@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>S7dev</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.clouds.min.js"></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", () => {
+        VANTA.CLOUDS({
+          el: "#app",
+          mouseControls: true,
+          touchControls: true,
+          gyroControls: true,
+          minHeight: 200.0,
+          minWidth: 200.0,
+          backgroundColor: 0xa4a4a4,
+          skyColor: 0x9fa4a7,
+          cloudColor: 0xdeaddb,
+          speed: 0.7,
+        });
+      });
+    </script>
+  </head>
+  <body id="app">
+    <section class="appContent">
+      <img src="./Images/profile.jpg" id="avatar" />
+      <br />
+      <p>Hey this is Shashwat.</p>
+      <p>I'm a frontend developer in the Web3 space.</p>
+      <br />
+      <p>The site is under-developement.</p>
+      <br />
+      <div class="timer">
+        <p>Expected to be live in <span id="time"></span></p>
+      </div>
+
+      <br />
+      <p>Incase you want to reach : shashwa7.dev@gmail.com</p>
+    </section>
+
+    <script>
+      // Set the date we're counting down to
+      var countDownDate = new Date("Sep 8, 2022 17:17").getTime();
+
+      // Update the count down every 1 second
+      var x = setInterval(function () {
+        // Get today's date and time
+        var now = new Date().getTime();
+
+        // Find the distance between now and the count down date
+        var distance = countDownDate - now;
+
+        // Time calculations for days, hours, minutes and seconds
+        var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        var hours = Math.floor(
+          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        );
+        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        // Output the result in an element with id="demo"
+        document.getElementById("time").innerHTML =
+          days + "d " + hours + "h " + minutes + "m " + seconds + "s. ";
+
+        // If the count down is over, write some text
+        if (distance < 0) {
+          clearInterval(x);
+          document.getElementById("time").innerHTML = "EXPIRED";
+        }
+      }, 1000);
+    </script>
+  </body>
+</html>

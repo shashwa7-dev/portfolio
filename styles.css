@@ -1,0 +1,46 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+img,
+picture,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+body {
+  padding: 2em;
+  color: rgb(255, 255, 255, 0.75);
+  font-family: monospace;
+  background-color: rgb(25, 25, 25);
+}
+.appContent {
+  max-width: 350px;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+#avatar {
+  width: 75px;
+  height: 75px;
+  border-radius: 0.5rem;
+}
+#time {
+  display: inline-block;
+  background: rgba(0, 255, 195, 0.5);
+  padding: 0 0.25rem;
+  border-radius: 2rem;
+  color: black;
+}
