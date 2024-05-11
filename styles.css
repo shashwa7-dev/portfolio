@@ -39,7 +39,7 @@ body {
   position: relative;
   border-radius: 0.5rem;
   box-shadow: 0 0 5px 0px rgba(255, 255, 255, 0);
-  transition: all 0.35s ease-in;
+  transition: all 0.3s ease-in;
   overflow: hidden;
 }
 .card:hover {
@@ -53,10 +53,10 @@ body {
   right: 5px;
   width: 60%;
   opacity: 0.2;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 .card:hover > #brand {
-  opacity: 0.22;
+  opacity: 0.3;
   
 }
 #avatar {
