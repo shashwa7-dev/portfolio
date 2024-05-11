@@ -7,7 +7,10 @@
   margin: 0;
   padding: 0;
 }
-
+:root {
+  --color1: rgb(0, 231, 255);
+  --color2: rgb(255, 0, 231);
+}
 html,
 body {
   height: 100%;
@@ -26,20 +29,41 @@ body {
   font-family: monospace;
   background-color: rgb(25, 25, 25);
 }
-.appContent {
+.card {
   max-width: 350px;
   background: rgba(0, 0, 0, 0.5);
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  position: relative;
   border-radius: 0.5rem;
-  opacity: 0;
-  transition: opacity 1s ease-in;
+  box-shadow: 0 0 5px 0px rgba(255, 255, 255, 0);
+  transition: all 0.35s ease-in;
+  overflow: hidden;
+}
+.card:hover {
+  box-shadow: -20px -20px 30px -25px var(--color1),
+    20px 20px 30px -25px var(--color2), -7px -7px 10px -5px var(--color1);
+  cursor: crosshair;
+}
+#brand {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 60%;
+  opacity: 0.2;
+  transition: all 0.3s ease;
+}
+.card:hover > #brand {
+  opacity: 0.22;
+  
 }
 #avatar {
   width: 75px;
   height: 75px;
   border-radius: 0.5rem;
-  float: left;
-  margin-right: 1rem;
+  overflow: hidden;
 }
 #time {
   display: inline-block;
@@ -47,4 +71,11 @@ body {
   padding: 0 0.25rem;
   border-radius: 2rem;
   color: black;
+}
+a {
+  color: white;
+  text-decoration: none;
+}
+#email {
+  color: yellow;
 }
