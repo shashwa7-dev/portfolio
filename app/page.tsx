@@ -6,7 +6,7 @@ import SpotifyLastListen from "./components/SpotifyLastListen";
 export default function Home() {
   return (
     <div
-      className="container p-5  lg:p-10 lg:pb-5 flex flex-col gap-4 h-full overflow-x-hidden"
+      className="container p-5 lg:p-10 lg:pb-5 flex flex-col gap-6 h-full"
       style={{ zIndex: 1 }}
     >
       <Intro />

@@ -1,12 +1,14 @@
 import React from "react";
 import SpotifyLastListen from "./SpotifyLastListen";
+import IST24HourClock from "./IST24HourClock";
 
 const CurrentState = () => {
   return (
     <div className="flex flex-col gap-1">
       <p className="font-black font-s7_mono text-xl lg:text-2xl text-s7-gray_graphite">
-        Current
+        Current Stats
       </p>
+
       <div className="flex flex-col gap-2">
         <p className="text-sm lg:text-normal">
           <span className="font-bold">Location:</span> Silvassa, D&NH, India
@@ -37,10 +39,12 @@ const CurrentState = () => {
           </a>
         </div>
         <p className="text-sm lg:text-normal">
-          <span className="font-bold">Email:</span>
+          <span className="font-bold">Email: </span>
           <span>shashwa7.dev@gmail.com</span>
         </p>
+
         <SpotifyLastListen />
+        <IST24HourClock />
       </div>
     </div>
   );

@@ -15,7 +15,7 @@ const Intro = () => {
           Greetings
         </p>
         <div className="flex flex-col gap-3">
-          <p className="text-sm lg:text-normal">Dear user,</p>
+          <p className="text-sm lg:text-normal font-medium">Dear user,</p>
           <p className="text-sm lg:text-normal">
             I specialize in crafting user experiences and interfaces, driven by
             deep passion for tech and coding. Like a web-slinging Spider-Man
@@ -33,7 +33,9 @@ const Intro = () => {
           </p>
           <div>
             <img src={"./fevicon.svg"} alt="shashwat tripathi" width={"35px"} />
-            <p className="text-sm lg:text-normal">{"Thank You ;)"}</p>
+            <p className="text-sm lg:text-normal font-medium">
+              {"Thank You ;)"}
+            </p>
           </div>
         </div>
       </div>
