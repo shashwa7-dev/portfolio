@@ -2,32 +2,59 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
 
+@keyframes spin-reverse {
+  from {
+    transform: rotate(45deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+html,
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  height: 100%;
+}
+:root {
+  /*app*/
+  --s7-primary-bg: #fefefe;
+  --s7-primary-fg: #020202;
+
+  /* colors */
+  --s7-grey-light: #d0d0d0;
+  --s7-grey-graphite: #4d5362;
+  --s7-rich-black: #020202;
 }
 
+body {
+  color: var(--s7-primary-fg);
+  background: var(--s7-primary-bg);
+  -webkit-font-smoothing: antialiased;
+}
+a:hover {
+  display: inline-block;
+  font-weight: 500;
+  transform: translateY(-1px);
+  transition: all 0.3s ease;
+}
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 4s linear infinite;
+}
+
+.animate-spin-reverse {
+  animation: spin-reverse 500ms linear;
 }
