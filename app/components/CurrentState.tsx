@@ -42,7 +42,6 @@ const CurrentState = () => {
           <span className="font-bold">Email: </span>
           <span>shashwa7.dev@gmail.com</span>
         </p>
-
         <SpotifyLastListen />
         <IST24HourClock />
       </div>

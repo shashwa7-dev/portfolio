@@ -32,7 +32,7 @@ const Intro = () => {
             networks! I'm rooting for your upgrade to version awesome.0!
           </p>
           <div>
-            <img src={"./fevicon.svg"} alt="shashwat tripathi" width={"35px"} />
+            <img src={"./fevicon.svg"} alt="shashwat tripathi" width={"25px"} />
             <p className="text-sm lg:text-normal font-medium">
               {"Thank You ;)"}
             </p>
