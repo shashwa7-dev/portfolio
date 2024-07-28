@@ -48,7 +48,6 @@ export default function SpotifyLastListen() {
 
   const handleMouseEnter = () => {
     setShowTooltip(true);
-    console.log("jkds");
   };
 
   const handleMouseLeave = () => {
@@ -100,8 +99,8 @@ export default function SpotifyLastListen() {
               }`}
               style={{ transition: "transform 0.5s ease-in-out" }}
             />
-            {showTooltip && !isPlaying && (
-              <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 px-2 bg-s7-gray100 font-bold text-s7-gray_graphite  text-[0.5rem] rounded whitespace-nowrap ">
+            {showTooltip && !isPlaying && track.preview_url && (
+              <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 px-2 bg-s7-gray100 font-bold text-s7-gray_graphite text-[0.5rem] rounded whitespace-nowrap ">
                 Click to play
               </div>
             )}
