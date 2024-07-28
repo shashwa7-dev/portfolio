@@ -21,13 +21,13 @@ const offBit = localFont({
   variable: "--font-offBit",
 });
 
-export const vt323 = VT323({
+const vt323 = VT323({
   subsets: ["latin"],
   weight: "400",
   display: "swap",
   variable: "--font-vt323",
 });
-export const jbMono = JetBrains_Mono({
+const jbMono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
   display: "swap",

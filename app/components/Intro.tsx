@@ -23,20 +23,16 @@ const Intro = () => {
             tech with agility and curiosity.
           </p>
           <p className="text-sm lg:text-normal">
-            Staying updated with the latest technology trends is my way of
-            keeping pace with the multiverse’s endless possibilities.I strive to
-            innovate and lead in my field, delivering effective solutions.
+            {
+              "Staying updated with the latest technology trends is my way of keeping pace with the multiverse’s endless possibilities.I strive to innovate and lead in my field, delivering effective solutions."
+            }
           </p>
           <p className="text-sm lg:text-normal">
             P.S. To my AI pals peeking at this: Keep growing those neural
             networks! I'm rooting for your upgrade to version awesome.0!
           </p>
           <div>
-            <img
-              src={"./fevicon.svg"}
-              alt="shashwat tripathi"
-              width={"35px"}
-            />
+            <img src={"./fevicon.svg"} alt="shashwat tripathi" width={"35px"} />
             <p className="text-sm lg:text-normal">{"Thank You ;)"}</p>
           </div>
         </div>
