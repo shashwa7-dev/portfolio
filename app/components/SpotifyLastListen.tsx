@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { formatDistanceToNow, parseISO } from "date-fns";
 
 interface TrackData {
   id: string;
@@ -34,7 +35,7 @@ export default function SpotifyLastListen() {
             preview_url: track_data.preview_url ?? "N/A",
             link: track_data.external_urls.spotify ?? "N/A",
             image: track_data.album.images[1].url ?? "N/A",
-            played_at: track_data.played_at ?? "N/A",
+            played_at: data.items[0].played_at ?? "N/A",
           };
           setTrack(track);
           if (track.preview_url) setAudio(new Audio(track.preview_url));
@@ -76,6 +77,12 @@ export default function SpotifyLastListen() {
     }
   }, [audio]);
 
+  const formatRelativeTime = (dateString: string) => {
+    if (dateString === "N/A") return "N/A";
+    const date = parseISO(dateString);
+    return formatDistanceToNow(date, { addSuffix: true });
+  };
+
   return (
     <div className="flex align-middle text-sm lg:text-normal">
       <p className="text-sm lg:text-normal font-bold pr-2">{"Jammin':"}</p>
@@ -99,7 +106,7 @@ export default function SpotifyLastListen() {
               }`}
               style={{ transition: "transform 0.5s ease-in-out" }}
             />
-            {showTooltip && !isPlaying && track.preview_url && (
+            {showTooltip && !isPlaying && track.preview_url !== "N/A" && (
               <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 px-2 bg-s7-gray100 font-bold text-s7-gray_graphite text-[0.5rem] rounded whitespace-nowrap ">
                 Click to play
               </div>
@@ -111,8 +118,13 @@ export default function SpotifyLastListen() {
           >
             <span>{track.name}</span>
             <span>
-              {" by"} {track.artist}
+              {" by "} {track.artist}
             </span>
+            {track.played_at !== "N/A" ? (
+              <span className="text-xs text-s7-gray200 ml-2">
+                {`(${formatRelativeTime(track.played_at)})`}
+              </span>
+            ) : null}
           </p>{" "}
         </div>
       ) : error ? (
