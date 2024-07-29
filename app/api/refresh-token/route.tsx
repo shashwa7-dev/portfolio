@@ -10,7 +10,9 @@ async function refreshAccessToken() {
   const response = await fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
     headers: {
-      "Cache-Control": "no-store, max-age=0",
+      "Cache-Control": "no-cache, no-store, must-revalidate",
+      Pragma: "no-cache",
+      Expires: "0",
       "Content-Type": "application/x-www-form-urlencoded",
       Authorization:
         "Basic " +
