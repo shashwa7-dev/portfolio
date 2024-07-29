@@ -13,84 +13,38 @@ interface TrackData {
   played_at: string;
 }
 
-interface TokenData {
-  access_token: string;
-  expires_at: number;
-}
-
 export default function SpotifyLastListen() {
   const [track, setTrack] = useState<TrackData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
-  const [tokenData, setTokenData] = useState<TokenData | null>(null);
-
-  const refreshToken = async () => {
-    try {
-      const tokenResponse = await fetch("/api/refresh-token");
-      const data = await tokenResponse.json();
-      if (data.error) {
-        throw new Error(data.error);
-      }
-      const newTokenData: TokenData = {
-        access_token: data.access_token,
-        expires_at: Date.now() + data.expires_in * 1000,
-      };
-      setTokenData(newTokenData);
-      return newTokenData.access_token;
-    } catch (err) {
-      console.error("Failed to refresh token:", err);
-      setError("Failed to refresh access token");
-      return null;
-    }
-  };
-
-  const getValidToken = async () => {
-    if (!tokenData || Date.now() > tokenData.expires_at - 60000) {
-      // Refresh if within 1 minute of expiration
-      return refreshToken();
-    }
-    return tokenData.access_token;
-  };
-
-  const fetchLastListened = async () => {
-    const accessToken = await getValidToken();
-    if (!accessToken) return;
-
-    try {
-      const response = await fetch(
-        `/api/last-listened?access_token=${accessToken}`
-      );
-      const data = await response.json();
-
-      if (data.error) {
-        setError(data.error);
-      } else {
-        const track_data = data.items[0].track;
-        const newTrack: TrackData = {
-          id: track_data.id,
-          name: track_data.name,
-          artist: track_data.artists[0].name ?? "N/A",
-          preview_url: track_data.preview_url ?? "N/A",
-          link: track_data.external_urls.spotify ?? "N/A",
-          image: track_data.album.images[1].url ?? "N/A",
-          played_at: data.items[0].played_at ?? "N/A",
-        };
-        setTrack(newTrack);
-        if (newTrack.preview_url) setAudio(new Audio(newTrack.preview_url));
-      }
-    } catch (err) {
-      setError("Failed to fetch last listened track");
-      console.error(err);
-    }
-  };
 
   useEffect(() => {
-    fetchLastListened();
-    // Set up an interval to periodically check and update the last listened track
-    const intervalId = setInterval(fetchLastListened, 60000); // Check every minute
-    return () => clearInterval(intervalId);
+    fetch("/api/last-listened")
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.error) {
+          setError(data.error);
+        } else {
+          const track_data = data.items[0].track;
+          const track: TrackData = {
+            id: track_data.id,
+            name: track_data.name,
+            artist: track_data.artists[0].name ?? "N/A",
+            preview_url: track_data.preview_url ?? "N/A",
+            link: track_data.external_urls.spotify ?? "N/A",
+            image: track_data.album.images[1].url ?? "N/A",
+            played_at: data.items[0].played_at ?? "N/A",
+          };
+          setTrack(track);
+          if (track.preview_url) setAudio(new Audio(track.preview_url));
+        }
+      })
+      .catch((err) => {
+        setError("Failed to fetch user profile");
+        console.error(err);
+      });
   }, []);
 
   const handleMouseEnter = () => {

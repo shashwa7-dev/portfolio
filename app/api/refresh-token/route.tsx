@@ -5,8 +5,6 @@ const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
 const refresh_token = process.env.SPOTIFY_REFRESH_TOKEN;
 export const dynamic = "force-dynamic";
 async function refreshAccessToken() {
-  console.log("Refreshing access token using refresh token:", refresh_token);
-
   const response = await fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
     cache: "no-store",
