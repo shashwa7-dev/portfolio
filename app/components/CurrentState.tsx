@@ -23,7 +23,7 @@ const CurrentState = () => {
           </a>
         </div>
         <p className="text-sm lg:text-normal">
-          <span className="font-bold">My Tools:</span>{" "}
+          <span className="font-bold">Tools:</span>{" "}
           {"Next/React/Node[JS], Chakra/Tailwind[UI], GSAP/Framer[MX]"}
         </p>
         <div className="text-sm lg:text-normal flex gap-2 align-top">
