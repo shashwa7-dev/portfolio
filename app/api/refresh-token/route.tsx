@@ -31,9 +31,9 @@ async function refreshAccessToken() {
 
   return await response.json();
 }
-
 export async function GET() {
   try {
+    console.log("Starting token refresh");
     const tokenData = await refreshAccessToken();
     console.log("Received token data:", tokenData);
 
@@ -41,11 +41,17 @@ export async function GET() {
       throw new Error(tokenData.error_description || tokenData.error);
     }
 
-    return NextResponse.json({ access_token: tokenData.access_token });
-  } catch (error) {
+    // Add a buffer to the expiration time
+    const expiresIn = tokenData.expires_in - 60; // 60 seconds buffer
+
+    return NextResponse.json({
+      access_token: tokenData.access_token,
+      expires_in: expiresIn,
+    });
+  } catch (error:any) {
     console.error("Error refreshing token:", error);
     return NextResponse.json(
-      { error: "Failed to refresh token" },
+      { error: "Failed to refresh token", details: error.message },
       { status: 500 }
     );
   }
