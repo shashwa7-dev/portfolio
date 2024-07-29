@@ -32,11 +32,9 @@ const IST24HourClock = () => {
     return date.toLocaleString("en-US", options);
   };
 
-  if (!dateTime) return <div>Loading...</div>;
-
   const [datePart, timePart] = formatDateTime(dateTime).split(" at ");
 
-  return (
+  return !dateTime ? null : (
     <div className="ist-clock text-s7-gray200 mt-2">
       <p className="text-xs font-bold">{datePart}</p>
       <p className="text-xs font-bold">{timePart} IST</p>
