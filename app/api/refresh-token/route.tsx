@@ -41,14 +41,13 @@ export async function GET() {
       throw new Error(tokenData.error_description || tokenData.error);
     }
 
-    // Add a buffer to the expiration time
-    const expiresIn = tokenData.expires_in - 60; // 60 seconds buffer
+    const expiresIn = tokenData.expires_in;
 
     return NextResponse.json({
       access_token: tokenData.access_token,
       expires_in: expiresIn,
     });
-  } catch (error:any) {
+  } catch (error: any) {
     console.error("Error refreshing token:", error);
     return NextResponse.json(
       { error: "Failed to refresh token", details: error.message },

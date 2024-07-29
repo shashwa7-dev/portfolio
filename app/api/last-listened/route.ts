@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-async function getlastListened(access_token: string) {
+async function getLastListened(access_token: string) {
   const response = await fetch(
     "https://api.spotify.com/v1/me/player/recently-played?limit=1",
     {
@@ -12,24 +12,17 @@ async function getlastListened(access_token: string) {
 
 export async function GET(request: NextRequest) {
   try {
-    // First, refresh the token
-    //NOTE: avoid accessing nextJS apis like this: http://localhost:3000/api/refresh-token,
-    //use request obj to access origin
-    const tokenResponse = await fetch(
-      `${request.nextUrl.origin}/api/refresh-token`
-    );
-    const tokenData = await tokenResponse.json();
-    console.log("Token expires in:", tokenData.expires_in, "seconds");
-    if (tokenData.error) {
-      throw new Error(tokenData.error);
+    const access_token = request.nextUrl.searchParams.get("access_token");
+    if (!access_token) {
+      throw new Error("No access token provided");
     }
-    // Then, use the new access token to fetch user profile
-    const lastTrack = await getlastListened(tokenData.access_token);
+
+    const lastTrack = await getLastListened(access_token);
     return NextResponse.json(lastTrack);
   } catch (error) {
     console.error("Error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch user profile" },
+      { error: "Failed to fetch last listened track" },
       { status: 500 }
     );
   }
