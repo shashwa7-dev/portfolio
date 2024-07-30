@@ -3,7 +3,9 @@ import { NextResponse } from "next/server";
 const client_id = process.env.SPOTIFY_CLIENT_ID;
 const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
 const refresh_token = process.env.SPOTIFY_REFRESH_TOKEN;
+
 export const dynamic = "force-dynamic";
+
 async function refreshAccessToken() {
   const response = await fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
@@ -33,6 +35,7 @@ async function refreshAccessToken() {
 
   return await response.json();
 }
+
 export async function GET() {
   try {
     console.log("Starting token refresh");
@@ -45,10 +48,21 @@ export async function GET() {
 
     const expiresIn = tokenData.expires_in;
 
-    return NextResponse.json({
-      access_token: tokenData.access_token,
-      expires_in: expiresIn,
-    });
+    return NextResponse.json(
+      {
+        access_token: tokenData.access_token,
+        expires_in: expiresIn,
+      },
+      {
+        status: 200,
+        headers: {
+          "Cache-Control":
+            "no-store, no-cache, must-revalidate, proxy-revalidate",
+          Pragma: "no-cache",
+          Expires: "0",
+        },
+      }
+    );
   } catch (error: any) {
     console.error("Error refreshing token:", error);
     return NextResponse.json(
