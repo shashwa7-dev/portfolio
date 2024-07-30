@@ -15,7 +15,7 @@ interface TrackData {
 
 interface TokenData {
   access_token: string;
-  expires_at: number;
+  expires_in: number;
 }
 
 export default function SpotifyLastListen() {
@@ -24,21 +24,17 @@ export default function SpotifyLastListen() {
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
-  const [tokenData, setTokenData] = useState<TokenData | null>(null);
 
   const refreshToken = async () => {
+    console.log("refresh token called");
     try {
       const tokenResponse = await fetch("/api/refresh-token");
-      const data = await tokenResponse.json();
-      if (data.error) {
-        throw new Error(data.error);
+      const tokenData = await tokenResponse.json();
+      if (tokenData.error) {
+        throw new Error(tokenData.error);
       }
-      const newTokenData: TokenData = {
-        access_token: data.access_token,
-        expires_at: Date.now() + data.expires_in * 1000,
-      };
-      setTokenData(newTokenData);
-      return newTokenData.access_token;
+      console.log("access_token_data", tokenData);
+      return tokenData.access_token;
     } catch (err) {
       console.error("Failed to refresh token:", err);
       setError("Failed to refresh access token");
@@ -46,16 +42,9 @@ export default function SpotifyLastListen() {
     }
   };
 
-  const getValidToken = async () => {
-    if (!tokenData || Date.now() > tokenData.expires_at - 60000) {
-      // Refresh if within 1 minute of expiration
-      return refreshToken();
-    }
-    return tokenData.access_token;
-  };
-
   const fetchLastListened = async () => {
-    const accessToken = await getValidToken();
+    const accessToken = await refreshToken();
+    console.log("fetch last listened called", accessToken);
     if (!accessToken) {
       console.warn("Access token not foun!");
       return;
