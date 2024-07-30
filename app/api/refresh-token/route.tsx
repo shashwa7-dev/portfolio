@@ -51,7 +51,7 @@ export async function GET() {
     return NextResponse.json(
       {
         access_token: tokenData.access_token,
-        expires_in: expiresIn - 3500,
+        expires_in: expiresIn - 3540,
       },
       {
         status: 200,
