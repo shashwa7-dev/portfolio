@@ -24,30 +24,23 @@ export default function SpotifyLastListen() {
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
-  const [tokenData, setTokenData] = useState<TokenData | null>(null);
 
   const refreshToken = async () => {
-    console.log("fetched token", tokenData, Date.now());
-    if (!tokenData || Date.now() >= tokenData.expiresAt) {
-      const tokenResponse = await fetch(`/api/refresh-token?t=${Date.now()}`, {
-        cache: "no-store",
-        headers: {
-          "Cache-Control": "no-cache, no-store, must-revalidate",
-          Pragma: "no-cache",
-          Expires: "0",
-        },
-      });
-      const newTokenData = await tokenResponse.json();
-      if (newTokenData.error) {
-        throw new Error(newTokenData.error);
-      }
-      setTokenData({
-        ...newTokenData,
-        expiresAt: Date.now() + newTokenData.expires_in * 1000,
-      });
-      return newTokenData.access_token;
+    const tokenResponse = await fetch(`/api/refresh-token`, {
+      cache: "no-store",
+      headers: {
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        Pragma: "no-cache",
+        Expires: "0",
+      },
+    });
+    const newTokenData = await tokenResponse.json();
+    console.log("fetched token", newTokenData, Date.now());
+    if (newTokenData.error) {
+      throw new Error(newTokenData.error);
     }
-    return tokenData.access_token;
+
+    return newTokenData.access_token;
   };
 
   const fetchLastListened = async () => {
