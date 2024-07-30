@@ -15,7 +15,7 @@ interface TrackData {
 
 interface TokenData {
   access_token: string;
-  expires_in: number;
+  expiresAt: number;
 }
 
 export default function SpotifyLastListen() {
@@ -24,22 +24,30 @@ export default function SpotifyLastListen() {
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
+  const [tokenData, setTokenData] = useState<TokenData | null>(null);
 
   const refreshToken = async () => {
-    console.log("refresh token called");
-    try {
-      const tokenResponse = await fetch("/api/refresh-token");
-      const tokenData = await tokenResponse.json();
-      if (tokenData.error) {
-        throw new Error(tokenData.error);
+    console.log("fetched token", tokenData, Date.now());
+    if (!tokenData || Date.now() >= tokenData.expiresAt) {
+      const tokenResponse = await fetch(`/api/refresh-token?t=${Date.now()}`, {
+        cache: "no-store",
+        headers: {
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+          Pragma: "no-cache",
+          Expires: "0",
+        },
+      });
+      const newTokenData = await tokenResponse.json();
+      if (newTokenData.error) {
+        throw new Error(newTokenData.error);
       }
-      console.log("access_token_data", tokenData);
-      return tokenData.access_token;
-    } catch (err) {
-      console.error("Failed to refresh token:", err);
-      setError("Failed to refresh access token");
-      return null;
+      setTokenData({
+        ...newTokenData,
+        expiresAt: Date.now() + newTokenData.expires_in * 1000,
+      });
+      return newTokenData.access_token;
     }
+    return tokenData.access_token;
   };
 
   const fetchLastListened = async () => {
