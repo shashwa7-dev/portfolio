@@ -1,11 +1,3 @@
-[[headers]]
-  for = "/api/*"
-  [headers.values]
-    Cache-Control = "no-cache, no-store, must-revalidate"
-    Pragma = "no-cache"
-    Expires = "0"
-
-## This rule redirects to an external API, signing requests with a secret
 [[redirects]]
   from = "/"
   to = "https://shashwa7.vercel.app/"
