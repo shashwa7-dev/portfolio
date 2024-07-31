@@ -31,8 +31,14 @@ const Intro = () => {
             P.S. To my AI pals peeking at this: Keep growing those neural
             networks! I'm rooting for your upgrade to version awesome.0!
           </p>
-          <div>
-            <img src={"./fevicon.svg"} alt="shashwat tripathi" width={"25px"} />
+          <div className="flex flex-col gap-0 w-fit">
+            <div className="w-[30px]">
+              <img
+                src={"./fevicon.svg"}
+                alt="shashwat tripathi"
+                className="opacity-30"
+              />
+            </div>
             <p className="text-sm lg:text-normal font-medium">
               {"Thank You ;)"}
             </p>
