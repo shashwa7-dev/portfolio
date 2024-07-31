@@ -1,7 +1,6 @@
 import CurrentState from "./components/CurrentState";
 import Footer from "./components/Footer";
 import Intro from "./components/Intro";
-import SpotifyLastListen from "./components/SpotifyLastListen";
 
 export default function Home() {
   return (

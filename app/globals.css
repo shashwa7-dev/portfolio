@@ -58,3 +58,26 @@ a:hover {
 .animate-spin-reverse {
   animation: spin-reverse 500ms linear;
 }
+
+@keyframes ellipsis {
+  0% {
+    content: "-.-";
+  }
+  20% {
+    content: "o.o";
+  }
+  40% {
+    content: "O.O";
+  }
+  60% {
+    content: "(0-0)";
+  }
+  100% {
+    content: "(0v0)";
+  }
+}
+
+.dots::after {
+  content: ".";
+  animation: ellipsis 1.5s infinite steps(3, end);
+}
