@@ -38,8 +38,13 @@ export const metadata: Metadata = {
   description: "Frontend Engineer | Expert in Crafting Quality Interfaces",
   authors: [{ name: "Shashwat Tripathi" }],
   openGraph: {
+    url: "https://shashwa7.vercel.app/",
+    type: "website",
     title: "S7.dev",
     description: "Frontend Engineer | Expert in Crafting Quality Interfaces",
+    images: [
+      "https://github.com/shashwa7-dev/portfolio/blob/assets/brand.png?raw=true",
+    ],
   },
   twitter: {
     card: "summary",
