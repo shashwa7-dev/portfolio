@@ -22,6 +22,12 @@ const CurrentState = () => {
             @SentientAI
           </a>
         </div>
+        <div className="text-sm lg:text-normal flex gap-2 align-top">
+          <p className="font-bold">Projects:</p>
+          <a href="https://eatri8-ai.vercel.app/" target="_blank">
+            @EATRi8_AI
+          </a>
+        </div>
         <p className="text-sm lg:text-normal">
           <span className="font-bold">Tools:</span>{" "}
           {"Next/React/Node[JS], Chakra/Tailwind[UI], GSAP/Framer[MX]"}
