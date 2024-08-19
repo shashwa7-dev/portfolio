@@ -5,6 +5,7 @@ import CurrentState from "./components/CurrentState";
 import Footer from "./components/Footer";
 import Intro from "./components/Intro";
 import Loading from "./loading";
+import SpiderAnimation from "./components/SpiderBG";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
@@ -39,6 +40,7 @@ export default function Home() {
           className="w-full h-full "
         />
       </div>
+      <SpiderAnimation />
     </div>
   );
 }
