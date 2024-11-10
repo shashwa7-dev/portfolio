@@ -1,18 +1,12 @@
 import React from "react";
+import SpotifyLastListen from "./SpotifyLastListen";
 
 const Footer = () => {
   return (
-    <div className="flex justify-center align-middle mt-auto py-4 border-t gap-0 relative">
-      {" "}
-      <p className="text-sm font-s7_mono pt-1">{"Copyright - "}</p>{" "}
-      <div className="w-[20px]">
-        <img
-          src={"./images/pixel.png"}
-          alt="shashwat tripathi"
-          className="opacity-50"
-        />
-      </div>{" "}
-      <p className="text-sm font-s7_mono pt-1">{" / S7.dev - 2024"}</p>{" "}
+    <div className="flex justify-center items-center mt-auto p-2 border-t gap-2 relative">
+      <p>{"shashwa7.in"}</p>
+      <SpotifyLastListen />
+      <p className="text-sm">{`${new Date().getFullYear()}`}</p>
     </div>
   );
 };

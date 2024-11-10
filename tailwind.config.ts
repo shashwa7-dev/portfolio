@@ -23,9 +23,25 @@ const config: Config = {
           "2xl": "920px",
         },
       },
+      screens: {
+        "-2xl": {
+          max: "1535px",
+        },
+        "-xl": {
+          max: "1279px",
+        },
+        "-lg": {
+          max: "1023px",
+        },
+        "-md": {
+          max: "767px",
+        },
+        "-sm": {
+          max: "639px",
+        },
+      },
       fontFamily: {
-        mono: ["var(--font-vt323)", ...fontFamily.mono],
-        s7_mono: ["var(--font-offBit)", ...fontFamily.mono],
+        mono: ["var(--font-spaceGrotesk)", ...fontFamily.mono],
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

@@ -1,54 +1,23 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono, VT323 } from "next/font/google";
+import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
-import localFont from "next/font/local";
+import { baseUrl } from "./sitemap";
 
-const offBit = localFont({
-  src: [
-    {
-      path: "../public/fonts/offBit/ob_reg.ttf",
-      weight: "400",
-    },
-    {
-      path: "../public/fonts/offBit/ob_bold.ttf",
-      weight: "700",
-    },
-    {
-      path: "../public/fonts/offBit/ob_dot_bold.ttf",
-      weight: "900",
-    },
-  ],
-  variable: "--font-offBit",
-});
-
-const vt323 = VT323({
-  subsets: ["latin"],
-  weight: "400",
-  display: "swap",
-  variable: "--font-vt323",
-});
-const jbMono = JetBrains_Mono({
+const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
   display: "swap",
-  variable: "--font-jbMono",
+  variable: "--font-spaceGrotesk",
 });
+
 export const metadata: Metadata = {
+  metadataBase: new URL(baseUrl),
   title: "S7.dev",
   description: "Frontend Engineer | Expert in Crafting Quality Interfaces",
   authors: [{ name: "Shashwat Tripathi" }],
-  openGraph: {
-    url: "https://shashwa7.vercel.app/",
-    type: "website",
-    title: "S7.dev",
-    description: "Frontend Engineer | Expert in Crafting Quality Interfaces",
-    images: [
-      "https://github.com/shashwa7-dev/portfolio/blob/assets/brand.png?raw=true",
-    ],
-  },
   twitter: {
     card: "summary",
-    site: "https://shashwa7.vercel.app/",
+    site: baseUrl,
     description:
       "Frontend Engineer | Crafting sleek, responsive interfaces | Turning ideas into reality | Getting the job done right",
     images: [
@@ -65,8 +34,27 @@ export const metadata: Metadata = {
     ],
     other: [{ rel: "mask-icon", url: "/safari-pinned-tab.svg" }],
   },
-  other: {
-    copyright: "S7.dev@2024",
+  openGraph: {
+    url: baseUrl,
+    type: "website",
+    title: "S7.dev",
+    description: "Frontend Engineer | Expert in Crafting Quality Interfaces",
+    images: [
+      "https://github.com/shashwa7-dev/portfolio/blob/assets/brand.png?raw=true",
+    ],
+    siteName: "S7.dev",
+    locale: "en_US",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 };
 
@@ -76,8 +64,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${offBit.variable} ${vt323.variable}`}>
-      <body className={jbMono.className}>{children}</body>
+    <html lang="en">
+      <body className={spaceGrotesk.className}>{children}</body>
     </html>
   );
 }

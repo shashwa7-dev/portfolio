@@ -1,12 +1,10 @@
-import { MetadataRoute } from "next";
+export const baseUrl = "https://www.shashwa7.in/";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  return [
-    {
-      url: "https://shashwa7.vercel.app/",
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 1,
-    },
-  ];
+export default async function sitemap() {
+  let routes = [""].map((route) => ({
+    url: `${baseUrl}${route}`,
+    lastModified: new Date().toISOString().split("T")[0],
+  }));
+
+  return [...routes];
 }

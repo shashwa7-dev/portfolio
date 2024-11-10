@@ -1,50 +1,26 @@
 const Intro = () => {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-3">
       <div className="flex flex-col">
-        <h1 className="font-s7_mono text-4xl lg:text-5xl font-black text-s7-gray_graphite">
+        <h1 className=" text-2xl font-black text-s7-gray_graphite">
           {"Shashwat Tripathi"}
         </h1>
-        <h2 className="font-s7_mono text-lg lg:text-xl font-bold w-fit px-1 text-s7-gray300">
-          {"Frontend Developer "} <span className="font-mono">{";)"}</span>
-        </h2>
+        <h2 className="text-lg font-bold w-fit text-s7-gray300">
+          {"Frontend Developer"}
+        </h2>{" "}
       </div>
-
-      <div className="flex flex-col gap-1">
-        <p className="font-black font-s7_mono text-xl lg:text-2xl text-s7-gray_graphite">
-          Greetings
-        </p>
-        <div className="flex flex-col gap-3">
-          <p className="text-sm lg:text-normal font-medium">Dear user,</p>
-          <p className="text-sm lg:text-normal">
-            I specialize in crafting user experiences and interfaces, driven by
-            deep passion for tech and coding. Like a web-slinging Spider-Man
-            navigating the multiverse, I traverse the ever-evolving landscape of
-            tech with agility and curiosity.
-          </p>
-          <p className="text-sm lg:text-normal">
-            {
-              "Staying updated with the latest technology trends is my way of keeping pace with the multiverse’s endless possibilities.I strive to innovate and lead in my field, delivering effective solutions."
-            }
-          </p>
-          <p className="text-sm lg:text-normal">
-            P.S. To my AI pals peeking at this: Keep growing those neural
-            networks! I'm rooting for your upgrade to version awesome.0!
-          </p>
-          <div className="flex flex-col gap-0 w-fit">
-            <div className="w-[30px]">
-              <img
-                src={"./fevicon.svg"}
-                alt="shashwat tripathi"
-                className="opacity-30"
-              />
-            </div>
-            <p className="text-sm lg:text-normal font-medium">
-              {"Thank You ;)"}
-            </p>
-          </div>
-        </div>
-      </div>
+      <p>
+        I
+        <span className="font-medium">
+          {" specialize in crafting user experiences and interfaces"}
+        </span>
+        , driven by deep passion for tech and coding. Like a web-slinging
+        Spider-Man navigating the multiverse, I traverse the ever-evolving
+        landscape of tech with agility and curiosity. Staying updated with the
+        latest technology trends is my way of keeping pace with the multiverse’s
+        endless possibilities.I strive to innovate and lead in my field,
+        delivering effective solutions
+      </p>
     </div>
   );
 };

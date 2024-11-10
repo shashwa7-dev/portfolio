@@ -4,52 +4,59 @@ import IST24HourClock from "./IST24HourClock";
 
 const CurrentState = () => {
   return (
-    <div className="flex flex-col gap-1">
-      <p className="font-black font-s7_mono text-xl lg:text-2xl text-s7-gray_graphite">
-        Current Stats
-      </p>
-
-      <div className="flex flex-col gap-2">
-        <p className="text-sm lg:text-normal">
-          <span className="font-bold">Location:</span> Silvassa, D&NH, India
-        </p>
-        <div className="text-sm lg:text-normal flex gap-2 align-top">
-          <p className="font-bold">Building:</p>
+    <div className="grid grid-cols-2 gap-4 -md:grid-cols-1 -md:gap-2">
+      <div>
+        <p className="font-bold">Building</p>
+        <div className="flex gap-1">
           <a href="https://playai.network/" target="_blank">
-            @PlayAI,
+            {"PlayAI,"}
           </a>
-          <a href="https://x.com/sentient_agi" target="_blank">
-            @SentientAI
-          </a>
-        </div>
-        <div className="text-sm lg:text-normal flex gap-2 align-top">
-          <p className="font-bold">Projects:</p>
-          <a href="https://eatri8-ai.vercel.app/" target="_blank">
-            @EATRi8_AI
+          <a href="https://nodeexplorer.playai.network/" target="_blank">
+            {"Node Expolorer"}
           </a>
         </div>
-        <p className="text-sm lg:text-normal">
-          <span className="font-bold">Tools:</span>{" "}
-          {"Next/React/Node[JS], Chakra/Tailwind[UI], GSAP/Framer[MX]"}
+      </div>
+      <div>
+        <p className="font-bold">Projects</p>
+        <a href="https://eatri8-ai.shashwa7.in/" target="_blank">
+          EATRi8_AI
+        </a>
+      </div>
+      <div>
+        <p className="font-bold">Stack</p>
+        <p>
+          <span className="font-bold">{"Js: "}</span> React JS, Node JS
         </p>
-        <div className="text-sm lg:text-normal flex gap-2 align-top">
-          <p className="font-bold">Socials:</p>
-          <a href="https://github.com/shashwa7-dev" target="_blank">
-            Github,
+        <p>
+          <span className="font-bold">{"Ui: "}</span>Tailwind, Chakra, GSAP,
+          Framer
+        </p>
+        <p>
+          <span className="font-bold">{"Vc: "}</span>Github
+        </p>
+      </div>
+      <div>
+        <p className="font-bold">Connect</p>
+        <div>
+          <span className="font-bold">Email: </span>
+          <span>contact@shashwa7.in</span>
+        </div>
+        <div>
+          <span className="font-bold">Social: </span>
+          <a href="http://github.shashwa7.in/" target="_blank">
+            {"Github, "}
           </a>
-          <a href="https://x.com/theWebKid" target="_blank">
-            Twitter,
+          <a href="https://x.com/shashwa7-dev" target="_blank">
+            {"Twitter, "}
           </a>
           <a href="https://www.linkedin.com/in/shashwa7/" target="_blank">
             In
           </a>
         </div>
-        <p className="text-sm lg:text-normal">
-          <span className="font-bold">Email: </span>
-          <span>shashwa7.dev@gmail.com</span>
-        </p>
-        <SpotifyLastListen />
-        <IST24HourClock />
+      </div>
+      <div>
+        <p className="font-bold">Location</p>
+        <p>Silvassa, D&NH, India</p>
       </div>
     </div>
   );
