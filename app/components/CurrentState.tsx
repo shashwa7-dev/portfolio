@@ -12,7 +12,7 @@ const CurrentState = () => {
             {"PlayAI,"}
           </a>
           <a href="https://nodeexplorer.playai.network/" target="_blank">
-            {"Node Expolorer"}
+            {"Node Explorer"}
           </a>
         </div>
       </div>
@@ -25,7 +25,7 @@ const CurrentState = () => {
       <div>
         <p className="font-bold">Stack</p>
         <p>
-          <span className="font-bold">{"Js: "}</span> React JS, Node JS
+          <span className="font-bold">{"App: "}</span> React JS, Node JS, Typescript
         </p>
         <p>
           <span className="font-bold">{"Ui: "}</span>Tailwind, Chakra, GSAP,
