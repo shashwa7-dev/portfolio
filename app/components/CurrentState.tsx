@@ -4,7 +4,7 @@ import IST24HourClock from "./IST24HourClock";
 
 const CurrentState = () => {
   return (
-    <div className="grid grid-cols-2 gap-4 -md:grid-cols-1 -md:gap-2">
+    <div className="grid grid-cols-2 gap-4 -md:grid-cols-1 -md:gap-2 text-sm">
       <div>
         <p className="font-bold">Building</p>
         <div className="flex gap-1">
