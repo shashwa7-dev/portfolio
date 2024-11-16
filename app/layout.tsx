@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     description:
       "Frontend Engineer | Crafting sleek, responsive interfaces | Turning ideas into reality | Getting the job done right",
     images: [
-      "https://github.com/shashwa7-dev/portfolio/blob/assets/brand.png?raw=true",
+      "https://raw.githubusercontent.com/shashwa7-dev/portfolio/refs/heads/assets/s7dev.png",
     ],
   },
   icons: {
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     title: "S7.dev",
     description: "Frontend Engineer | Expert in Crafting Quality Interfaces",
     images: [
-      "https://github.com/shashwa7-dev/portfolio/blob/assets/brand.png?raw=true",
+      "https://raw.githubusercontent.com/shashwa7-dev/portfolio/refs/heads/assets/s7dev.png",
     ],
     siteName: "S7.dev",
     locale: "en_US",
