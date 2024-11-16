@@ -3,7 +3,7 @@ import SpotifyLastListen from "./SpotifyLastListen";
 
 const Footer = () => {
   return (
-    <div className="flex justify-center items-center mt-auto p-2 border-t gap-2 relative">
+    <div className="flex justify-center items-center mt-auto p-4 border-s7-gray300/50  rounded-2xl gap-2 relative opacity-0 animate-fadeIn">
       <p>{"shashwa7.in"}</p>
       <SpotifyLastListen />
       <p className="text-sm">{`${new Date().getFullYear()}`}</p>

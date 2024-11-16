@@ -9,7 +9,7 @@ const config: Config = {
   theme: {
     extend: {
       animation: {
-        fadeIn: "fadeIn 1s ease-out forwards",
+        fadeIn: "fadeIn 2s ease-in-out forwards",
       },
       keyframes: {
         fadeIn: {
