@@ -64,7 +64,7 @@ const CurrentState = () => {
           <NFT
             name="Celio X Emiway"
             preview="https://raw.seadn.io/files/b6c56f2fa5b3178119b34319599218a1.mp4"
-            url="https://assets.candy.io/DC_VIDEO/c59b532f-fde1-4206-bf0e-f0547c0c7680/CD_VFX_V13_SM.mp4"
+            url="https://opensea.io/assets/matic/0xe07c459e424245c1af5c76d14c783a9a149f5018/10"
           />
           <NFT
             name="S7.DEV(Testnet)"
