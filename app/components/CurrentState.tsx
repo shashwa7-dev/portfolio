@@ -45,7 +45,7 @@ const CurrentState = () => {
           <a href="http://github.shashwa7.in/" target="_blank">
             {"Github, "}
           </a>
-          <a href="https://x.com/shashwa7-dev" target="_blank">
+          <a href="https://x.com/shashwa7_" target="_blank">
             {"Twitter, "}
           </a>
           <a href="https://www.linkedin.com/in/shashwa7/" target="_blank">
