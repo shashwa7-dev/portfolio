@@ -6,6 +6,9 @@ const CurrentState = () => {
       <div>
         <p className="font-bold">Building</p>
         <div className="flex gap-1">
+          <a href="https://nodeportal.playai.network/" target="_blank">
+            {"Node Portal,"}
+          </a>
           <a href="https://playai.network/" target="_blank">
             {"PlayAI,"}
           </a>
