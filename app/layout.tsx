@@ -12,7 +12,7 @@ const spaceGrotesk = Space_Grotesk({
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
-  title: "S7.dev",
+  title: "Hey, what's good?",
   description: "Frontend Engineer | Expert in Crafting Quality Interfaces",
   authors: [{ name: "Shashwat Tripathi" }],
   twitter: {
