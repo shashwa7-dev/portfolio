@@ -4,7 +4,7 @@ const CurrentState = () => {
   return (
     <div className="grid grid-cols-2 gap-4 -md:grid-cols-1 -md:gap-2 text-sm">
       <div>
-        <p className="font-bold">Building</p>
+        <p className="font-bold underline">Building</p>
         <div className="flex gap-1">
           <a href="https://nodeportal.playai.network/" target="_blank">
             {"Node Portal,"}
@@ -18,27 +18,24 @@ const CurrentState = () => {
         </div>
       </div>
       <div>
-        <p className="font-bold">Projects</p>
+        <p className="font-bold underline">Projects</p>
         <a href="https://eatri8-ai.shashwa7.in/" target="_blank">
           EATRi8_AI
         </a>
       </div>
       <div>
-        <p className="font-bold">Stack</p>
+        <p className="font-bold underline">Stack</p>
         <p>
           <span className="font-bold">{"App: "}</span> React JS, Node JS,
           Typescript
         </p>
         <p>
-          <span className="font-bold">{"Ui: "}</span>Tailwind, Chakra, GSAP,
+          <span className="font-bold">{"UI: "}</span>Tailwind, Chakra, GSAP,
           Framer
-        </p>
-        <p>
-          <span className="font-bold">{"Vc: "}</span>Github
         </p>
       </div>
       <div>
-        <p className="font-bold">Connect</p>
+        <p className="font-bold underline">Connect</p>
         <div>
           <span className="font-bold">Email: </span>
           <span>contact@shashwa7.in</span>
@@ -57,7 +54,7 @@ const CurrentState = () => {
         </div>
       </div>
       <div>
-        <p className="font-bold">NFTs</p>
+        <p className="font-bold underline">NFTs</p>
         <div className="flex justify-start items-center gap-2">
           <NFT
             name="Val-Zod, Superman"
@@ -77,7 +74,7 @@ const CurrentState = () => {
         </div>
       </div>
       <div>
-        <p className="font-bold">Location</p>
+        <p className="font-bold underline">Location</p>
         <p>Silvassa, D&NH, India</p>
       </div>
     </div>
