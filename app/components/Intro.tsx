@@ -1,25 +1,29 @@
+import SpotifyLastListen from "./SpotifyLastListen";
+
 const Intro = () => {
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex flex-col">
-        <h1 className=" text-2xl font-black text-s7-gray_graphite">
+    <div className="flex flex-col gap-3 border-b border-gray-300 pb-2">
+      <div className="flex flex-col relative">
+        <img
+          src="./new-prof.png"
+          alt="shashwa7.in"
+          className="w-[50px] h-[50px] rounded-md absolute top-0
+          right-0"
+        />
+        <div className="absolute -top-2 -right-2">
+          <SpotifyLastListen />
+        </div>
+        <h1 className=" text-xl font-black text-s7-gray_graphite">
           {"Shashwat Tripathi"}
         </h1>
-        <h2 className="text-lg font-bold w-fit text-s7-gray300">
-          {"Frontend Developer"}
-        </h2>{" "}
+        <h2 className="font-bold w-fit text-gray-500">{"Web App Developer"}</h2>
       </div>
-      <p>
-        I
-        <span className="italic">
-          {" specialize in crafting user experiences and interfaces"}
-        </span>
-        {` , driven by deep passion for tech and coding. Like a web-slinging
-        Spider-Man navigating the multiverse, I traverse the ever-evolving
-        landscape of tech with agility and curiosity. Staying updated with the
-        latest technology trends is my way of keeping pace with the multiverse’s
-        endless possibilities.I strive to innovate and lead in my field,
-        delivering effective solutions`}
+      <p className="-md:text-sm">
+        I<span className="font-medium italic text-pink-500">{" love "}</span>
+        to craft
+        <span className="font-medium">{" user experiences "}</span>
+        and
+        <span className="font-medium">{" interfaces. "}</span>
       </p>
     </div>
   );
