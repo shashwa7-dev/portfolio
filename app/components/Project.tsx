@@ -22,20 +22,27 @@ export const Social = ({
   type,
 }: {
   link: string;
-  type: "github" | "twitter" | "web" | "twitch" | "discord" | "other" | "linked-in";
+  type:
+    | "github"
+    | "twitter"
+    | "web"
+    | "twitch"
+    | "discord"
+    | "other"
+    | "linked-in";
 }) => {
   const icon =
     type === "linked-in"
-      ? "./icons/linkedin.svg"
+      ? "/icons/linkedin.svg"
       : type === "github"
-      ? "./icons/github.svg"
+      ? "/icons/github.svg"
       : type === "twitter"
-      ? "./icons/x.svg"
+      ? "/icons/x.svg"
       : type === "twitch"
-      ? "./icons/twitch.svg"
+      ? "/icons/twitch.svg"
       : type === "discord"
-      ? "./icons/discord.svg"
-      : "./icons/link.svg";
+      ? "/icons/discord.svg"
+      : "/icons/link.svg";
 
   return (
     <a

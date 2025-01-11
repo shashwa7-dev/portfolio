@@ -16,8 +16,8 @@ const projects: TProject[] = [
       github: "https://github.com/shashwa7-dev/food-analyzer",
       web: "https://eatri8-ai.shashwa7.in/",
     },
-    preview: "./projects/preview_eatri8.mp4",
-    thumbnail: "./projects/project_eatri8.jpg",
+    preview: "/projects/preview_eatri8.mp4",
+    thumbnail: "/projects/project_eatri8.jpg",
   },
 ];
 const Projects = () => {

@@ -13,7 +13,7 @@ const projects: TProject[] = [
       web: "https://agentexperience.live/",
       other: "https://www.cookie.fun/en/agent/agent-rogue",
     },
-    thumbnail: "./projects/project_agent_exp.jpg",
+    thumbnail: "/projects/project_agent_exp.jpg",
   },
   {
     id: "2",
@@ -32,7 +32,7 @@ const projects: TProject[] = [
       twitter: "https://x.com/playAInetwork",
       web: "https://nodeexplorer.playai.network/",
     },
-    thumbnail: "./projects/project_node_exp.jpg",
+    thumbnail: "/projects/project_node_exp.jpg",
   },
   {
     id: "3",
@@ -40,8 +40,8 @@ const projects: TProject[] = [
     description:
       "I have build the landing page for PlayAI, an innovative AI-driven platform designed to enhance the gaming experience. PlayAI leverages advanced machine learning models to provide real-time assistance, strategic insights, and personalized coaching for gamers across various genres.",
     stack: ["react/ts", "styled-components", "gsap", "motion"],
-    thumbnail: "./projects/project_playai.jpg",
-    preview: "./projects/preview_playai.mp4",
+    thumbnail: "/projects/project_playai.jpg",
+    preview: "/projects/preview_playai.mp4",
     links: {
       twitter: "https://x.com/playAInetwork",
       web: "https://playai.network/",
