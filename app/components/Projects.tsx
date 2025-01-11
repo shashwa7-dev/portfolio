@@ -17,13 +17,13 @@ const projects: TProject[] = [
       web: "https://eatri8-ai.shashwa7.in/",
     },
     preview: "/projects/preview_eatri8.mp4",
-    thumbnail: "/projects/project_eatri8.jpg",
+    thumbnail: "/projects/project_eatri8.JPG",
   },
 ];
 const Projects = () => {
   return (
     <div className="text-sm grid gap-3">
-      <p className="text-lg font-medium border-b">Cooking ?</p>
+      <p className="text-lg font-medium border-b">{"Side Quests"}</p>
       <div className="grid gap-2">
         {projects?.map((project) => (
           <Project project={project} key={project.id} />

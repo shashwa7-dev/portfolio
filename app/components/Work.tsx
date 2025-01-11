@@ -13,7 +13,7 @@ const projects: TProject[] = [
       web: "https://agentexperience.live/",
       other: "https://www.cookie.fun/en/agent/agent-rogue",
     },
-    thumbnail: "/projects/project_agent_exp.jpg",
+    thumbnail: "/projects/project_agent_exp.JPG",
   },
   {
     id: "2",
@@ -32,7 +32,7 @@ const projects: TProject[] = [
       twitter: "https://x.com/playAInetwork",
       web: "https://nodeexplorer.playai.network/",
     },
-    thumbnail: "/projects/project_node_exp.jpg",
+    thumbnail: "/projects/project_node_exp.JPG",
   },
   {
     id: "3",
@@ -40,7 +40,7 @@ const projects: TProject[] = [
     description:
       "I have build the landing page for PlayAI, an innovative AI-driven platform designed to enhance the gaming experience. PlayAI leverages advanced machine learning models to provide real-time assistance, strategic insights, and personalized coaching for gamers across various genres.",
     stack: ["react/ts", "styled-components", "gsap", "motion"],
-    thumbnail: "/projects/project_playai.jpg",
+    thumbnail: "/projects/project_playai.JPG",
     preview: "/projects/preview_playai.mp4",
     links: {
       twitter: "https://x.com/playAInetwork",
@@ -51,8 +51,28 @@ const projects: TProject[] = [
 const Work = () => {
   return (
     <div className="text-sm grid gap-3">
-      <p className="text-lg font-medium border-b">My Work</p>
+      <div className="flex justify-between border-b pb-1">
+        <p className="text-lg font-medium">Work & Experience</p>
+      </div>
       <div className="grid gap-2">
+        <div className="flex justify-between mb-1">
+          <div className="grid">
+            <span>Frontend Engineer</span>
+            <a
+              className="flex items-center gap-1"
+              href="https://x.com/playAInetwork"
+              target="_blank"
+            >
+              <img
+                src="./images/dehidden_logo.jpeg"
+                alt="dehidden.com"
+                className="w-[10px] h-[10px] rounded-sm"
+              />
+              <span>Dehidden</span>
+            </a>
+          </div>
+          <p className="text-gray-500">Jan, 2022 - Present</p>
+        </div>
         {projects?.map((project) => (
           <Project project={project} key={project.id} />
         ))}
