@@ -49,6 +49,12 @@ const Activity = () => {
             author="Nadia Makarevich"
             progress={35}
           />
+          <Book
+            name={"Can't Hurt Me"}
+            cover="/books/book_cant_hurt_me.jpg"
+            author="David Goggins"
+            progress={17}
+          />
         </div>
       </div>
       <div className="grid gap-1">
