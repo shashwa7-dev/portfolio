@@ -1,4 +1,5 @@
 import About from "./components/About";
+import Activity from "./components/Activity";
 import Footer from "./components/Footer";
 import Intro from "./components/Intro";
 import Projects from "./components/Projects";
@@ -14,6 +15,7 @@ export default function Home() {
       <Work />
       <Projects />
       <TechStack />
+      <Activity />
       <Socials />
       <Footer />
     </div>

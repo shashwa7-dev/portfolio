@@ -7,7 +7,7 @@ const Intro = () => {
             {"Shashwat Tripathi"}
           </h1>
           <h2 className="font-bold w-fit text-gray-500">
-            {"Full-Stack Web Developer"}
+            {"Frontend Focused . Fullstack Developer"}
           </h2>
         </div>
         <img

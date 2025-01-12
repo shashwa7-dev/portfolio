@@ -66,7 +66,12 @@ export const Stack = ({ name }: { name: String }) => {
 const Project = ({ project }: { project: TProject }) => {
   const [isHovering, setIsHovering] = useState(false);
   return (
-    <div className="border rounded-lg grid grid-rows-[250px,auto">
+    <div className="border rounded-lg grid grid-rows-[auto_250px_auto]">
+      <div className="p-2 flex gap-2 items-center">
+        <div className="bg-gray-300 w-[10px] h-[10px] rounded-full"></div>
+        <div className="bg-gray-300 w-[10px] h-[10px] rounded-full"></div>
+        <div className="bg-gray-300 w-[10px] h-[10px] rounded-full"></div>
+      </div>
       <div
         className="project_thumb overflow-hidden relative curso-pointer"
         onMouseEnter={() => setIsHovering(true)}
@@ -79,18 +84,20 @@ const Project = ({ project }: { project: TProject }) => {
             muted
             loop
             playsInline
-            className="w-full h-full object-cover rounded-md"
+            className="w-full h-full object-cover"
           />
         ) : (
           <img
             src={project.thumbnail}
             alt={project.title}
-            className="w-full h-full object-cover rounded-md transition-transform duration-300 hover:scale-[1.05]"
+            className="w-full h-full object-cover transition-transform duration-300 hover:scale-[1.05]"
           />
         )}
       </div>
       <div className="project_details p-2">
-        <p className="text-lg font-medium">{project.title}</p>
+        <p className="text-lg font-medium text-s7-gray_graphite underline">
+          {project.title}
+        </p>
         <p>{project.description}</p>
         <div className="my-2 grid gap-2">
           <div>

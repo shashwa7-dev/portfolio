@@ -52,7 +52,9 @@ const Work = () => {
   return (
     <div className="text-sm grid gap-3">
       <div className="flex justify-between border-b pb-1">
-        <p className="text-lg font-medium">Work & Experience</p>
+        <p className="text-lg font-medium text-s7-gray_graphite">
+          Work & Experience
+        </p>
       </div>
       <div className="grid gap-2">
         <div className="flex justify-between mb-1">

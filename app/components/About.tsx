@@ -3,7 +3,9 @@ import React from "react";
 const About = () => {
   return (
     <div className="text-sm grid gap-3">
-      <p className="text-lg font-medium border-b">About</p>
+      <p className="text-lg font-medium border-b text-s7-gray_graphite">
+        About
+      </p>
       <p>
         Hey there! I’m Shashwat—a curious builder and problem solver who loves
         turning ideas into elegant digital solutions. With a knack for crafting
