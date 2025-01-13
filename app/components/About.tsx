@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "./common/Link";
 
 const About = () => {
   return (
@@ -15,9 +16,14 @@ const About = () => {
         shape the future of technology.
       </p>
       <p>
-        Feel free to reach out{" "}
-        <span className="font-medium">contact@shashwa7.in</span> whether you
-        have questions, ideas to share, or just want to chat!
+        Feel free to reach out
+        <a
+          href="mailto:contact@shashwa7.in"
+          className="px-1 text-xs border font-medium text-s7-gray_graphite rounded-md border-b-[2.5px]  mx-1 lowercase inline-block"
+        >
+          {" contact@shashwa7.in "}
+        </a>
+        whether you have questions, ideas to share, or just want to chat!
       </p>
     </div>
   );

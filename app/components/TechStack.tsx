@@ -1,5 +1,6 @@
 import React from "react";
-import { Link, Stack } from "./Project";
+import { Stack } from "./Project";
+import { Link } from "./common/Link";
 
 const TechStack = () => {
   return (
@@ -16,13 +17,16 @@ const TechStack = () => {
           <Stack name={"Tailwind CSS"} />
           <Stack name={"GSAP"} />
           <Stack name={"Motion"} />
+          <Stack name={"React Query"} />
+          <Stack name={"Apollo GraphQL"} />
+          <Stack name={"Zustand"} />
         </div>
       </div>
       <div className="grid gap-2">
         <p className="italic">Backend</p>
         <div className="flex flex-wrap gap-2">
           <Stack name={"Node JS"} />
-          <Stack name={"Graph QL"} />
+          <Stack name={"GraphQL"} />
           <Stack name={"Websocket"} />
           <Stack name={"WebRTC"} />
           <Stack name={"Postgress (SQL)"} />
@@ -36,6 +40,7 @@ const TechStack = () => {
         <p className="italic">Tools & Softwares</p>
         <div className="flex flex-wrap gap-2">
           <Stack name={"VS Code"} />
+          <Stack name={"Postman"} />
           <Stack name={"Figma"} />
           <Stack name={"Git"} />
           <Stack name={"Notion"} />

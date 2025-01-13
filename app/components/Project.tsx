@@ -56,22 +56,6 @@ export const Social = ({
   );
 };
 
-export const Link = ({ name, link }: { name: String; link?: string }) => {
-  return (
-    <a
-      href={link}
-      target="_blank"
-      className="social border flex items-center  gap-1 p-[1px] px-2 rounded-md border-b-4 text-gray-600"
-    >
-      <span className="capitalize">{name}</span>
-      <img
-        src={"/icons/link.svg"}
-        alt={link}
-        className="w-[10px] h-[10px] text-gray-600"
-      />
-    </a>
-  );
-};
 export const Stack = ({ name }: { name: String }) => {
   return (
     <div className="border p-[1px] px-2 rounded-md border-b-4 text-gray-600">

@@ -54,6 +54,8 @@ const config: Config = {
       },
       colors: {
         s7: {
+          primary_bg: "#fefefe",
+          primary_fg: "#020202",
           gray100: "#EAEAEA",
           gray200: "#D0D0D0",
           gray300: "#A0A0A0",
