@@ -2,6 +2,7 @@ import About from "./components/About";
 import Activity from "./components/Activity";
 import Footer from "./components/Footer";
 import Intro from "./components/Intro";
+import KeyboardNavigation from "./components/KeyboardNavigation";
 import Projects from "./components/Projects";
 import Socials from "./components/Socials";
 import TechStack from "./components/TechStack";
@@ -18,13 +19,7 @@ export default function Home() {
       <Activity />
       <Socials />
       <Footer />
-      {/* <div className="fixed bottom-[-20px] right-[-20px] -lg:hidden">
-        <img
-          src="./chilling.gif"
-          alt="ducky"
-          className="w-[350px] opacity-60 grayscale"
-        />
-      </div> */}
+      <KeyboardNavigation />
     </div>
   );
 }

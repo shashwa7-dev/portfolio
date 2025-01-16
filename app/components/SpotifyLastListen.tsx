@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { formatDistanceToNow, parseISO } from "date-fns";
-
+import "./Console";
 interface TrackData {
   id: string;
   name: string;
@@ -83,7 +83,6 @@ export default function SpotifyLastListen() {
     return formatDistanceToNow(date, { addSuffix: true });
   };
 
-  console.log("track", track);
   return (
     <div className="flex align-middle text-sm lg:text-normal">
       {track ? (
