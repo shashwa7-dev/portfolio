@@ -47,7 +47,7 @@ console.log(
   `
 %c⚡️ Want to collaborate or just chat about code? 
 🌐 Find me at: shashwa7.in
-📧 Email: conteact@shashwa7.in
+📧 Email: contact@shashwa7.in
 `,
   styles.text
 );
