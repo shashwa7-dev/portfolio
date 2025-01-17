@@ -37,7 +37,7 @@ const projects: TProject[] = [
     links: {
       github: "https://github.com/shashwa7-dev/rouge-token-tracker",
     },
-    thumbnail: "/projects/project_sol_tracker.JPG",
+    thumbnail: "/projects/project_sol_tracker.jpg",
   },
   {
     id: "3",
