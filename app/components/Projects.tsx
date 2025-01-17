@@ -6,12 +6,14 @@ const projects: TProject[] = [
     title: "Eatri8.ai",
     description:
       "Built a health assessment app that uses Google Gemini Flash 1.5 AI to analyze food products. Users upload food labels to get a health score, recommended portion sizes, and consumption advice.",
-    stack: [
-      "next/ts",
-      "@google/generative-ai",
-      "gemini-flash(1.5)",
-      "tailwind/shadcn",
-    ],
+    stack: {
+      fe: [
+        "next/ts",
+        "@google/generative-ai",
+        "gemini-flash(1.5)",
+        "tailwind/shadcn",
+      ],
+    },
     links: {
       github: "https://github.com/shashwa7-dev/food-analyzer",
       web: "https://eatri8-ai.shashwa7.in/",
