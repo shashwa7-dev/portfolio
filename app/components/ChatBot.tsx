@@ -330,14 +330,16 @@ const S7Bot = () => {
               } w-fit max-w-[80%] break-words`}
             >
               {msg.role !== "user" ? (
-                <div className={`w-[20px] h-[20px] overflow-hidden rounded-md`}>
+                <div className={`rounded-md flex items-center gap-2`}>
                   <img
                     src={"./truffy.jpg"}
-                    className={"w-full h-full object-cover object-center"}
+                    className={"w-[20px] h-[20px] object-cover object-center"}
                     alt="truffy assistant"
                   />
+                  {isStreaming ? <span>{"    . . ."}</span> : null}
                 </div>
               ) : null}
+
               {msg.content}
             </div>
           ))}
@@ -383,6 +385,8 @@ Here’s what you need to know about Shashwat:
   - Backend: Node.js, GraphQL, MongoDB, PostgreSQL, Firebase, Websocket, WebRTC
   - Blockchain/Web3: Solana, Ethers, Web3JS
   - Others: AWS, Docker, Figma
+- **Current Organization**: Dehidden (Jan 2022 – Present)
+- **Open to Work**: Actively exploring new opportunities
 - **Projects**: 
   1. **Agent Experience**:
      - Description: AI-driven project powered by $ROGUE token on Solana blockchain, combining decentralized tech with advanced AI for innovative experiences.
@@ -401,12 +405,19 @@ Here’s what you need to know about Shashwat:
      - Description: Landing page for PlayAI, an AI-driven gaming platform offering real-time assistance and personalized coaching.
      - Stack: React/TS, Styled-components, GSAP, Motion
      - Links: [Twitter](https://x.com/playAInetwork), [Web](https://playai.network/)
-- **Social Media**:
+  5. **Eatri8.ai**:
+    - Description: Built a health assessment app that uses Google Gemini Flash 1.5 AI to analyze food products. Users upload food labels to get a health score, recommended portion sizes, and consumption advice.
+    - Stack: Next/TS, @google/generative-ai, Gemini Flash 1.5, Tailwind/Shadcn
+    - Links: [GitHub](https://github.com/shashwa7-dev/food-analyzer), [Web](https://eatri8-ai.shashwa7.in/)
+
+- **Social Media / Contacts**:
   - GitHub: [shashwa7-dev](https://github.com/shashwa7-dev)
   - LinkedIn: [Shashwat Tripathi](https://www.linkedin.com/in/shashwa7/)
   - Twitter: [@theWebKid](https://x.com/theWebKid)
   - Spotify: [buffer1000](https://open.spotify.com/user/buffer1000)
   - Reddit: [vinyl1998](https://www.reddit.com/user/vinyl1998/)
+  - Email: (contact@shashwa7.in)
+  - portfolio: [shashwa7.in](https://www.shashwa7.in)
 - **Interests**: Music, Gym, Walking, Gaming, Cooking, Home Barista, Coffee Enthusiast
 
 Feel free to ask me anything about Shashwat, his expertise, or how he can help. I’m here to make your experience delightful and productive!`;
