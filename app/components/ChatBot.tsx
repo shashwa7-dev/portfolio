@@ -247,7 +247,7 @@ const S7Bot = () => {
       {/* Floating Notification */}
       {!isOpen && (
         <div
-          className={`fixed bottom-[90px] -md:bottom-[65px]  right-4 transform transition-all duration-300 ease-in-out
+          className={`fixed bottom-[90px] -md:bottom-[70px]  right-4 transform transition-all duration-300 ease-in-out
                  ${
                    showNotification
                      ? "opacity-100 translate-y-0"
