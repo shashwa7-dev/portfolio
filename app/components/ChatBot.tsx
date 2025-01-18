@@ -243,11 +243,11 @@ const S7Bot = () => {
     return () => _cleanup_notification();
   }, [currentMessageIndex, isOpen]);
   return (
-    <div className="fixed bottom-4 right-4  -md:bottom-2 -md:right-2 z-50">
+    <div className="fixed bottom-4 right-4   z-50">
       {/* Floating Notification */}
       {!isOpen && (
         <div
-          className={`fixed bottom-[90px] -md:bottom-[65px]  right-4 -md:right-2 transform transition-all duration-300 ease-in-out
+          className={`fixed bottom-[90px] -md:bottom-[65px]  right-4 transform transition-all duration-300 ease-in-out
                  ${
                    showNotification
                      ? "opacity-100 translate-y-0"
@@ -269,7 +269,7 @@ const S7Bot = () => {
         onClick={() => setIsOpen(!isOpen)}
         className={`${
           isOpen ? "hidden" : "flex"
-        } fixed bottom-4 right-4 w-[65px] h-[65px] -md:w-[50px] -md:h-[50px] rounded-md overflow-hidden border border-b-4 -md:bottom-2 -md:right-2`}
+        } fixed bottom-4 right-4 w-[65px] h-[65px] -md:w-[50px] -md:h-[50px] rounded-md overflow-hidden border border-b-4 `}
       >
         <img
           src={"./truffy.jpg"}
