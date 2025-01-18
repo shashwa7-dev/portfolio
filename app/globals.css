@@ -32,6 +32,21 @@ body {
   --s7-grey-graphite: #4d5362;
 }
 
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
 body {
   color: var(--s7-primary-fg);
   background: var(--s7-primary-bg);

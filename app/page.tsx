@@ -1,5 +1,7 @@
 import About from "./components/About";
 import Activity from "./components/Activity";
+import S7Bot from "./components/ChatBot";
+import PortfolioChatbot from "./components/ChatBot";
 import Footer from "./components/Footer";
 import Intro from "./components/Intro";
 import KeyboardNavigation from "./components/KeyboardNavigation";
@@ -20,6 +22,7 @@ export default function Home() {
       <Socials />
       <Footer />
       <KeyboardNavigation />
+      <S7Bot />
     </div>
   );
 }

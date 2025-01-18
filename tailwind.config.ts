@@ -10,12 +10,22 @@ const config: Config = {
     extend: {
       animation: {
         fadeIn: "fadeIn 1s ease-in-out forwards",
+        float: "float 1s ease-in-out infinite",
+        blink: "blink 1s step-end infinite",
       },
       keyframes: {
+        blink: {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0" },
+        },
         fadeIn: {
           "0%": { opacity: "0" },
           "100%": { opacity: "1" },
         },
+      },
+      float: {
+        "0%, 100%": { transform: "translateY(0px)" },
+        "50%": { transform: "translateY(-5px)" },
       },
       container: {
         center: true,

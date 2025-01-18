@@ -24,7 +24,6 @@ async function refreshAccessToken() {
       refresh_token: refresh_token!,
       timestamp: Date.now().toString(),
     }),
-
   });
 
   if (!response.ok) {
