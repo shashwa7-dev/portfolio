@@ -290,19 +290,23 @@ const S7Bot = () => {
       >
         {/* Header */}
         <div className="flex items-center justify-between p-2 px-3 border-b">
-          <div className="flex  items-center gap-2 relative overflow-hidden z-2">
-            <div className={`w-[30px] h-[30px] overflow-hidden rounded-md`}>
-              <img
-                src={"./truffy.jpg"}
-                className={"w-full h-full object-cover object-center"}
-                alt="truffy assistant"
-              />
+          <div>
+            <div className="flex  items-start gap-1 relative overflow-hidden z-2">
+              <div className={`w-[25px] h-[25px] overflow-hidden rounded-md`}>
+                <img
+                  src={"./truffy.jpg"}
+                  className={"w-full h-full object-cover object-center"}
+                  alt="truffy assistant"
+                />
+              </div>
+              <h3 className="font-semibold text-s7-gray300 text-lg translate-y-1 opacity-90 ">
+                Truffy AI
+              </h3>
             </div>
-            <h3 className="font-semibold text-s7-gray300 text-xl translate-y-1.5 opacity-90 ">
-              Truffy AI
-            </h3>
+            <p className="text-xs  text-s7-gray300 text-center">
+              Powered by Gemini 3.5 Trubo
+            </p>
           </div>
-
           <button
             onClick={handleClose}
             className="p-1 px-2 text-xs border border-b-4 rounded-md hover:bg-gray-100 transition-colors"
@@ -320,7 +324,9 @@ const S7Bot = () => {
             <div
               key={index}
               className={`p-1 text-sm px-2 rounded-md border border-b-4 ${
-                msg.role === "user" ? "bg-s7-gray100 border-gray-500 ml-auto" : "bg-white"
+                msg.role === "user"
+                  ? "bg-s7-gray100 border-gray-500 ml-auto"
+                  : "bg-white"
               } w-fit max-w-[80%] break-words`}
             >
               {msg.role !== "user" ? (
@@ -339,7 +345,7 @@ const S7Bot = () => {
         </div>
 
         {/* Input Form */}
-        <form onSubmit={handleSubmit} className="p-3 border-t">
+        <form onSubmit={handleSubmit} className="p-2 border-t px-3">
           <div className="flex gap-2">
             <input
               type="text"
@@ -352,7 +358,7 @@ const S7Bot = () => {
             <button
               type="submit"
               disabled={isStreaming || !message.trim()}
-              className="p-1 px-4 border border-b-4 rounded text-sm disabled:opacity-50 transition-all"
+              className="p-1 px-2 border border-b-4 rounded text-sm disabled:opacity-50 transition-all"
             >
               {isStreaming ? ". . ." : "Send"}
             </button>
