@@ -2,15 +2,24 @@
 
 import React, { useState, useRef, useEffect } from "react";
 
-const TIMEOUT_DURATION = 10000; // 10 seconds
+const TIMEOUT_DURATION = 10000;
 const NOTIFICATION_MESSAGES = [
   "Hello, I'm Truffy!",
   "Your AI assistant.",
   "Got questions? Ask me!",
 ];
-const TYPE_SPEED = 100; // Increased from 50 to 100ms
-const MESSAGE_DISPLAY_TIME = 5000; // Time to show full message
-const TRANSITION_DELAY = 1000; // Delay before starting new message
+const TYPE_SPEED = 100;
+const MESSAGE_DISPLAY_TIME = 5000;
+const TRANSITION_DELAY = 1000;
+
+interface EmailState {
+  step: "email" | "subject" | "body" | "verify";
+  data: {
+    email?: string;
+    subject?: string;
+    body?: string;
+  };
+}
 
 const S7Bot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -22,6 +31,7 @@ const S7Bot = () => {
   const [notificationText, setNotificationText] = useState("");
   const [showNotification, setShowNotification] = useState(false);
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const [emailState, setEmailState] = useState<EmailState | null>(null);
 
   const chatWindowRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -29,7 +39,7 @@ const S7Bot = () => {
   const abortControllerRef = useRef<AbortController | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const typingTimerRef = useRef<NodeJS.Timeout | null>(null);
-  // Cleanup function for requests and timers
+
   const cleanup = () => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -42,10 +52,10 @@ const S7Bot = () => {
     setIsStreaming(false);
   };
 
-  // Handle popup close
   const handleClose = () => {
     cleanup();
     setIsOpen(false);
+    setEmailState(null);
   };
 
   const scrollToBottom = () => {
@@ -56,7 +66,6 @@ const S7Bot = () => {
     scrollToBottom();
   }, [messages]);
 
-  // Handle click outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -76,7 +85,6 @@ const S7Bot = () => {
     };
   }, [isOpen]);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       cleanup();
@@ -87,22 +95,17 @@ const S7Bot = () => {
     e.preventDefault();
     if (!message.trim() || isStreaming) return;
 
-    // Cleanup any existing request
     cleanup();
 
-    // Add user message
     setMessages((prev) => [...prev, { role: "user", content: message }]);
     const userMessage = message;
     setMessage("");
 
-    // Add initial assistant message
     setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
     setIsStreaming(true);
 
-    // Create new AbortController for this request
     abortControllerRef.current = new AbortController();
 
-    // Set timeout
     timeoutRef.current = setTimeout(() => {
       cleanup();
       setMessages((prev) => [
@@ -118,6 +121,7 @@ const S7Bot = () => {
         body: JSON.stringify({
           message: userMessage,
           model: "gemini-pro",
+          emailState: emailState,
         }),
         signal: abortControllerRef.current.signal,
       });
@@ -149,6 +153,10 @@ const S7Bot = () => {
                 throw new Error(data.error);
               }
 
+              if (data.emailState !== undefined) {
+                setEmailState(data.emailState);
+              }
+
               if (data.text) {
                 accumulatedContent += data.text;
                 setMessages((prev) => [
@@ -164,7 +172,6 @@ const S7Bot = () => {
       }
     } catch (error: any) {
       console.error("Stream error:", error);
-      // Only update message if not aborted
       if (error.name !== "AbortError") {
         setMessages((prev) => [
           ...prev.slice(0, -1),
@@ -180,8 +187,6 @@ const S7Bot = () => {
     }
   };
 
-  //notification actions
-  // Cleanup function
   const _cleanup_notification = () => {
     if (typingTimerRef.current) {
       clearTimeout(typingTimerRef.current);
@@ -192,11 +197,10 @@ const S7Bot = () => {
     setNotificationText("");
     setShowNotification(false);
   };
-  // Typing effect function
-  // Improved typing effect function
+
   const typeMessage = async (text: string) => {
     setShowNotification(true);
-    setNotificationText(""); // Clear previous text
+    setNotificationText("");
 
     const typeNextChar = (currentText: string, fullText: string) => {
       if (currentText.length < fullText.length) {
@@ -208,10 +212,8 @@ const S7Bot = () => {
           typeNextChar(newText, fullText);
         }, TYPE_SPEED);
       } else {
-        // Full message is typed, wait before starting next message
         timeoutRef.current = setTimeout(() => {
           setShowNotification(false);
-          // Wait for fade out, then move to next message
           setTimeout(() => {
             setCurrentMessageIndex(
               (prev) => (prev + 1) % NOTIFICATION_MESSAGES.length
@@ -224,7 +226,6 @@ const S7Bot = () => {
     typeNextChar("", text);
   };
 
-  // Handle message cycling
   useEffect(() => {
     if (isOpen) {
       _cleanup_notification();
@@ -241,12 +242,12 @@ const S7Bot = () => {
 
     return () => _cleanup_notification();
   }, [currentMessageIndex, isOpen]);
+
   return (
     <div className="fixed bottom-4 right-4 -md:right-2.5 z-50">
-      {/* Floating Notification */}
       {!isOpen && (
         <div
-          className={`fixed bottom-[85px] -md:bottom-[70px]  right-4 -md:right-2.5 transform transition-all duration-300 ease-in-out
+          className={`fixed bottom-[85px] -md:bottom-[70px] right-4 -md:right-2.5 transform transition-all duration-300 ease-in-out
                  ${
                    showNotification
                      ? "opacity-100 translate-y-0"
@@ -263,7 +264,7 @@ const S7Bot = () => {
           </div>
         </div>
       )}
-      {/* Chat Button */}
+
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`${
@@ -272,14 +273,11 @@ const S7Bot = () => {
       >
         <img
           src={"./truffy.jpg"}
-          className={
-            "w-full h-full object-cover object-center hover:rotate-2 hover:scale-110"
-          }
+          className="w-full h-full object-cover object-center hover:rotate-2 hover:scale-110"
           alt="truffy assistant"
         />
       </button>
 
-      {/* Chat Window */}
       <div
         ref={chatContainerRef}
         className={`${
@@ -287,24 +285,23 @@ const S7Bot = () => {
             ? "translate-y-0 opacity-100"
             : "translate-y-full opacity-0 pointer-events-none"
         } transform transition-all duration-300 ease-in-out
-        bg-white rounded-lg shadow-sm border border-b-4 w-96 -md:w-80 max-h-[500px] flex flex-col `}
+        bg-white rounded-lg shadow-sm border border-b-4 w-96 -md:w-80 max-h-[500px] flex flex-col`}
       >
-        {/* Header */}
         <div className="flex items-center justify-between p-2 px-3 border-b">
           <div>
-            <div className="flex  items-center gap-1 relative overflow-hidden z-2">
-              <div className={`w-[25px] h-[25px] overflow-hidden rounded-lg`}>
+            <div className="flex items-center gap-1 relative overflow-hidden z-2">
+              <div className="w-[25px] h-[25px] overflow-hidden rounded-lg">
                 <img
                   src={"./truffy.jpg"}
-                  className={"w-full h-full object-cover object-center"}
+                  className="w-full h-full object-cover object-center"
                   alt="truffy assistant"
                 />
               </div>
-              <h3 className="font-semibold text-s7-gray300 text-lg translate-y-1 opacity-90 ">
+              <h3 className="font-semibold text-s7-gray300 text-lg translate-y-1 opacity-90">
                 Truffy AI
               </h3>
             </div>
-            <p className="text-xs  text-s7-gray300 text-center">
+            <p className="text-xs text-s7-gray300 text-center">
               Powered by Gemini 3.5 Turbo
             </p>
           </div>
@@ -316,7 +313,6 @@ const S7Bot = () => {
           </button>
         </div>
 
-        {/* Messages */}
         <div
           ref={chatWindowRef}
           className="flex-1 overflow-y-auto p-3 space-y-4 min-h-[300px] max-h-[360px] scroll-smooth"
@@ -330,33 +326,31 @@ const S7Bot = () => {
                   : "bg-white"
               } w-fit max-w-[80%] break-words`}
             >
-              {msg.role !== "user" ? (
-                <div className={`flex items-center gap-2`}>
+              {msg.role !== "user" && (
+                <div className="flex items-center gap-2">
                   <img
                     src={"./truffy.jpg"}
-                    className={
-                      "w-[20px] h-[20px] object-cover object-center rounded-md"
-                    }
+                    className="w-[20px] h-[20px] object-cover object-center rounded-md"
                     alt="truffy assistant"
                   />
-                  {isStreaming ? <span>{"    . . ."}</span> : null}
+                  {isStreaming && <span>{"    . . ."}</span>}
                 </div>
-              ) : null}
-
+              )}
               {msg.content}
             </div>
           ))}
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input Form */}
         <form onSubmit={handleSubmit} className="p-2 border-t px-3">
           <div className="flex gap-2">
             <input
               type="text"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Type your message..."
+              placeholder={
+                emailState ? "Type your response..." : "Type your message..."
+              }
               disabled={isStreaming}
               className="flex-1 p-1 border rounded text-sm focus:outline-none"
             />
