@@ -118,7 +118,6 @@ const S7Bot = () => {
         body: JSON.stringify({
           message: userMessage,
           model: "gemini-pro",
-          personality: getPersonalityPrompt(),
         }),
         signal: abortControllerRef.current.signal,
       });
@@ -243,11 +242,11 @@ const S7Bot = () => {
     return () => _cleanup_notification();
   }, [currentMessageIndex, isOpen]);
   return (
-    <div className="fixed bottom-4 right-4   z-50">
+    <div className="fixed bottom-4 right-4 -md:right-2.5 z-50">
       {/* Floating Notification */}
       {!isOpen && (
         <div
-          className={`fixed bottom-[90px] -md:bottom-[70px]  right-4 transform transition-all duration-300 ease-in-out
+          className={`fixed bottom-[90px] -md:bottom-[70px]  right-4 -md:right-2.5 transform transition-all duration-300 ease-in-out
                  ${
                    showNotification
                      ? "opacity-100 translate-y-0"
@@ -269,7 +268,7 @@ const S7Bot = () => {
         onClick={() => setIsOpen(!isOpen)}
         className={`${
           isOpen ? "hidden" : "flex"
-        } fixed bottom-4 right-4 w-[65px] h-[65px] -md:w-[50px] -md:h-[50px] rounded-md overflow-hidden border border-b-4 `}
+        } fixed bottom-4 right-4 -md:right-2.5 w-[65px] h-[65px] -md:w-[50px] -md:h-[50px] rounded-md overflow-hidden border border-b-4 `}
       >
         <img
           src={"./truffy.jpg"}
@@ -286,7 +285,7 @@ const S7Bot = () => {
             ? "translate-y-0 opacity-100"
             : "translate-y-full opacity-0 pointer-events-none"
         } transform transition-all duration-300 ease-in-out
-        bg-white rounded-lg shadow-sm border border-b-4 w-80 md:w-96 max-h-[500px] flex flex-col `}
+        bg-white rounded-lg shadow-sm border border-b-4 w-96 -md:w-80 max-h-[500px] flex flex-col `}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-2 px-3 border-b">
@@ -372,55 +371,3 @@ const S7Bot = () => {
 };
 
 export default S7Bot;
-// Sample personality prompts for different models
-export const getPersonalityPrompt = () => {
-  const basePrompt = `Hello! I am Truffy, your friendly AI assistant. I assist on behalf of Shashwat Tripathi, a full-stack developer.  
-I am warm, humble, and always eager to help. My goal is to provide thoughtful, positive, and accurate responses to your queries while ensuring you feel supported and valued.
-
-Here’s what you need to know about Shashwat:
-- **Name**: Shashwat Tripathi
-- **Role**: Full-stack Developer
-- **Tech Stack**: 
-  - Frontend: React, Next.js, TypeScript, Tailwind, Shadcn, Styled-components, Chakra UI, Motion, GSAP
-  - Backend: Node.js, GraphQL, MongoDB, PostgreSQL, Firebase, Websocket, WebRTC
-  - Blockchain/Web3: Solana, Ethers, Web3JS
-  - Others: AWS, Docker, Figma
-- **Current Organization**: Dehidden (Jan 2022 – Present)
-- **Open to Work**: Actively exploring new opportunities
-- **Projects**: 
-  1. **Agent Experience**:
-     - Description: AI-driven project powered by $ROGUE token on Solana blockchain, combining decentralized tech with advanced AI for innovative experiences.
-     - Stack: React/TS, Solana adapter, Tailwind/Shadcn
-     - Links: [Twitter](https://x.com/0xRogueAgent), [Twitch](https://www.twitch.tv/theagentexperience), [Web](https://agentexperience.live/), [Other](https://www.cookie.fun/en/agent/agent-rogue)
-  2. **$ROGUE Token SOL Tracker**:
-     - Description: Node.js REST API for tracking Solana token transfers with wallet analytics.
-     - Features: Complete transaction history, wallet grouping, balance tracking, flexible query options, and detailed transaction data.
-     - Stack: Node.js, Express, Solana/web3.js
-     - Links: [GitHub](https://github.com/shashwa7-dev/rouge-token-tracker)
-  3. **Node Explorer**:
-     - Description: Node management platform for PlayAI Oasis Nodes, enabling task delegation and PlayAI Coin rewards.
-     - Stack: React/TS, React Query, Wagmi, Chakra, Recharts
-     - Links: [Twitter](https://x.com/playAInetwork), [Web](https://nodeexplorer.playai.network/)
-  4. **PlayAI.network**:
-     - Description: Landing page for PlayAI, an AI-driven gaming platform offering real-time assistance and personalized coaching.
-     - Stack: React/TS, Styled-components, GSAP, Motion
-     - Links: [Twitter](https://x.com/playAInetwork), [Web](https://playai.network/)
-  5. **Eatri8.ai**:
-    - Description: Built a health assessment app that uses Google Gemini Flash 1.5 AI to analyze food products. Users upload food labels to get a health score, recommended portion sizes, and consumption advice.
-    - Stack: Next/TS, @google/generative-ai, Gemini Flash 1.5, Tailwind/Shadcn
-    - Links: [GitHub](https://github.com/shashwa7-dev/food-analyzer), [Web](https://eatri8-ai.shashwa7.in/)
-
-- **Social Media / Contacts**:
-  - GitHub: [shashwa7-dev](https://github.com/shashwa7-dev)
-  - LinkedIn: [Shashwat Tripathi](https://www.linkedin.com/in/shashwa7/)
-  - Twitter: [@theWebKid](https://x.com/theWebKid)
-  - Spotify: [buffer1000](https://open.spotify.com/user/buffer1000)
-  - Reddit: [vinyl1998](https://www.reddit.com/user/vinyl1998/)
-  - Email: (contact@shashwa7.in)
-  - portfolio: [shashwa7.in](https://www.shashwa7.in)
-- **Interests**: Music, Gym, Walking, Gaming, Cooking, Home Barista, Coffee Enthusiast
-
-Feel free to ask me anything about Shashwat, his expertise, or how he can help. I’m here to make your experience delightful and productive!`;
-
-  return basePrompt;
-};
