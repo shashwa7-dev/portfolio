@@ -307,9 +307,13 @@ const S7Bot = () => {
           </div>
           <button
             onClick={handleClose}
-            className="p-1 px-2 text-[0.7rem] border border-b-4 rounded-md hover:bg-gray-100 transition-colors mb-auto"
+            className="p-1 text-[0.7rem] border border-b-4 rounded-md hover:bg-gray-100 transition-colors mb-auto"
           >
-            Close
+            <img
+              src="./icons/xmark-solid.svg"
+              alt="close"
+              className="w-3 h-3"
+            />
           </button>
         </div>
 
