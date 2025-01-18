@@ -4,8 +4,8 @@ import React, { useState, useRef, useEffect } from "react";
 
 const TIMEOUT_DURATION = 10000; // 10 seconds
 const NOTIFICATION_MESSAGES = [
-  "Hello, it's Truffy AI.",
-  "Let's chat?!",
+  "Hello, I'm Truffy!",
+  "Your AI assistant.",
   "Got questions? Ask me!",
 ];
 const TYPE_SPEED = 100; // Increased from 50 to 100ms
@@ -246,7 +246,7 @@ const S7Bot = () => {
       {/* Floating Notification */}
       {!isOpen && (
         <div
-          className={`fixed bottom-[90px] -md:bottom-[70px]  right-4 -md:right-2.5 transform transition-all duration-300 ease-in-out
+          className={`fixed bottom-[85px] -md:bottom-[70px]  right-4 -md:right-2.5 transform transition-all duration-300 ease-in-out
                  ${
                    showNotification
                      ? "opacity-100 translate-y-0"
@@ -268,11 +268,13 @@ const S7Bot = () => {
         onClick={() => setIsOpen(!isOpen)}
         className={`${
           isOpen ? "hidden" : "flex"
-        } fixed bottom-4 right-4 -md:right-2.5 w-[65px] h-[65px] -md:w-[50px] -md:h-[50px] rounded-md overflow-hidden border border-b-4 `}
+        } shadow-md fixed bottom-4 right-4 -md:right-2.5 w-[60px] h-[60px] -md:w-[50px] -md:h-[50px] rounded-lg overflow-hidden border border-s7-gray_graphite border-b-4`}
       >
         <img
           src={"./truffy.jpg"}
-          className={"w-full h-full object-cover object-center"}
+          className={
+            "w-full h-full object-cover object-center hover:rotate-2 hover:scale-110"
+          }
           alt="truffy assistant"
         />
       </button>
@@ -290,8 +292,8 @@ const S7Bot = () => {
         {/* Header */}
         <div className="flex items-center justify-between p-2 px-3 border-b">
           <div>
-            <div className="flex  items-start gap-1 relative overflow-hidden z-2">
-              <div className={`w-[25px] h-[25px] overflow-hidden rounded-md`}>
+            <div className="flex  items-center gap-1 relative overflow-hidden z-2">
+              <div className={`w-[25px] h-[25px] overflow-hidden rounded-lg`}>
                 <img
                   src={"./truffy.jpg"}
                   className={"w-full h-full object-cover object-center"}
@@ -303,12 +305,12 @@ const S7Bot = () => {
               </h3>
             </div>
             <p className="text-xs  text-s7-gray300 text-center">
-              Powered by Gemini 3.5 Trubo
+              Powered by Gemini 3.5 Turbo
             </p>
           </div>
           <button
             onClick={handleClose}
-            className="p-1 px-2 text-xs border border-b-4 rounded-md hover:bg-gray-100 transition-colors"
+            className="p-1 px-2 text-[0.7rem] border border-b-4 rounded-md hover:bg-gray-100 transition-colors mb-auto"
           >
             Close
           </button>
@@ -329,10 +331,12 @@ const S7Bot = () => {
               } w-fit max-w-[80%] break-words`}
             >
               {msg.role !== "user" ? (
-                <div className={`rounded-md flex items-center gap-2`}>
+                <div className={`flex items-center gap-2`}>
                   <img
                     src={"./truffy.jpg"}
-                    className={"w-[20px] h-[20px] object-cover object-center"}
+                    className={
+                      "w-[20px] h-[20px] object-cover object-center rounded-md"
+                    }
                     alt="truffy assistant"
                   />
                   {isStreaming ? <span>{"    . . ."}</span> : null}
