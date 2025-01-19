@@ -22,11 +22,11 @@ export function BlogPosts() {
           })
           .map((post, id) => (
             <Link
-              className="grid grid-cols-[250px_1fr] border rounded-md overflow-hidden -md:grid-cols-1 -md:grid-rows-[200px_1fr] bg-gray-50"
+              className="grid grid-cols-[250px_1fr] border rounded-md overflow-hidden -md:grid-cols-1 bg-gray-50"
               href={`/blog/${post.slug}`}
               key={post.slug}
             >
-              <div className="grid place-items-center">
+              <div className="grid place-items-center -md:h-[150px] overflow-hidden">
                 <img
                   src={post.metadata.image}
                   alt={post.metadata.title}
