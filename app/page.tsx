@@ -16,8 +16,8 @@ export default function Home() {
       <Intro />
       <About />
       <Work />
-      <Projects />
       <BlogPosts />
+      <Projects />
       <TechStack />
       <Activity />
       <Socials />

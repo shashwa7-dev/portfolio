@@ -71,7 +71,7 @@ export const Stack = ({ name }: { name: String }) => {
 const Project = ({ project }: { project: TProject }) => {
   const [isHovering, setIsHovering] = useState(false);
   return (
-    <div className="border rounded-lg grid grid-rows-[auto_250px_auto]">
+    <div className="border rounded-lg grid grid-rows-[auto_250px_auto] bg-gray-50">
       <div className="p-2 flex gap-2 items-center">
         <div className="bg-gray-300 w-[10px] h-[10px] rounded-full"></div>
         <div className="bg-gray-300 w-[10px] h-[10px] rounded-full"></div>
