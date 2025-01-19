@@ -12,16 +12,15 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.33.1",
     "@google/generative-ai": "^0.21.0",
     "axios": "^1.7.9",
     "date-fns": "^3.6.0",
-    "l": "^0.6.0",
     "next": "14.2.5",
+    "next-mdx-remote": "^5.0.0",
     "nodemailer": "^6.9.16",
-    "openai": "^4.79.1",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "sugar-high": "^0.8.2"
   },
   "devDependencies": {
     "@types/node": "^20",
