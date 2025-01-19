@@ -118,11 +118,11 @@ a:hover {
 }
 
 .prose a {
-  @apply underline transition-all decoration-neutral-400 dark:decoration-neutral-600 underline-offset-2 decoration-[0.1em];
+  @apply underline transition-all decoration-neutral-400  underline-offset-2 decoration-[0.1em];
 }
 
 .prose .anchor:after {
-  @apply text-neutral-300 dark:text-neutral-700;
+  @apply text-neutral-300;
   content: "#";
 }
 
@@ -141,7 +141,6 @@ a:hover {
 .prose pre code {
   @apply p-0;
   line-height: 1.5;
-
 }
 
 .prose code span {
@@ -154,7 +153,7 @@ a:hover {
 }
 
 .prose p {
-  @apply my-4 text-neutral-800 dark:text-neutral-200;
+  @apply my-4 text-neutral-800;
 }
 
 .prose h1 {
