@@ -78,14 +78,13 @@ const Work = () => {
   return (
     <div className="text-sm grid gap-3">
       <div className="flex justify-between border-b pb-1">
-        <p className="text-lg font-medium text-secondary-foreground">
+        <p className="text-lg font-medium text-secondary-foreground font-sans">
           Work & Experience
         </p>
       </div>
       <div className="grid gap-2">
         <div className="flex justify-between mb-1">
           <div className="grid">
-            <span>Frontend Engineer</span>
             <a
               className="flex items-center gap-1"
               href="https://x.com/playAInetwork"
@@ -98,6 +97,7 @@ const Work = () => {
               />
               <span>Dehidden</span>
             </a>
+            <span className="text-secondary-foreground">Frontend Engineer</span>
           </div>
           <p className="text-muted-foreground">Jan, 2022 - Present</p>
         </div>

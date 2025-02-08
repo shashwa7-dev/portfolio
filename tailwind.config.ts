@@ -53,6 +53,7 @@ const config: Config = {
       },
       fontFamily: {
         mono: ["var(--font-spaceGrotesk)", ...fontFamily.mono],
+        sans: ["var(--font-stoke)",...fontFamily.sans],
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

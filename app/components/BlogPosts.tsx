@@ -6,7 +6,7 @@ export function BlogPosts() {
 
   return (
     <div className="text-sm grid gap-3">
-      <p className="text-lg font-medium border-b text-secondary-foreground">
+      <p className="text-lg font-medium border-b text-secondary-foreground font-sans">
         {"Blogs"}
       </p>
       <div>

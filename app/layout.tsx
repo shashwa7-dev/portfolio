@@ -2,7 +2,12 @@ import type { Metadata } from "next";
 import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { baseUrl } from "./sitemap";
+import localFont from "next/font/local";
 
+const stoke = localFont({
+  src: "../public/fonts/VVDS-Fifties-Exp-Med.otf",
+  variable: "--font-stoke",
+});
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
@@ -66,7 +71,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`bg-background text-foreground border-border ${spaceGrotesk.className}`}
+        className={`bg-background text-foreground border-border ${spaceGrotesk.variable} ${stoke.variable} font-mono`}
       >
         {children}
       </body>
