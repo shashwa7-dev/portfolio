@@ -86,14 +86,14 @@ const Work = () => {
         <div className="flex justify-between mb-1">
           <div className="grid">
             <a
-              className="flex items-center gap-1"
+              className="flex items-center gap-1 font-sans text-[1rem]"
               href="https://x.com/playAInetwork"
               target="_blank"
             >
               <img
                 src="./images/dehidden_logo.jpeg"
                 alt="dehidden.com"
-                className="w-[10px] h-[10px] rounded-sm"
+                className="w-[12px] h-[12px] rounded-sm"
               />
               <span>Dehidden</span>
             </a>

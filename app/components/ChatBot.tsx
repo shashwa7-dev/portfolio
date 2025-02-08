@@ -298,7 +298,7 @@ const S7Bot = () => {
                   alt="truffy assistant"
                 />
               </div>
-              <h3 className="font-semibold text-secondary-foreground text-lg translate-y-1 opacity-90">
+              <h3 className="font-semibold text-secondary-foreground text-lg opacity-90 font-sans">
                 Truffy AI
               </h3>
             </div>

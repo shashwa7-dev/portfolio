@@ -35,7 +35,9 @@ const Activity = () => {
         {"Activity"}
       </p>
       <div className="grid gap-1">
-        <p className="italic">Currently Reading</p>
+        <p className="italic font-sans text-muted-foreground">
+          Currently Reading
+        </p>
         <div className="flex flex-wrap gap-2">
           <Book
             name={"Build A LLM"}
@@ -58,7 +60,7 @@ const Activity = () => {
         </div>
       </div>
       <div className="grid gap-1">
-        <p className="italic">Last listen</p>
+        <p className="italic font-sans text-muted-foreground">Last listen</p>
         <SpotifyLastListen />
       </div>
     </div>
