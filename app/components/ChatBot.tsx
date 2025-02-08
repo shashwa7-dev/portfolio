@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import { SVGS } from "./SVGS";
 
 const TIMEOUT_DURATION = 10000;
 const NOTIFICATION_MESSAGES = [
@@ -254,9 +255,9 @@ const S7Bot = () => {
                      : "opacity-0 translate-y-5"
                  }`}
         >
-          <div className="bg-white rounded-md border border-b-4 p-1 px-2 w-fit -md:text-xs text-sm">
+          <div className="bg-card rounded-md border border-b-4 p-1 px-2 w-fit -md:text-xs text-sm">
             <div className="relative">
-              <p className="text-sm text-gray-800">
+              <p className="text-sm text-card-foreground">
                 {notificationText}
                 <span className="ml-1 animate-blink"></span>
               </p>
@@ -269,7 +270,7 @@ const S7Bot = () => {
         onClick={() => setIsOpen(!isOpen)}
         className={`${
           isOpen ? "hidden" : "flex"
-        } shadow-md fixed bottom-4 right-4 -md:right-2.5 w-[60px] h-[60px] -md:w-[50px] -md:h-[50px] rounded-lg overflow-hidden border border-s7-gray_graphite border-b-4`}
+        } shadow-sm fixed bottom-4 right-4 -md:right-2.5 w-[60px] h-[60px] -md:w-[50px] -md:h-[50px] rounded-lg overflow-hidden border-2`}
       >
         <img
           src={"./truffy.jpg"}
@@ -285,7 +286,7 @@ const S7Bot = () => {
             ? "translate-y-0 opacity-100"
             : "translate-y-full opacity-0 pointer-events-none"
         } transform transition-all duration-300 ease-in-out
-        bg-white rounded-lg shadow-sm border border-b-4 w-96 -md:w-80 max-h-[500px] flex flex-col`}
+        bg-card rounded-lg shadow-sm border border-b-4 w-80 max-h-[500px] flex flex-col`}
       >
         <div className="flex items-center justify-between p-2 px-3 border-b">
           <div>
@@ -297,23 +298,20 @@ const S7Bot = () => {
                   alt="truffy assistant"
                 />
               </div>
-              <h3 className="font-semibold text-s7-gray300 text-lg translate-y-1 opacity-90">
+              <h3 className="font-semibold text-secondary-foreground text-lg translate-y-1 opacity-90">
                 Truffy AI
               </h3>
             </div>
-            <p className="text-xs text-s7-gray300 text-center">
+            <p className="text-xs text-muted-foreground text-center">
               Powered by Gemini 3.5 Turbo
             </p>
           </div>
           <button
             onClick={handleClose}
-            className="p-1 text-[0.7rem] border border-b-4 rounded-md hover:bg-gray-100 transition-colors mb-auto"
+            className="p-1 text-[0.7rem] border border-b-4 rounded-md hover:bg-muted transition-colors mb-auto flex items-center"
           >
-            <img
-              src="./icons/xmark-solid.svg"
-              alt="close"
-              className="w-3 h-3"
-            />
+            <p>Close</p>
+            <SVGS.Close className="w-3 h-3" />
           </button>
         </div>
 
@@ -324,10 +322,8 @@ const S7Bot = () => {
           {messages.map((msg, index) => (
             <div
               key={index}
-              className={`p-1 text-sm px-2 rounded-md border border-b-4 ${
-                msg.role === "user"
-                  ? "bg-s7-gray100 border-gray-500 ml-auto"
-                  : "bg-white"
+              className={`p-1 text-sm px-2 rounded-md border ${
+                msg.role === "user" ? "bg-secondary ml-auto" : "bg-primary"
               } w-fit max-w-[80%] break-words`}
             >
               {msg.role !== "user" && (
@@ -356,7 +352,7 @@ const S7Bot = () => {
                 emailState ? "Type your response..." : "Type your message..."
               }
               disabled={isStreaming}
-              className="flex-1 p-1 border rounded text-sm focus:outline-none"
+              className="flex-1 p-1 border rounded text-sm bg-input focus:outline-none placeholder-secondary-foreground"
             />
             <button
               type="submit"

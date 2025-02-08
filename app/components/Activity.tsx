@@ -14,14 +14,14 @@ const Book = ({
 }) => {
   return (
     <div className="w-[150px] h-[200px] relative rounded-lg overflow-hidden border">
-      <div className="book_info w-full bg-white absolute bottom-1 right-0 p-1 text-xs">
+      <div className="book_info w-full bg-card absolute bottom-1 right-0 p-1 text-xs">
         <p>{name}</p>
-        <p className="text-s7-gray_graphite italic">{author}</p>
+        <p className="text-secondary-foreground italic">{author}</p>
       </div>
       <img src={cover} alt={name} className="w-full h-full object-cover" />
-      <div className="bg-slate-100 w-full p-[2px] absolute bottom-0 left-0">
+      <div className="bg-muted w-full p-[2px] absolute bottom-0 left-0">
         <div
-          className={`bg-s7-gray300 p-[2px] absolute bottom-0 left-0`}
+          className={`bg-muted-foreground p-[2px] absolute bottom-0 left-0`}
           style={{ width: `${Math.abs((progress / 100) * 100)}%` }}
         />
       </div>
@@ -31,7 +31,7 @@ const Book = ({
 const Activity = () => {
   return (
     <div className="text-sm grid gap-3">
-      <p className="text-lg font-medium border-b text-s7-gray_graphite">
+      <p className="text-lg font-medium border-b text-secondary-foreground">
         {"Activity"}
       </p>
       <div className="grid gap-1">

@@ -1,6 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+}
 
 @keyframes spin-slow {
   from {
@@ -23,13 +28,21 @@ html,
 body {
   height: 100%;
 }
+/*light*/
 :root {
-  /*app*/
-  --s7-primary-bg: #fefefe;
-  --s7-primary-fg: #020202;
-  /* colors */
-  --s7-grey-light: #d0d0d0;
-  --s7-grey-graphite: #4d5362;
+  --background: 0, 0%, 100%;
+  --foreground: 0, 0%, 1%;
+  --primary: 0, 0%, 100%;
+  --primary-foreground: 0, 0%, 1%;
+  --secondary: 0, 0%, 82%;
+  --secondary-foreground: 223, 12%, 34%;
+  --muted: 0, 0%, 82%;
+  --muted-foreground: 220, 9%, 46%;
+  --card: 210, 20%, 98%;
+  --card-foreground: 0, 0%, 1%;
+  --input: 220, 13%, 91%;
+  --border: 220, 13%, 91%;
+
   /*sugar high mdx roots*/
   --sh-class: #2d5e9d;
   --sh-identifier: #354150;
@@ -39,7 +52,32 @@ body {
   --sh-comment: #a19595;
   --sh-jsxliterals: #6266d1;
 }
+.dark {
+  /* Kept the same as requested */
+  --background: 0, 0%, 16%;
+  --foreground: 45, 49%, 80%;
+  --primary: 0, 0%, 16%;
+  --primary-foreground: 45, 49%, 80%;
 
+  /* Updated coordinated values */
+  --secondary: 0, 0%, 25%; /* Increased lightness to make it pop */
+  --secondary-foreground: 45, 49%, 90%;
+  --muted: 0, 0%, 20%;
+  --muted-foreground: 45, 49%, 70%;
+  --card: 0, 0%, 18%;
+  --card-foreground: 45, 49%, 85%;
+  --input: 0, 0%, 30%;
+  --border: 0, 0%, 30%;
+
+  /* Updated sugar high mdx roots to match theme */
+  --sh-class: hsl(45, 49%, 80%);
+  --sh-identifier: hsl(45, 49%, 75%);
+  --sh-sign: hsl(45, 49%, 70%);
+  --sh-string: hsl(45, 49%, 65%);
+  --sh-keyword: hsl(45, 49%, 60%);
+  --sh-comment: hsl(45, 25%, 55%);
+  --sh-jsxliterals: hsl(45, 49%, 70%);
+}
 @keyframes float {
   0% {
     transform: translateY(0px);
@@ -56,8 +94,6 @@ body {
 }
 
 body {
-  color: var(--s7-primary-fg);
-  background: var(--s7-primary-bg);
   -webkit-font-smoothing: antialiased;
 }
 a:hover {
@@ -100,12 +136,10 @@ a:hover {
   content: ".";
   animation: ellipsis 1.5s infinite steps(3, end);
 }
-
 /*MDX stylings*/
 
 .prose .anchor {
   @apply absolute invisible no-underline;
-
   margin-left: -1em;
   padding-right: 0.5em;
   width: 80%;
@@ -118,11 +152,12 @@ a:hover {
 }
 
 .prose a {
-  @apply underline transition-all decoration-neutral-400  underline-offset-2 decoration-[0.1em];
+  @apply underline transition-all underline-offset-2 decoration-[0.1em];
+  text-decoration-color: hsl(var(--muted-foreground));
 }
 
 .prose .anchor:after {
-  @apply text-neutral-300;
+  color: hsl(var(--muted-foreground));
   content: "#";
 }
 
@@ -131,10 +166,14 @@ a:hover {
 }
 
 .prose pre {
-  @apply bg-neutral-50 rounded-lg overflow-x-auto py-2 px-3 text-sm border;
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+  @apply rounded-lg overflow-x-auto py-2 px-3 text-sm border;
 }
 
 .prose code {
+  background-color: hsl(var(--card));
+  color: hsl(var(--card-foreground));
   @apply px-1 py-0.5 rounded-lg;
 }
 
@@ -148,44 +187,50 @@ a:hover {
 }
 
 .prose img {
-  /* Don't apply styles to next/image */
   @apply m-0;
 }
 
 .prose p {
-  @apply my-4 text-neutral-800;
+  @apply my-4;
+  color: hsl(var(--foreground));
 }
 
 .prose h1 {
   @apply text-4xl font-medium tracking-tight mt-6 mb-2;
+  color: hsl(var(--foreground));
 }
 
 .prose h2 {
   @apply text-xl font-medium tracking-tight mt-6 mb-2;
+  color: hsl(var(--foreground));
 }
 
 .prose h3 {
   @apply text-xl font-medium tracking-tight mt-6 mb-2;
+  color: hsl(var(--foreground));
 }
 
 .prose h4 {
   @apply text-lg font-medium tracking-tight mt-6 mb-2;
+  color: hsl(var(--foreground));
 }
 
 .prose strong {
   @apply font-medium;
+  color: hsl(var(--foreground));
 }
 
 .prose ul {
   @apply list-disc pl-6;
+  color: hsl(var(--foreground));
 }
 
 .prose ol {
   @apply list-decimal pl-6;
+  color: hsl(var(--foreground));
 }
 
 .prose > :first-child {
-  /* Override removing top margin, causing layout shift */
   margin-top: 1.25em !important;
   margin-bottom: 1.25em !important;
 }
@@ -195,8 +240,8 @@ pre::-webkit-scrollbar {
 }
 
 pre {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* Remove Safari input shadow on mobile */
@@ -212,6 +257,7 @@ table {
   max-width: fit-content;
   overflow-x: auto;
   white-space: nowrap;
+  color: hsl(var(--foreground));
 }
 
 .title {

@@ -106,13 +106,13 @@ export default function SpotifyLastListen() {
               style={{ transition: "transform 0.5s ease-in-out" }}
             />
             {showTooltip && !isPlaying && track.preview_url !== "N/A" && (
-              <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 px-2 bg-s7-gray100 font-bold text-s7-gray_graphite text-[0.5rem] rounded whitespace-nowrap ">
+              <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 px-2 bg-s7-gray100 font-bold text-secondary-foreground text-[0.5rem] rounded whitespace-nowrap ">
                 Click to play
               </div>
             )}
           </div>{" "}
           <p
-            className="text-sm lg:text-normal cursor-pointer hover:text-s7-gray_graphite hover:font-bold"
+            className="text-sm lg:text-normal cursor-pointer hover:text-secondary-foreground hover:font-bold"
             onClick={() => window.open(track.link, "_blank")}
           >
             <span>{track.name}</span>

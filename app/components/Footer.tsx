@@ -1,22 +1,16 @@
 import React from "react";
-import SpotifyLastListen from "./SpotifyLastListen";
-import { Link } from "./common/Link";
-
 
 const Footer = () => {
   return (
-    <div className="grid place-items-center">
-      <div className="grid place-items-center relative">
+    <div className="grid place-items-center relative  overflow-hidden p-4 pb-0 rounded-t  opacity-0 animate-fadeIn">
+      <div className="grid place-items-center h-[150px] -md:h-[100px] overflow-hidden rounded-t-md opacity-70">
         <img
-          src="./working.gif"
+          src="./images/chill.jpg"
           alt="ducky"
-          className="w-[300px] opacity-60 grayscale"
+          className="w-full h-full object-cover"
         />
-        <div className="text-[.7rem] absolute bottom-[97px] right-[15px] scale-75">
-          <Link link="https://dribbble.com/kunchevsky" name={"Kunchevsky"} />
-        </div>
       </div>
-      <div className="flex justify-center items-center p-2 border-s7-gray300/50  text-s7-gray_graphite rounded-2xl relative opacity-0 animate-fadeIn gap-1">
+      <div className="flex justify-center items-center p-1 text-secondary-foreground rounded-md  px-2 gap-1 absolute -bottom-[10px] pb-2 bg-background">
         <p>{"shashwa7.in"}</p>
         <p className="text-sm">{`o ${new Date().getFullYear()}`}</p>
       </div>

@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { SVGS } from "./SVGS";
 export type Feature = {
   title: string;
   points: string[];
@@ -36,34 +37,32 @@ export const Social = ({
     | "other"
     | "linked";
 }) => {
-  const icon =
+  const Icon =
     type === "linked"
-      ? "/icons/linkedin.svg"
+      ? SVGS.LinkedIn
       : type === "github"
-      ? "/icons/github.svg"
+      ? SVGS.Github
       : type === "twitter"
-      ? "/icons/x.svg"
+      ? SVGS.Twitter
       : type === "twitch"
-      ? "/icons/twitch.svg"
-      : type === "discord"
-      ? "/icons/discord.svg"
-      : "/icons/link.svg";
+      ? SVGS.Twitch
+      : SVGS.Link;
 
   return (
     <a
       href={link}
       target="_blank"
-      className="social border flex items-center  gap-1 p-[1px] px-2 rounded-md border-b-4 text-gray-600"
+      className="social border flex items-center  gap-1 p-[1px] px-2 rounded-md border-b-4 text-secondary-foreground"
     >
       <span className="capitalize">{type}</span>
-      <img src={icon} alt={link} className="w-[10px] h-[10px] text-gray-600" />
+      <Icon className="w-[10px] h-[10px]" />
     </a>
   );
 };
 
 export const Stack = ({ name }: { name: String }) => {
   return (
-    <div className="border p-[1px] px-2 rounded-md border-b-4 text-gray-600">
+    <div className="border p-[1px] px-2 rounded-md border-b-4 text-secondary-foreground">
       <p className="capitalize">{name}</p>
     </div>
   );
@@ -71,7 +70,7 @@ export const Stack = ({ name }: { name: String }) => {
 const Project = ({ project }: { project: TProject }) => {
   const [isHovering, setIsHovering] = useState(false);
   return (
-    <div className="border rounded-lg grid grid-rows-[auto_250px_auto] bg-gray-50">
+    <div className="border rounded-lg grid grid-rows-[auto_250px_auto] bg-card">
       <div className="p-2 flex gap-2 items-center">
         <div className="bg-gray-300 w-[10px] h-[10px] rounded-full"></div>
         <div className="bg-gray-300 w-[10px] h-[10px] rounded-full"></div>
@@ -100,13 +99,13 @@ const Project = ({ project }: { project: TProject }) => {
         )}
       </div>
       <div className="project_details p-2">
-        <p className="text-lg font-medium text-s7-gray_graphite border-b mb-1">
+        <p className="text-lg font-medium text-secondary-foreground border-b mb-1">
           {project.title}
         </p>
         <p>{project.description}</p>
         {project?.features ? (
           <div className="border-y mt-1 py-1">
-            <p className="font-medium underline text-s7-gray_graphite mb-1">
+            <p className="font-medium underline text-secondary-foreground mb-1">
               {project.features[0].title}
             </p>
             <ul className="grid gap-1">
@@ -119,7 +118,9 @@ const Project = ({ project }: { project: TProject }) => {
         <div className="my-2 grid gap-2">
           {project.stack.fe ? (
             <div>
-              <p className="text-sm font-medium text-gray-600 mb-1">FE Stack</p>
+              <p className="text-sm font-medium text-secondary-foreground mb-1">
+                FE Stack
+              </p>
               <div className="flex flex-wrap gap-2">
                 {project.stack.fe?.map((tool, id) => (
                   <Stack name={tool} key={tool + `tool-${id}`} />
@@ -129,7 +130,9 @@ const Project = ({ project }: { project: TProject }) => {
           ) : null}
           {project.stack.be ? (
             <div>
-              <p className="text-sm font-medium text-gray-600 mb-1">BE Stack</p>
+              <p className="text-sm font-medium text-secondary-foreground mb-1">
+                BE Stack
+              </p>
               <div className="flex flex-wrap gap-2">
                 {project.stack.be?.map((tool, id) => (
                   <Stack name={tool} key={tool + `tool-${id}`} />
@@ -138,7 +141,9 @@ const Project = ({ project }: { project: TProject }) => {
             </div>
           ) : null}
           <div>
-            <p className="text-sm font-medium text-gray-600 mb-1">Links</p>
+            <p className="text-sm font-medium text-secondary-foreground mb-1">
+              Links
+            </p>
             <div className="flex gap-2 flex-wrap">
               {project.links?.web && (
                 <Social link={project.links?.web} type="web" />

@@ -78,7 +78,7 @@ const Work = () => {
   return (
     <div className="text-sm grid gap-3">
       <div className="flex justify-between border-b pb-1">
-        <p className="text-lg font-medium text-s7-gray_graphite">
+        <p className="text-lg font-medium text-secondary-foreground">
           Work & Experience
         </p>
       </div>
@@ -99,7 +99,7 @@ const Work = () => {
               <span>Dehidden</span>
             </a>
           </div>
-          <p className="text-gray-500">Jan, 2022 - Present</p>
+          <p className="text-muted-foreground">Jan, 2022 - Present</p>
         </div>
         {projects?.map((project) => (
           <Project project={project} key={project.id} />

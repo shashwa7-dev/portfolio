@@ -25,7 +25,7 @@ const projects: TProject[] = [
 const Projects = () => {
   return (
     <div className="text-sm grid gap-3">
-      <p className="text-lg font-medium border-b text-s7-gray_graphite">
+      <p className="text-lg font-medium border-b text-secondary-foreground">
         {"Side Quests"}
       </p>
       <div className="grid gap-2">

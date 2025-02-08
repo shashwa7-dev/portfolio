@@ -4,7 +4,7 @@ import { Social } from "./Project";
 const Socials = () => {
   return (
     <div className="text-sm grid gap-3">
-      <p className="text-lg font-medium border-b text-s7-gray_graphite">
+      <p className="text-lg font-medium border-b text-secondary-foreground">
         Socials
       </p>
       <div className="flex flex-wrap gap-2">

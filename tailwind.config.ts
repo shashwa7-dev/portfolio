@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 import { fontFamily } from "tailwindcss/defaultTheme";
 const config: Config = {
+  darkMode: ["class"],
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -63,15 +64,28 @@ const config: Config = {
         "4000": "4000ms",
       },
       colors: {
-        s7: {
-          primary_bg: "#fefefe",
-          primary_fg: "#020202",
-          gray100: "#EAEAEA",
-          gray200: "#D0D0D0",
-          gray300: "#A0A0A0",
-          gray_graphite: "#4D5362",
-          rich_black: "#020202",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
         },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+        },
+        borderColor: {
+          DEFAULT: "hsl(var(--border))", // This overrides the default border color
+        },
+        input: "hsl(var(--input))",
       },
     },
   },

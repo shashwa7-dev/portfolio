@@ -41,7 +41,7 @@ const NFT = ({
           className="rounded-md"
         />
         {showNftName && (
-          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-1 bg-s7-gray100 font-bold text-s7-gray_graphite text-[0.5rem] rounded whitespace-nowrap">
+          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-1 bg-s7-gray100 font-bold text-secondary-foreground text-[0.5rem] rounded whitespace-nowrap">
             {name}
           </div>
         )}

@@ -65,7 +65,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={spaceGrotesk.className}>{children}</body>
+      <body
+        className={`bg-background text-foreground border-border ${spaceGrotesk.className}`}
+      >
+        {children}
+      </body>
     </html>
   );
 }

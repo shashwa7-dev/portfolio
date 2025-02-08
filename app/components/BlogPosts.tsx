@@ -6,7 +6,7 @@ export function BlogPosts() {
 
   return (
     <div className="text-sm grid gap-3">
-      <p className="text-lg font-medium border-b text-s7-gray_graphite">
+      <p className="text-lg font-medium border-b text-secondary-foreground">
         {"Blogs"}
       </p>
       <div>
@@ -22,7 +22,7 @@ export function BlogPosts() {
           })
           .map((post, id) => (
             <Link
-              className="grid grid-cols-[250px_1fr] border rounded-md overflow-hidden -md:grid-cols-1 bg-gray-50"
+              className="grid grid-cols-[250px_1fr] border rounded-md overflow-hidden -md:grid-cols-1 bg-card text-card-foreground"
               href={`/blog/${post.slug}`}
               key={post.slug}
             >
@@ -35,7 +35,7 @@ export function BlogPosts() {
               </div>
               <div className="w-full grid gap-1 p-3">
                 <div>
-                  <p className="font-semibold text-lg text-s7-gray_graphite">{`${post.metadata.title}`}</p>
+                  <p className="font-semibold text-lg text-secondary-foreground">{`${post.metadata.title}`}</p>
                   <p className="text-s7-gray300 text-xs">
                     {formatDate(post.metadata.publishedAt, false)}
                   </p>
