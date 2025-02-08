@@ -9,7 +9,7 @@ const TechStack = () => {
         Tech Stack
       </p>
       <div className="grid gap-2">
-        <p className="italic">Frontend</p>
+        <p className="italic font-sans text-muted-foreground">Frontend</p>
         <div className="flex flex-wrap gap-2">
           <Stack name={"Typescript"} />
           <Stack name={"React"} />
@@ -23,7 +23,7 @@ const TechStack = () => {
         </div>
       </div>
       <div className="grid gap-2">
-        <p className="italic">Backend</p>
+        <p className="italic font-sans text-muted-foreground">Backend</p>
         <div className="flex flex-wrap gap-2">
           <Stack name={"Node JS"} />
           <Stack name={"GraphQL"} />
@@ -37,7 +37,7 @@ const TechStack = () => {
         </div>
       </div>
       <div className="grid gap-2">
-        <p className="italic">Tools & Softwares</p>
+        <p className="italic font-sans text-muted-foreground">Tools & Softwares</p>
         <div className="flex flex-wrap gap-2">
           <Stack name={"VS Code"} />
           <Stack name={"Postman"} />
@@ -51,7 +51,7 @@ const TechStack = () => {
         </div>
       </div>
       <div className="grid gap-2">
-        <p className="italic">Hardware Setup</p>
+        <p className="italic font-sans text-muted-foreground">Hardware Setup</p>
         <div className="flex flex-wrap gap-2">
           <Link
             name={"Mac M1 Air"}

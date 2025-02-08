@@ -5,7 +5,7 @@ import { baseUrl } from "./sitemap";
 import localFont from "next/font/local";
 
 const stoke = localFont({
-  src: "../public/fonts/VVDS-Fifties-Exp-Med.otf",
+  src: "../public/fonts/Somatic-Rounded.otf",
   variable: "--font-stoke",
 });
 const spaceGrotesk = Space_Grotesk({

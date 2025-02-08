@@ -72,9 +72,9 @@ const Project = ({ project }: { project: TProject }) => {
   return (
     <div className="border rounded-lg grid grid-rows-[auto_250px_auto] bg-card">
       <div className="p-2 flex gap-2 items-center">
-        <div className="bg-gray-300 w-[10px] h-[10px] rounded-full"></div>
-        <div className="bg-gray-300 w-[10px] h-[10px] rounded-full"></div>
-        <div className="bg-gray-300 w-[10px] h-[10px] rounded-full"></div>
+        <div className="bg-secondary w-[10px] h-[10px] rounded-full"></div>
+        <div className="bg-secondary w-[10px] h-[10px] rounded-full"></div>
+        <div className="bg-secondary w-[10px] h-[10px] rounded-full"></div>
       </div>
       <div
         className="project_thumb overflow-hidden relative curso-pointer"
@@ -99,13 +99,13 @@ const Project = ({ project }: { project: TProject }) => {
         )}
       </div>
       <div className="project_details p-2">
-        <p className="text-lg font-medium text-secondary-foreground border-b mb-1">
+        <p className="text-lg font-medium text-secondary-foreground border-b mb-1 font-sans">
           {project.title}
         </p>
         <p>{project.description}</p>
         {project?.features ? (
           <div className="border-y mt-1 py-1">
-            <p className="font-medium underline text-secondary-foreground mb-1">
+            <p className="font-medium underline text-secondary-foreground mb-1 font-sans">
               {project.features[0].title}
             </p>
             <ul className="grid gap-1">
@@ -118,7 +118,7 @@ const Project = ({ project }: { project: TProject }) => {
         <div className="my-2 grid gap-2">
           {project.stack.fe ? (
             <div>
-              <p className="text-sm font-medium text-secondary-foreground mb-1">
+              <p className="text-sm font-medium text-secondary-foreground mb-1 font-sans">
                 FE Stack
               </p>
               <div className="flex flex-wrap gap-2">
@@ -130,7 +130,7 @@ const Project = ({ project }: { project: TProject }) => {
           ) : null}
           {project.stack.be ? (
             <div>
-              <p className="text-sm font-medium text-secondary-foreground mb-1">
+              <p className="text-sm font-medium text-secondary-foreground mb-1 font-sans">
                 BE Stack
               </p>
               <div className="flex flex-wrap gap-2">
@@ -141,7 +141,7 @@ const Project = ({ project }: { project: TProject }) => {
             </div>
           ) : null}
           <div>
-            <p className="text-sm font-medium text-secondary-foreground mb-1">
+            <p className="text-sm font-medium text-secondary-foreground mb-1 font-sans">
               Links
             </p>
             <div className="flex gap-2 flex-wrap">
