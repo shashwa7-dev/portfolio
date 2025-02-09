@@ -15,7 +15,7 @@ const Book = ({
   return (
     <div className="w-[150px] h-[200px] relative rounded-lg overflow-hidden border">
       <div className="book_info w-full bg-card absolute bottom-1 right-0 p-1 text-xs">
-        <p>{name}</p>
+        <p className="font-sans">{name}</p>
         <p className="text-secondary-foreground italic">{author}</p>
       </div>
       <img src={cover} alt={name} className="w-full h-full object-cover" />

@@ -1,9 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/*UPDATING default border color*/
 @layer base {
   * {
     border-color: hsl(var(--border));
+  }
+}
+/*FONT SPACING for font-sans: as the font used is bit tighter by default*/
+@layer base {
+  .font-sans {
+    letter-spacing: 0.035em;
   }
 }
 
@@ -196,27 +203,27 @@ a:hover {
 }
 
 .prose h1 {
-  @apply text-4xl font-medium tracking-tight mt-6 mb-2;
+  @apply text-4xl font-medium  mt-6 mb-2 font-sans;
   color: hsl(var(--foreground));
 }
 
 .prose h2 {
-  @apply text-xl font-medium tracking-tight mt-6 mb-2;
+  @apply text-xl font-medium  mt-6 mb-2 font-sans;
   color: hsl(var(--foreground));
 }
 
 .prose h3 {
-  @apply text-xl font-medium tracking-tight mt-6 mb-2;
+  @apply text-xl font-medium  mt-6 mb-2 font-sans;
   color: hsl(var(--foreground));
 }
 
 .prose h4 {
-  @apply text-lg font-medium tracking-tight mt-6 mb-2;
+  @apply text-lg font-medium  mt-6 mb-2 font-sans;
   color: hsl(var(--foreground));
 }
 
 .prose strong {
-  @apply font-medium;
+  @apply font-medium font-sans;
   color: hsl(var(--foreground));
 }
 

@@ -51,9 +51,10 @@ const config: Config = {
           max: "639px",
         },
       },
+
       fontFamily: {
         mono: ["var(--font-spaceGrotesk)", ...fontFamily.mono],
-        sans: ["var(--font-stoke)",...fontFamily.sans],
+        sans: ["var(--font-stoke)", ...fontFamily.sans],
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
