@@ -8,7 +8,6 @@ import KeyboardNavigation from "./components/KeyboardNavigation";
 import Projects from "./components/Projects";
 import Socials from "./components/Socials";
 import TechStack from "./components/TechStack";
-import DarkModeToggle from "./components/ThemeSwitch";
 import Work from "./components/Work";
 
 export default function Home() {

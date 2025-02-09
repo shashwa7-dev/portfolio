@@ -1,3 +1,5 @@
+import { SVGS } from "../SVGS";
+
 interface LinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   name: string;
   link?: string;
@@ -17,11 +19,7 @@ export const Link: React.FC<LinkProps> = ({
       {...props}
     >
       <span className="capitalize">{name}</span>
-      <img
-        src={"/icons/link.svg"}
-        alt={link}
-        className="w-[10px] h-[10px] text-secondary-foreground"
-      />
+      <SVGS.Link className="w-[10px] h-[10px]" />
     </a>
   );
 };
