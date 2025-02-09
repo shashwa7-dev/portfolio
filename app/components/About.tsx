@@ -19,7 +19,7 @@ const About = () => {
         Feel free to reach out
         <a
           href="mailto:contact@shashwa7.in"
-          className="px-1 text-xs border font-medium text-secondary-foreground rounded-md border-b-[2.5px]  mx-1 lowercase inline-block"
+          className="px-1  border font-medium text-secondary-foreground rounded-md border-b-[2.5px]  mx-1 lowercase inline-block font-sans text-md"
         >
           {" contact@shashwa7.in "}
         </a>
