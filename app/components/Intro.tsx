@@ -5,7 +5,7 @@ const Intro = () => {
     <div className="mt-2">
       <div className="grid grid-cols-[1fr_auto]">
         <div className="flex flex-col relative">
-          <h1 className=" text-3xl -md:text-2xl font-black text-secondary-foreground font-sans">
+          <h1 className=" text-3xl -md:text-2xl  text-secondary-foreground font-sans">
             {"Shashwat Tripathi"}
           </h1>
           <h2 className="font-bold w-fit text-muted-foreground">

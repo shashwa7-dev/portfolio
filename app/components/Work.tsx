@@ -19,18 +19,6 @@ const projects: TProject[] = [
     id: "2",
     title: "$ROGUE Token SOL Tracker",
     description: `The Solana Token Transfer Tracker is a Node.js-based REST API service that monitors and analyzes token transfer transactions on the Solana blockchain. The service specifically tracks transfers for a designated token contract, providing detailed transaction history and wallet analytics.`,
-    features: [
-      {
-        title: "Key Features",
-        points: [
-          "Complete Transaction History: Fetches and processes all historical token transfers for the specified contract.",
-          "Transaction Grouping: Organizes transactions by wallet address, providing per-wallet analytics.",
-          "Balance Tracking: Calculates running balances and total deposits/withdrawals for each wallet.",
-          "Flexible Query Options: Supports optional transaction limit parameters and grouping preferences.",
-          "Comprehensive Transaction Details: Includes timestamps, signatures, amounts, and transaction types.",
-        ],
-      },
-    ],
     stack: {
       be: ["node/js", "express", "solana/web3.js"],
     },

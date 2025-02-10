@@ -4,7 +4,7 @@ import { Link } from "./common/Link";
 const About = () => {
   return (
     <div className="text-sm grid gap-3">
-      <p className="text-lg font-medium border-b text-secondary-foreground font-sans">
+      <p className="text-lg border-b text-secondary-foreground font-sans">
         About
       </p>
       <p>

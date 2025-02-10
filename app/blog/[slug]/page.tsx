@@ -82,7 +82,7 @@ export default function Blog({ params }: any) {
           }),
         }}
       />
-      <h1 className="title font-semibold text-2xl font-sans">
+      <h1 className="title  text-2xl font-sans">
         {post.metadata.title}
       </h1>
       <div className="flex justify-between items-center mt-1 text-sm">

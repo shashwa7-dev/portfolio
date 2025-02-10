@@ -35,7 +35,7 @@ export function BlogPosts() {
               </div>
               <div className="w-full grid gap-1 p-3">
                 <div>
-                  <p className="font-semibold text-lg text-secondary-foreground font-sans">{`${post.metadata.title}`}</p>
+                  <p className="text-lg text-secondary-foreground font-sans">{`${post.metadata.title}`}</p>
                   <p className="text-s7-gray300 text-xs">
                     {formatDate(post.metadata.publishedAt, false)}
                   </p>
