@@ -39,7 +39,7 @@ export default function DarkModeToggle() {
     >
       <div
         className={
-          "w-6 h-6 overflow-hidden cursor-pointer rounded-md border border-b-[3px] transition"
+          "w-7 h-7 overflow-hidden cursor-pointer rounded-md border border-b-[3px] transition"
         }
         onClick={() => toggleDarkMode(false)}
         style={isDarkMode ? { transform: "scale(0.8)" } : {}}
@@ -52,7 +52,7 @@ export default function DarkModeToggle() {
       </div>
       <div
         className={
-          "w-6 h-6 overflow-hidden cursor-pointer rounded-md border border-b-[3px] transition"
+          "w-7 h-7 overflow-hidden cursor-pointer rounded-md border border-b-[3px] transition"
         }
         onClick={() => toggleDarkMode(true)}
         style={!isDarkMode ? { transform: "scale(0.8)" } : {}}

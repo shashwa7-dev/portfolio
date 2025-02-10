@@ -12,12 +12,8 @@ const Intro = () => {
             {"Frontend Focused . Fullstack Developer"}
           </h2>
         </div>
-        <div className="relative">
-          <img
-            src="./new-prof.png"
-            alt="shashwa7.in"
-            className="w-[60px] h-[60px] rounded-md"
-          />
+        <div className="relative w-[65px] h-[65px] border p-[2px] rounded-md bg-secondary">
+          <img src="./new-prof.png" alt="shashwa7.in" className="rounded-[4px] w-full h-full" />
           <div className="absolute w-fit -bottom-[15px] mx-auto right-0 left-0">
             <DarkModeToggle />
           </div>
