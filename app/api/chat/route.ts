@@ -234,8 +234,9 @@ export async function POST(request: NextRequest) {
     (async () => {
       try {
         const genAI = initializeGoogleAI();
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-
+        const model = genAI.getGenerativeModel({
+          model: "gemini-1.5-flash",
+        });
         // Handle email collection flow
         // Handle email collection flow
         if (emailState || detectEmailIntent(message)) {

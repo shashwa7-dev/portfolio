@@ -62,7 +62,7 @@ export const Social = ({
 
 export const Stack = ({ name }: { name: String }) => {
   return (
-    <div className="border p-[1px] px-2 rounded-md border-b-4 text-secondary-foreground">
+    <div className="border p-[1px] px-2 rounded-md border-b-4 text-secondary-foreground bg-card">
       <p className="capitalize">{name}</p>
     </div>
   );
