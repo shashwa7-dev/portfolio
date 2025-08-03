@@ -14,6 +14,7 @@ export default function Home() {
   return (
     <div className="container max-w-2xl  relative">
       <div className="p-4 grid gap-4">
+        
         <Intro />
         <About />
         <Work />

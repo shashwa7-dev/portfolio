@@ -8,6 +8,7 @@ export type Feature = {
 export type TProject = {
   id: string;
   title: string;
+  isActive?: boolean;
   description: string;
   features?: Feature[];
   thumbnail: string;
@@ -75,7 +76,14 @@ const Project = ({ project }: { project: TProject }) => {
         <div className="bg-secondary w-[10px] h-[10px] rounded-full"></div>
         <div className="bg-secondary w-[10px] h-[10px] rounded-full"></div>
         <div className="bg-secondary w-[10px] h-[10px] rounded-full"></div>
+        {project?.isActive && (
+          <div className="ml-auto flex items-center justify-center gap-1">
+            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+            <span>Dev/IP</span>
+          </div>
+        )}
       </div>
+
       <div
         className="project_thumb overflow-hidden relative curso-pointer"
         onMouseEnter={() => setIsHovering(true)}

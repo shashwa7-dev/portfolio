@@ -2,6 +2,19 @@ import React from "react";
 import Project, { TProject } from "./Project";
 const projects: TProject[] = [
   {
+    id: "0x",
+    title: "PlayAI Hub",
+    description:
+      "PlayAI Hub is a unified platform for real-time AI chat streaming, multi-chain protocol swaps (MCPs), and secure cross-chain bridging—bringing seamless AI and DeFi interactions together.",
+    stack: { fe: ["react/ts", "tailwind/shadcn", "@tanstack/react-query"] },
+    links: {
+      twitter: "https://x.com/aura_playai",
+      web: "https://hub.playai.network/",
+    },
+    isActive: true,
+    thumbnail: "/projects/project_playhub.JPG",
+  },
+  {
     id: "1",
     title: "Agent Experience",
     description:
