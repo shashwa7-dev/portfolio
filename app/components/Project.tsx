@@ -13,6 +13,7 @@ export type TProject = {
   features?: Feature[];
   thumbnail: string;
   preview?: string;
+  date?: string;
   links?: {
     github?: string;
     twitch?: string;
@@ -53,17 +54,17 @@ export const Social = ({
     <a
       href={link}
       target="_blank"
-      className="social border flex items-center  gap-1 p-[1px] px-2 rounded-md border-b-4 text-secondary-foreground"
+      className="social border flex items-center  gap-1 p-[1px] text-xs px-2 rounded-md border-b-4 text-secondary-foreground"
     >
       <span className="capitalize">{type}</span>
-      <Icon className="w-[10px] h-[10px]" />
+      <Icon className="w-[7px] h-[7px]" />
     </a>
   );
 };
 
 export const Stack = ({ name }: { name: String }) => {
   return (
-    <div className="border p-[1px] px-2 rounded-md border-b-4 text-secondary-foreground bg-card">
+    <div className="border p-[1px] px-2 rounded-md border-b-4  text-xs text-secondary-foreground bg-card">
       <p className="capitalize">{name}</p>
     </div>
   );

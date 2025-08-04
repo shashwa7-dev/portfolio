@@ -1,5 +1,6 @@
 import React from "react";
-import Project, { TProject } from "./Project";
+import { TProject } from "./Project";
+import ProjectCard from "./PorjectCard";
 const projects: TProject[] = [
   {
     id: "0x",
@@ -21,12 +22,12 @@ const projects: TProject[] = [
       "0xRogueAgent is an AI-driven agent project powered by its native $ROGUE token on the Solana blockchain. It combines decentralized technology with advanced AI to deliver innovative, mission-based experiences. The $ROGUE token plays a central role in the ecosystem, enabling users to engage with the AI agent, unlock features, and participate in governance.",
     stack: { fe: ["react/ts", "solana-adapter", "tailwind/shadcn"] },
     links: {
-      twitter: "https://x.com/0xRogueAgent",
-      twitch: "https://www.twitch.tv/theagentexperience",
       web: "https://agentexperience.live/",
-      other: "https://www.cookie.fun/en/agent/agent-rogue",
+      other:
+        "https://dexscreener.com/solana/bgzm2era3ifpkcmb4w49of3cj9ruverxzhe2pzbbp8tv",
     },
     thumbnail: "/projects/project_agent_exp.JPG",
+    date: "3/25",
   },
   {
     id: "2",
@@ -39,6 +40,7 @@ const projects: TProject[] = [
       github: "https://github.com/shashwa7-dev/rouge-token-tracker",
     },
     thumbnail: "/projects/project_sol_tracker.jpg",
+    date: "3/25",
   },
   {
     id: "3",
@@ -60,6 +62,7 @@ const projects: TProject[] = [
       web: "https://nodeexplorer.playai.network/",
     },
     thumbnail: "/projects/project_node_exp.JPG",
+    date: "9/24",
   },
   {
     id: "4",
@@ -73,6 +76,7 @@ const projects: TProject[] = [
       twitter: "https://x.com/playAInetwork",
       web: "https://playai.network/",
     },
+    date: "6/24",
   },
 ];
 const Work = () => {
@@ -102,9 +106,11 @@ const Work = () => {
           </div>
           <p className="text-muted-foreground">Jan, 2022 - Present</p>
         </div>
-        {projects?.map((project) => (
-          <Project project={project} key={project.id} />
-        ))}
+        <div className="grid grid-cols-2 gap-6 mt-4 -sm:grid-cols-1 place-items-center">
+          {projects?.map((project) => (
+            <ProjectCard project={project} key={project.id} />
+          ))}{" "}
+        </div>
       </div>
     </div>
   );

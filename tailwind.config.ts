@@ -13,8 +13,18 @@ const config: Config = {
         fadeIn: "fadeIn 1s ease-in-out forwards",
         float: "float 1s ease-in-out infinite",
         blink: "blink 1s step-end infinite",
+        "marquee-left": "marquee-left var(--duration, 40s) linear infinite",
+        "marquee-up": "marquee-up var(--duration, 40s) linear infinite",
       },
       keyframes: {
+        "marquee-left": {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(calc(-100% - var(--gap)))" },
+        },
+        "marquee-up": {
+          from: { transform: "translateY(0)" },
+          to: { transform: "translateY(calc(-100% - var(--gap)))" },
+        },
         blink: {
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: "0" },
@@ -24,6 +34,7 @@ const config: Config = {
           "100%": { opacity: "1" },
         },
       },
+
       float: {
         "0%, 100%": { transform: "translateY(0px)" },
         "50%": { transform: "translateY(-5px)" },

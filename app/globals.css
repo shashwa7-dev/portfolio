@@ -35,6 +35,7 @@ html,
 body {
   height: 100%;
 }
+
 /*light*/
 :root {
   --background: 0, 0%, 100%;
@@ -108,8 +109,22 @@ a:hover {
   transition: all 0.1s ease;
 }
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  /* Card UTILS */
+  .dark .content-bg {
+    background: linear-gradient(
+        160deg,
+        rgba(103, 103, 103, 0.25) 14%,
+        rgba(14, 14, 14, 0.2) 97.3%
+      ),
+      #0c0c0c;
+  }
+  .content-bg {
+    background: hsl(var(--card));
+  }
+  .content-shadow {
+    box-shadow: 0.6px 0.6px 0px rgba(255, 255, 255, 0.297),
+      inset 0px 4.8px 4.8px rgba(0, 0, 0, 0.2),
+      inset 2px 3px 1.2px rgba(0, 0, 0, 0.45);
   }
 }
 

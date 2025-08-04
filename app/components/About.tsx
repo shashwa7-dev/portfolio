@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "./common/Link";
+import ToolsAndStack from "./ToolStack";
 
 const About = () => {
   return (
