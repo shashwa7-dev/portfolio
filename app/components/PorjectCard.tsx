@@ -77,22 +77,22 @@ export default function ProjectCard({ project }: { project: TProject }) {
             </h3>
             <div className="flex gap-2 flex-wrap">
               {project.links?.web && (
-                <Social link={project.links?.web} type="web" />
+                <Social link={project.links?.web} type="web"  className="text-xs"/>
               )}
               {project.links?.github && (
-                <Social link={project.links?.github} type="github" />
+                <Social link={project.links?.github} type="github" className="text-xs" />
               )}
               {project.links?.twitter && (
-                <Social link={project.links?.twitter} type="twitter" />
+                <Social link={project.links?.twitter} type="twitter"  className="text-xs"/>
               )}
               {project.links?.twitch && (
-                <Social link={project.links?.twitch} type="twitch" />
+                <Social link={project.links?.twitch} type="twitch" className="text-xs" />
               )}
               {project.links?.discord && (
-                <Social link={project.links?.discord} type="discord" />
+                <Social link={project.links?.discord} type="discord"  className="text-xs"/>
               )}
               {project.links?.other && (
-                <Social link={project.links?.other} type="other" />
+                <Social link={project.links?.other} type="other" className="text-xs" />
               )}
             </div>
           </div>
@@ -116,7 +116,7 @@ export default function ProjectCard({ project }: { project: TProject }) {
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {project.stack.fe?.map((tool, id) => (
-                        <Stack name={tool} key={tool + `tool-${id}`} />
+                        <Stack name={tool} key={tool + `tool-${id}`} className="text-xs"/>
                       ))}
                     </div>
                   </div>
@@ -128,7 +128,7 @@ export default function ProjectCard({ project }: { project: TProject }) {
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {project.stack.be?.map((tool, id) => (
-                        <Stack name={tool} key={tool + `tool-${id}`} />
+                        <Stack name={tool} key={tool + `tool-${id}`} className="text-xs"/>
                       ))}
                     </div>
                   </div>

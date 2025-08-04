@@ -284,7 +284,7 @@ const S7Bot = () => {
         className={`${
           isOpen
             ? "translate-y-0 opacity-100"
-            : "translate-y-full opacity-0 pointer-events-none"
+            : "translate-y-full opacity-0 pointer-events-none h-0"
         } transform transition-all duration-300 ease-in-out
         bg-card rounded-lg shadow-sm border border-b-4 w-80 max-h-[500px] flex flex-col`}
       >

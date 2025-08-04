@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { SVGS } from "./SVGS";
+import { cn } from "@/lib/utils";
 export type Feature = {
   title: string;
   points: string[];
@@ -28,6 +29,7 @@ export type TProject = {
 export const Social = ({
   link,
   type,
+  className,
 }: {
   link: string;
   type:
@@ -38,6 +40,7 @@ export const Social = ({
     | "discord"
     | "other"
     | "linked";
+  className?: string;
 }) => {
   const Icon =
     type === "linked"
@@ -54,17 +57,31 @@ export const Social = ({
     <a
       href={link}
       target="_blank"
-      className="social border flex items-center  gap-1 p-[1px] text-xs px-2 rounded-md border-b-4 text-secondary-foreground"
+      className={cn(
+        "social border flex items-center  gap-1 p-[1px] text-sm px-2 rounded-md border-b-4 text-secondary-foreground",
+        className
+      )}
     >
       <span className="capitalize">{type}</span>
-      <Icon className="w-[7px] h-[7px]" />
+      <Icon className="w-[10px] h-[10px]" />
     </a>
   );
 };
 
-export const Stack = ({ name }: { name: String }) => {
+export const Stack = ({
+  name,
+  className,
+}: {
+  name: String;
+  className?: string;
+}) => {
   return (
-    <div className="border p-[1px] px-2 rounded-md border-b-4  text-xs text-secondary-foreground bg-card">
+    <div
+      className={cn(
+        "border p-[1px] px-2 rounded-md border-b-4  text-sm text-secondary-foreground bg-card",
+        className
+      )}
+    >
       <p className="capitalize">{name}</p>
     </div>
   );
