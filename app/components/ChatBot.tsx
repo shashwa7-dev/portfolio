@@ -303,7 +303,7 @@ const S7Bot = () => {
               </h3>
             </div>
             <p className="text-xs text-muted-foreground text-center">
-              Powered by Gemini 2.5 Flash
+              Built on Gemini 2.0 Flash
             </p>
           </div>
           <button
