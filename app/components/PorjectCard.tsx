@@ -55,15 +55,13 @@ export default function ProjectCard({ project }: { project: TProject }) {
       </button>
       <button
         className={
-          "absolute text-xs bottom-2 left-[47%] p-2  bg-card rounded-xl"
+          "absolute text-xs group -bottom-[12px] left-[39%] "
         }
         onClick={() => setShowFullContent((prev) => !prev)}
       >
-        <SVGS.Chevdown
-          className={cn(
-            "w-8 h-8 transition-all",
-            showFullContent && "rotate-180"
-          )}
+        <img
+          src={"/images/cut-hover.png"}
+          className={cn("w-[100px] transition-all hidden group-hover:block")}
         />
       </button>
 
@@ -77,22 +75,46 @@ export default function ProjectCard({ project }: { project: TProject }) {
             </h3>
             <div className="flex gap-2 flex-wrap">
               {project.links?.web && (
-                <Social link={project.links?.web} type="web"  className="text-xs"/>
+                <Social
+                  link={project.links?.web}
+                  type="web"
+                  className="text-xs"
+                />
               )}
               {project.links?.github && (
-                <Social link={project.links?.github} type="github" className="text-xs" />
+                <Social
+                  link={project.links?.github}
+                  type="github"
+                  className="text-xs"
+                />
               )}
               {project.links?.twitter && (
-                <Social link={project.links?.twitter} type="twitter"  className="text-xs"/>
+                <Social
+                  link={project.links?.twitter}
+                  type="twitter"
+                  className="text-xs"
+                />
               )}
               {project.links?.twitch && (
-                <Social link={project.links?.twitch} type="twitch" className="text-xs" />
+                <Social
+                  link={project.links?.twitch}
+                  type="twitch"
+                  className="text-xs"
+                />
               )}
               {project.links?.discord && (
-                <Social link={project.links?.discord} type="discord"  className="text-xs"/>
+                <Social
+                  link={project.links?.discord}
+                  type="discord"
+                  className="text-xs"
+                />
               )}
               {project.links?.other && (
-                <Social link={project.links?.other} type="other" className="text-xs" />
+                <Social
+                  link={project.links?.other}
+                  type="other"
+                  className="text-xs"
+                />
               )}
             </div>
           </div>
@@ -116,7 +138,11 @@ export default function ProjectCard({ project }: { project: TProject }) {
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {project.stack.fe?.map((tool, id) => (
-                        <Stack name={tool} key={tool + `tool-${id}`} className="text-xs"/>
+                        <Stack
+                          name={tool}
+                          key={tool + `tool-${id}`}
+                          className="text-xs"
+                        />
                       ))}
                     </div>
                   </div>
@@ -128,7 +154,11 @@ export default function ProjectCard({ project }: { project: TProject }) {
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {project.stack.be?.map((tool, id) => (
-                        <Stack name={tool} key={tool + `tool-${id}`} className="text-xs"/>
+                        <Stack
+                          name={tool}
+                          key={tool + `tool-${id}`}
+                          className="text-xs"
+                        />
                       ))}
                     </div>
                   </div>

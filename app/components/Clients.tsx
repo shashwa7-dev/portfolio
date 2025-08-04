@@ -5,17 +5,17 @@ const clients = [
   {
     name: "Play AI",
     img: "/clients/client_playai.jpg",
-    link: "https://x.com/playAInetwork",
+    link: "https://x.com/playAInetwork/status/1950596969396859101",
   },
   {
     name: "Polygon",
     img: "/clients/client_polygon.jpg",
-    link: "https://x.com/0xPolygon",
+    link: "https://x.com/0xPolygon/status/1671504505764970498",
   },
   {
     name: "Coinbase",
     img: "/clients/client_coinbase.png",
-    link: "https://x.com/coinbase",
+    link: "https://x.com/baseapp/status/1542327195174965248",
   },
   {
     name: "Sentient",
@@ -25,12 +25,7 @@ const clients = [
   {
     name: "Nodeops",
     img: "/clients/client_nodeops.jpg",
-    link: "https://x.com/NodeOpsHQ",
-  },
-  {
-    name: "Web3Conf",
-    img: "/clients/client_web3_conf.jpg",
-    link: "https://x.com/web3conf_india",
+    link: "https://x.com/NodeOpsHQ/status/1845796942686949607",
   },
 ];
 const Clients = () => {

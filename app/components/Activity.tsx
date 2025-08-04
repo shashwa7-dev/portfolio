@@ -37,11 +37,11 @@ const Activity = () => {
         {"Activity"}
       </p>
       <div className="grid gap-1">
-        <p className="italic font-sans text-muted-foreground">My Blogs</p>
+        <p className="italic font-sans text-muted-foreground">Blogs</p>
         <Link href={"/blogs"}>
           <div className="flex border w-fit bg-card p-1 gap-1 rounded-md border-b-4 items-center pr-2">
-            <img src={"/images/icon_blogpost.svg"} className="w-5 h-5" />
-            <button className="hover:underline">Check blogs</button>
+            <img src={"/images/icon_blogpost.svg"} className="w-4 h-4" />
+            <button className="hover:underline">Checkout blogs</button>
             <SVGS.Link className="w-[10px] h-[10px]" />
           </div>
         </Link>
