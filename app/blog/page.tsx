@@ -1,4 +1,4 @@
-import { BlogPosts } from "../components/BlogPosts";
+import { BlogPosts } from "../../components/BlogPosts";
 
 export const metadata = {
   title: "Blog",

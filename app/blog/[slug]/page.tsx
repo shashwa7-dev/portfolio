@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { CustomMDX } from "@/app/components/common/mdx";
+import { CustomMDX } from "@/components/common/mdx";
 import { formatDate, getBlogPosts } from "../utils";
 import { baseUrl } from "@/app/sitemap";
 
@@ -82,9 +82,7 @@ export default function Blog({ params }: any) {
           }),
         }}
       />
-      <h1 className="title  text-2xl font-sans">
-        {post.metadata.title}
-      </h1>
+      <h1 className="title  text-2xl font-sans">{post.metadata.title}</h1>
       <div className="flex justify-between items-center mt-1 text-sm">
         <p className="text-sm text-s7-gray300">
           {formatDate(post.metadata.publishedAt)}

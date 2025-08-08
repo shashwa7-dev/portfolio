@@ -1,9 +1,11 @@
 import React from "react";
-import Project, { TProject } from "./Project";
+import { TProject } from "./Project";
+import ProjectCard from "./PorjectCard";
 const projects: TProject[] = [
   {
     id: "1",
     title: "Eatri8.ai",
+    isActive: true,
     description:
       "Built a health assessment app that uses Google Gemini Flash 1.5 AI to analyze food products. Users upload food labels to get a health score, recommended portion sizes, and consumption advice.",
     stack: {
@@ -30,7 +32,7 @@ const Projects = () => {
       </p>
       <div className="grid gap-2">
         {projects?.map((project) => (
-          <Project project={project} key={project.id} />
+          <ProjectCard project={project} key={project.id} />
         ))}
       </div>
     </div>

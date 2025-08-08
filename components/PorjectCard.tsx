@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import { Social, Stack, TProject } from "./Project";
 import { cn } from "@/lib/utils";
-import { SVGS } from "./SVGS";
 
 export default function ProjectCard({ project }: { project: TProject }) {
   const [isHovering, setIsHovering] = useState(false);
