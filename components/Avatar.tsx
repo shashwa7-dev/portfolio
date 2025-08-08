@@ -98,9 +98,7 @@ const Avatar = ({ isDarkMode }: { isDarkMode: boolean }) => {
   return (
     <div
       ref={avatarRef}
-      className={`relative transition-all duration-1000 ${
-        isLoaded ? "scale-100 opacity-100" : "scale-75 opacity-0"
-      }`}
+      className={`relative transition-all duration-300`}
       onMouseEnter={() => handleAvatarHover(true)}
       onMouseLeave={() => handleAvatarHover(false)}
     >
