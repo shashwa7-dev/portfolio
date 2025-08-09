@@ -30,7 +30,7 @@ const Projects = () => {
       <p className="text-lg font-medium border-b text-secondary-foreground font-sans">
         {"Side Quests"}
       </p>
-      <div className="grid gap-2">
+      <div className="grid gap-2 -md:place-items-center">
         {projects?.map((project) => (
           <ProjectCard project={project} key={project.id} />
         ))}

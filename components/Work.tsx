@@ -82,13 +82,13 @@ const projects: TProject[] = [
 const Work = () => {
   return (
     <div className="text-sm grid gap-3">
-      <div className="flex justify-between border-b pb-1">
+      <div className="flex justify-between border-b">
         <p className="text-lg font-medium text-secondary-foreground font-sans">
           Work & Experience
         </p>
       </div>
       <div className="grid gap-2">
-        <div className="flex justify-between mb-1">
+        <div className="flex justify-between">
           <div className="grid">
             <a
               className="flex items-center gap-1 font-sans text-[1rem]"
@@ -106,7 +106,7 @@ const Work = () => {
           </div>
           <p className="text-muted-foreground">Jan, 2022 - Present</p>
         </div>
-        <div className="grid grid-cols-2 gap-6 mt-4 -sm:grid-cols-1 place-items-center">
+        <div className="grid grid-cols-2 gap-6 -sm:grid-cols-1 place-items-center">
           {projects?.map((project) => (
             <ProjectCard project={project} key={project.id} />
           ))}{" "}

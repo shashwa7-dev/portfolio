@@ -37,7 +37,9 @@ const TechStack = () => {
         </div>
       </div>
       <div className="grid gap-2">
-        <p className="italic font-sans text-muted-foreground">Tools & Softwares</p>
+        <p className="italic font-sans text-muted-foreground">
+          Tools & Softwares
+        </p>
         <div className="flex flex-wrap gap-2">
           <Stack name={"VS Code"} />
           <Stack name={"Postman"} />
