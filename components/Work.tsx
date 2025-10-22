@@ -16,6 +16,27 @@ const projects: TProject[] = [
     thumbnail: "/projects/project_playhub.JPG",
   },
   {
+    id: "0x2",
+    title: "MadRims by PlayAI",
+    description:
+      "Mad Rims are AI-powered glasses built on top of the PlayAI Network. With them, your tasks are just an ask away.They come packed with a 12MP camera with EIS, dual open-ear speakers, snap-on shades, a hi-tech mic to activate your personal assistant, and more",
+    stack: {
+      fe: [
+        "react/ts",
+        "framer/motion",
+        "tailwind/shadcn",
+        "@tanstack/react-query",
+      ],
+    },
+    preview: "/projects/madrims_preview.mp4",
+    links: {
+      web: "https://madrims.playai.network/learn-more",
+    },
+    isActive: true,
+    thumbnail: "/projects/project_madrims.JPG",
+    date: "9/25",
+  },
+  {
     id: "1",
     title: "Agent Experience",
     description:
