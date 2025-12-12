@@ -3,7 +3,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { containerVariants, itemVariants } from "@/lib/motionVariants";
 import SectionTitle from "./common/SectionTitle";
-import { Hexagon } from "feather-icons-react";
+import { GitMerge, Hexagon } from "feather-icons-react";
 
 const clients = [
   {
@@ -43,7 +43,7 @@ const Clients = () => {
     >
       <SectionTitle
         title="Clients & Contributions"
-        icon={<Hexagon className={"w-4 h-4"} />}
+        icon={<GitMerge className={"w-4 h-4"} />}
       />
       <motion.div
         variants={containerVariants}

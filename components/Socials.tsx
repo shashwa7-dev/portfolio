@@ -3,7 +3,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Social } from "./Project";
 import { containerVariants, itemVariants } from "@/lib/motionVariants";
-import { Navigation } from "feather-icons-react";
+import { Smile } from "feather-icons-react";
 import SectionTitle from "./common/SectionTitle";
 
 const Socials = () => {
@@ -15,10 +15,7 @@ const Socials = () => {
       viewport={{ once: true, amount: 0.3 }}
       className="text-sm grid gap-3"
     >
-      <SectionTitle
-        title="Socials"
-        icon={<Navigation className={"w-4 h-4"} />}
-      />
+      <SectionTitle title="Socials" icon={<Smile className={"w-4 h-4"} />} />
       <motion.div
         variants={containerVariants}
         className="flex flex-wrap gap-2 items-center"

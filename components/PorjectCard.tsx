@@ -11,15 +11,15 @@ export default function ProjectCard({ project }: { project: TProject }) {
 
   return (
     <div
-      className="relative flex flex-col cursor-pointer rounded-xl border border-border bg-primary transition-transform duration-300 ease-in-out hover:scale-[1.02] overflow-hidden h-[350px]"
+      className="relative flex flex-col cursor-pointer rounded-xl border border-border bg-primary transition-transform duration-300 ease-in-out hover:scale-[1.02] overflow-hidden h-[350px] group"
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
       {/* Header */}
       <div className="flex items-center justify-between px-3 pt-3">
         <h4
-          className={`text-[4.5rem] -md-text-[2rem] absolute opacity-5 leading-tight tracking-tighter top-[-25px] right-[-5px] font-bold italic lowercase z-[0]  ${
-            project.isWork ? "text-muted-foreground" : "text-cyan-300"
+          className={`text-[4.5rem] -md-text-[2rem] absolute opacity-5 leading-tight tracking-tighter top-[-25px] right-[-5px] font-bold italic lowercase z-[0] group-hover:text-[5.5rem] group-hover:-translate-x-3 transition-all  ${
+            project.isWork ? "text-muted-foreground" : "text-yellow-300"
           }`}
         >
           {project.isWork ? "Work" : "offcod8"}
