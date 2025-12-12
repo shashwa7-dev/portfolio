@@ -116,7 +116,7 @@ const Work = () => {
         icon={<Briefcase className={"w-4 h-4"} />}
       />
 
-      <div className="grid gap-2">
+      <div className="grid gap-4">
         <div className="flex justify-between">
           <div className="grid">
             <a
@@ -127,11 +127,11 @@ const Work = () => {
               <img
                 src="./images/dehidden_logo.jpeg"
                 alt="dehidden.com"
-                className="w-[12px] h-[12px] rounded-sm"
+                className="w-[20px] h-[20px] rounded-md"
               />
               <span>Dehidden</span>
             </a>
-            <span className="text-secondary-foreground">Frontend Engineer</span>
+            <span className="text-secondary-foreground">Web3 Frontend Consultant</span>
           </div>
           <p className="text-muted-foreground">Jan, 2022 - Present</p>
         </div>

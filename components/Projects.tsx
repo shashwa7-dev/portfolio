@@ -33,10 +33,30 @@ const Projects = () => {
         title="Side Quests"
         icon={<Coffee className={"w-4 h-4"} />}
       />
-      <div className="grid grid-cols-2 gap-6 -sm:grid-cols-1 place-items-center">
-        {projects?.map((project) => (
-          <ProjectCard project={project} key={project.id} />
-        ))}
+      <div className="grid gap-4">
+        <div className="flex justify-between">
+          <div className="grid">
+            <a
+              className="flex items-center gap-1 font-sans text-[1rem]"
+              href="https://x.com/offcod8"
+              target="_blank"
+            >
+              <img
+                src="./images/offcod8.webp"
+                alt="offcod8"
+                className="w-[20px] h-[20px] rounded-md border"
+              />
+              <span>offcod8</span>
+            </a>
+            <span className="text-secondary-foreground">Lab of Codes</span>
+          </div>
+          <p className="text-muted-foreground">Jan, 2021 - Present</p>
+        </div>
+        <div className="grid grid-cols-2 gap-6 -sm:grid-cols-1 place-items-center">
+          {projects?.map((project) => (
+            <ProjectCard project={project} key={project.id} />
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -17,8 +17,12 @@ export default function ProjectCard({ project }: { project: TProject }) {
     >
       {/* Header */}
       <div className="flex items-center justify-between px-3 pt-3">
-        <h4 className="text-[4.5rem] -md-text-[2rem] absolute opacity-5 leading-tight tracking-tighter top-[-20px] right-[-5px] font-bold italic uppercase  text-card-foreground">
-          {project.isWork ? "Work" : "Project"}
+        <h4
+          className={`text-[4.5rem] -md-text-[2rem] absolute opacity-5 leading-tight tracking-tighter top-[-25px] right-[-5px] font-bold italic lowercase  ${
+            project.isWork ? "text-muted-foreground" : "text-cyan-300"
+          }`}
+        >
+          {project.isWork ? "Work" : "offcod8"}
         </h4>
         <div className="flex items-center gap-1 text-xs text-muted-foreground border px-1 rounded-xl">
           {project?.isActive ? (
