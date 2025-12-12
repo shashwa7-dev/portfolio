@@ -18,13 +18,13 @@ export default function ProjectCard({ project }: { project: TProject }) {
       {/* Header */}
       <div className="flex items-center justify-between px-3 pt-3">
         <h4
-          className={`text-[4.5rem] -md-text-[2rem] absolute opacity-5 leading-tight tracking-tighter top-[-25px] right-[-5px] font-bold italic lowercase  ${
+          className={`text-[4.5rem] -md-text-[2rem] absolute opacity-5 leading-tight tracking-tighter top-[-25px] right-[-5px] font-bold italic lowercase z-[0]  ${
             project.isWork ? "text-muted-foreground" : "text-cyan-300"
           }`}
         >
           {project.isWork ? "Work" : "offcod8"}
         </h4>
-        <div className="flex items-center gap-1 text-xs text-muted-foreground border px-1 rounded-xl">
+        <div className="flex items-center gap-1 text-xs text-muted-foreground border p-0.5 px-1.5 rounded-xl relative z-[1]">
           {project?.isActive ? (
             <>
               <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
@@ -37,6 +37,17 @@ export default function ProjectCard({ project }: { project: TProject }) {
             </>
           )}
         </div>
+        <button
+          className="text-xs backdrop-blur-sm border rounded-lg bg-primary px-1.5 p-0.5 flex text-muted-foreground w-fit justify-between items-center gap-1 hover:text-secondary-foreground transition-colors relative z-[1] font-medium"
+          onClick={() => setShowFullContent((prev) => !prev)}
+        >
+          {showFullContent ? "Minimize" : "Expand"}
+          {showFullContent ? (
+            <Minimize className="w-3 h-3" />
+          ) : (
+            <Maximize className="w-3 h-3" />
+          )}
+        </button>
       </div>
 
       {/* Content */}
@@ -105,7 +116,7 @@ export default function ProjectCard({ project }: { project: TProject }) {
 
           {/* Tech Stack (expanded view) */}
           {showFullContent && (
-            <div className="space-y-2">
+            <div className="space-y-2 mt-2">
               {project.stack.fe && (
                 <div>
                   <p className="text-sm font-medium text-secondary-foreground mb-1">
@@ -136,7 +147,7 @@ export default function ProjectCard({ project }: { project: TProject }) {
 
         {/* Thumbnail */}
         {!showFullContent && (
-          <div className="relative rounded-md overflow-hidden h-[160px] w-full">
+          <div className="relative rounded-md overflow-hidden h-[200px] w-full">
             {project?.preview && isHovering ? (
               <video
                 src={project.preview}
@@ -155,21 +166,6 @@ export default function ProjectCard({ project }: { project: TProject }) {
             )}
           </div>
         )}
-      </div>
-
-      {/* Read More Button */}
-      <div className="flex justify-center items-center  bg-muted p-2">
-        <button
-          className="text-xs font-medium flex text-muted-foreground w-full justify-between items-center gap-1 hover:text-secondary-foreground transition-colors"
-          onClick={() => setShowFullContent((prev) => !prev)}
-        >
-          {showFullContent ? "Show Less" : "Read More"}
-          {showFullContent ? (
-            <Minimize className="w-3 h-3" />
-          ) : (
-            <Maximize className="w-3 h-3" />
-          )}
-        </button>
       </div>
     </div>
   );

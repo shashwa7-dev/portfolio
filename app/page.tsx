@@ -11,9 +11,9 @@ import Brand from "@/components/Brand";
 export default function Home() {
   return (
     <div className="relative">
-      <div className="max-w-6xl mx-auto px-4 py-8 grid lg:grid-cols-[1fr_300px] gap-8">
+      <div className="max-w-6xl mx-auto p-6 pb-0 md:p-0 grid lg:grid-cols-[1fr_300px] gap-6">
         {/* Left - Main Content */}
-        <div className="space-y-6">
+        <div className="space-y-6 backdrop-blur-sm md:border-x md:p-6">
           <About />
           <Work />
           <Projects />
@@ -21,7 +21,7 @@ export default function Home() {
         </div>
 
         {/* Right - Sidebar */}
-        <aside className="space-y-6 sticky top-2 h-fit">
+        <aside className="space-y-6 sticky top-0 h-fit backdrop-blur-sm pb-4 md:pt-6">
           <Clients />
           <Socials />
           <Activity />
