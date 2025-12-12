@@ -140,19 +140,19 @@ a:hover {
 
 @keyframes ellipsis {
   0% {
-    content: "-.-";
+    content: "o";
   }
   20% {
-    content: "o.o";
+    content: "of";
   }
   40% {
-    content: "O.O";
+    content: "off";
   }
   60% {
-    content: "(0-0)";
+    content: "offco";
   }
   100% {
-    content: "(0v0)";
+    content: "offcod8";
   }
 }
 

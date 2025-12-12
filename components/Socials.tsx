@@ -15,7 +15,10 @@ const Socials = () => {
       viewport={{ once: true, amount: 0.3 }}
       className="text-sm grid gap-3"
     >
-      <SectionTitle title="Socials" icon={<Navigation className={"w-4 h-4"} />} />
+      <SectionTitle
+        title="Socials"
+        icon={<Navigation className={"w-4 h-4"} />}
+      />
       <motion.div
         variants={containerVariants}
         className="flex flex-wrap gap-2 items-center"
@@ -27,7 +30,7 @@ const Socials = () => {
           <Social type="linked" link="https://www.linkedin.com/in/shashwa7/" />
         </motion.div>
         <motion.div variants={itemVariants}>
-          <Social type="twitter" link="https://x.com/shashwa7_" />
+          <Social type="twitter" link="https://x.com/offcod8" />
         </motion.div>
       </motion.div>
     </motion.div>

@@ -48,7 +48,7 @@ Here’s what you need to know about Shashwat:
 - **Social Media / Contacts**:
   - GitHub: [shashwa7-dev](https://github.com/shashwa7-dev)
   - LinkedIn: [Shashwat Tripathi](https://www.linkedin.com/in/shashwa7/)
-  - Twitter: [@shashwa7_](https://x.com/shashwa7_)
+  - Twitter: [@offcod8](https://x.com/offcod8)
   - Spotify: [buffer1000](https://open.spotify.com/user/buffer1000)
   - Reddit: [vinyl1998](https://www.reddit.com/user/vinyl1998/)
   - Email: (contact@shashwa7.in)

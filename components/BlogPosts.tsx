@@ -1,14 +1,14 @@
 import { formatDate, getBlogPosts } from "@/app/blog/utils";
 import Link from "next/link";
+import SectionTitle from "./common/SectionTitle";
+import { Folder } from "feather-icons-react";
 
 export function BlogPosts() {
   let allBlogs = getBlogPosts();
 
   return (
     <div className="text-sm grid gap-3">
-      <p className="text-lg font-medium border-b text-secondary-foreground font-sans">
-        {"My Blogs"}
-      </p>
+      <SectionTitle title={"My Blogs"} icon={<Folder className="w-4 h-4"/>} />
       <div>
         {allBlogs
           .sort((a, b) => {
