@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Social, Stack, TProject } from "./Project";
 import { cn } from "@/lib/utils";
-import { ArrowUpRight, Maximize, Minimize } from "feather-icons-react";
+import { Maximize, Minimize } from "feather-icons-react";
 
 export default function ProjectCard({ project }: { project: TProject }) {
   const [isHovering, setIsHovering] = useState(false);
@@ -105,7 +105,7 @@ export default function ProjectCard({ project }: { project: TProject }) {
 
           {/* Tech Stack (expanded view) */}
           {showFullContent && (
-            <div className="mt-2 space-y-2">
+            <div className="space-y-2">
               {project.stack.fe && (
                 <div>
                   <p className="text-sm font-medium text-secondary-foreground mb-1">
@@ -136,7 +136,7 @@ export default function ProjectCard({ project }: { project: TProject }) {
 
         {/* Thumbnail */}
         {!showFullContent && (
-          <div className="relative mt-3 rounded-md overflow-hidden h-[160px] w-full">
+          <div className="relative rounded-md overflow-hidden h-[160px] w-full">
             {project?.preview && isHovering ? (
               <video
                 src={project.preview}

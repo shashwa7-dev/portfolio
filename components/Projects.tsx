@@ -3,11 +3,30 @@ import { TProject } from "./Project";
 import ProjectCard from "./PorjectCard";
 import { Coffee } from "feather-icons-react";
 import SectionTitle from "./common/SectionTitle";
+import FocusProApp from "./Tweets/FocusProApp";
 const projects: TProject[] = [
+  {
+    id: "2",
+    title: "f0cusPro (Productivity)",
+    isActive: true,
+
+    description: `Built a tiny productive tool(using ElectronJS) that blocks distracting sites. Under the hood: a simple HTTP proxy that intercepts requests and blocks blacklisted domains. I saw this as premium feature in "stayinsession.com" app. Yeah, a VPN can bypass it, but come on, you wouldn’t do that… right? What else should I add to it?`,
+    stack: {
+      fe: ["react/ts"],
+      be: ["ElectronJS"],
+    },
+    links: {
+      github: "https://github.com/shashwa7-dev/focus-pro",
+      web: "https://x.com/offcod8/status/1998007706041659638",
+    },
+    embedPreview:
+      "https://drive.google.com/file/d/16QecPjKk6ZzFyJzKO3iqqph3BmwcSGXm/view",
+    thumbnail: "/projects/project_focus_pro.JPG",
+  },
   {
     id: "1",
     title: "Eatri8.ai",
-    isActive: true,
+    date: "9/25",
     description:
       "Built a health assessment app that uses Google Gemini Flash 1.5 AI to analyze food products. Users upload food labels to get a health score, recommended portion sizes, and consumption advice.",
     stack: {

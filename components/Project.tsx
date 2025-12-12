@@ -15,6 +15,7 @@ export type TProject = {
   features?: Feature[];
   thumbnail: string;
   preview?: string;
+  embedPreview?: string;
   date?: string;
   links?: {
     github?: string;
@@ -116,6 +117,16 @@ const Project = ({ project }: { project: TProject }) => {
             loop
             playsInline
             className="w-full h-full object-cover"
+          />
+        ) : project?.embedPreview && isHovering ? (
+          <iframe
+            src={project?.embedPreview}
+            width="100%"
+            height="100%"
+            allow="autoplay"
+            allowFullScreen
+            loading="lazy"
+            className="absolute inset-0 w-full h-full"
           />
         ) : (
           <img
