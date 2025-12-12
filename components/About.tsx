@@ -1,20 +1,15 @@
 import React from "react";
-import { Link } from "./common/Link";
-import ToolsAndStack from "./ToolStack";
+import Intro from "./Intro";
 
 const About = () => {
   return (
-    <div className="text-sm grid gap-3">
-      <p className="text-lg border-b text-secondary-foreground font-sans">
-        About
-      </p>
+    <div className="text-sm grid gap-3 relative">
+      <Intro />
       <p>
-        Hey there! I’m Shashwat—a curious builder and problem solver who loves
+        Hey there! I’m Shashwat, a curious builder and problem solver who loves
         turning ideas into elegant digital solutions. With a knack for crafting
         sleek interfaces and seamless user experiences, I’m always on the
-        lookout for new challenges. Lately, I’ve been diving deep into the
-        fascinating world of AI and machine learning, exploring how they can
-        shape the future of technology.
+        lookout for new challenges.
       </p>
       <p>
         Feel free to reach out

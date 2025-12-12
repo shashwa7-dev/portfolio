@@ -1,6 +1,8 @@
 import React from "react";
 import { TProject } from "./Project";
 import ProjectCard from "./PorjectCard";
+import { Coffee } from "feather-icons-react";
+import SectionTitle from "./common/SectionTitle";
 const projects: TProject[] = [
   {
     id: "1",
@@ -18,7 +20,7 @@ const projects: TProject[] = [
     },
     links: {
       github: "https://github.com/shashwa7-dev/food-analyzer",
-      web: "https://eatri8-ai.shashwa7.in/",
+      // web: "https://eatri8-ai.shashwa7.in/",
     },
     preview: "/projects/preview_eatri8.mp4",
     thumbnail: "/projects/project_eatri8.JPG",
@@ -27,10 +29,11 @@ const projects: TProject[] = [
 const Projects = () => {
   return (
     <div className="text-sm grid gap-3">
-      <p className="text-lg font-medium border-b text-secondary-foreground font-sans">
-        {"Side Quests"}
-      </p>
-      <div className="grid gap-2 -md:place-items-center">
+      <SectionTitle
+        title="Side Quests"
+        icon={<Coffee className={"w-4 h-4"} />}
+      />
+      <div className="grid grid-cols-2 gap-6 -sm:grid-cols-1 place-items-center">
         {projects?.map((project) => (
           <ProjectCard project={project} key={project.id} />
         ))}

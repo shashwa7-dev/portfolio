@@ -1,5 +1,9 @@
 "use client";
 import React from "react";
+import { motion } from "framer-motion";
+import { containerVariants, itemVariants } from "@/lib/motionVariants";
+import SectionTitle from "./common/SectionTitle";
+import { Hexagon } from "feather-icons-react";
 
 const clients = [
   {
@@ -28,25 +32,36 @@ const clients = [
     link: "https://x.com/NodeOpsHQ/status/1845796942686949607",
   },
 ];
+
 const Clients = () => {
   return (
-    <div className="text-sm grid gap-3">
-      <p className="text-lg font-medium text-secondary-foreground font-sans border-b">
-        {"Clients & Contributions"}
-      </p>
-      <div className="flex items-center flex-wrap gap-2">
-        {clients?.map((client) => (
-          <div
-            onClick={() => window.open(client.link, "_blank")}
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="text-sm grid gap-3"
+    >
+      <SectionTitle
+        title="Clients & Contributions"
+        icon={<Hexagon className={"w-4 h-4"} />}
+      />
+      <motion.div
+        variants={containerVariants}
+        className="flex items-center flex-wrap gap-2"
+      >
+        {clients.map((client) => (
+          <motion.div
+            variants={itemVariants}
             key={client.name}
-            className="bg-card flex border-2  overflow-hidden pr-1.5 rounded-lg items-center text-xs gap-2 cursor-pointer hover:scale-95 transition-all"
+            onClick={() => window.open(client.link, "_blank")}
+            className="bg-card flex border-2 overflow-hidden pr-1.5 rounded-lg items-center text-xs gap-2 cursor-pointer hover:scale-95 transition-all"
           >
-            <img src={client.img} className="w-[26px]" />
+            <img src={client.img} className="w-[26px]" alt={client.name} />
             <span>{client.name}</span>
-          </div>
+          </motion.div>
         ))}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

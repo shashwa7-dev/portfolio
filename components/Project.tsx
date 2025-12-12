@@ -8,6 +8,7 @@ export type Feature = {
 };
 export type TProject = {
   id: string;
+  isWork?: boolean;
   title: string;
   isActive?: boolean;
   description: string;

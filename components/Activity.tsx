@@ -1,7 +1,12 @@
+"use client";
 import React from "react";
-import SpotifyLastListen from "./SpotifyLastListen";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { SVGS } from "./SVGS";
+import SpotifyLastListen from "./SpotifyLastListen";
+import { containerVariants, itemVariants } from "@/lib/motionVariants";
+import SectionTitle from "./common/SectionTitle";
+import { Zap } from "feather-icons-react";
 
 const Book = ({
   name,
@@ -15,68 +20,97 @@ const Book = ({
   progress: number;
 }) => {
   return (
-    <div className="w-[150px] h-[200px] relative rounded-lg overflow-hidden border">
-      <div className="book_info w-full bg-card absolute bottom-1 right-0 p-1 text-xs">
-        <p className="font-sans">{name}</p>
-        <p className="text-secondary-foreground italic">{author}</p>
-      </div>
-      <img src={cover} alt={name} className="w-full h-full object-cover" />
-      <div className="bg-muted w-full p-[2px] absolute bottom-0 left-0">
+    <motion.div
+      variants={itemVariants}
+      whileHover={{ scale: 1.03, y: -2 }}
+      className="h-[150px] relative rounded-lg overflow-hidden border border-border bg-card cursor-pointer"
+    >
+      <img
+        src={cover}
+        alt={name}
+        className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity"
+      />
+
+      {/* Progress bar */}
+      <div className="absolute bottom-0 left-0 w-full bg-muted h-[4px]">
         <div
-          className={`bg-muted-foreground p-[2px] absolute bottom-0 left-0`}
-          style={{ width: `${Math.abs((progress / 100) * 100)}%` }}
+          className="bg-muted-foreground h-[4px]"
+          style={{ width: `${progress}%` }}
         />
       </div>
-    </div>
+
+      {/* Info */}
+      <div className="absolute bottom-1 right-0 w-full bg-card backdrop-blur-sm px-2 py-1 text-xs">
+        <p className="font-sans truncate">{name}</p>
+        <p className="text-secondary-foreground italic truncate">{author}</p>
+      </div>
+    </motion.div>
   );
 };
+
+// 🧭 Main Activity Component
 const Activity = () => {
   return (
-    <div className="text-sm grid gap-3">
-      <p className="text-lg font-medium text-secondary-foreground font-sans border-b">
-        {"Activity"}
-      </p>
-      <div className="grid gap-1">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.3 }}
+      className="text-sm grid gap-3"
+    >
+      <SectionTitle
+        title="Activity"
+        icon={<Zap className={"w-4 h-4"} />}
+      />
+
+      {/* Blogs Section */}
+      <motion.div variants={itemVariants} className="grid gap-1">
         <p className="italic font-sans text-muted-foreground">Blogs</p>
-        <Link href={"/blogs"}>
-          <div className="flex border w-fit bg-card p-1 gap-1 rounded-md border-b-4 items-center pr-2">
-            <img src={"/images/icon_blogpost.svg"} className="w-4 h-4" />
-            <button className="hover:underline">Checkout blogs</button>
+        <Link href="/blogs">
+          <div className="flex items-center gap-1 w-fit bg-card border border-border rounded-md px-2 py-1 hover:bg-card/80 transition">
+            <img src="/images/icon_blogpost.svg" className="w-4 h-4" />
+            <span className="hover:underline">Checkout blogs</span>
             <SVGS.Link className="w-[10px] h-[10px]" />
           </div>
         </Link>
-      </div>
-      <div className="grid gap-1">
+      </motion.div>
+
+      {/* Reading Section */}
+      <motion.div variants={itemVariants} className="grid gap-2">
         <p className="italic font-sans text-muted-foreground">
           Currently Reading
         </p>
-        <div className="flex flex-wrap gap-2">
+        <motion.div
+          variants={containerVariants}
+          className="grid grid-cols-3 gap-2"
+        >
           <Book
-            name={"Build A LLM"}
+            name="Build a LLM"
+            author="Sebastian Raschka"
             cover="/books/book_build_LLM.JPG"
-            author="Sebestian Raschka"
             progress={15}
           />
           <Book
-            name={"Advanced React"}
-            cover="/books/book_advnc_react.JPG"
+            name="Advanced React"
             author="Nadia Makarevich"
+            cover="/books/book_advnc_react.JPG"
             progress={35}
           />
           <Book
-            name={"Can't Hurt Me"}
-            cover="/books/book_cant_hurt_me.jpg"
+            name="Can't Hurt Me"
             author="David Goggins"
+            cover="/books/book_cant_hurt_me.jpg"
             progress={17}
           />
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
-      <div className="grid gap-1">
+      {/* Spotify Section */}
+      <motion.div variants={itemVariants} className="grid gap-1">
         <p className="italic font-sans text-muted-foreground">Last listen</p>
         <SpotifyLastListen />
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

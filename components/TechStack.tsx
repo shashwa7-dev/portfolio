@@ -1,13 +1,17 @@
 import React from "react";
 import { Stack } from "./Project";
 import { Link } from "./common/Link";
+import SectionTitle from "./common/SectionTitle";
+import { Layers } from "feather-icons-react";
+import Brand from "./Brand";
 
 const TechStack = () => {
   return (
     <div className="text-sm grid gap-3">
-      <p className="text-lg font-medium border-b text-secondary-foreground font-sans">
-        Tech Stack
-      </p>
+      <SectionTitle
+        title="Tech Stack"
+        icon={<Layers className={"w-4 h-4"} />}
+      />
       <div className="grid gap-2">
         <p className="italic font-sans text-muted-foreground">Frontend</p>
         <div className="flex flex-wrap gap-2">

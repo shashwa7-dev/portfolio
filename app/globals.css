@@ -61,30 +61,32 @@ body {
   --sh-jsxliterals: #6266d1;
 }
 .dark {
-  /* Kept the same as requested */
-  --background: 0, 0%, 16%;
-  --foreground: 45, 49%, 80%;
-  --primary: 0, 0%, 16%;
-  --primary-foreground: 45, 49%, 80%;
+  /* Background layers */
+  --background: 0, 0%, 8%;   /* near-black */
+  --foreground: 0, 0%, 90%;  /* soft white */
+  --card: 0, 0%, 10%;
+  --card-foreground: 0, 0%, 85%;
 
-  /* Updated coordinated values */
-  --secondary: 0, 0%, 25%; /* Increased lightness to make it pop */
-  --secondary-foreground: 45, 49%, 90%;
-  --muted: 0, 0%, 20%;
-  --muted-foreground: 45, 49%, 70%;
-  --card: 0, 0%, 18%;
-  --card-foreground: 45, 49%, 85%;
-  --input: 0, 0%, 30%;
-  --border: 0, 0%, 30%;
+  /* Primary & Secondary — both neutral darks */
+  --primary: 0, 0%, 14%;
+  --primary-foreground: 0, 0%, 90%;
+  --secondary: 0, 0%, 18%;
+  --secondary-foreground: 0, 0%, 85%;
 
-  /* Updated sugar high mdx roots to match theme */
-  --sh-class: hsl(45, 49%, 80%);
-  --sh-identifier: hsl(45, 49%, 75%);
-  --sh-sign: hsl(45, 49%, 70%);
-  --sh-string: hsl(45, 49%, 65%);
-  --sh-keyword: hsl(45, 49%, 60%);
-  --sh-comment: hsl(45, 25%, 55%);
-  --sh-jsxliterals: hsl(45, 49%, 70%);
+  /* Muted / Borders */
+  --muted: 0, 0%, 16%;
+  --muted-foreground: 0, 0%, 60%;
+  --border: 0, 0%, 20%;
+  --input: 0, 0%, 20%;
+
+  /* Syntax highlighting — only place with color */
+  --sh-class: hsl(280, 100%, 70%);       /* purple */
+  --sh-identifier: hsl(190, 100%, 70%);  /* cyan */
+  --sh-sign: hsl(45, 100%, 65%);         /* yellow */
+  --sh-string: hsl(140, 80%, 65%);       /* green */
+  --sh-keyword: hsl(340, 80%, 70%);      /* pink/red */
+  --sh-comment: hsl(0, 0%, 45%);         /* gray */
+  --sh-jsxliterals: hsl(210, 100%, 70%); /* blue */
 }
 @keyframes float {
   0% {

@@ -71,7 +71,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`bg-background text-foreground border-border ${spaceGrotesk.variable} ${stoke.variable} font-mono`}
+        className={`bg-background text-foreground border-border ${spaceGrotesk.variable} ${stoke.variable} font-mono dark`}
       >
         {children}
       </body>

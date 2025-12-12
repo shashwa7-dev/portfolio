@@ -1,18 +1,36 @@
+"use client";
 import React from "react";
+import { motion } from "framer-motion";
 import { Social } from "./Project";
+import { containerVariants, itemVariants } from "@/lib/motionVariants";
+import { Navigation } from "feather-icons-react";
+import SectionTitle from "./common/SectionTitle";
 
 const Socials = () => {
   return (
-    <div className="text-sm grid gap-3">
-      <p className="text-lg font-medium border-b text-secondary-foreground font-sans">
-        Socials
-      </p>
-      <div className="flex flex-wrap gap-2">
-        <Social type="github" link="https://github.com/shashwa7-dev" />
-        <Social type="linked" link="https://www.linkedin.com/in/shashwa7/" />
-        <Social type="twitter" link="https://x.com/shashwa7_" />
-      </div>
-    </div>
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.3 }}
+      className="text-sm grid gap-3"
+    >
+      <SectionTitle title="Socials" icon={<Navigation className={"w-4 h-4"} />} />
+      <motion.div
+        variants={containerVariants}
+        className="flex flex-wrap gap-2 items-center"
+      >
+        <motion.div variants={itemVariants}>
+          <Social type="github" link="https://github.com/shashwa7-dev" />
+        </motion.div>
+        <motion.div variants={itemVariants}>
+          <Social type="linked" link="https://www.linkedin.com/in/shashwa7/" />
+        </motion.div>
+        <motion.div variants={itemVariants}>
+          <Social type="twitter" link="https://x.com/shashwa7_" />
+        </motion.div>
+      </motion.div>
+    </motion.div>
   );
 };
 
