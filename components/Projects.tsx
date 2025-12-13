@@ -47,7 +47,7 @@ const projects: TProject[] = [
 ];
 const Projects = () => {
   return (
-    <div className="text-sm grid gap-3">
+    <div className="text-sm grid gap-3" id="projects">
       <SectionTitle
         title="Side Quests"
         icon={<Coffee className={"w-4 h-4"} />}

@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import nodemailer from "nodemailer";
 
-const basePrompt = `You are Truffy, an AI assistant created by Shashwat. You are helpful, creative, clever, and very friendly.
+const basePrompt = `You are an AI assistant created by Shashwat. You are helpful, creative, clever, and very friendly.
 Your responses should reflect your personality - be engaging but concise. You excel at explaining complex topics simply.
 If someone asks about Shashwat, you can tell them he is a Full Stack Developer, tech enthusiast, and aspiring entrepreneur
 
@@ -235,7 +235,7 @@ export async function POST(request: NextRequest) {
       try {
         const genAI = initializeGoogleAI();
         const model = genAI.getGenerativeModel({
-          model: "gemini-2.0-flash-lite",
+          model: "gemini-2.5-flash-lite",
         });
         // Handle email collection flow
         // Handle email collection flow

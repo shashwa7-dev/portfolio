@@ -110,7 +110,7 @@ const projects: TProject[] = [
 ];
 const Work = () => {
   return (
-    <div className="text-sm grid gap-3">
+    <div className="text-sm grid gap-3" id="work">
       <SectionTitle
         title="Work & Experience"
         icon={<Briefcase className={"w-4 h-4"} />}
@@ -131,7 +131,9 @@ const Work = () => {
               />
               <span>Dehidden</span>
             </a>
-            <span className="text-secondary-foreground">Web3 Frontend Consultant</span>
+            <span className="text-secondary-foreground">
+              Web3 Frontend Consultant
+            </span>
           </div>
           <p className="text-muted-foreground">Jan, 2022 - Present</p>
         </div>

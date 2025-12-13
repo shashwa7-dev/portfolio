@@ -5,8 +5,8 @@ import { SVGS } from "./SVGS";
 
 const TIMEOUT_DURATION = 10000;
 const NOTIFICATION_MESSAGES = [
-  "Hello, I'm Truffy!",
-  "Your AI assistant.",
+  "Hello, Its Shashwat.",
+  "I meant Shashwat's AI assistant.",
   "Got questions? Ask me!",
 ];
 const TYPE_SPEED = 100;
@@ -248,7 +248,7 @@ const S7Bot = () => {
     <div className="fixed bottom-4 right-4 -md:right-2.5 z-50">
       {!isOpen && (
         <div
-          className={`fixed bottom-[85px] -md:bottom-[70px] right-4 -md:right-2.5 transform transition-all duration-300 ease-in-out
+          className={`fixed bottom-[60px] right-4 -md:right-2.5 transform transition-all duration-300 ease-in-out
                  ${
                    showNotification
                      ? "opacity-100 translate-y-0"
@@ -257,7 +257,7 @@ const S7Bot = () => {
         >
           <div className="bg-card rounded-md border border-b-4 p-1 px-2 w-fit -md:text-xs text-sm">
             <div className="relative">
-              <p className="text-sm text-card-foreground">
+              <p className="text-xs text-card-foreground">
                 {notificationText}
                 <span className="ml-1 animate-blink"></span>
               </p>
@@ -270,10 +270,10 @@ const S7Bot = () => {
         onClick={() => setIsOpen(!isOpen)}
         className={`${
           isOpen ? "hidden" : "flex"
-        } shadow-sm fixed bottom-4 right-4 -md:right-2.5 w-[60px] h-[60px] -md:w-[50px] -md:h-[50px] rounded-lg overflow-hidden border-2`}
+        } shadow-sm fixed bottom-4 right-4 -md:right-2.5 w-[40px] h-[40px] rounded-xl overflow-hidden border-2`}
       >
         <img
-          src={"./truffy.jpg"}
+          src={"./apple-touch-icon.png"}
           className="w-full h-full object-cover object-center hover:rotate-2 hover:scale-110"
           alt="truffy assistant"
         />
@@ -291,19 +291,19 @@ const S7Bot = () => {
         <div className="flex items-center justify-between p-2 px-3 border-b">
           <div>
             <div className="flex items-center gap-1 relative overflow-hidden z-2">
-              <div className="w-[25px] h-[25px] overflow-hidden rounded-lg">
+              <div className="w-[20px] h-[20px] overflow-hidden rounded-md">
                 <img
-                  src={"./truffy.jpg"}
+                  src={"./apple-touch-icon.png"}
                   className="w-full h-full object-cover object-center"
-                  alt="truffy assistant"
+                  alt="protfolio assistant"
                 />
               </div>
-              <h3 className="text-secondary-foreground text-lg opacity-90 font-sans">
-                Truffy AI
+              <h3 className="text-secondary-foreground opacity-90 font-sans">
+                Portfolio Assistant
               </h3>
             </div>
-            <p className="text-xs text-muted-foreground text-center">
-              Built on Gemini 2.0 Flash
+            <p className="text-xs text-muted-foreground text-left">
+              Built on Gemini 2.5 Flash
             </p>
           </div>
           <button
@@ -329,7 +329,7 @@ const S7Bot = () => {
               {msg.role !== "user" && (
                 <div className="flex items-center gap-2">
                   <img
-                    src={"./truffy.jpg"}
+                    src={"./apple-touch-icon.png"}
                     className="w-[20px] h-[20px] object-cover object-center rounded-md"
                     alt="truffy assistant"
                   />
