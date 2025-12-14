@@ -42,25 +42,25 @@ export default function ProjectCard({ project }: { project: TProject }) {
           )}
         </div>
         <button
-          className="text-xs backdrop-blur-sm border rounded-lg bg-primary px-1.5 p-0.5 flex text-muted-foreground w-fit justify-between items-center gap-1 hover:text-secondary-foreground transition-colors relative z-[1] font-medium"
+          className="text-xs backdrop-blur-sm border rounded-lg bg-primary px-1.5 p-0.5 flex text-amber-500 w-fit justify-between items-center gap-1 hover:text-secondary-foreground transition-colors relative z-[1] font-medium"
           onClick={(e) => {
             e.stopPropagation();
             setShowFullContent((prev) => !prev);
           }}
         >
-          {showFullContent ? "Minimize" : "Expand"}
           {showFullContent ? (
             <Minimize className="w-3 h-3" />
           ) : (
             <Maximize className="w-3 h-3" />
           )}
+          {showFullContent ? "Read Less" : "Read More"}
         </button>
       </div>
 
       {/* Content */}
       <div className="flex flex-col justify-between p-3 pt-0 gap-3 flex-1 overflow-y-auto relative z-[1]">
         <div className="flex flex-col flex-1 gap-1">
-          <div>
+          <div className="space-y-1">
             {/* Title */}
             <h3 className="text-base font-medium text-secondary-foreground font-sans">
               {project?.title}

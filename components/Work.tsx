@@ -50,6 +50,8 @@ process.`,
     },
     links: {
       web: "https://x.com/baseapp/status/1542327195174965248/photo/1",
+      other:
+        "https://opensea.io/item/polygon/0x61c594b34341e2f3f0db05e0d6bd30980c94df7b/1",
     },
     thumbnail: "/projects/CoinbaseNFT.jpeg",
     date: "06/22",
@@ -101,6 +103,29 @@ process.`,
     },
     thumbnail: "/projects/project_agent_exp.JPG",
     date: "03/25",
+  },
+  {
+    id: "0xPolygonCopilot",
+    isWork: true,
+    title: "Polygon Copilot",
+    description:
+      "Partnered with Polygon to build an AI chatbot for Web3 developers using OpenAI’s GPT models, delivering blockchain insights within the zkEVM ecosystem. Designed rich frontend components like minting call-to-action and multi-persona sessions (Beginner/Advanced) to enhance engagement.",
+    stack: {
+      fe: [
+        "react",
+        "typescript",
+        "styledComponents",
+        "reactQuery",
+        "zustand",
+        "wagmi",
+      ],
+    },
+    links: {
+      web: "https://polygon.technology/blog/introducing-copilot-your-ai-powered-guide-to-polygon-and-web3?utm_source=twitter&utm_medium=social&utm_content=copilot-blog",
+      other: "https://x.com/0xPolygon/status/1671504505764970498",
+    },
+    thumbnail: "/projects/polygon_copilot.webp",
+    date: "06/23",
   },
   // {
   //   id: "0x5",

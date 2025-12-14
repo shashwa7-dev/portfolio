@@ -101,7 +101,7 @@ const iconMap: Record<StackName, { icon: string; label: string }> = {
   web3js: { icon: "simple-icons:web3dotjs", label: "Web3 JS" },
   next: { icon: "simple-icons:nextdotjs", label: "Next.js" },
   styledComponents: {
-    icon: "simple-icons:styledcomponents",
+    icon: "devicon-plain:styledcomponents",
     label: "Styled Components",
   },
   tailwind: { icon: "simple-icons:tailwindcss", label: "Tailwind CSS" },
