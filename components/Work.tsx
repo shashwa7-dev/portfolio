@@ -27,7 +27,7 @@ const projects: TProject[] = [
     description:
       "Mad Rims are AI-powered glasses built on top of the PlayAI Network. With them, your tasks are just an ask away.They come packed with a 12MP camera with EIS, dual open-ear speakers, snap-on shades, a hi-tech mic to activate your personal assistant, and more",
     stack: {
-      fe: ["react", "typescript", "tailwind", "reactQuery", "shadcn"],
+      fe: ["react", "typescript", "tailwind", "shadcn", "motion", "reactQuery"],
     },
     preview: "/projects/madrims_preview.mp4",
     links: {
@@ -38,58 +38,35 @@ const projects: TProject[] = [
     date: "9/25",
   },
   {
-    id: "0x3",
-    isWork: true,
-    title: "Agent Experience",
-    description:
-      "0xRogueAgent is an AI-driven agent project powered by its native $ROGUE token on the Solana blockchain. It combines decentralized technology with advanced AI to deliver innovative, mission-based experiences. The $ROGUE token plays a central role in the ecosystem, enabling users to engage with the AI agent, unlock features, and participate in governance.",
-    stack: {
-      fe: ["react", "typescript", "tailwind", "shadcn", "reactQuery", "solana"],
-    },
-    links: {
-      web: "https://agentexperience.live/",
-      other:
-        "https://dexscreener.com/solana/bgzm2era3ifpkcmb4w49of3cj9ruverxzhe2pzbbp8tv",
-    },
-    thumbnail: "/projects/project_agent_exp.JPG",
-    date: "3/25",
-  },
-  {
     id: "0x4",
     isWork: true,
-    title: "$ROGUE Token SOL Tracker",
-    description: `The Solana Token Transfer Tracker is a Node.js-based REST API service that monitors and analyzes token transfer transactions on the Solana blockchain. The service specifically tracks transfers for a designated token contract, providing detailed transaction history and wallet analytics.`,
+    title: "Coinbase X Polygon NFT (100K+)",
+    description: `Collaborated with Coinbase, Polygon, and partners to onboard users to Web3 via a high-scale
+ special-edition NFT minting platform.Engineered a robust & scalable platform handling over 1 Million users for NFT onboarding.With
+100K NFTs minted in the first day and a 50% increase in user retention during the minting
+process.`,
     stack: {
-      be: ["express", "node", "solana", "web3js"],
+      fe: ["react", "styledComponents", "wagmi"],
     },
     links: {
-      github: "https://github.com/shashwa7-dev/rouge-token-tracker",
+      web: "https://x.com/baseapp/status/1542327195174965248/photo/1",
     },
-    thumbnail: "/projects/project_sol_tracker.jpg",
-    date: "3/25",
+    thumbnail: "/projects/CoinbaseNFT.jpeg",
+    date: "06/22",
   },
   {
-    id: "0x5",
+    id: "0xNFTWrapped",
     isWork: true,
-    title: "Node Explorer",
-    description:
-      "Node Explorer is a node management platform enabling users to delegate and manage PlayAI Oasis Nodes for task execution, earning PlayAI Coins while ensuring efficient off-chain computation and AI model integrity.",
+    title: "NFT Wrapped 2022",
+    description: `Built a personalized, gamified NFT experience inspired by Spotify Wrapped, from concept to launch in just 3 weeks. Integrated quests, leaderboards, and user personas to boost engagement, achieving 250+ wraps and 100+ mints within 24 hours of launch.`,
     stack: {
-      fe: [
-        "react",
-        "typescript",
-        "reactQuery",
-        "wagmi",
-        "chakraui",
-        // "recharts",
-      ],
+      fe: ["react", "styledComponents", "wagmi", "motion"],
     },
     links: {
-      twitter: "https://x.com/playAInetwork",
-      web: "https://nodeexplorer.playai.network/",
+      web: "https://www.producthunt.com/products/nft-wrapped?launch=nft-wrapped",
     },
-    thumbnail: "/projects/project_node_exp.JPG",
-    date: "9/24",
+    thumbnail: "/projects/NFT-Wrapped.webp",
+    date: "12/22",
   },
   {
     id: "0x6",
@@ -106,8 +83,48 @@ const projects: TProject[] = [
       twitter: "https://x.com/playAInetwork",
       web: "https://playai.network/",
     },
-    date: "6/24",
+    date: "06/24",
   },
+  {
+    id: "0x3",
+    isWork: true,
+    title: "Agent Experience",
+    description:
+      "0xRogueAgent is an AI-driven agent project powered by its native $ROGUE token on the Solana blockchain. It combines decentralized technology with advanced AI to deliver innovative, mission-based experiences. The $ROGUE token plays a central role in the ecosystem, enabling users to engage with the AI agent, unlock features, and participate in governance.",
+    stack: {
+      fe: ["react", "typescript", "tailwind", "shadcn", "reactQuery", "solana"],
+    },
+    links: {
+      web: "https://agentexperience.live/",
+      other:
+        "https://dexscreener.com/solana/bgzm2era3ifpkcmb4w49of3cj9ruverxzhe2pzbbp8tv",
+    },
+    thumbnail: "/projects/project_agent_exp.JPG",
+    date: "03/25",
+  },
+  // {
+  //   id: "0x5",
+  //   isWork: true,
+  //   title: "Node Explorer",
+  //   description:
+  //     "Node Explorer is a node management platform enabling users to delegate and manage PlayAI Oasis Nodes for task execution, earning PlayAI Coins while ensuring efficient off-chain computation and AI model integrity.",
+  //   stack: {
+  //     fe: [
+  //       "react",
+  //       "typescript",
+  //       "reactQuery",
+  //       "wagmi",
+  //       "chakraui",
+  //       // "recharts",
+  //     ],
+  //   },
+  //   links: {
+  //     twitter: "https://x.com/playAInetwork",
+  //     web: "https://nodeexplorer.playai.network/",
+  //   },
+  //   thumbnail: "/projects/project_node_exp.JPG",
+  //   date: "09/24",
+  // },
 ];
 const Work = () => {
   return (

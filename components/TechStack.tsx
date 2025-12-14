@@ -22,7 +22,7 @@ const frontendStacks = [
   "solana",
 ] as const;
 const aiStacks = ["openai", "googleGemini", "claude"] as const;
-const protocolStaks = ["graphql", "websocket", "webrtc"] as const;
+const protocolStaks = ["restAPI", "graphql", "websocket", "webrtc"] as const;
 const backendStacks = [
   "node",
   "bun",
@@ -108,7 +108,7 @@ const TechStack = () => {
             ))}
           </div>
         </div>
-        <div className="grid gap-2">
+        <div className="grid gap-2 h-fit">
           <p className="italic font-sans text-muted-foreground">
             Hardware Setup
           </p>

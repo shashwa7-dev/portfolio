@@ -53,6 +53,7 @@ export type StackName =
   | "claude"
   | "spotify"
   | "youtube"
+  | "restAPI"
   | "playstation"
   | "coffee";
 
@@ -65,6 +66,7 @@ type StackProps = {
 
 const iconMap: Record<StackName, { icon: string; label: string }> = {
   vscode: { icon: "devicon-plain:vscode", label: "VS Code" },
+  restAPI: { icon: "dashicons:rest-api", label: "REST" },
   figma: { icon: "simple-icons:figma", label: "Figma" },
   playstation: { icon: "simple-icons:playstation", label: "PS" },
   canva: { icon: "simple-icons:canva", label: "Canva" },
@@ -109,7 +111,7 @@ const iconMap: Record<StackName, { icon: string; label: string }> = {
   apollo: { icon: "simple-icons:apollographql", label: "Apollo GraphQL" },
   node: { icon: "simple-icons:nodedotjs", label: "Node.js" },
   graphql: { icon: "simple-icons:graphql", label: "GraphQL" },
-  websocket: { icon: "mdi:web", label: "WebSocket" },
+  websocket: { icon: "simple-icons:socketdotio", label: "WebSocket" },
   webrtc: { icon: "simple-icons:webrtc", label: "WebRTC" },
   postgres: { icon: "simple-icons:postgresql", label: "PostgreSQL" },
   firebase: { icon: "simple-icons:firebase", label: "Firebase" },

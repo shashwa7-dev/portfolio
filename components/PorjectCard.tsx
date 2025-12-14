@@ -15,14 +15,14 @@ export default function ProjectCard({ project }: { project: TProject }) {
   );
   return (
     <div
-      className="relative flex flex-col cursor-pointer rounded-xl border border-border bg-primary transition-transform duration-300 ease-in-out hover:scale-[1.02] overflow-hidden h-[350px] group"
+      className="relative flex flex-col  gap-1 cursor-pointer rounded-xl border border-border bg-primary transition-transform duration-300 ease-in-out hover:scale-[1.02] overflow-hidden h-[350px] group"
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
       {/* Header */}
       <div className="flex items-center justify-between px-3 pt-3">
         <h4
-          className={`text-[4.5rem] -md-text-[2rem] absolute opacity-5 leading-tight tracking-tighter top-[-25px] right-[-5px] font-bold italic lowercase z-[0] group-hover:text-[5.5rem] group-hover:-translate-x-3 transition-all  ${
+          className={`text-[4.5rem] -md-text-[2rem] absolute opacity-5 leading-tight tracking-tighter top-[-25px] right-[-5px] font-bold italic lowercase z-[0]  transition-all  ${
             project.isWork ? "text-muted-foreground" : "text-yellow-300"
           }`}
         >
@@ -43,7 +43,10 @@ export default function ProjectCard({ project }: { project: TProject }) {
         </div>
         <button
           className="text-xs backdrop-blur-sm border rounded-lg bg-primary px-1.5 p-0.5 flex text-muted-foreground w-fit justify-between items-center gap-1 hover:text-secondary-foreground transition-colors relative z-[1] font-medium"
-          onClick={() => setShowFullContent((prev) => !prev)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowFullContent((prev) => !prev);
+          }}
         >
           {showFullContent ? "Minimize" : "Expand"}
           {showFullContent ? (
@@ -55,9 +58,9 @@ export default function ProjectCard({ project }: { project: TProject }) {
       </div>
 
       {/* Content */}
-      <div className="flex flex-col justify-between p-3 pt-0 gap-2 flex-1 overflow-y-auto">
+      <div className="flex flex-col justify-between p-3 pt-0 gap-3 flex-1 overflow-y-auto relative z-[1]">
         <div className="flex flex-col flex-1 gap-1">
-          <div className="space-y-1">
+          <div>
             {/* Title */}
             <h3 className="text-base font-medium text-secondary-foreground font-sans">
               {project?.title}
@@ -172,7 +175,7 @@ export default function ProjectCard({ project }: { project: TProject }) {
               <img
                 src={project.thumbnail}
                 alt={project.title}
-                className="w-full h-full object-cover transition-transform duration-300 hover:scale-[1.03]"
+                className="w-full h-full object-cover transition-all duration-300 hover:scale-[1.03]  opacity-80 group-hover:grayscale-0 group-hover:opacity-100"
               />
             )}
           </div>

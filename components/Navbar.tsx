@@ -24,8 +24,7 @@ const hamburgerVariants = {
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-
-  const toggleMenu = () => setOpen((prev) => !prev);
+  const buttonRef = useRef<HTMLDivElement>(null);
   const closeMenu = () => setOpen(false);
 
   // Prevent body scroll when menu is open
@@ -33,16 +32,24 @@ export default function Navbar() {
     document.body.style.overflow = open ? "hidden" : "auto";
   }, [open]);
 
-  //    // Close menu on outside click
-  //   useEffect(() => {
-  //     const handleClickOutside = (e: MouseEvent) => {
-  //       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-  //         setOpen(false);
-  //       }
-  //     };
-  //     if (open) document.addEventListener("mousedown", handleClickOutside);
-  //     return () => document.removeEventListener("mousedown", handleClickOutside);
-  //   }, [open]);
+  // Close menu on outside click
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(target) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(target)
+      ) {
+        setOpen(false);
+      }
+    };
+
+    if (open) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open]);
 
   return (
     <nav className="relative z-[1000]">
@@ -50,8 +57,12 @@ export default function Navbar() {
       <div
         className={`fixed top-6 right-6 z-[1001] flex flex-col gap-[6px] cursor-pointer items-center justify-center w-9 h-9 transition-colors ${
           open ? "text-secondary-foreground" : "text-foreground"
-        }`}
-        onClick={toggleMenu}
+          }`}
+        ref={buttonRef}
+        onClick={(e) => {
+          e.stopPropagation();
+          setOpen((prev) => !prev);
+        }}
       >
         <motion.div
           variants={hamburgerVariants}
@@ -79,9 +90,9 @@ export default function Navbar() {
             animate={{ scaleY: 1, opacity: 1 }}
             exit={{ scaleY: 0, opacity: 0 }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="fixed top-0 left-0 w-full bg-neutral-900/95 backdrop-blur-sm origin-top z-[999] rounded-lg p-2"
+            className="fixed top-0 left-0 w-full  backdrop-blur-sm origin-top z-[999] rounded-lg p-2"
           >
-            <div className="space-y-6  border shadow-sm p-4 rounded-xl bg-card relative overflow-hidden">
+            <div className="space-y-6  border  shadow-sm p-4 rounded-xl bg-card relative overflow-hidden">
               <img
                 src={"/images/bg.gif"}
                 alt=""
