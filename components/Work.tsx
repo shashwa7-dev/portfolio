@@ -10,7 +10,9 @@ const projects: TProject[] = [
     title: "PlayAI Hub",
     description:
       "PlayAI Hub is a unified platform for real-time AI chat streaming, multi-chain protocol swaps (MCPs), and secure cross-chain bridging—bringing seamless AI and DeFi interactions together.",
-    stack: { fe: ["react/ts", "tailwind/shadcn", "@tanstack/react-query"] },
+    stack: {
+      fe: ["react", "typescript", "tailwind", "shadcn", "reactQuery", "wagmi"],
+    },
     links: {
       twitter: "https://x.com/aura_playai",
       web: "https://hub.playai.network/",
@@ -25,12 +27,7 @@ const projects: TProject[] = [
     description:
       "Mad Rims are AI-powered glasses built on top of the PlayAI Network. With them, your tasks are just an ask away.They come packed with a 12MP camera with EIS, dual open-ear speakers, snap-on shades, a hi-tech mic to activate your personal assistant, and more",
     stack: {
-      fe: [
-        "react/ts",
-        "framer/motion",
-        "tailwind/shadcn",
-        "@tanstack/react-query",
-      ],
+      fe: ["react", "typescript", "tailwind", "reactQuery", "shadcn"],
     },
     preview: "/projects/madrims_preview.mp4",
     links: {
@@ -46,7 +43,9 @@ const projects: TProject[] = [
     title: "Agent Experience",
     description:
       "0xRogueAgent is an AI-driven agent project powered by its native $ROGUE token on the Solana blockchain. It combines decentralized technology with advanced AI to deliver innovative, mission-based experiences. The $ROGUE token plays a central role in the ecosystem, enabling users to engage with the AI agent, unlock features, and participate in governance.",
-    stack: { fe: ["react/ts", "solana-adapter", "tailwind/shadcn"] },
+    stack: {
+      fe: ["react", "typescript", "tailwind", "shadcn", "reactQuery", "solana"],
+    },
     links: {
       web: "https://agentexperience.live/",
       other:
@@ -61,7 +60,7 @@ const projects: TProject[] = [
     title: "$ROGUE Token SOL Tracker",
     description: `The Solana Token Transfer Tracker is a Node.js-based REST API service that monitors and analyzes token transfer transactions on the Solana blockchain. The service specifically tracks transfers for a designated token contract, providing detailed transaction history and wallet analytics.`,
     stack: {
-      be: ["node/js", "express", "solana/web3.js"],
+      be: ["express", "node", "solana", "web3js"],
     },
     links: {
       github: "https://github.com/shashwa7-dev/rouge-token-tracker",
@@ -77,12 +76,12 @@ const projects: TProject[] = [
       "Node Explorer is a node management platform enabling users to delegate and manage PlayAI Oasis Nodes for task execution, earning PlayAI Coins while ensuring efficient off-chain computation and AI model integrity.",
     stack: {
       fe: [
-        "react/ts",
-        "react-query",
-        "wagmi (contract)",
-        "reown-appkit (wallet)",
-        "chakra",
-        "recharts",
+        "react",
+        "typescript",
+        "reactQuery",
+        "wagmi",
+        "chakraui",
+        // "recharts",
       ],
     },
     links: {
@@ -98,7 +97,9 @@ const projects: TProject[] = [
     title: "PlayAI.network",
     description:
       "I have build the landing page for PlayAI, an innovative AI-driven platform designed to enhance the gaming experience. PlayAI leverages advanced machine learning models to provide real-time assistance, strategic insights, and personalized coaching for gamers across various genres.",
-    stack: { fe: ["react/ts", "styled-components", "gsap", "motion"] },
+    stack: {
+      fe: ["react", "typescript", "styledComponents", "gsap", "motion"],
+    },
     thumbnail: "/projects/project_playai.JPG",
     preview: "/projects/preview_playai.mp4",
     links: {

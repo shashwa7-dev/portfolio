@@ -15,7 +15,7 @@ export const Link: React.FC<LinkProps> = ({
     <a
       href={link}
       target="_blank"
-      className={`bg-s7-primary_bg social border flex items-center justify-center gap-1 p-[1px] px-2 rounded-md border-b-4 text-secondary-foreground w-fit ${className}`}
+      className={`p-1 px-2 rounded-md border-b-4 border  text-xs gap-1.5 text-secondary-foreground bg-card flex items-center ${className}`}
       {...props}
     >
       <span className="capitalize">{name}</span>

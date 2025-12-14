@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { SVGS } from "./SVGS";
 import { cn } from "@/lib/utils";
+import { StackName } from "./common/StackIcon";
 export type Feature = {
   title: string;
   points: string[];
@@ -25,7 +26,7 @@ export type TProject = {
     web?: string;
     other?: string;
   };
-  stack: { fe?: String[]; be?: String[] };
+  stack: { fe?: StackName[]; be?: StackName[] };
 };
 
 export const Social = ({
@@ -64,8 +65,8 @@ export const Social = ({
         className
       )}
     >
-      <span className="capitalize">{type}</span>
       <Icon className="w-[10px] h-[10px]" />
+      <span className="capitalize">{type}</span>
     </a>
   );
 };

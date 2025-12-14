@@ -12,8 +12,8 @@ const projects: TProject[] = [
 
     description: `Built a tiny productive tool(using ElectronJS) that blocks distracting sites. Under the hood: a simple HTTP proxy that intercepts requests and blocks blacklisted domains. I saw this as premium feature in "stayinsession.com" app. Yeah, a VPN can bypass it, but come on, you wouldn’t do that… right? What else should I add to it?`,
     stack: {
-      fe: ["react/ts"],
-      be: ["ElectronJS"],
+      fe: ["react", "typescript"],
+      be: ["electron"],
     },
     links: {
       github: "https://github.com/shashwa7-dev/focus-pro",
@@ -30,12 +30,7 @@ const projects: TProject[] = [
     description:
       "Built a health assessment app that uses Google Gemini Flash 1.5 AI to analyze food products. Users upload food labels to get a health score, recommended portion sizes, and consumption advice.",
     stack: {
-      fe: [
-        "next/ts",
-        "@google/generative-ai",
-        "gemini-flash(1.5)",
-        "tailwind/shadcn",
-      ],
+      fe: ["next", "typescript", "googleGemini", "tailwind", "shadcn"],
     },
     links: {
       github: "https://github.com/shashwa7-dev/food-analyzer",

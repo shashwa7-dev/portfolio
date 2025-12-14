@@ -7,6 +7,7 @@ import SpotifyLastListen from "./SpotifyLastListen";
 import { containerVariants, itemVariants } from "@/lib/motionVariants";
 import SectionTitle from "./common/SectionTitle";
 import { Zap } from "feather-icons-react";
+import { Icon } from "@iconify/react";
 
 const Book = ({
   name,
@@ -58,19 +59,15 @@ const Activity = () => {
       viewport={{ once: true, amount: 0.3 }}
       className="text-sm grid gap-3"
     >
-      <SectionTitle
-        title="Activity"
-        icon={<Zap className={"w-4 h-4"} />}
-      />
+      <SectionTitle title="Activity" icon={<Zap className={"w-4 h-4"} />} />
 
       {/* Blogs Section */}
       <motion.div variants={itemVariants} className="grid gap-1">
         <p className="italic font-sans text-muted-foreground">Blogs</p>
         <Link href="/blogs">
           <div className="flex items-center gap-1 w-fit bg-card border border-border rounded-md px-2 py-1 hover:bg-card/80 transition">
-            <img src="/images/icon_blogpost.svg" className="w-4 h-4" />
+            <Icon icon={"fa6-solid:blog"} fontSize={"0.75rem"} />
             <span className="hover:underline">Checkout blogs</span>
-            <SVGS.Link className="w-[10px] h-[10px]" />
           </div>
         </Link>
       </motion.div>

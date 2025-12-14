@@ -6,10 +6,9 @@ const About = () => {
     <div className="text-sm grid gap-3 relative">
       <Intro />
       <p>
-        Hey there! I’m Shashwat, a curious builder and problem solver who loves
-        turning ideas into elegant digital solutions. With a knack for crafting
-        sleek interfaces and seamless user experiences, I’m always on the
-        lookout for new challenges.
+        Hey there! I’m Shashwat, a frontend developer who also works across the
+        full stack. I build clean, functional, and user-friendly web
+        applications with a focus on great design and seamless user experiences.
       </p>
       <p>
         Feel free to reach out

@@ -1,14 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Social, Stack, TProject } from "./Project";
 import { cn } from "@/lib/utils";
 import { Maximize, Minimize } from "feather-icons-react";
+import StackIcon from "./common/StackIcon";
 
 export default function ProjectCard({ project }: { project: TProject }) {
   const [isHovering, setIsHovering] = useState(false);
   const [showFullContent, setShowFullContent] = useState(false);
-
+  const stack = useMemo(
+    () => [...(project.stack?.be || []), ...(project.stack?.fe || [])],
+    []
+  );
   return (
     <div
       className="relative flex flex-col cursor-pointer rounded-xl border border-border bg-primary transition-transform duration-300 ease-in-out hover:scale-[1.02] overflow-hidden h-[350px] group"
@@ -51,57 +55,71 @@ export default function ProjectCard({ project }: { project: TProject }) {
       </div>
 
       {/* Content */}
-      <div className="flex flex-col justify-between p-3 pt-0 flex-1 overflow-hidden">
-        <div className="flex flex-col flex-1">
-          {/* Title */}
-          <h3 className="text-base font-medium text-secondary-foreground font-sans mb-1">
-            {project?.title}
-          </h3>
-
-          {/* Links */}
-          <div className="flex gap-2 flex-wrap mb-2">
-            {project.links?.web && (
-              <Social
-                link={project.links?.web}
-                type="web"
-                className="text-xs"
-              />
-            )}
-            {project.links?.github && (
-              <Social
-                link={project.links?.github}
-                type="github"
-                className="text-xs"
-              />
-            )}
-            {project.links?.twitter && (
-              <Social
-                link={project.links?.twitter}
-                type="twitter"
-                className="text-xs"
-              />
-            )}
-            {project.links?.twitch && (
-              <Social
-                link={project.links?.twitch}
-                type="twitch"
-                className="text-xs"
-              />
-            )}
-            {project.links?.discord && (
-              <Social
-                link={project.links?.discord}
-                type="discord"
-                className="text-xs"
-              />
-            )}
-            {project.links?.other && (
-              <Social
-                link={project.links?.other}
-                type="other"
-                className="text-xs"
-              />
-            )}
+      <div className="flex flex-col justify-between p-3 pt-0 gap-2 flex-1 overflow-y-auto">
+        <div className="flex flex-col flex-1 gap-1">
+          <div className="space-y-1">
+            {/* Title */}
+            <h3 className="text-base font-medium text-secondary-foreground font-sans">
+              {project?.title}
+            </h3>
+            <div className="flex justify-between items-center gap-2 ">
+              {/*Stack */}
+              <div className="flex items-center gap-2">
+                {stack?.map((stack_name) => (
+                  <StackIcon
+                    name={stack_name}
+                    showLabel={false}
+                    size={15}
+                    key={stack_name + project.title}
+                  />
+                ))}
+              </div>
+              {/* Links */}
+              <div className="flex gap-2 flex-wrap mb-2">
+                {project.links?.web && (
+                  <Social
+                    link={project.links?.web}
+                    type="web"
+                    className="text-xs"
+                  />
+                )}
+                {project.links?.github && (
+                  <Social
+                    link={project.links?.github}
+                    type="github"
+                    className="text-xs"
+                  />
+                )}
+                {project.links?.twitter && (
+                  <Social
+                    link={project.links?.twitter}
+                    type="twitter"
+                    className="text-xs"
+                  />
+                )}
+                {project.links?.twitch && (
+                  <Social
+                    link={project.links?.twitch}
+                    type="twitch"
+                    className="text-xs"
+                  />
+                )}
+                {project.links?.discord && (
+                  <Social
+                    link={project.links?.discord}
+                    type="discord"
+                    className="text-xs"
+                  />
+                )}
+                {project.links?.other && (
+                  <Social
+                    link={project.links?.other}
+                    type="other"
+                    className="text-xs"
+                  />
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Description */}
@@ -117,26 +135,19 @@ export default function ProjectCard({ project }: { project: TProject }) {
           {/* Tech Stack (expanded view) */}
           {showFullContent && (
             <div className="space-y-2 mt-2">
-              {project.stack.fe && (
+              {stack?.length > 0 && (
                 <div>
                   <p className="text-sm font-medium text-secondary-foreground mb-1">
-                    FE Stack
+                    Stack
                   </p>
-                  <div className="flex flex-wrap gap-2">
-                    {project.stack.fe.map((tool, id) => (
-                      <Stack key={id} name={tool} className="text-xs" />
-                    ))}
-                  </div>
-                </div>
-              )}
-              {project.stack.be && (
-                <div>
-                  <p className="text-sm font-medium text-secondary-foreground mb-1">
-                    BE Stack
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {project.stack.be.map((tool, id) => (
-                      <Stack key={id} name={tool} className="text-xs" />
+                  <div className="flex flex-wrap gap-1.5">
+                    {stack.map((tool, id) => (
+                      <StackIcon
+                        key={id}
+                        name={tool}
+                        className="text-xs"
+                        showLabel={true}
+                      />
                     ))}
                   </div>
                 </div>
@@ -147,7 +158,7 @@ export default function ProjectCard({ project }: { project: TProject }) {
 
         {/* Thumbnail */}
         {!showFullContent && (
-          <div className="relative rounded-md overflow-hidden h-[200px] w-full">
+          <div className="relative rounded-md overflow-hidden w-full aspect-video">
             {project?.preview && isHovering ? (
               <video
                 src={project.preview}
