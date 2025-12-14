@@ -134,9 +134,9 @@ const Work = () => {
         icon={<Briefcase className={"w-4 h-4"} />}
       />
 
-      <div className="grid gap-4">
+      <div className="grid gap-3">
         <div className="flex justify-between">
-          <div className="grid">
+          <div className="grid gap-1">
             <a
               className="flex items-center gap-1 font-sans text-[1rem]"
               href="https://x.com/playAInetwork"
@@ -150,7 +150,7 @@ const Work = () => {
               <span>Dehidden</span>
             </a>
             <span className="text-secondary-foreground">
-              Web3 Frontend Consultant
+              {"Frontend Developer (Web3)"}
             </span>
           </div>
           <p className="text-muted-foreground">Jan, 2022 - Present</p>

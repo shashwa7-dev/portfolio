@@ -47,9 +47,9 @@ const Projects = () => {
         title="Side Quests"
         icon={<Coffee className={"w-4 h-4"} />}
       />
-      <div className="grid gap-4">
+      <div className="grid gap-3">
         <div className="flex justify-between">
-          <div className="grid">
+          <div className="grid gap-1">
             <a
               className="flex items-center gap-1 font-sans text-[1rem]"
               href="https://x.com/offcod8"
@@ -62,9 +62,11 @@ const Projects = () => {
               />
               <span>offcod8</span>
             </a>
-            <span className="text-secondary-foreground">Lab of Codes</span>
+            <span className="text-secondary-foreground">
+              Solo Founder & Engineer
+            </span>
           </div>
-          <p className="text-muted-foreground">Jan, 2021 - Present</p>
+          <p className="text-muted-foreground">Jun, 2021 - Present</p>
         </div>
         <div className="grid grid-cols-2 gap-6 -sm:grid-cols-1 place-items-center">
           {projects?.map((project) => (
