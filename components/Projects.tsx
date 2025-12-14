@@ -26,7 +26,7 @@ const projects: TProject[] = [
   {
     id: "1",
     title: "Eatri8.ai",
-    date: "9/25",
+    date: "09/25",
     description:
       "Built a health assessment app that uses Google Gemini Flash 1.5 AI to analyze food products. Users upload food labels to get a health score, recommended portion sizes, and consumption advice.",
     stack: {
