@@ -20,14 +20,28 @@ export const metadata: Metadata = {
   title: "Hey, what's good?",
   description: "Frontend Engineer | Expert in Crafting Quality Interfaces",
   authors: [{ name: "Shashwat Tripathi" }],
-  twitter: {
-    card: "summary",
-    site: baseUrl,
-    description:
-      "Frontend Engineer | Crafting sleek, responsive interfaces | Turning ideas into reality | Getting the job done right",
+  openGraph: {
+    title: "S7.dev",
+    description: "Frontend Engineer | Expert in Crafting Quality Interfaces",
+    url: baseUrl,
+    siteName: "S7.dev",
+    locale: "en_US",
+    type: "website",
     images: [
-      "https://raw.githubusercontent.com/shashwa7-dev/portfolio/refs/heads/assets/s7dev.png",
+      {
+        url: "/og-image.png",
+        width: 1600,
+        height: 900,
+        alt: "Shashwat Tripathi — Frontend Engineer",
+      },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "S7.dev",
+    description:
+      "Frontend Engineer | Crafting sleek, responsive interfaces with great design and seamless UX.",
+    images: ["/og-image.png"],
   },
   icons: {
     icon: [
@@ -38,17 +52,6 @@ export const metadata: Metadata = {
       { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
     ],
     other: [{ rel: "mask-icon", url: "/safari-pinned-tab.svg" }],
-  },
-  openGraph: {
-    url: baseUrl,
-    type: "website",
-    title: "S7.dev",
-    description: "Frontend Engineer | Expert in Crafting Quality Interfaces",
-    images: [
-      "https://raw.githubusercontent.com/shashwa7-dev/portfolio/refs/heads/assets/s7dev.png",
-    ],
-    siteName: "S7.dev",
-    locale: "en_US",
   },
   robots: {
     index: true,
