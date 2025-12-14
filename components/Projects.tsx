@@ -1,9 +1,8 @@
 import React from "react";
 import { TProject } from "./Project";
 import ProjectCard from "./PorjectCard";
-import { Coffee } from "feather-icons-react";
 import SectionTitle from "./common/SectionTitle";
-import FocusProApp from "./Tweets/FocusProApp";
+import { Icon } from "@iconify/react";
 const projects: TProject[] = [
   {
     id: "2",
@@ -45,7 +44,7 @@ const Projects = () => {
     <div className="text-sm grid gap-3" id="projects">
       <SectionTitle
         title="Side Quests"
-        icon={<Coffee className={"w-4 h-4"} />}
+        icon={<Icon icon="line-md:map-marker-loop" className="w-5 h-5" />}
       />
       <div className="grid gap-3">
         <div className="flex justify-between">

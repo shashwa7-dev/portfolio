@@ -2,16 +2,17 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Briefcase, Coffee, Folder } from "feather-icons-react";
+import { Briefcase, Folder } from "feather-icons-react";
+import { Icon } from "@iconify/react";
 
 const navLinks = [
-  { label: "Work", icon: <Briefcase className="w-4 h-4" />, href: "#work" },
+  { label: "Work", icon: <Briefcase className="w-5 h-5" />, href: "#work" },
   {
-    label: "Projects",
-    icon: <Coffee className="w-4 h-4" />,
+    label: "Side Quest",
+    icon: <Icon icon="line-md:map-marker-loop" className="w-5 h-5" />,
     href: "#projects",
   },
-  { label: "Blogs", icon: <Folder className="w-4 h-4" />, href: "/blogs" },
+  { label: "Blogs", icon: <Folder className="w-5 h-5" />, href: "/blogs" },
 ];
 
 const hamburgerVariants = {
@@ -57,7 +58,7 @@ export default function Navbar() {
       <div
         className={`fixed top-6 right-6 z-[1001] flex flex-col gap-[6px] cursor-pointer items-center justify-center w-9 h-9 transition-colors ${
           open ? "text-secondary-foreground" : "text-foreground"
-          }`}
+        }`}
         ref={buttonRef}
         onClick={(e) => {
           e.stopPropagation();
