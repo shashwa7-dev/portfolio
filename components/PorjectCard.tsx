@@ -6,8 +6,7 @@ import { cn } from "@/lib/utils";
 import {
   Maximize,
   Minimize,
-  Pause,
-  Play,
+  PauseCircle,
   PlayCircle,
 } from "feather-icons-react";
 import StackIcon from "./common/StackIcon";
@@ -59,6 +58,7 @@ export default function ProjectCard({ project }: { project: TProject }) {
           className="text-xs backdrop-blur-sm border rounded-lg bg-primary px-1.5 p-0.5 flex text-amber-500 w-fit justify-between items-center gap-1 hover:text-secondary-foreground transition-colors relative z-[1] font-medium"
           onClick={(e) => {
             e.stopPropagation();
+            togglePlay();
             setShowFullContent((prev) => !prev);
           }}
         >
@@ -185,8 +185,8 @@ export default function ProjectCard({ project }: { project: TProject }) {
           <div
             ref={containerRef}
             tabIndex={0}
-            // onMouseEnter={() => setShowControls(true)}
-            // onMouseLeave={() => setShowControls(false)}
+            onMouseEnter={() => setShowControls(true)}
+            onMouseLeave={() => setShowControls(false)}
             onClick={() => setShowControls((prev) => !prev)}
             className="relative rounded-md overflow-hidden w-full aspect-video group"
           >
@@ -224,12 +224,23 @@ export default function ProjectCard({ project }: { project: TProject }) {
                       togglePlay();
                       setShowControls(false);
                     }}
-                    className="flex items-center justify-center p-3 rounded-xl bg-black/80 border-2 border-amber-500 shadow-md focus:outline-none"
+                    className={cn(
+                      "absolute  px-2 flex items-center justify-center p-1  gap-1 rounded-lg bg-black/80 border text-amber-500 shadow-sm focus:outline-none border-amber-500",
+                      isPlaying
+                        ? "right-full/2 bottom-full/2 p-1.5 text-sm"
+                        : "bottom-2 right-2 text-xs"
+                    )}
                   >
                     {isPlaying ? (
-                      <Pause className="w-5 h-5 text-amber-500" />
+                      <>
+                        <PauseCircle className="w-4 h-4 text-amber-500" />
+                        Pause
+                      </>
                     ) : (
-                      <Play className="w-5 h-5 text-amber-500" />
+                      <>
+                        <PlayCircle className="w-3 h-3 text-amber-500" />
+                        Preview
+                      </>
                     )}
                   </button>
                 </div>

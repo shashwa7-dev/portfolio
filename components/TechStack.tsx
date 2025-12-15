@@ -43,7 +43,7 @@ const toolStacks = ["vscode", "figma", "notion", "postman"] as const;
 const mixStacks = ["coffee", "spotify", "youtube", "playstation"] as const;
 const TechStack = () => {
   return (
-    <div className="text-sm grid gap-3">
+    <div className="text-sm grid gap-3" id="tech_stack">
       <SectionTitle
         title="Tech Stack"
         icon={<Layers className={"w-4 h-4"} />}

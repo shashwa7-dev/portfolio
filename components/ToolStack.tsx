@@ -35,9 +35,11 @@ const tools: StackName[] = [
 const ToolsAndStack = () => {
   return (
     <div className="max-w-sm -md:max-w-[60dvw] -sm:max-w-[50dvw]">
-      <Marquee fade>
+      <Marquee fade pauseOnHover>
         {tools?.map((tool) => (
-          <StackIcon key={tool} name={tool} showLabel={false} size={20} />
+          <a href="#tech_stack">
+            <StackIcon key={tool} name={tool} showLabel={false} size={20} />
+          </a>
         ))}
       </Marquee>
     </div>

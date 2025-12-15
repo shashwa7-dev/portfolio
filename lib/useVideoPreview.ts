@@ -31,6 +31,7 @@ export function useVideoPreview<T extends HTMLVideoElement>() {
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
+
     if (!inView && !video.paused) {
       video.pause();
       setIsPlaying(false);
