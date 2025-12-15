@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
-import { Social, Stack, TProject } from "./Project";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Social, TProject } from "./Project";
 import { cn } from "@/lib/utils";
 import {
   Maximize,
@@ -12,7 +12,6 @@ import {
 } from "feather-icons-react";
 import StackIcon from "./common/StackIcon";
 import { useVideoPreview } from "@/lib/useVideoPreview";
-import { Icon } from "@iconify/react";
 
 export default function ProjectCard({ project }: { project: TProject }) {
   const [showFullContent, setShowFullContent] = useState(false);
@@ -20,6 +19,14 @@ export default function ProjectCard({ project }: { project: TProject }) {
     () => [...(project.stack?.be || []), ...(project.stack?.fe || [])],
     []
   );
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [showControls, setShowControls] = useState(false);
+
+  useEffect(() => {
+    if (!showControls) return;
+    const timer = setTimeout(() => setShowControls(false), 3000);
+    return () => clearTimeout(timer);
+  }, [showControls]);
   const { bind, isPlaying, togglePlay } = useVideoPreview();
 
   return (
@@ -176,26 +183,25 @@ export default function ProjectCard({ project }: { project: TProject }) {
         {/* Thumbnail */}
         {!showFullContent && (
           <div
-            className="relative rounded-md overflow-hidden w-full aspect-video group focus-within:opacity-100"
+            ref={containerRef}
             tabIndex={0}
+            onMouseEnter={() => setShowControls(true)}
+            onMouseLeave={() => setShowControls(false)}
+            onClick={() => setShowControls(true)}
+            className="relative rounded-md overflow-hidden w-full aspect-video group"
           >
-            {project.preview && !isPlaying && (
-              <div className="flex items-center gap-1 text-xs border border-amber-500 p-0.5 px-1.5 rounded-md backdrop-blur-sm z-[1] bg-black/80 text-amber-500 absolute top-2 right-2">
-                <Icon icon={"line-md:watch-twotone-loop"} className="w-3 h-3" />
-                <span>Preview</span>
-              </div>
+            {/* Thumbnail when paused */}
+            {!isPlaying && (
+              <img
+                src={project.thumbnail}
+                alt={project.title}
+                className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 z-0"
+              />
             )}
 
-            {project?.preview ? (
+            {/* Video */}
+            {project?.preview && (
               <>
-                {!isPlaying && (
-                  <img
-                    src={project.thumbnail}
-                    alt={project.title}
-                    className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 z-0"
-                  />
-                )}
-
                 <video
                   {...bind}
                   src={project.preview}
@@ -203,29 +209,31 @@ export default function ProjectCard({ project }: { project: TProject }) {
                   className="w-full h-full object-cover"
                 />
 
-                {/* Hover + Focus (mobile tap) overlay */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 bg-black/50 hover:bg-black/30">
+                {/* Overlay controls (auto-hide after 3s) */}
+                <div
+                  className={cn(
+                    "absolute inset-0 flex items-center justify-center transition-opacity duration-500 bg-black/10 z-10",
+                    showControls || !isPlaying
+                      ? "opacity-100"
+                      : "opacity-0 pointer-events-none"
+                  )}
+                >
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       togglePlay();
+                      setShowControls(false);
                     }}
-                    className="flex items-center justify-center p-4 rounded-xl bg-black/80 border-2 border-amber-500 shadow-md focus:outline-none"
+                    className="flex items-center justify-center p-3 rounded-xl bg-black/80 border-2 border-amber-500 shadow-md focus:outline-none"
                   >
                     {isPlaying ? (
-                      <Pause className="w-6 h-6 text-amber-500" />
+                      <Pause className="w-5 h-5 text-amber-500" />
                     ) : (
-                      <Play className="w-6 h-6 text-amber-500" />
+                      <Play className="w-5 h-5 text-amber-500" />
                     )}
                   </button>
                 </div>
               </>
-            ) : (
-              <img
-                src={project.thumbnail}
-                alt={project.title}
-                className="w-full h-full object-cover transition-all duration-300 hover:scale-[1.03] opacity-80 group-hover:opacity-100"
-              />
             )}
           </div>
         )}
