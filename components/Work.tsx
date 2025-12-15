@@ -57,6 +57,29 @@ process.`,
     date: "06/22",
   },
   {
+    id: "0xPolygonCopilot",
+    isWork: true,
+    title: "Polygon Copilot",
+    description:
+      "Partnered with Polygon to build an AI chatbot for Web3 developers using OpenAI’s GPT models, delivering blockchain insights within the zkEVM ecosystem. Designed rich frontend components like minting call-to-action and multi-persona sessions (Beginner/Advanced) to enhance engagement.",
+    stack: {
+      fe: [
+        "react",
+        "typescript",
+        "styledComponents",
+        "reactQuery",
+        "zustand",
+        "wagmi",
+      ],
+    },
+    links: {
+      web: "https://polygon.technology/blog/introducing-copilot-your-ai-powered-guide-to-polygon-and-web3?utm_source=twitter&utm_medium=social&utm_content=copilot-blog",
+      other: "https://x.com/0xPolygon/status/1671504505764970498",
+    },
+    thumbnail: "/projects/polygon_copilot.webp",
+    date: "06/23",
+  },
+  {
     id: "0xNFTWrapped",
     isWork: true,
     title: "NFT Wrapped 2022",
@@ -69,7 +92,7 @@ process.`,
       opensea:
         "https://opensea.io/item/polygon/0x5be60c156c48d1ca8f141ed429080212c781bdb3/3",
     },
-    thumbnail: "/projects/NFT-Wrapped.webp",
+    thumbnail: "/projects/nft_wrapped_project.JPG",
     date: "12/22",
   },
   {
@@ -107,51 +130,28 @@ process.`,
     date: "03/25",
   },
   {
-    id: "0xPolygonCopilot",
+    id: "0x5",
     isWork: true,
-    title: "Polygon Copilot",
+    title: "Node Explorer",
     description:
-      "Partnered with Polygon to build an AI chatbot for Web3 developers using OpenAI’s GPT models, delivering blockchain insights within the zkEVM ecosystem. Designed rich frontend components like minting call-to-action and multi-persona sessions (Beginner/Advanced) to enhance engagement.",
+      "Node Explorer is a node management platform enabling users to delegate and manage PlayAI Oasis Nodes for task execution, earning PlayAI Coins while ensuring efficient off-chain computation and AI model integrity.",
     stack: {
       fe: [
         "react",
         "typescript",
-        "styledComponents",
         "reactQuery",
-        "zustand",
         "wagmi",
+        "chakraui",
+        // "recharts",
       ],
     },
     links: {
-      web: "https://polygon.technology/blog/introducing-copilot-your-ai-powered-guide-to-polygon-and-web3?utm_source=twitter&utm_medium=social&utm_content=copilot-blog",
-      other: "https://x.com/0xPolygon/status/1671504505764970498",
+      twitter: "https://x.com/playAInetwork",
+      web: "https://nodeexplorer.playai.network/",
     },
-    thumbnail: "/projects/polygon_copilot.webp",
-    date: "06/23",
+    thumbnail: "/projects/project_node_exp.JPG",
+    date: "09/24",
   },
-  // {
-  //   id: "0x5",
-  //   isWork: true,
-  //   title: "Node Explorer",
-  //   description:
-  //     "Node Explorer is a node management platform enabling users to delegate and manage PlayAI Oasis Nodes for task execution, earning PlayAI Coins while ensuring efficient off-chain computation and AI model integrity.",
-  //   stack: {
-  //     fe: [
-  //       "react",
-  //       "typescript",
-  //       "reactQuery",
-  //       "wagmi",
-  //       "chakraui",
-  //       // "recharts",
-  //     ],
-  //   },
-  //   links: {
-  //     twitter: "https://x.com/playAInetwork",
-  //     web: "https://nodeexplorer.playai.network/",
-  //   },
-  //   thumbnail: "/projects/project_node_exp.JPG",
-  //   date: "09/24",
-  // },
 ];
 const Work = () => {
   return (
