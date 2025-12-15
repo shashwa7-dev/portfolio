@@ -15,7 +15,7 @@ const Intro = () => {
         <div className="flex items-center">
           <div className="flex items-center gap-1 text-xs md:text-sm text-muted-foreground border p-0.5 px-2 rounded-xl w-fit bg-card font-bold shadow-sm">
             <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            <span>Available</span>
+            <span>Open to Work</span>
           </div>
           <ToolsAndStack />
         </div>
