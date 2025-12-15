@@ -152,6 +152,18 @@ process.`,
     thumbnail: "/projects/project_node_exp.JPG",
     date: "09/24",
   },
+  {
+    id: "0xDehiddenQuest",
+    isWork: true,
+    title: "Dehidden Quest X Web3Conf 2022",
+    description: `Dehidden Quest was a gamified Web3 onboarding experience at Web3Conf India 2022 by Dehidden, engaging over 2,000 attendees through interactive booth challenges,on-chain & social tasks. It featured social wallet login, task verification, and reward redemption via an intuitive frontend interface. Participants earned soulbound ERC-721 NFTs and real-world goodies like T-shirts, bottles, and hoodies for completing quests.`,
+    stack: {
+      fe: ["react", "reactQuery", "wagmi", "styledComponents", "motion"],
+    },
+    preview: "/projects/project_quest_preview.mp4",
+    thumbnail: "/projects/project_quest.png",
+    date: "08/22",
+  },
 ];
 const Work = () => {
   return (
