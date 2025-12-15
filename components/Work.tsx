@@ -92,7 +92,7 @@ process.`,
       opensea:
         "https://opensea.io/item/polygon/0x5be60c156c48d1ca8f141ed429080212c781bdb3/3",
     },
-    thumbnail: "/projects/nft_wrapped_project.JPG",
+    thumbnail: "/projects/nft_wrapped.webp",
     date: "12/22",
   },
   {
