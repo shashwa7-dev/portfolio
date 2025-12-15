@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: `${baseUrl}/og-image.png`,
+        url: `${baseUrl}/og-image.png?v=2.0`,
         width: 1600,
         height: 900,
         alt: "Shashwat Tripathi — Frontend Engineer",
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     title: "S7.dev",
     description:
       "Frontend Engineer | Crafting sleek, responsive interfaces with great design and seamless UX.",
-    images: [`${baseUrl}/og-image.png`],
+    images: [`${baseUrl}/og-image.png?v=2.0`],
   },
   icons: {
     icon: [
