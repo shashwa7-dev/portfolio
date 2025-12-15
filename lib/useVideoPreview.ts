@@ -38,9 +38,14 @@ export function useVideoPreview<T extends HTMLVideoElement>() {
     }
   }, [inView]);
 
-  const togglePlay = () => {
+  const togglePlay = (forcePause?: boolean) => {
     const video = videoRef.current;
     if (!video) return;
+    if (forcePause) {
+      video.currentTime = 0; // reset video
+      setIsPlaying(false);
+      return;
+    }
     if (video.paused) {
       document.querySelectorAll("video[data-preview]").forEach((v) => {
         if (v !== video) (v as HTMLVideoElement).pause();
@@ -59,6 +64,7 @@ export function useVideoPreview<T extends HTMLVideoElement>() {
     ref: videoRef,
     isPlaying,
     togglePlay,
+    setIsPlaying,
     bind: {
       ref: videoRef,
       "data-preview": true,

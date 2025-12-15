@@ -26,7 +26,7 @@ export default function ProjectCard({ project }: { project: TProject }) {
     const timer = setTimeout(() => setShowControls(false), 3000);
     return () => clearTimeout(timer);
   }, [showControls]);
-  const { bind, isPlaying, togglePlay } = useVideoPreview();
+  const { bind, isPlaying, togglePlay, setIsPlaying } = useVideoPreview();
 
   return (
     <div className="relative flex flex-col  gap-1 cursor-pointer rounded-xl border border-border bg-primary transition-transform duration-300 ease-in-out hover:scale-[1.02] overflow-hidden h-[350px] group">
@@ -58,7 +58,7 @@ export default function ProjectCard({ project }: { project: TProject }) {
           className="text-xs backdrop-blur-sm border rounded-lg bg-primary px-1.5 p-0.5 flex text-amber-500 w-fit justify-between items-center gap-1 hover:text-secondary-foreground transition-colors relative z-[1] font-medium"
           onClick={(e) => {
             e.stopPropagation();
-            togglePlay();
+            togglePlay(true); //force pause
             setShowFullContent((prev) => !prev);
           }}
         >
