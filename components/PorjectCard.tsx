@@ -175,16 +175,19 @@ export default function ProjectCard({ project }: { project: TProject }) {
 
         {/* Thumbnail */}
         {!showFullContent && (
-          <div className="relative rounded-md overflow-hidden w-full aspect-video">
-            {project.preview && !isPlaying ? (
+          <div
+            className="relative rounded-md overflow-hidden w-full aspect-video group focus-within:opacity-100"
+            tabIndex={0}
+          >
+            {project.preview && !isPlaying && (
               <div className="flex items-center gap-1 text-xs border border-amber-500 p-0.5 px-1.5 rounded-md backdrop-blur-sm z-[1] bg-black/80 text-amber-500 absolute top-2 right-2">
                 <Icon icon={"line-md:watch-twotone-loop"} className="w-3 h-3" />
                 <span>Preview</span>
               </div>
-            ) : null}
+            )}
+
             {project?.preview ? (
               <>
-                {/* Show poster when video is paused */}
                 {!isPlaying && (
                   <img
                     src={project.thumbnail}
@@ -192,6 +195,7 @@ export default function ProjectCard({ project }: { project: TProject }) {
                     className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 z-0"
                   />
                 )}
+
                 <video
                   {...bind}
                   src={project.preview}
@@ -199,14 +203,14 @@ export default function ProjectCard({ project }: { project: TProject }) {
                   className="w-full h-full object-cover"
                 />
 
-                {/* Hover-only CTA Overlay */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/50 hover:bg-black/30">
+                {/* Hover + Focus (mobile tap) overlay */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 bg-black/50 hover:bg-black/30">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       togglePlay();
                     }}
-                    className="flex items-center justify-center  p-4 rounded-xl bg-black/80 border-2 border-amber-500 shadow-md"
+                    className="flex items-center justify-center p-4 rounded-xl bg-black/80 border-2 border-amber-500 shadow-md focus:outline-none"
                   >
                     {isPlaying ? (
                       <Pause className="w-6 h-6 text-amber-500" />
