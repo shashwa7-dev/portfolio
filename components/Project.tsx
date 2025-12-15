@@ -44,12 +44,12 @@ export const Social = ({
     | "twitch"
     | "discord"
     | "other"
-    | "linked"
+    | "linkedIn"
     | "opensea";
   className?: string;
 }) => {
   const Icon =
-    type === "linked"
+    type === "linkedIn"
       ? SVGS.LinkedIn
       : type === "github"
       ? SVGS.Github

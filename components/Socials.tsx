@@ -24,7 +24,7 @@ const Socials = () => {
           <Social type="github" link="https://github.com/shashwa7-dev" />
         </motion.div>
         <motion.div variants={itemVariants}>
-          <Social type="linked" link="https://www.linkedin.com/in/shashwa7/" />
+          <Social type="linkedIn" link="https://www.linkedin.com/in/shashwa7/" />
         </motion.div>
         <motion.div variants={itemVariants}>
           <Social type="twitter" link="https://x.com/offcod8" />
