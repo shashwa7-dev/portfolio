@@ -185,9 +185,9 @@ export default function ProjectCard({ project }: { project: TProject }) {
           <div
             ref={containerRef}
             tabIndex={0}
-            onMouseEnter={() => setShowControls(true)}
-            onMouseLeave={() => setShowControls(false)}
-            onClick={() => setShowControls(true)}
+            // onMouseEnter={() => setShowControls(true)}
+            // onMouseLeave={() => setShowControls(false)}
+            onClick={() => setShowControls((prev) => !prev)}
             className="relative rounded-md overflow-hidden w-full aspect-video group"
           >
             {/* Thumbnail when paused */}
