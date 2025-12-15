@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { SVGS } from "./SVGS";
 import { cn } from "@/lib/utils";
 import { StackName } from "./common/StackIcon";
+import { Icon as Iconify } from "@iconify/react";
 export type Feature = {
   title: string;
   points: string[];
@@ -24,6 +25,7 @@ export type TProject = {
     twitter?: string;
     discord?: string;
     web?: string;
+    opensea?: string;
     other?: string;
   };
   stack: { fe?: StackName[]; be?: StackName[] };
@@ -42,7 +44,8 @@ export const Social = ({
     | "twitch"
     | "discord"
     | "other"
-    | "linked";
+    | "linked"
+    | "opensea";
   className?: string;
 }) => {
   const Icon =
@@ -65,7 +68,11 @@ export const Social = ({
         className
       )}
     >
-      <Icon className="w-[10px] h-[10px]" />
+      {type === "opensea" ? (
+        <Iconify icon="simple-icons:opensea" className="w-[10px] h-[10px]" />
+      ) : (
+        <Icon className="w-[10px] h-[10px]" />
+      )}
       <span className="capitalize">{type}</span>
     </a>
   );

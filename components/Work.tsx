@@ -50,7 +50,7 @@ process.`,
     },
     links: {
       web: "https://x.com/baseapp/status/1542327195174965248/photo/1",
-      other:
+      opensea:
         "https://opensea.io/item/polygon/0x61c594b34341e2f3f0db05e0d6bd30980c94df7b/1",
     },
     thumbnail: "/projects/CoinbaseNFT.jpeg",
@@ -66,6 +66,8 @@ process.`,
     },
     links: {
       web: "https://www.producthunt.com/products/nft-wrapped?launch=nft-wrapped",
+      opensea:
+        "https://opensea.io/item/polygon/0x5be60c156c48d1ca8f141ed429080212c781bdb3/3",
     },
     thumbnail: "/projects/NFT-Wrapped.webp",
     date: "12/22",

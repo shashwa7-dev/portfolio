@@ -55,7 +55,8 @@ export type StackName =
   | "youtube"
   | "restAPI"
   | "playstation"
-  | "coffee";
+  | "coffee"
+  | "opensea";
 
 type StackProps = {
   name: StackName;
@@ -89,6 +90,7 @@ const iconMap: Record<StackName, { icon: string; label: string }> = {
   zustand: { icon: "devicon-plain:zustand", label: "Zustand" },
   supabase: { icon: "simple-icons:supabase", label: "Supabase" },
   mongodb: { icon: "simple-icons:mongodb", label: "Mongo DB" },
+  opensea: { icon: "simple-icons:opensea", label: "Opensea" },
   postgress: { icon: "simple-icons:postgresql", label: "PostgreSQL" },
   cloudflare: { icon: "simple-icons:cloudflare", label: "Cloudflare" },
   chakraui: { icon: "simple-icons:chakraui", label: "Chakra UI" },

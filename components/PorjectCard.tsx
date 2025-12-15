@@ -121,6 +121,13 @@ export default function ProjectCard({ project }: { project: TProject }) {
                     className="text-xs"
                   />
                 )}
+                {project.links?.opensea && (
+                  <Social
+                    link={project.links?.opensea}
+                    type="opensea"
+                    className="text-xs"
+                  />
+                )}
               </div>
             </div>
           </div>
