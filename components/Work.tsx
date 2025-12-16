@@ -8,24 +8,26 @@ const projects: TProject[] = [
     id: "0x1",
     isWork: true,
     title: "PlayAI Hub",
-    description:
-      "PlayAI Hub is a unified platform for real-time AI chat streaming, multi-chain protocol swaps (MCPs), and secure cross-chain bridging—bringing seamless AI and DeFi interactions together.",
+    description: `PlayAI Hub unifies real-time AI chat streaming with workflow-driven DeFi interactions in a single AI × DeFi platform.
+As the frontend developer, I built the core UI, real-time chat streaming, workflow-preset chat sessions, and interactive mission/reward flows.
+The platform enables x402-powered, agent-ready apps to automate actions like swaps and auto-trades via workflows while users progress through Missions, Crates, and Rewards.`,
     stack: {
       fe: ["react", "typescript", "tailwind", "shadcn", "reactQuery", "wagmi"],
     },
     links: {
-      twitter: "https://x.com/aura_playai",
+      twitter: "https://x.com/playAInetwork/status/1979186759020757025",
       web: "https://hub.playai.network/",
     },
     isActive: true,
+    preview: "/projects/playhub_preview.mp4",
     thumbnail: "/projects/project_playhub.JPG",
   },
   {
     id: "0x2",
     isWork: true,
     title: "MadRims by PlayAI",
-    description:
-      "Mad Rims are AI-powered glasses built on top of the PlayAI Network. With them, your tasks are just an ask away.They come packed with a 12MP camera with EIS, dual open-ear speakers, snap-on shades, a hi-tech mic to activate your personal assistant, and more",
+    description: `Mad Rims are AI-powered glasses built on the PlayAI Network, letting users complete tasks with a simple voice command.
+As the frontend developer, I built the product landing page and ordering flow, enabling users to explore features and place orders seamlessly.`,
     stack: {
       fe: ["react", "typescript", "tailwind", "shadcn", "motion", "reactQuery"],
     },
@@ -149,7 +151,7 @@ process.`,
       twitter: "https://x.com/playAInetwork",
       web: "https://nodeexplorer.playai.network/",
     },
-    thumbnail: "/projects/project_node_exp.JPG",
+    thumbnail: "/projects/node_explorer.jpeg",
     date: "09/24",
   },
   {
