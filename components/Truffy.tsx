@@ -89,7 +89,7 @@ export default function Truffy() {
 
   return (
     <motion.div
-      className="hidden lg:flex justify-center sticky top-0 p-2 h-[100dvh] items-end"
+      className="hidden xl:flex justify-center sticky top-0 p-2 h-[100dvh] items-end"
       variants={slideUpContainerVariants}
       initial="hidden"
       animate="visible"
