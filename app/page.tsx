@@ -5,13 +5,14 @@ import TechStack from "../components/TechStack";
 import Work from "../components/Work";
 import Brand from "@/components/Brand";
 import S7Bot from "@/components/ChatBot";
-import Truffy from "@/components/Truffy";
+import dynamic from "next/dynamic";
 
+const LazyLoadTruffy = dynamic(() => import("@/components/Truffy"));
 export default function Home() {
   return (
     <div className="relative">
       <div className="max-w-screen-xl mx-auto pb-0 md:p-0 grid lg:grid-cols-[1fr_325px] xl:grid-cols-[225px_1fr_325px]">
-        <Truffy />
+        <LazyLoadTruffy />
         <div className="space-y-6 p-4 backdrop-blur-sm md:border-x">
           <About />
           <Work />

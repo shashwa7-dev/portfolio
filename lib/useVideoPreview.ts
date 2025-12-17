@@ -1,73 +1,56 @@
-import { useEffect, useRef, useState } from "react";
+// /lib/useVideoPreview.ts
+import { useCallback, useEffect, useRef, useState } from "react";
 
-export function useVideoPreview<T extends HTMLVideoElement>() {
-  const videoRef = useRef<T | null>(null);
-  const [inView, setInView] = useState(false);
+export function useVideoPreview() {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  useEffect(() => {
-    const el = videoRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => setInView(entry.isIntersecting),
-      { threshold: 0.3 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
+  const play = useCallback(async () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    try {
+      video.muted = true; // REQUIRED (browser policy)
+      video.playsInline = true;
+      await video.play();
+      setIsPlaying(true);
+    } catch (err) {
+      // autoplay may fail silently — ignore
+      console.warn("Video play blocked", err);
+    }
   }, []);
-  //on video end
+
+  const pause = useCallback(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.pause();
+    setIsPlaying(false);
+  }, []);
+
+  // keep state in sync if user pauses via native controls
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    const handleEnded = () => {
-      video.currentTime = 0; // rewind
-      setIsPlaying(false);
+    const onPlay = () => setIsPlaying(true);
+    const onPause = () => setIsPlaying(false);
+
+    video.addEventListener("play", onPlay);
+    video.addEventListener("pause", onPause);
+
+    return () => {
+      video.removeEventListener("play", onPlay);
+      video.removeEventListener("pause", onPause);
     };
-
-    video.addEventListener("ended", handleEnded);
-    return () => video.removeEventListener("ended", handleEnded);
   }, []);
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    if (!inView && !video.paused) {
-      video.pause();
-      setIsPlaying(false);
-    }
-  }, [inView]);
-
-  const togglePlay = (forcePause?: boolean) => {
-    const video = videoRef.current;
-    if (!video) return;
-    if (forcePause) {
-      video.currentTime = 0; // reset video
-      setIsPlaying(false);
-      return;
-    }
-    if (video.paused) {
-      document.querySelectorAll("video[data-preview]").forEach((v) => {
-        if (v !== video) (v as HTMLVideoElement).pause();
-      });
-      video
-        .play()
-        .then(() => setIsPlaying(true))
-        .catch(() => {});
-    } else {
-      video.pause();
-      setIsPlaying(false);
-    }
-  };
 
   return {
-    ref: videoRef,
     isPlaying,
-    togglePlay,
-    setIsPlaying,
+    play,
+    pause,
     bind: {
       ref: videoRef,
-      "data-preview": true,
       muted: true,
       playsInline: true,
       preload: "metadata",

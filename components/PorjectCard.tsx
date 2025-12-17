@@ -11,6 +11,7 @@ import {
 } from "feather-icons-react";
 import StackIcon from "./common/StackIcon";
 import { useVideoPreview } from "@/lib/useVideoPreview";
+import Image from "next/image";
 
 export default function ProjectCard({ project }: { project: TProject }) {
   const [showFullContent, setShowFullContent] = useState(false);
@@ -18,6 +19,7 @@ export default function ProjectCard({ project }: { project: TProject }) {
     () => [...(project.stack?.be || []), ...(project.stack?.fe || [])],
     []
   );
+  const [loadedThumbnail, setThumbnailLoaded] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [showControls, setShowControls] = useState(false);
 
@@ -26,7 +28,7 @@ export default function ProjectCard({ project }: { project: TProject }) {
     const timer = setTimeout(() => setShowControls(false), 3000);
     return () => clearTimeout(timer);
   }, [showControls]);
-  const { bind, isPlaying, togglePlay, setIsPlaying } = useVideoPreview();
+  const { bind, isPlaying, play, pause } = useVideoPreview();
 
   return (
     <div className="relative flex flex-col  gap-1 cursor-pointer rounded-xl border border-border bg-primary transition-transform duration-300 ease-in-out hover:scale-[1.02] overflow-hidden h-[325px] group">
@@ -58,7 +60,7 @@ export default function ProjectCard({ project }: { project: TProject }) {
           className="text-xs backdrop-blur-sm border rounded-lg bg-primary px-1.5 p-0.5 flex text-amber-500 w-fit justify-between items-center gap-1 hover:text-secondary-foreground transition-colors relative z-[1] font-medium"
           onClick={(e) => {
             e.stopPropagation();
-            togglePlay(true); //force pause
+            pause(); //force pause
             setShowFullContent((prev) => !prev);
           }}
         >
@@ -190,14 +192,26 @@ export default function ProjectCard({ project }: { project: TProject }) {
             onClick={() => setShowControls((prev) => !prev)}
             className="relative rounded-md overflow-hidden w-full aspect-video group"
           >
-            {/* Thumbnail when paused */}
-            {!isPlaying && (
-              <img
-                src={project.thumbnail}
-                alt={project.title}
-                className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 z-0"
-              />
+            {!loadedThumbnail && (
+              <div className="absolute inset-0 bg-background animate-pulse z-0 flex items-center justify-center overflow-hidden">
+                <p className="text-xl opacity-50 italic">offcod8</p>
+              </div>
             )}
+
+            {/* Thumbnail when paused */}
+            <Image
+              src={project.thumbnail}
+              alt={project.title}
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className={cn(
+                "object-cover transition-opacity duration-300",
+                !isPlaying ? "visible" : "hidden"
+              )}
+              loading="lazy"
+              placeholder={"empty"}
+              onLoad={() => setThumbnailLoaded(true)}
+            />
 
             {/* Video */}
             {project?.preview && (
@@ -213,7 +227,7 @@ export default function ProjectCard({ project }: { project: TProject }) {
                 <div
                   className={cn(
                     "absolute inset-0 flex items-center justify-center transition-opacity duration-500 bg-black/10 z-10",
-                    showControls || !isPlaying
+                    (showControls || !isPlaying) && loadedThumbnail
                       ? "opacity-100"
                       : "opacity-0 pointer-events-none"
                   )}
@@ -221,24 +235,30 @@ export default function ProjectCard({ project }: { project: TProject }) {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      togglePlay();
+
+                      if (isPlaying) {
+                        pause();
+                      } else {
+                        play();
+                      }
+
                       setShowControls(false);
                     }}
                     className={cn(
-                      "absolute  px-2 flex items-center justify-center p-1  gap-1 rounded-lg bg-black/80 border text-amber-500 shadow-sm focus:outline-none border-amber-500",
+                      "absolute px-1.5 p-1 flex items-center gap-1 rounded-lg bg-black/80 border text-amber-500 border-amber-500",
                       isPlaying
-                        ? "right-full/2 bottom-full/2 p-1.5 text-sm"
+                        ? "right-1/2 bottom-1/2 translate-x-1/2 translate-y-1/2"
                         : "bottom-2 right-2 text-xs"
                     )}
                   >
                     {isPlaying ? (
                       <>
-                        <PauseCircle className="w-4 h-4 text-amber-500" />
+                        <PauseCircle className="w-4 h-4" />
                         Pause
                       </>
                     ) : (
                       <>
-                        <PlayCircle className="w-3 h-3 text-amber-500" />
+                        <PlayCircle className="w-3 h-3" />
                         Preview
                       </>
                     )}

@@ -163,7 +163,7 @@ function ActionButton({
       onClick={onClick}
       className={cn(
         "text-xs  transition-all text-center justify-center",
-        active && "scale-90 bg-amber-500 text-black"
+        active && "scale-90 !bg-amber-500 !text-black"
       )}
     >
       {label}

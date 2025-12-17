@@ -1,13 +1,13 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { SVGS } from "./SVGS";
 import SpotifyLastListen from "./SpotifyLastListen";
 import { containerVariants, itemVariants } from "@/lib/motionVariants";
 import SectionTitle from "./common/SectionTitle";
 import { Zap } from "feather-icons-react";
 import { Icon } from "@iconify/react";
+import Image from "next/image";
 
 const Book = ({
   name,
@@ -20,16 +20,28 @@ const Book = ({
   cover: string;
   progress: number;
 }) => {
+  const [coverLoaded, setCoverLoaded] = useState(false);
   return (
     <motion.div
       variants={itemVariants}
       whileHover={{ scale: 1.03, y: -2 }}
       className="h-[150px] relative rounded-lg overflow-hidden border border-border bg-card cursor-pointer"
     >
-      <img
+      {!coverLoaded && (
+        <div className="absolute inset-0 bg-background animate-pulse z-0 flex items-center justify-center overflow-hidden">
+          <p className="text-lg opacity-50 italic">offcod8</p>
+        </div>
+      )}
+
+      <Image
         src={cover}
         alt={name}
-        className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity"
+        fill
+        sizes="(max-width: 768px) 100vw, 50vw"
+        className="object-cover transition-opacity duration-300 opacity-80 "
+        loading="lazy"
+        placeholder={"empty"}
+        onLoad={() => setCoverLoaded(true)}
       />
 
       {/* Progress bar */}
