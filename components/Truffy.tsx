@@ -31,7 +31,7 @@ const ANIMATION_DURATION: Record<AvatarState, number> = {
   punch: 1500,
 };
 
-export default function AvatarGIF() {
+export default function Truffy() {
   const [state, setState] = useState<AvatarState>("idle");
   const isAnimatingRef = useRef(false);
   const activeKeyRef = useRef<string>("");
@@ -89,7 +89,7 @@ export default function AvatarGIF() {
 
   return (
     <motion.div
-      className="hidden md:flex justify-center sticky top-0 p-2 h-[100dvh] items-end"
+      className="hidden lg:flex justify-center sticky top-0 p-2 h-[100dvh] items-end"
       variants={slideUpContainerVariants}
       initial="hidden"
       animate="visible"
