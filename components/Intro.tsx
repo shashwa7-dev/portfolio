@@ -1,7 +1,6 @@
 import React from "react";
 import ToolsAndStack from "./ToolStack";
 import Navbar from "./Navbar";
-import AvatarGIF from "./AvatarGif";
 
 const Intro = () => {
   return (
@@ -11,7 +10,6 @@ const Intro = () => {
           <h1 className="text-3xl mb-0.5 -md:text-2xl  text-secondary-foreground font-sans">
             {"Shashwat Tripathi"}
           </h1>
-          <AvatarGIF />
         </div>
         <h2 className="font-bold text-base md:text-lg w-fit text-muted-foreground mb-2">
           <span className="text-amber-500">{"Frontend Engineer"}</span>
