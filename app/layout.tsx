@@ -3,6 +3,7 @@ import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { baseUrl } from "./sitemap";
 import localFont from "next/font/local";
+import { Analytics } from "@vercel/analytics/next";
 
 const stoke = localFont({
   src: "../public/fonts/Somatic-Rounded.otf",
@@ -78,6 +79,7 @@ export default function RootLayout({
       >
         {children}
       </body>
+      <Analytics />
     </html>
   );
 }
