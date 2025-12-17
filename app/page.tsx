@@ -6,6 +6,7 @@ import Work from "../components/Work";
 import Brand from "@/components/Brand";
 import S7Bot from "@/components/ChatBot";
 
+
 export default function Home() {
   return (
     <div className="relative">
