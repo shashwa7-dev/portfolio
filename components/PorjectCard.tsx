@@ -31,7 +31,7 @@ export default function ProjectCard({ project }: { project: TProject }) {
   const { bind, isPlaying, play, pause } = useVideoPreview();
 
   return (
-    <div className="relative flex flex-col  gap-1 cursor-pointer rounded-xl border border-border bg-primary transition-transform duration-300 ease-in-out hover:scale-[1.02] overflow-hidden h-[325px] group">
+    <div className="relative flex flex-col  gap-1 cursor-pointer rounded-xl border border-border bg-primary transition-transform duration-300 ease-in-out hover:scale-[1.02] overflow-hidden h-[350px] md:h-[325px] group">
       {/* Header */}
       <div className="flex items-center justify-between px-3 pt-3">
         <h4
