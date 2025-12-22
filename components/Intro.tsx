@@ -17,7 +17,13 @@ const Intro = () => {
           {" . Fullstack Capable"}
         </h2>
         <div className="flex items-center">
-          <div className={buttonClasses({ size: "sm", variant: "primary" })}>
+          <div
+            className={buttonClasses({
+              size: "sm",
+              variant: "primary",
+              className: "!flex-shrink-0",
+            })}
+          >
             <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
             <span>Open to Work</span>
           </div>
