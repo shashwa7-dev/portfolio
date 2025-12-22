@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { SVGS } from "./SVGS";
+import Button from "./common/Button";
 
 const TIMEOUT_DURATION = 10000;
 const NOTIFICATION_MESSAGES = [
@@ -306,13 +307,10 @@ const S7Bot = () => {
               Built on Gemini 2.5 Flash
             </p>
           </div>
-          <button
-            onClick={handleClose}
-            className="p-1 text-[0.7rem] border border-b-4 rounded-md hover:bg-muted transition-colors mb-auto flex items-center"
-          >
+          <Button onClick={handleClose} variant="danger" size="sm">
             <p>Close</p>
             <SVGS.Close className="w-3 h-3" />
-          </button>
+          </Button>
         </div>
 
         <div
@@ -354,13 +352,13 @@ const S7Bot = () => {
               disabled={isStreaming}
               className="flex-1 p-1 border rounded text-sm bg-input focus:outline-none placeholder-secondary-foreground"
             />
-            <button
+            <Button
               type="submit"
               disabled={isStreaming || !message.trim()}
-              className="p-1 px-2 border border-b-4 rounded text-sm disabled:opacity-50 transition-all"
+              variant="primary"
             >
               {isStreaming ? ". . ." : "Send"}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

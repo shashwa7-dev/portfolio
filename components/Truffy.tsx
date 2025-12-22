@@ -165,7 +165,7 @@ function ActionButton({
       variant="danger"
       className={cn(
         "text-xs  transition-all text-center justify-center",
-        active && "scale-90 !bg-button-danger-hover"
+        active && "scale-90  !bg-amber-500"
       )}
     >
       {label}
