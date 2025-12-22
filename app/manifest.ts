@@ -16,15 +16,17 @@ export default function manifest(): MetadataRoute.Manifest {
         src: "/android-chrome-192x192.png",
         sizes: "192x192",
         type: "image/png",
+        purpose: "maskable",
       },
       {
-        src: "/android-chrome-256x256.png",
-        sizes: "256x256",
+        src: "/android-chrome-512x512.png",
+        sizes: "512x512",
         type: "image/png",
+        purpose: "maskable",
       },
     ],
-    theme_color: "#efefef",
-    background_color: "#efefef",
+    theme_color: "#1e1e1e",
+    background_color: "#f8f3dd",
     display: "standalone",
   };
 }
