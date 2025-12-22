@@ -4,6 +4,7 @@ import { SVGS } from "./SVGS";
 import { cn } from "@/lib/utils";
 import { StackName } from "./common/StackIcon";
 import { Icon as Iconify } from "@iconify/react";
+import { buttonClasses } from "./common/Button/button.styles";
 export type Feature = {
   title: string;
   points: string[];
@@ -63,10 +64,8 @@ export const Social = ({
     <a
       href={link}
       target="_blank"
-      className={cn(
-        "social border flex items-center  gap-1 p-[1px] text-sm px-2 rounded-md border-b-4 text-secondary-foreground",
-        className
-      )}
+      rel="noopener noreferrer"
+      className={buttonClasses({ variant: "primary", size: "sm", className })}
     >
       {type === "opensea" ? (
         <Iconify icon="simple-icons:opensea" className="w-[10px] h-[10px]" />

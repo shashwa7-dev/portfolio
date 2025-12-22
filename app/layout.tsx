@@ -4,6 +4,7 @@ import "./globals.css";
 import { baseUrl } from "./sitemap";
 import localFont from "next/font/local";
 import { Analytics } from "@vercel/analytics/next";
+import Image from "next/image";
 
 const stoke = localFont({
   src: "../public/fonts/Somatic-Rounded.otf",
@@ -75,6 +76,16 @@ export default function RootLayout({
         className={`bg-background text-foreground border-border ${spaceGrotesk.variable} ${stoke.variable} font-mono dark`}
       >
         {children} <Analytics />
+        <div className="fixed top-0 left-0 z-[-1] opacity-5 w-full h-full">
+          <Image
+            src="/stardew_2.png"
+            alt=""
+            fill
+            placeholder="blur"
+            blurDataURL="/stardew_2.png"
+            className="object-cover"
+          />
+        </div>
       </body>
     </html>
   );

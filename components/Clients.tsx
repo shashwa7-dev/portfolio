@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { containerVariants, itemVariants } from "@/lib/motionVariants";
 import SectionTitle from "./common/SectionTitle";
 import { GitMerge, Hexagon } from "feather-icons-react";
+import Button from "./common/Button";
 
 const clients = [
   {
@@ -50,14 +51,20 @@ const Clients = () => {
         className="flex items-center flex-wrap gap-2"
       >
         {clients.map((client) => (
-          <motion.div
-            variants={itemVariants}
-            key={client.name}
-            onClick={() => window.open(client.link, "_blank")}
-            className="bg-card flex border-2 overflow-hidden pr-1.5 rounded-lg items-center text-xs gap-2 cursor-pointer hover:scale-95 transition-all"
-          >
-            <img src={client.img} className="w-[26px]" alt={client.name} />
-            <span>{client.name}</span>
+          <motion.div variants={itemVariants} key={client.name}>
+            <Button
+              className="overflow-hidden"
+              size="sm"
+              variant="primary"
+              onClick={() => window.open(client.link, "_blank")}
+            >
+              <img
+                src={client.img}
+                className="rounded-xl w-4"
+                alt={client.name}
+              />
+              <span>{client.name}</span>{" "}
+            </Button>
           </motion.div>
         ))}
       </motion.div>

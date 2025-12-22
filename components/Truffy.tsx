@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Button from "./common/Button";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { containerVariants, itemVariants, slideUpContainerVariants } from "@/lib/motionVariants";
+import { itemVariants, slideUpContainerVariants } from "@/lib/motionVariants";
 
 const GIFS = {
   idle: "/truffy/ideal_truffy.gif",
@@ -161,9 +161,11 @@ function ActionButton({
   return (
     <Button
       onClick={onClick}
+      size="sm"
+      variant="danger"
       className={cn(
         "text-xs  transition-all text-center justify-center",
-        active && "scale-90 !bg-amber-500 !text-black"
+        active && "scale-90 !bg-button-danger-hover"
       )}
     >
       {label}

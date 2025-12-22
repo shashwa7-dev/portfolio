@@ -2,13 +2,14 @@ import { formatDate, getBlogPosts } from "@/app/blog/utils";
 import Link from "next/link";
 import SectionTitle from "./common/SectionTitle";
 import { Folder } from "feather-icons-react";
+import Button from "./common/Button";
 
 export function BlogPosts() {
   let allBlogs = getBlogPosts();
 
   return (
     <div className="text-sm grid gap-3">
-      <SectionTitle title={"My Blogs"} icon={<Folder className="w-4 h-4"/>} />
+      <SectionTitle title={"My Blogs"} icon={<Folder className="w-4 h-4" />} />
       <div>
         {allBlogs
           .sort((a, b) => {
@@ -20,7 +21,7 @@ export function BlogPosts() {
             }
             return 1;
           })
-          .map((post, id) => (
+          .map((post) => (
             <Link
               className="grid grid-cols-[250px_1fr] border rounded-md overflow-hidden -md:grid-cols-1 bg-card text-card-foreground"
               href={`/blog/${post.slug}`}
@@ -44,12 +45,9 @@ export function BlogPosts() {
                 <div className="flex gap-2 flex-wrap mt-2">
                   {JSON.parse(post.metadata.tags).map(
                     (tag: string, id: number) => (
-                      <span
-                        key={id}
-                        className="border inline-block p-[2px] px-2 border-b-4 text-xs rounded-md"
-                      >
+                      <Button key={id} size="sm" variant="danger">
                         {tag}
-                      </span>
+                      </Button>
                     )
                   )}
                 </div>

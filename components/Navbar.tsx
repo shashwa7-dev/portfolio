@@ -80,7 +80,7 @@ export default function Navbar() {
       </div>
 
       {open && (
-        <div className="fixed top-0 left-0 w-full h-[100dvh] bg-neutral-900/90 backdrop-blur-sm origin-top z-[999] rounded-lg" />
+        <div className="fixed top-0 left-0 w-full h-[100dvh] bg-black/50 origin-top z-[999] rounded-lg" />
       )}
       {/* Animated Fullscreen Menu */}
       <AnimatePresence>
@@ -91,13 +91,13 @@ export default function Navbar() {
             animate={{ scaleY: 1, opacity: 1 }}
             exit={{ scaleY: 0, opacity: 0 }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="fixed top-0 left-0 w-full  backdrop-blur-sm origin-top z-[999] rounded-lg p-2"
+            className="fixed top-0 left-0 w-full  origin-top z-[999] rounded-lg p-2"
           >
             <div className="space-y-6  border  shadow-sm p-4 rounded-xl bg-card relative overflow-hidden">
               <img
                 src={"/images/bg.gif"}
                 alt=""
-                className="absolute w-full h-full top-0 left-0 z-[0] opacity-5 grayscale"
+                className="absolute w-full h-full top-0 left-0 z-[0] opacity-5"
               />
               <ul className="flex flex-col items-end justify-end pt-10 gap-2 relative z-[1]">
                 {navLinks.map((link, i) => (
@@ -107,12 +107,9 @@ export default function Navbar() {
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ delay: 0.2 * i }}
                     onClick={closeMenu}
-                    className="text-muted-foreground hover:text-secondary-foreground cursor-pointer font-medium tracking-wide flex items-center gap-2 text-lg"
+                    className="text-amber-500 hover:text-amber-500/50 cursor-pointer font-medium tracking-wide flex items-center gap-2 text-lg"
                   >
-                    <a
-                      href={link.href}
-                      className="hover:text-secondary-foreground"
-                    >
+                    <a href={link.href} className="hover:text-amber-500/50">
                       {link.label}
                     </a>
                     {link.icon}

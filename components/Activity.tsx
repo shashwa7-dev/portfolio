@@ -8,6 +8,7 @@ import SectionTitle from "./common/SectionTitle";
 import { Zap } from "feather-icons-react";
 import { Icon } from "@iconify/react";
 import Image from "next/image";
+import Button from "./common/Button";
 
 const Book = ({
   name,
@@ -75,18 +76,18 @@ const Activity = () => {
 
       {/* Blogs Section */}
       <motion.div variants={itemVariants} className="grid gap-1">
-        <p className="italic font-sans text-muted-foreground">Blogs</p>
+        <p className="italic font-sans text-subtitle">Blogs</p>
         <Link href="/blogs">
-          <div className="flex items-center gap-1 w-fit bg-card border border-border rounded-md px-2 py-1 hover:bg-card/80 transition">
+          <Button size="sm" variant="danger">
             <Icon icon={"fa6-solid:blog"} fontSize={"0.75rem"} />
             <span className="hover:underline">Checkout blogs</span>
-          </div>
+          </Button>
         </Link>
       </motion.div>
 
       {/* Reading Section */}
       <motion.div variants={itemVariants} className="grid gap-2">
-        <p className="italic font-sans text-muted-foreground">
+        <p className="italic font-sans text-subtitle">
           Currently Reading
         </p>
         <motion.div
@@ -116,7 +117,7 @@ const Activity = () => {
 
       {/* Spotify Section */}
       <motion.div variants={itemVariants} className="grid gap-1">
-        <p className="italic font-sans text-muted-foreground">Last listen</p>
+        <p className="italic font-sans text-subtitle">Last listen</p>
         <SpotifyLastListen />
       </motion.div>
     </motion.div>

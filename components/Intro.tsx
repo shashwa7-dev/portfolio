@@ -1,6 +1,7 @@
 import React from "react";
 import ToolsAndStack from "./ToolStack";
 import Navbar from "./Navbar";
+import { buttonClasses } from "./common/Button/button.styles";
 
 const Intro = () => {
   return (
@@ -16,7 +17,7 @@ const Intro = () => {
           {" . Fullstack Capable"}
         </h2>
         <div className="flex items-center">
-          <div className="flex items-center gap-1 text-xs md:text-sm text-muted-foreground border p-0.5 px-2 rounded-xl w-fit bg-card font-bold shadow-sm flex-shrink-0">
+          <div className={buttonClasses({ size: "sm", variant: "primary" })}>
             <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
             <span>Open to Work</span>
           </div>

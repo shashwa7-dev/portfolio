@@ -1,4 +1,5 @@
 import { SVGS } from "../SVGS";
+import { buttonClasses } from "./Button/button.styles";
 
 interface LinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   name: string;
@@ -15,10 +16,11 @@ export const Link: React.FC<LinkProps> = ({
     <a
       href={link}
       target="_blank"
-      className={`p-1 px-2 rounded-md border-b-4 border  text-xs gap-1.5 text-secondary-foreground bg-card flex items-center ${className}`}
+      rel="noopener noreferrer"
+      className={buttonClasses({ variant: "primary", size: "sm" })}
       {...props}
     >
-      <span className="capitalize">{name}</span>
+      <span className="capitalize">{name}</span>{" "}
       <SVGS.Link className="w-[10px] h-[10px]" />
     </a>
   );

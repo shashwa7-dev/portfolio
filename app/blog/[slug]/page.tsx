@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { CustomMDX } from "@/components/common/mdx";
 import { formatDate, getBlogPosts } from "../utils";
 import { baseUrl } from "@/app/sitemap";
+import Button from "@/components/common/Button";
 
 export async function generateStaticParams() {
   let posts = getBlogPosts();
@@ -90,12 +91,9 @@ export default function Blog({ params }: any) {
       </div>
       <div className="flex gap-2 flex-wrap mt-2">
         {JSON.parse(post.metadata.tags).map((tag: string, id: number) => (
-          <span
-            key={id}
-            className="border inline-block p-[2px] px-2 border-b-4 text-xs rounded-md"
-          >
+          <Button key={id} variant="danger" size="sm">
             {tag}
-          </span>
+          </Button>
         ))}
       </div>
       <article className="prose">

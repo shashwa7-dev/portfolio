@@ -38,55 +38,99 @@ body {
 
 /*light*/
 :root {
-  --background: 0, 0%, 100%;
-  --foreground: 0, 0%, 1%;
-  --primary: 0, 0%, 100%;
-  --primary-foreground: 0, 0%, 1%;
-  --secondary: 0, 0%, 82%;
-  --secondary-foreground: 223, 12%, 34%;
-  --muted: 0, 0%, 82%;
-  --muted-foreground: 220, 9%, 46%;
-  --card: 210, 20%, 98%;
-  --card-foreground: 0, 0%, 1%;
-  --input: 220, 13%, 91%;
-  --border: 220, 13%, 91%;
+  /* Background layers — warm daylight */
+  --background: 45, 40%, 96%; /* parchment daylight */
+  --foreground: 220, 20%, 12%; /* deep ink */
 
-  /*sugar high mdx roots*/
-  --sh-class: #2d5e9d;
-  --sh-identifier: #354150;
-  --sh-sign: #8996a3;
-  --sh-string: #00a99a;
-  --sh-keyword: #f47067;
-  --sh-comment: #a19595;
-  --sh-jsxliterals: #6266d1;
+  /* Cards — soft paper elevation */
+  --card: 45, 35%, 98%;
+  --card-foreground: 220, 18%, 14%;
+
+  /* Primary text & accents */
+  --primary: 30, 35%, 30%; /* warm wood */
+  --primary-foreground: 45, 40%, 96%;
+
+  /* Secondary — muted nature tones */
+  --secondary: 110, 20%, 85%; /* soft leaf */
+  --secondary-foreground: 220, 18%, 18%;
+
+  /* Muted / supporting UI */
+  --muted: 45, 25%, 90%;
+  --muted-foreground: 220, 10%, 40%;
+
+  /* Borders / inputs — organic separation */
+  --border: 45, 20%, 82%;
+  --input: 45, 20%, 88%;
+
+  /* Focus ring — warm glow */
+  --ring: 42, 70%, 55%;
+
+  /* --- Buttons --- */
+  --button-secondary: 45, 25%, 88%;
+  --button-secondary-foreground: 220, 18%, 18%;
+  --button-secondary-hover: 45, 25%, 82%;
+
+  /* --- Destructive (berry, not screaming red) --- */
+  --button-danger: 350, 55%, 55%;
+  --button-danger-hover: 350, 60%, 48%;
+
+  /* Syntax highlighting — daytime farm */
+  --sh-class: hsl(120, 35%, 45%); /* crop green */
+  --sh-identifier: hsl(200, 45%, 40%); /* river blue */
+  --sh-sign: hsl(42, 90%, 45%); /* sun gold */
+  --sh-string: hsl(90, 40%, 40%); /* leaf */
+  --sh-keyword: hsl(15, 65%, 45%); /* clay orange */
+  --sh-comment: hsl(45, 10%, 55%); /* dry wood */
+  --sh-jsxliterals: hsl(210, 50%, 45%);
 }
 .dark {
-  /* Background layers */
-  --background: 0, 0%, 8%;   /* near-black */
-  --foreground: 0, 0%, 90%;  /* soft white */
-  --card: 0, 0%, 10%;
-  --card-foreground: 0, 0%, 85%;
+  /* Background layers — night farm vibes */
+  --background: 220, 18%, 10%; /* deep night blue */
+  --foreground: 45, 30%, 88%; /* warm moonlight */
+  /* Cards — soft elevation, not cold */
+  --card: 210, 10%, 13%;
+  --card-foreground: 45, 25%, 85%;
+  /* Subtitle / supporting text */
+  --subtitle: 45, 15%, 72%; /* warm, soft */
+  --subtitle-muted: 45, 10%, 62%; /* quieter variant */
+  /* Muted / Borders — organic separation */
+  --muted: 210, 8%, 16%;
+  --muted-foreground: 45, 10%, 62%;
+  --border: 95, 10%, 26%; /* moss-tinted border */
+  --input: 95, 10%, 22%;
 
-  /* Primary & Secondary — both neutral darks */
-  --primary: 0, 0%, 14%;
-  --primary-foreground: 0, 0%, 90%;
-  --secondary: 0, 0%, 18%;
-  --secondary-foreground: 0, 0%, 85%;
+  /* Primary & Secondary — wood / soil tones */
+  --primary: 30, 25%, 18%; /* dark wood */
+  --primary-foreground: 45, 35%, 90%;
+  --secondary: 110, 15%, 18%; /* forest soil */
+  --secondary-foreground: 45, 25%, 85%;
 
-  /* Muted / Borders */
-  --muted: 0, 0%, 16%;
-  --muted-foreground: 0, 0%, 60%;
-  --border: 0, 0%, 20%;
-  --input: 0, 0%, 20%;
+  /* Muted / Borders — soft, not harsh */
+  --muted: 220, 15%, 16%;
+  --muted-foreground: 45, 10%, 65%;
+  --border: 30, 15%, 25%;
+  --input: 30, 15%, 22%;
 
-  /* Syntax highlighting — only place with color */
-  --sh-class: hsl(280, 100%, 70%);       /* purple */
-  --sh-identifier: hsl(190, 100%, 70%);  /* cyan */
-  --sh-sign: hsl(45, 100%, 65%);         /* yellow */
-  --sh-string: hsl(140, 80%, 65%);       /* green */
-  --sh-keyword: hsl(340, 80%, 70%);      /* pink/red */
-  --sh-comment: hsl(0, 0%, 45%);         /* gray */
-  --sh-jsxliterals: hsl(210, 100%, 70%); /* blue */
+  /* --- Secondary buttons (quiet night) --- */
+  --button-secondary: 220, 16%, 20%; /* muted night */
+  --button-secondary-foreground: 45, 20%, 88%;
+  --button-secondary-hover: 220, 18%, 24%;
+
+  /* --- Destructive / danger (berry, not red) --- */
+  --button-danger: 350, 45%, 50%; /* muted berry */
+  --button-danger-hover: 350, 50%, 46%;
+
+  /* --- Focus / ring (soft glow) --- */
+  --ring: 42, 70%, 60%;
+
+  /* Syntax highlighting — Stardew-inspired */
+  --sh-class: hsl(120, 40%, 65%); /* crop green */
+  --sh-identifier: hsl(200, 55%, 70%); /* river blue */
+  --sh-sign: hsl(45, 90%, 65%); /* golden sun */
+  --sh-string: hsl(90, 45%, 65%); /* leaf green */
+  --sh-keyword: hsl(15, 70%, 65%); /* autumn orange */
+  --sh-comment: hsl(45, 10%, 50%); /* weathered wood */
+  --sh-jsxliterals: hsl(210, 60%, 70%); /* night sky */
 }
 @keyframes float {
   0% {

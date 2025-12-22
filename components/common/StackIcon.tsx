@@ -3,6 +3,7 @@
 import React from "react";
 import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
+import Button from "./Button";
 
 export type StackName =
   | "html"
@@ -131,17 +132,18 @@ export default function StackIcon({
   if (!stack) return null;
 
   return (
-    <div
+    <Button
+      variant="primary"
+      size={showLabel ? "sm" : "sm"}
       className={cn(
-        "flex items-center gap-1.5 rounded-md  text-muted-foreground hover:text-foreground transition-colors text-xs",
-        showLabel &&
-          "p-1 px-2 rounded-md border-b-4 border  text-sm text-secondary-foreground bg-card",
+        "gap-1.5",
+        !showLabel && "p-0 !px-0 !border-0 !bg-transparent !border-b-0",
         className
       )}
       title={stack.label}
     >
       <Icon icon={stack.icon} width={size} height={size} />
       {showLabel && <span>{stack.label}</span>}
-    </div>
+    </Button>
   );
 }

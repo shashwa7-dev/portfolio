@@ -79,26 +79,48 @@ const config: Config = {
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-        },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
-        },
+
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        borderColor: {
-          DEFAULT: "hsl(var(--border))", // This overrides the default border color
+
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
         },
+
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
+
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+
+        /* Text hierarchy */
+        subtitle: "hsl(var(--subtitle))",
+        "subtitle-muted": "hsl(var(--subtitle-muted))",
+
+        /* Form + layout */
+        border: "hsl(var(--border))",
         input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+
+        /* Buttons */
+        button: {
+          secondary: {
+            DEFAULT: "hsl(var(--button-secondary))",
+            foreground: "hsl(var(--button-secondary-foreground))",
+            hover: "hsl(var(--button-secondary-hover))",
+          },
+          danger: {
+            DEFAULT: "hsl(var(--button-danger))",
+            hover: "hsl(var(--button-danger-hover))",
+          },
+        },
       },
     },
   },

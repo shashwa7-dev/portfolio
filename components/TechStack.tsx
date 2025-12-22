@@ -49,7 +49,7 @@ const TechStack = () => {
         icon={<Layers className={"w-4 h-4"} />}
       />
       <div className="grid gap-2 h-fit">
-        <p className="italic font-sans text-muted-foreground">Frontend</p>
+        <p className="italic font-sans text-subtitle">Frontend</p>
         <div className="flex flex-wrap gap-2">
           {frontendStacks.map((name) => (
             <StackIcon key={name} name={name} />
@@ -58,7 +58,7 @@ const TechStack = () => {
       </div>
       <div className="grid md:grid-cols-2 gap-3">
         <div className="grid gap-2 h-fit">
-          <p className="italic font-sans text-muted-foreground">
+          <p className="italic font-sans text-subtitle">
             Backend & Database
           </p>
           <div className="flex flex-wrap gap-2">
@@ -68,7 +68,7 @@ const TechStack = () => {
           </div>
         </div>
         <div className="grid gap-2 h-fit">
-          <p className="italic font-sans text-muted-foreground">
+          <p className="italic font-sans text-subtitle">
             DevOps & Infra
           </p>
           <div className="flex flex-wrap gap-2">
@@ -80,7 +80,7 @@ const TechStack = () => {
       </div>
       <div className="grid md:grid-cols-2 gap-3">
         <div className="grid gap-2 h-fit">
-          <p className="italic font-sans text-muted-foreground">
+          <p className="italic font-sans text-subtitle">
             Protocols / APIs
           </p>
           <div className="flex flex-wrap gap-2">
@@ -90,7 +90,7 @@ const TechStack = () => {
           </div>
         </div>
         <div className="grid gap-2 h-fit">
-          <p className="italic font-sans text-muted-foreground">AI Stack</p>
+          <p className="italic font-sans text-subtitle">AI Stack</p>
           <div className="flex flex-wrap gap-2">
             {aiStacks.map((name) => (
               <StackIcon key={name} name={name} />
@@ -99,7 +99,7 @@ const TechStack = () => {
         </div>
 
         <div className="grid gap-2 h-fit">
-          <p className="italic font-sans text-muted-foreground">
+          <p className="italic font-sans text-subtitle">
             Tools & Softwares
           </p>
           <div className="flex flex-wrap gap-2">
@@ -109,7 +109,7 @@ const TechStack = () => {
           </div>
         </div>
         <div className="grid gap-2 h-fit">
-          <p className="italic font-sans text-muted-foreground">
+          <p className="italic font-sans text-subtitle">
             Hardware Setup
           </p>
           <div className="flex flex-wrap gap-2">
@@ -128,7 +128,7 @@ const TechStack = () => {
           </div>
         </div>
         <div className="grid gap-2 h-fit">
-          <p className="italic font-sans text-muted-foreground">Powered By</p>
+          <p className="italic font-sans text-subtitle">Powered By</p>
           <div className="flex flex-wrap gap-2">
             {mixStacks.map((name) => (
               <StackIcon key={name} name={name} />
