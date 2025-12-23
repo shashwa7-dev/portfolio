@@ -2,11 +2,12 @@ import Book from "@/components/common/Book";
 import SectionTitle from "@/components/common/SectionTitle";
 import { books } from "@/lib/books";
 import { Icon } from "@iconify/react";
-import { Metadata } from "next";
-export const metadata: Metadata = {
+
+export const metadata = {
   title: "Books",
-  description: "Books I’m reading and learning from.",
+  description: "My books library.",
 };
+
 export default function BooksPage() {
   return (
     <section className="text-sm grid gap-4 max-w-2xl p-4 mx-auto">

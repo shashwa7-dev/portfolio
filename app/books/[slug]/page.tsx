@@ -3,11 +3,44 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Link } from "@/components/common/Link";
+import { baseUrl } from "@/app/sitemap";
 
 type Props = {
   params: { slug: string };
 };
+export function generateMetadata({ params }: any) {
+  const book = books.find((b) => b.slug === params.slug);
+  if (!book) {
+    return;
+  }
 
+  const { name: title, description, cover: image } = book;
+  const ogImage = image
+    ? image
+    : `${baseUrl}/og?title=${encodeURIComponent(book.name)}`;
+  return {
+    title: book.name,
+    description: book.description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      url: `${baseUrl}/books`,
+      siteName: "S7.dev",
+      images: [
+        {
+          url: ogImage,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImage],
+    },
+  };
+}
 export default function BookPage({ params }: Props) {
   const book = books.find((b) => b.slug === params.slug);
   if (!book) notFound();
