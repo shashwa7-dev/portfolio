@@ -17,7 +17,7 @@ export default function BookPage({ params }: Props) {
   return (
     <main className="max-w-4xl mx-auto px-4 py-10 space-y-10">
       {/* Header */}
-      <header className="flex gap-6 items-start">
+      <header className="flex flex-col items-center text-center md:text-left md:flex-row gap-6 md:items-start">
         <div className="relative w-40 aspect-[2/3] shrink-0 overflow-hidden rounded-lg border-4">
           <Image
             src={book.cover}
@@ -43,7 +43,7 @@ export default function BookPage({ params }: Props) {
             <span className="text-amber-500 font-semibold">{book.author}</span>
           </p>
           <Link name={`Buy ${book.name}`} link={book.link} />
-          <div className="flex items-center gap-2 text-sm">
+          <div className="flex -md:justify-center items-center gap-2 text-sm">
             <span className="rounded-md  px-2 py-1 bg-button-danger">
               {completedCount}/{book.chapters.length} chapters
             </span>
@@ -69,7 +69,7 @@ export default function BookPage({ params }: Props) {
           {book.chapters.map((chapter, index) => (
             <li
               key={chapter.id}
-              className={`flex items-center justify-between rounded-lg border px-4 py-3 text-sm transition bg-muted
+              className={`flex items-center justify-between rounded-lg border px-4 py-3 text-sm transition bg-muted 
                 ${
                   chapter.completed
                     ? "!bg-secondary text-muted-foreground"
@@ -77,7 +77,7 @@ export default function BookPage({ params }: Props) {
                 }
               `}
             >
-              <span
+              <p
                 className={cn(
                   "flex items-center gap-3",
                   chapter.completed && "line-through"
@@ -85,7 +85,7 @@ export default function BookPage({ params }: Props) {
               >
                 <span className="text-xs opacity-50">{index + 1}.</span>
                 {chapter.title}
-              </span>
+              </p>
 
               {chapter.completed && (
                 <span className="rounded-md bg-green-500/10 text-green-600 px-2 py-1 text-xs">
