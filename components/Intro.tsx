@@ -17,16 +17,18 @@ const Intro = () => {
           {" . Fullstack Capable"}
         </h2>
         <div className="flex items-center">
-          <div
+          <a
             className={buttonClasses({
               size: "sm",
-              variant: "primary",
-              className: "!flex-shrink-0",
+              variant: "secondary",
+
+              className: "!flex-shrink-0 !bg-muted",
             })}
+            href={"mailto:contact@shashwa7.in"}
           >
             <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
             <span>Open to Work</span>
-          </div>
+          </a>
           <ToolsAndStack />
         </div>
       </div>

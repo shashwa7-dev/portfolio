@@ -1,12 +1,14 @@
-import React from "react";
 import { BlogPosts } from "../../components/BlogPosts";
 
-const BlogsPage = () => {
-  return (
-    <div className="max-w-2xl p-4 mx-auto">
-      <BlogPosts />
-    </div>
-  );
+export const metadata = {
+  title: "Blogs",
+  description: "Read my blog.",
 };
 
-export default BlogsPage;
+export default function Page() {
+  return (
+    <section className="text-sm grid gap-4 max-w-2xl p-4 mx-auto">
+      <BlogPosts />
+    </section>
+  );
+}

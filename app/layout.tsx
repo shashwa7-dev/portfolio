@@ -19,7 +19,10 @@ const spaceGrotesk = Space_Grotesk({
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
-  title: "Hey, what's good?",
+  title: {
+    default: "Whats Good?",
+    template: "%s | offcod8",
+  },
   description: "Frontend Engineer | Expert in Crafting Quality Interfaces",
   authors: [{ name: "Shashwat Tripathi" }],
   openGraph: {

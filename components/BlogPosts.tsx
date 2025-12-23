@@ -1,15 +1,21 @@
-import { formatDate, getBlogPosts } from "@/app/blog/utils";
+import { formatDate, getBlogPosts } from "@/app/blogs/utils";
 import Link from "next/link";
 import SectionTitle from "./common/SectionTitle";
-import { Folder } from "feather-icons-react";
 import Button from "./common/Button";
+import { Icon } from "@iconify/react";
 
 export function BlogPosts() {
   let allBlogs = getBlogPosts();
 
   return (
-    <div className="text-sm grid gap-3">
-      <SectionTitle title={"My Blogs"} icon={<Folder className="w-4 h-4" />} />
+    <div className="text-sm grid gap-4">
+      <SectionTitle
+        variant="huge"
+        title={"My Blogs"}
+        icon={
+          <Icon icon={"streamline-block:content-write"} className="w-8 h-8" />
+        }
+      />
       <div>
         {allBlogs
           .sort((a, b) => {
@@ -24,7 +30,7 @@ export function BlogPosts() {
           .map((post) => (
             <Link
               className="grid grid-cols-[250px_1fr] border rounded-md overflow-hidden -md:grid-cols-1 bg-card text-card-foreground"
-              href={`/blog/${post.slug}`}
+              href={`/blogs/${post.slug}`}
               key={post.slug}
             >
               <div className="grid place-items-center -md:h-[150px] overflow-hidden">
