@@ -7,7 +7,7 @@ import Brand from "@/components/Brand";
 import S7Bot from "@/components/ChatBot";
 import dynamic from "next/dynamic";
 
-const LazyLoadTruffy = dynamic(() => import("@/components/Truffy"));
+const LazyLoadTruffy = dynamic(() => import("@/components/Drocto"));
 export default function Home() {
   return (
     <div className="relative">

@@ -26,7 +26,7 @@ const Activity = () => {
       <motion.div variants={itemVariants} className="grid gap-1">
         <p className="italic font-sans text-subtitle">Blogs</p>
         <Link href="/blogs">
-          <Button size="sm" variant="danger">
+          <Button size="sm" variant="primary">
             <Icon
               icon={"streamline-block:content-write"}
               fontSize={"0.75rem"}

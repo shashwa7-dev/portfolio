@@ -14,7 +14,7 @@ export default function BooksPage() {
       <SectionTitle
         variant="huge"
         title={"Book Shelf"}
-        icon={<Icon icon={"material-symbols:book"} className="w-8 h-8" />}
+        icon={<Icon icon={"material-symbols:book"} className="w-6 h-6" />}
       />
 
       <div className="grid grid-cols-3 gap-4">

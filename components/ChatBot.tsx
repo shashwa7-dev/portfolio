@@ -6,8 +6,8 @@ import Button from "./common/Button";
 
 const TIMEOUT_DURATION = 10000;
 const NOTIFICATION_MESSAGES = [
-  "Hello, Its Shashwat.",
-  "I meant Shashwat's AI assistant.",
+  "Hello, Its Truffy!.",
+  "I am Shashwat's AI assistant.",
   "Got questions? Ask me!",
 ];
 const TYPE_SPEED = 100;
@@ -274,7 +274,7 @@ const S7Bot = () => {
         } shadow-sm fixed bottom-4 right-4 -md:right-2.5 w-[40px] h-[40px] rounded-xl overflow-hidden border-2`}
       >
         <img
-          src={"./apple-touch-icon.png"}
+          src={"./truffycc.png"}
           className="w-full h-full object-cover object-center hover:rotate-2 hover:scale-110"
           alt="truffy assistant"
         />
@@ -294,13 +294,13 @@ const S7Bot = () => {
             <div className="flex items-center gap-1 relative overflow-hidden z-2">
               <div className="w-[20px] h-[20px] overflow-hidden rounded-md">
                 <img
-                  src={"./apple-touch-icon.png"}
+                  src={"./truffycc.png"}
                   className="w-full h-full object-cover object-center"
                   alt="protfolio assistant"
                 />
               </div>
-              <h3 className="text-secondary-foreground opacity-90 font-sans">
-                Portfolio Assistant
+              <h3 className="text-secondary-foreground opacity-90 font-sans leading-tight ws-tighter">
+                Fetch it Truffy
               </h3>
             </div>
             <p className="text-xs text-muted-foreground text-left">
@@ -327,7 +327,7 @@ const S7Bot = () => {
               {msg.role !== "user" && (
                 <div className="flex items-center gap-2">
                   <img
-                    src={"./apple-touch-icon.png"}
+                    src={"./truffycc.png"}
                     className="w-[20px] h-[20px] object-cover object-center rounded-md"
                     alt="truffy assistant"
                   />

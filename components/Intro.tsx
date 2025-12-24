@@ -7,7 +7,14 @@ const Intro = () => {
   return (
     <div className="flex justify-between">
       <div className="flex flex-col relative max-w-[80%]">
-        <div className="flex relative w-fit">
+        <div className="flex items-center gap-1 relative w-fit">
+          <div className="w-[22.5px] h-[22.5px] md:w-[25px] md:h-[25px] overflow-hidden rounded-md">
+            <img
+              src={"./apple-touch-icon.png"}
+              className="w-full h-full object-cover object-center"
+              alt="protfolio assistant"
+            />
+          </div>
           <h1 className="text-3xl mb-0.5 -md:text-2xl  text-secondary-foreground font-sans">
             {"Shashwat Tripathi"}
           </h1>

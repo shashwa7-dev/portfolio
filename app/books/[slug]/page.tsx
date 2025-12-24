@@ -48,7 +48,7 @@ export default function BookPage({ params }: Props) {
   const completedCount = book.chapters.filter((c) => c.completed).length;
 
   return (
-    <main className="max-w-4xl mx-auto px-4 py-10 space-y-10">
+    <main className="max-w-2xl mx-auto px-4 py-10 space-y-10">
       {/* Header */}
       <header className="flex flex-col items-center text-center md:text-left md:flex-row gap-6 md:items-start">
         <div className="relative w-40 aspect-[2/3] shrink-0 overflow-hidden rounded-lg border-4">
@@ -67,7 +67,7 @@ export default function BookPage({ params }: Props) {
               {book.name}
             </h1>
             {book.description ? (
-              <p className="text-subtitle text-sm">{book.description}</p>
+              <p className="text-subtitle text-sm line-clamp-3">{book.description}</p>
             ) : null}
           </div>
 

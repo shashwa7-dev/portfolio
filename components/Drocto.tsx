@@ -7,11 +7,11 @@ import { motion } from "framer-motion";
 import { itemVariants, slideUpContainerVariants } from "@/lib/motionVariants";
 
 const GIFS = {
-  idle: "/truffy/ideal_truffy.gif",
-  backflip: "/truffy/backflip2_truffy.gif",
-  jump: "/truffy/jumping_truffy.gif",
-  slide: "/truffy/sliding_truffy.gif",
-  punch: "/truffy/punching_truffy.gif",
+  idle: "/drocto/ideal_drocto.gif",
+  backflip: "/drocto/backflip2_drocto.gif",
+  jump: "/drocto/jumping_drocto.gif",
+  slide: "/drocto/sliding_drocto.gif",
+  punch: "/drocto/punching_drocto.gif",
 } as const;
 
 type AvatarState = keyof typeof GIFS;
@@ -31,7 +31,7 @@ const ANIMATION_DURATION: Record<AvatarState, number> = {
   punch: 1500,
 };
 
-export default function Truffy() {
+export default function Drocto() {
   const [state, setState] = useState<AvatarState>("idle");
   const isAnimatingRef = useRef(false);
   const activeKeyRef = useRef<string>("");
@@ -106,7 +106,7 @@ export default function Truffy() {
           className="font-medium text-xs text-center"
           variants={itemVariants}
         >
-          Hey! I&apos;m <span className="text-amber-500 font-sans">Truffy</span>
+          Hey! I&apos;m <span className="text-amber-500 font-sans">Drocto</span>
         </motion.p>{" "}
         <motion.div className="grid grid-cols-2 gap-2" variants={itemVariants}>
           <ActionButton

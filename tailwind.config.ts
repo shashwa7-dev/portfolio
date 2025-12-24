@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
 import { fontFamily } from "tailwindcss/defaultTheme";
+import plugin from "tailwindcss/plugin";
 const config: Config = {
   darkMode: ["class"],
   content: [
@@ -124,6 +125,25 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    plugin(function ({ addUtilities }: any) {
+      const newUtilities = {
+        ".ws-tighter": {
+          wordSpacing: "-0.1rem",
+        },
+        ".ws-tight": {
+          wordSpacing: "0.1rem",
+        },
+        ".ws-normal": {
+          wordSpacing: "0.25rem",
+        },
+        ".ws-wide": {
+          wordSpacing: "0.5rem",
+        },
+      };
+
+      addUtilities(newUtilities, ["responsive"]);
+    }),
+  ],
 };
 export default config;

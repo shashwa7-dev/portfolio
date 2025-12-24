@@ -13,7 +13,7 @@ export function BlogPosts() {
         variant="huge"
         title={"My Blogs"}
         icon={
-          <Icon icon={"streamline-block:content-write"} className="w-8 h-8" />
+          <Icon icon={"streamline-block:content-write"} className="w-6 h-6" />
         }
       />
       <div>
