@@ -79,13 +79,13 @@ export default function RootLayout({
         className={`bg-background text-foreground border-border ${spaceGrotesk.variable} ${stoke.variable} font-mono dark`}
       >
         {children} <Analytics />
-        <div className="fixed top-0 left-0 z-[-1] opacity-5 w-full h-full">
+        <div className="fixed top-0 left-0 z-[-1] opacity-10 w-full h-full">
           <Image
-            src="/stardew_2.png"
+            src="/stardew.webp"
             alt=""
             fill
             placeholder="blur"
-            blurDataURL="/stardew_2.png"
+            blurDataURL="/stardew.webp"
             className="object-cover"
           />
         </div>

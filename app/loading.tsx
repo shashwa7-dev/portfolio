@@ -12,7 +12,7 @@ const Loading = () => {
           alt="loading"
           fill
           priority
-          className="object-contain"
+          className="object-contain rounded-xl"
         />
         <Loader className="animate-spin absolute bottom-2 right-1 w-4 h-4" />
       </div>{" "}
