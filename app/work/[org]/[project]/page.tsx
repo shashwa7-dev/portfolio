@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, ExternalLink, Play } from "feather-icons-react";
-import { organizations, getOrganization, getProjectFromOrg } from "@/lib/workData";
+import {  getOrganization, getProjectFromOrg } from "@/lib/workData";
 import { ActiveBadge } from "@/components/common/ActiveBadge";
 import StackIcon from "@/components/common/StackIcon";
 import VideoModal from "@/components/common/VideoModal";

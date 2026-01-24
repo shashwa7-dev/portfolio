@@ -22,7 +22,6 @@ A modern, aesthetic portfolio website built with Next.js, featuring smooth anima
 - npm, yarn, pnpm, or bun
 
 ### Installation
-
 1. Clone the repository:
 ```bash
 git clone https://github.com/yourusername/my-portfolio.git

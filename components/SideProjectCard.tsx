@@ -69,7 +69,7 @@ export default function SideProjectCard({ project }: SideProjectCardProps) {
             )}
 
             {/* Status badge */}
-            {project.isActive && (
+            {project.isRecent && (
               <ActiveBadge
                 variant="overlay"
                 className="absolute left-2 top-2"
