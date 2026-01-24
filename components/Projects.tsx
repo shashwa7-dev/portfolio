@@ -48,18 +48,32 @@ const Projects = () => {
       </div>
 
       {/* Brand header */}
-      <div className="flex items-center gap-3">
-        <Image
-          src="/images/offcod8.webp"
-          alt="offcod8"
-          width={40}
-          height={40}
-          className="rounded-lg"
-        />
-        <div>
-          <p className="font-medium">offcod8</p>
-          <p className="text-sm text-muted-foreground">
-            Solo Founder & Engineer · Jun 2021 — Present
+      <div className="flex items-center gap-3 mb-5">
+        {/* Logo */}
+        <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-secondary shrink-0">
+          <Image
+            src="/images/offcod8.webp"
+            alt="offcod8"
+            width={40}
+            height={40}
+            className="rounded-lg"
+          />
+        </div>
+
+        {/* Info */}
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-2">
+            <div className="flex items-center gap-2 flex-wrap min-w-0">
+              <h3 className="font-semibold text-foreground leading-tight">
+                offcod8
+              </h3>
+            </div>
+            <span className="text-xs text-muted-foreground tabular-nums shrink-0 sm:whitespace-nowrap">
+              {"Jun 2025 — Present"}
+            </span>
+          </div>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            {"Solo Founder & Engineer"}
           </p>
         </div>
       </div>

@@ -49,6 +49,7 @@ Built with React + Vite, this tool explores browser rendering and export edge ca
       web: "https://papernoise.shashwa7.in/",
     },
     thumbnail: "/projects/papernoise-og.png",
+    date: "Jan 2026",
   },
   {
     id: "focus-pro",
@@ -77,6 +78,7 @@ I built this after seeing similar features as premium offerings in apps like sta
       twitter: "https://x.com/offcod8/status/1998007706041659638",
     },
     thumbnail: "/projects/project_focus_pro.JPG",
+    date: "Dec 2025",
   },
   {
     id: "eatri8",
@@ -102,7 +104,7 @@ Built with Next.js and powered by Google Gemini Flash 1.5, the app processes ima
     },
     preview: "/projects/preview_eatri8.mp4",
     thumbnail: "/projects/project_eatri8.JPG",
-    date: "Sep 2025",
+    date: "Jul 2025",
   },
 ];
 
