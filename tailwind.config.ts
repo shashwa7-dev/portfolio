@@ -1,5 +1,4 @@
 import type { Config } from "tailwindcss";
-import plugin from "tailwindcss/plugin";
 import { fontFamily } from "tailwindcss/defaultTheme";
 
 const config: Config = {
@@ -115,28 +114,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [
-    plugin(function ({ addUtilities }) {
-      const newUtilities: Record<string, Record<string, string>> = {
-        ".center-absolute": {
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-        },
-        ".scrollbar-hide": {
-          "-ms-overflow-style": "none",
-          "scrollbar-width": "none",
-          "&::-webkit-scrollbar": {
-            display: "none",
-          },
-        },
-      };
-
-      addUtilities(newUtilities, ["responsive"]);
-    }),
-    require("tailwindcss-animate"),
-  ],
+  plugins: [require("tailwindcss-animate")],
 };
 
 export default config;
