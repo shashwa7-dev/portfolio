@@ -90,8 +90,8 @@ const Projects = () => {
                     <h4 className="font-semibold group-hover:text-accent transition-colors">
                       {project.title}
                     </h4>
-                    {project.isActive && (
-                      <ActiveBadge variant="minimal" />
+                    {project.isRecent && (
+                      <ActiveBadge variant="minimal" label="Recent" />
                     )}
                   </div>
                   <span className="text-xs text-muted-foreground whitespace-nowrap shrink-0">
