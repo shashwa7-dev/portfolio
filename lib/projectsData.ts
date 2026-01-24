@@ -46,6 +46,7 @@ Built with React + Vite, this tool explores browser rendering and export edge ca
     links: {
       github: "https://github.com/shashwa7-dev/papernoise-offcod8",
       producthunt: "https://www.producthunt.com/products/papernoise",
+      web: "https://papernoise.shashwa7.in/",
     },
     thumbnail: "/projects/papernoise-og.png",
   },
