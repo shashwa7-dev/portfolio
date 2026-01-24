@@ -2,6 +2,7 @@ import React from "react";
 import SectionTitle from "./common/SectionTitle";
 import { Layers } from "feather-icons-react";
 import StackIcon from "./common/StackIcon";
+import { Icon } from "@iconify/react";
 
 const frontendStacks = [
   "html",
@@ -61,7 +62,7 @@ const TechStack = () => {
     <div className="space-y-6" id="tech_stack">
       <SectionTitle
         title="Tech Stack"
-        icon={<Layers className="w-3.5 h-3.5" />}
+        icon={<Icon icon='solar:layers-minimalistic-line-duotone' className="w-5 h-5" />}
       />
 
       <div className="space-y-6">

@@ -5,6 +5,7 @@ import { containerVariants, itemVariants } from "@/lib/motionVariants";
 import { Smile } from "feather-icons-react";
 import SectionTitle from "./common/SectionTitle";
 import { SVGS } from "./SVGS";
+import { Icon } from "@iconify/react";
 
 const socials = [
   {
@@ -33,7 +34,7 @@ const Socials = () => {
       viewport={{ once: true, amount: 0.3 }}
       className="space-y-4"
     >
-      <SectionTitle title="Connect" icon={<Smile className="w-3.5 h-3.5" />} />
+      <SectionTitle title="Connect" icon={<Icon icon="solar:sticker-smile-circle-line-duotone" className="w-5 h-5" />} />
       <motion.div
         variants={containerVariants}
         className="flex flex-wrap gap-2 items-center"

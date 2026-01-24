@@ -3,10 +3,10 @@
 import React from "react";
 import { motion } from "motion/react";
 import SectionTitle from "./common/SectionTitle";
-import { Briefcase } from "feather-icons-react";
 import { organizations } from "@/lib/workData";
 import { containerVariants } from "@/lib/motionVariants";
 import WorkListItem from "./WorkListItem";
+import { Icon } from "@iconify/react";
 
 const Work = () => {
   return (
@@ -20,7 +20,7 @@ const Work = () => {
     >
       <SectionTitle
         title="Work Experience"
-        icon={<Briefcase className="w-3.5 h-3.5" />}
+        icon={<Icon icon={'solar:laptop-minimalistic-line-duotone'} className="w-5 h-5" />}
       />
 
       <div className="space-y-8">

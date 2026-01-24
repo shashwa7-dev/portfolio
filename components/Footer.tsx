@@ -9,7 +9,7 @@ const Footer = () => {
         <div className="flex items-center justify-between text-sm text-muted-foreground">
           <CurrentTime />
           <p>
-            &copy; {new Date().getFullYear()} Shashwat Tripathi •{" "}
+            &copy; {new Date().getFullYear()} {" / S7.dev / "}
             <a
               href="https://github.com/shashwa7-dev/portfolio/blob/main/LICENSE"
               target="_blank"

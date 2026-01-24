@@ -11,6 +11,7 @@ import { ArrowRight, ExternalLink, Folder } from "feather-icons-react";
 import { sideProjects } from "@/lib/projectsData";
 import { containerVariants, itemVariants } from "@/lib/motionVariants";
 import StackIcon from "./common/StackIcon";
+import { Icon } from "@iconify/react";
 
 const Projects = () => {
   const router = useRouter();
@@ -35,8 +36,7 @@ const Projects = () => {
       <div className="flex items-center justify-between">
         <SectionTitle
           title="Projects"
-          icon={<Folder className="w-4 h-4" />}
-          variant="large"
+          icon={<Icon icon='solar:backpack-line-duotone' className="w-5 h-5" />}
         />
         <Link
           href="/projects"

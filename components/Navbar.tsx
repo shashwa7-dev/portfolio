@@ -26,8 +26,9 @@ export default function Navbar() {
       {/* Sticky dock — fixed at bottom, pill-shaped */}
       <header className="fixed bottom-5 left-0 md:inset-x-0 z-50 flex justify-center pointer-events-none  px-2 md:px-4 ">
         <motion.nav
-          initial={{ opacity: 0, x: -10, }}
-          animate={{ opacity: 1, x: 0,  }}
+          initial={{ opacity: 0, y: 10, }}
+          animate={{ opacity: 1, y: 0, }}
+          transition={{ duration: 0.5, delay: 1 }}
           className="pointer-events-auto flex items-center gap-1 rounded-full bg-background/75 dark:bg-background/60 backdrop-blur-xl border border-border shadow-lg shadow-black/5 dark:shadow-black/20 p-2 md:px-4"
           role="navigation"
         >

@@ -38,15 +38,15 @@ const SectionTitle: React.FC<SectionTitleProps> = ({
   return (
     <div
       className={cn(
-        "flex items-center gap-2.5",
+        "flex items-center gap-2",
         alignMap[align],
-        showAccentBar && "border-l-2 border-accent pl-3 -ml-px",
+        showAccentBar && "border-l-2 border-accent pl-2.5 -ml-px",
         variantMap[variant].wrapper,
         className
       )}
     >
       {icon && (
-        <span className="shrink-0 text-accent [&_svg]:stroke-[2.5]" aria-hidden>
+        <span className="shrink-0 text-accent" aria-hidden>
           {icon}
         </span>
       )}

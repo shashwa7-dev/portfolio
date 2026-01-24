@@ -8,6 +8,7 @@ import SectionTitle from "./common/SectionTitle";
 import { Zap, ArrowRight } from "feather-icons-react";
 import BookListItem from "./BookListItem";
 import { books } from "@/lib/books";
+import { Icon } from "@iconify/react";
 
 const Activity = () => {
   return (
@@ -18,7 +19,7 @@ const Activity = () => {
       viewport={{ once: true, amount: 0.3 }}
       className="space-y-6"
     >
-      <SectionTitle title="Activity" icon={<Zap className="w-3.5 h-3.5" />} />
+      <SectionTitle title="Activity" icon={<Icon icon='solar:speaker-minimalistic-line-duotone' className="w-5 h-5" />} />
 
       {/* Blogs Section */}
       <motion.div variants={itemVariants} className="space-y-2">

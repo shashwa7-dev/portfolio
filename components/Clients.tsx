@@ -6,6 +6,7 @@ import { motion } from "motion/react";
 import { containerVariants, itemVariants } from "@/lib/motionVariants";
 import SectionTitle from "./common/SectionTitle";
 import { GitMerge, ExternalLink } from "feather-icons-react";
+import { Icon } from "@iconify/react";
 
 const clients = [
   {
@@ -57,8 +58,7 @@ const Clients = () => {
     >
       <SectionTitle
         title="Clients & Contributions"
-        icon={<GitMerge className="w-4 h-4" />}
-        variant="large"
+        icon={<Icon icon='solar:ufo-3-line-duotone' className="w-5 h-5" />}
       />
       <div className="space-y-2">
         {clients.map((client) => (
