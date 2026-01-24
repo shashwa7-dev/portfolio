@@ -1,9 +1,10 @@
 import React from "react";
 import CurrentTime from "./CurrentTime";
+import Brand from "./Brand";
 
 const Footer = () => {
   return (
-    <footer className="border-t border-border py-6 mt-12">
+    <footer className="border-t border-border py-6 mt-12 overflow-hidden relative h-[10rem] md:h-[15rem]">
       <div className="max-w-2xl mx-auto px-4">
         <div className="flex items-center justify-between text-sm text-muted-foreground">
           <CurrentTime />
@@ -20,6 +21,7 @@ const Footer = () => {
           </p>
         </div>
       </div>
+      <Brand />
     </footer>
   );
 };

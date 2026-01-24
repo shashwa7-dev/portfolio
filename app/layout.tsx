@@ -5,6 +5,8 @@ import "./globals.css";
 import { baseUrl } from "./sitemap";
 import { Analytics } from "@vercel/analytics/next";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import Brand from "@/components/Brand";
+import Footer from "@/components/Footer";
 
 const BottomFadeMask = dynamic(
   () =>
@@ -14,13 +16,13 @@ const BottomFadeMask = dynamic(
   { ssr: false }
 );
 
-// const AnimatedBackground = dynamic(
-//   () =>
-//     import("@/components/AnimatedBackground").then((m) => ({
-//       default: m.AnimatedBackground,
-//     })),
-//   { ssr: false }
-// );
+const AnimatedBackground = dynamic(
+  () =>
+    import("@/components/AnimatedBackground").then((m) => ({
+      default: m.AnimatedBackground,
+    })),
+  { ssr: false }
+);
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -90,7 +92,7 @@ export default function RootLayout({
       <body
         className={`bg-background text-foreground border-border ${plusJakarta.variable} font-sans dark`}
       >
-        {/* <AnimatedBackground /> */}
+        <AnimatedBackground />
         <div className="relative z-10">
           <TooltipProvider>
             {children}
@@ -98,6 +100,7 @@ export default function RootLayout({
             <Analytics />
           </TooltipProvider>
         </div>
+        <Footer />
       </body>
     </html>
   );

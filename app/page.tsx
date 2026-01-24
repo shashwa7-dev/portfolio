@@ -6,10 +6,8 @@ import Clients from "@/components/Clients";
 import Socials from "@/components/Socials";
 import Activity from "@/components/Activity";
 import Navbar from "@/components/Navbar";
-import CurrentTime from "@/components/CurrentTime";
 import { Separator } from "@/components/ui/separator";
 import dynamic from "next/dynamic";
-import Footer from "@/components/Footer";
 
 const S7Bot = dynamic(() => import("@/components/ChatBot"), {
   ssr: false,
@@ -19,7 +17,7 @@ export default function Home() {
   return (
     <main className="min-h-screen relative">
       <Navbar />
-      <div className="max-w-2xl mx-auto px-4 pt-20 pb-12 space-y-10">
+      <div className="max-w-2xl mx-auto px-4 pt-8 pb-24 space-y-10">
         {/* Hero / About */}
         <section>
           <About />
@@ -55,9 +53,6 @@ export default function Home() {
           <Socials />
         </section>
       </div>
-
-      {/* Footer */}
-      <Footer />
 
       <S7Bot />
     </main>

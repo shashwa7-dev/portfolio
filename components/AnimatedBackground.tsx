@@ -21,7 +21,7 @@ type ScrollMap = {
 const blobConfig: { className: string; scrollMap: ScrollMap }[] = [
     {
         className:
-            "absolute -top-[40%] -left-[20%] w-[60vmax] h-[60vmax] rounded-full opacity-[0.12] dark:opacity-[0.1] blur-3xl",
+            "absolute -top-[40%] -left-[20%] w-[50vmax] h-[50vmax] rounded-full opacity-[0.12] dark:opacity-[0.1] blur-3xl",
         scrollMap: {
             x: [0, 0.4, 0.7, 1],
             y: [0, 0.4, 0.7, 1],
@@ -29,6 +29,7 @@ const blobConfig: { className: string; scrollMap: ScrollMap }[] = [
             xOut: [0, 140, 180, 220],
             yOut: [0, 60, 180, 320],
             scaleOut: [1, 1.02, 1.04],
+
         },
     },
 
@@ -53,12 +54,16 @@ function ScrollBlob({
         <motion.div
             className={className}
             style={{
-                background: "hsl(var(--accent))",
+                background: "hsl(var(--accent)/0.7)",
                 ...(reduceMotion ? {} : { x, y, scale }),
             }}
         />
     );
 }
+
+
+// const GRAIN_SVG_VARIANT_A = `data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E`;
+const GRAIN_SVG_VARIANT_B = `data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch' result='noise'/%3E%3CfeColorMatrix type='matrix' values='0.08 0 0 0 0 0 0.08 0 0 0 0 0 0.08 0 0 0 0 0 1 0' in='noise'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E`;
 
 export function AnimatedBackground() {
     const reduceMotion = useReducedMotion();
@@ -81,6 +86,14 @@ export function AnimatedBackground() {
                         reduceMotion={!!reduceMotion}
                     />
                 ))}
+                <div
+                    className="absolute inset-0 opacity-[0.5] dark:opacity-[0.4] mix-blend-multiply"
+                    style={{
+                        backgroundImage: `url("${GRAIN_SVG_VARIANT_B}")`,
+                        backgroundSize: "180px 180px",
+                    }}
+                    aria-hidden="true"
+                />
             </motion.div>
         </AnimatePresence>
     );

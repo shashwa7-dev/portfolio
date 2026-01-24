@@ -9,7 +9,6 @@ import { motion, AnimatePresence } from "motion/react";
 const TIMEOUT_DURATION = 10000;
 const NOTIFICATION_MESSAGES = [
   "Hello, Its Truffy!.",
-  "I am Shashwat's AI assistant.",
   "Got questions? Ask me!",
 ];
 const TYPE_SPEED = 100;
@@ -260,7 +259,7 @@ const S7Bot = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-[60px] right-4 -md:right-2.5"
+            className="fixed bottom-[60px] right-4 -md:right-2.5 -md:hidden"
           >
             <div className="bg-card rounded-lg border shadow-lg px-3 py-2 max-w-[200px]">
               <p className="text-xs text-card-foreground">
