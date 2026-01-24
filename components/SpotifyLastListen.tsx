@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { formatDistanceToNow, parseISO } from "date-fns";
-import "./Console";
+import { cn } from "@/lib/utils";
+import { ExternalLink, Music } from "feather-icons-react";
+
 interface TrackData {
   id: string;
   name: string;
   artist: string;
-  preview_url: string;
   link: string;
   image: string;
   played_at: string;
@@ -16,9 +17,6 @@ interface TrackData {
 export default function SpotifyLastListen() {
   const [track, setTrack] = useState<TrackData | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
     fetch("/api/last-listened")
@@ -27,110 +25,90 @@ export default function SpotifyLastListen() {
         if (data.error) {
           setError(data.error);
         } else {
-          const track_data = data.items[0].track;
-          const track: TrackData = {
-            id: track_data.id,
-            name: track_data.name,
-            artist: track_data.artists[0].name ?? "N/A",
-            preview_url: track_data.preview_url ?? "N/A",
-            link: track_data.external_urls.spotify ?? "N/A",
-            image: track_data.album.images[1].url ?? "N/A",
+          const trackData = data.items[0].track;
+          setTrack({
+            id: trackData.id,
+            name: trackData.name,
+            artist: trackData.artists[0].name ?? "N/A",
+            link: trackData.external_urls.spotify ?? "N/A",
+            image: trackData.album.images[1].url ?? "N/A",
             played_at: data.items[0].played_at ?? "N/A",
-          };
-          setTrack(track);
-          if (track.preview_url) setAudio(new Audio(track.preview_url));
+          });
         }
       })
       .catch((err) => {
-        setError("Failed to fetch user profile");
+        setError("Failed to fetch");
         console.error(err);
       });
   }, []);
 
-  const handleMouseEnter = () => {
-    setShowTooltip(true);
-  };
-
-  const handleMouseLeave = () => {
-    setShowTooltip(false);
-    setIsPlaying(false);
-    if (audio) {
-      audio.pause();
-      audio.currentTime = 0;
-    }
-  };
-
-  const handleClick = useCallback(() => {
-    if (!audio) return;
-    setIsPlaying((prev) => !prev);
-    try {
-      if (audio) {
-        if (audio.paused) {
-          audio.play();
-        } else {
-          audio.pause();
-          audio.currentTime = 0;
-        }
-      }
-    } catch (err) {
-      console.log("audio err", err);
-    }
-  }, [audio]);
-
   const formatRelativeTime = (dateString: string) => {
-    if (dateString === "N/A") return "N/A";
+    if (dateString === "N/A") return "";
     const date = parseISO(dateString);
     return formatDistanceToNow(date, { addSuffix: true });
   };
 
-  return (
-    <div className="flex align-middle text-sm lg:text-normal">
-      {track ? (
-        <div className="flex align-middle justify-center gap-1">
-          <div
-            className={`flex flex-col cursor-pointer gap-0 relative hover:scale-150 transition-all`}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-            onClick={(e) => {
-              e.stopPropagation();
-              if (track.preview_url === "N/A") return;
-              handleClick();
-            }}
-          >
-            <img
-              src={track.image}
-              alt={track.name}
-              className={`${"animate-spin-slow  object-cover object-center w-5 h-5 min-w-5 rounded-full"} border-2 ${
-                isPlaying ? "border-green-500" : ""
-              }`}
-              style={{ transition: "transform 0.5s ease-in-out" }}
-            />
-            {showTooltip && !isPlaying && track.preview_url !== "N/A" && (
-              <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 px-2 bg-s7-gray100 font-bold text-secondary-foreground text-[0.5rem] rounded whitespace-nowrap ">
-                Click to play
-              </div>
-            )}
-          </div>{" "}
-          <p
-            className="text-sm lg:text-normal cursor-pointer hover:text-secondary-foreground hover:font-bold"
-            onClick={() => window.open(track.link, "_blank")}
-          >
-            <span>{track.name}</span>
-            <span>
-              {" by "} {track.artist}
-            </span>
-            {track.played_at !== "N/A" ? (
-              <span className="text-xs text-s7-gray200 ml-2">
-                {`(${formatRelativeTime(track.played_at)})`}
-              </span>
-            ) : null}
-          </p>{" "}
+  if (error) {
+    return (
+      <div className="flex items-center gap-3 rounded-xl border border-border bg-card/50 px-3 py-2.5">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted">
+          <Music className="size-5 text-muted-foreground" />
         </div>
-      ) : error ? (
-        "Rocky Theme Song"
-      ) : (
-        "Loading..."
+        <p className="text-sm text-muted-foreground">
+          Can&apos;t load now playing
+        </p>
+      </div>
+    );
+  }
+
+  if (!track) {
+    return (
+      <div className="flex items-center gap-3 rounded-xl border border-border bg-card/50 px-3 py-2.5">
+        <div className="size-10 shrink-0 animate-pulse rounded-full bg-muted" />
+        <div className="min-w-0 flex-1 space-y-1.5">
+          <div className="h-3 w-3/4 animate-pulse rounded bg-muted" />
+          <div className="h-2.5 w-1/2 animate-pulse rounded bg-muted" />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <a
+      href={track.link}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={cn(
+        "group flex items-center gap-3 rounded-xl border border-border bg-card/50 px-3 py-2.5 transition-all duration-200",
+        "hover:border-accent/30 hover:bg-card"
       )}
-    </div>
+    >
+      <div className="relative size-10 shrink-0 overflow-hidden rounded-lg bg-muted">
+        <img
+          src={track.image}
+          alt=""
+          className="size-full object-cover object-center"
+        />
+      </div>
+
+      <div className="min-w-0 flex-1 text-left">
+        <span className="block truncate text-sm font-medium text-foreground transition-colors group-hover:text-accent">
+          {track.name}
+        </span>
+        <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <span className="truncate">{track.artist}</span>
+          {formatRelativeTime(track.played_at) && (
+            <>
+              <span className="text-border">·</span>
+              <span className="shrink-0">
+                {formatRelativeTime(track.played_at)}
+              </span>
+            </>
+          )}
+        </span>
+      </div>
+
+      <ExternalLink className="size-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+    </a>
   );
 }

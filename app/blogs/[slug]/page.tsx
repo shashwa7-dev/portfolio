@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { CustomMDX } from "@/components/common/mdx";
 import { formatDate, getBlogPosts } from "../utils";
 import { baseUrl } from "@/app/sitemap";
-import Button from "@/components/common/Button";
+import { Badge } from "@/components/ui/badge";
 
 export async function generateStaticParams() {
   let posts = getBlogPosts();
@@ -60,7 +60,7 @@ export default function Blog({ params }: any) {
   }
 
   return (
-    <section className="container  max-w-2xl p-4 relative">
+    <section className="max-w-2xl mx-auto px-4 py-16 relative">
       <script
         type="application/ld+json"
         suppressHydrationWarning
@@ -85,15 +85,15 @@ export default function Blog({ params }: any) {
       />
       <h1 className="title  text-2xl font-sans">{post.metadata.title}</h1>
       <div className="flex justify-between items-center mt-1 text-sm">
-        <p className="text-sm text-s7-gray300">
+        <p className="text-sm text-muted-foreground">
           {formatDate(post.metadata.publishedAt)}
         </p>
       </div>
-      <div className="flex gap-2 flex-wrap mt-2">
+      <div className="flex gap-2 flex-wrap mt-3">
         {JSON.parse(post.metadata.tags).map((tag: string, id: number) => (
-          <Button key={id} variant="danger" size="sm">
+          <Badge key={id} variant="secondary" className="text-accent">
             {tag}
-          </Button>
+          </Badge>
         ))}
       </div>
       <article className="prose">

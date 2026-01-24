@@ -1,79 +1,156 @@
-import React from "react";
-import { TProject } from "./Project";
-import ProjectCard from "./PorjectCard";
-import SectionTitle from "./common/SectionTitle";
-import { Icon } from "@iconify/react";
-const projects: TProject[] = [
-  {
-    id: "2",
-    title: "f0cusPro (Productivity)",
-    isActive: true,
+"use client";
 
-    description: `Built a tiny productive tool(using ElectronJS) that blocks distracting sites. Under the hood: a simple HTTP proxy that intercepts requests and blocks blacklisted domains. I saw this as premium feature in "stayinsession.com" app. Yeah, a VPN can bypass it, but come on, you wouldn’t do that… right? What else should I add to it?`,
-    stack: {
-      fe: ["react", "typescript"],
-      be: ["electron"],
-    },
-    links: {
-      github: "https://github.com/shashwa7-dev/focus-pro",
-      web: "https://x.com/offcod8/status/1998007706041659638",
-    },
-    embedPreview:
-      "https://drive.google.com/file/d/16QecPjKk6ZzFyJzKO3iqqph3BmwcSGXm/view",
-    thumbnail: "/projects/project_focus_pro.JPG",
-  },
-  {
-    id: "1",
-    title: "Eatri8.ai",
-    date: "09/25",
-    description:
-      "Built a health assessment app that uses Google Gemini Flash 1.5 AI to analyze food products. Users upload food labels to get a health score, recommended portion sizes, and consumption advice.",
-    stack: {
-      fe: ["next", "typescript", "googleGemini", "tailwind", "shadcn"],
-    },
-    links: {
-      github: "https://github.com/shashwa7-dev/food-analyzer",
-      // web: "https://eatri8-ai.shashwa7.in/",
-    },
-    preview: "/projects/preview_eatri8.mp4",
-    thumbnail: "/projects/project_eatri8.JPG",
-  },
-];
+import React, { useCallback } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { motion } from "motion/react";
+import { ActiveBadge } from "./common/ActiveBadge";
+import SectionTitle from "./common/SectionTitle";
+import { ArrowRight, ExternalLink, Folder } from "feather-icons-react";
+import { sideProjects } from "@/lib/projectsData";
+import { containerVariants, itemVariants } from "@/lib/motionVariants";
+import StackIcon from "./common/StackIcon";
+
 const Projects = () => {
+  const router = useRouter();
+  const handleRowKeyDown = useCallback(
+    (e: React.KeyboardEvent, slug: string) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        router.push(`/project/${slug}`);
+      }
+    },
+    [router]
+  );
   return (
-    <div className="text-sm grid gap-3" id="projects">
-      <SectionTitle
-        title="Side Quests"
-        icon={<Icon icon="line-md:map-marker-loop" className="w-5 h-5" />}
-      />
-      <div className="grid gap-3">
-        <div className="flex justify-between">
-          <div className="grid gap-1">
-            <a
-              className="flex items-center gap-1 font-sans text-[1rem]"
-              href="https://x.com/offcod8"
-              target="_blank"
-            >
-              <img
-                src="./images/offcod8.webp"
-                alt="offcod8"
-                className="w-[20px] h-[20px] rounded-md border"
-              />
-              <span>offcod8</span>
-            </a>
-            <span className="text-secondary-foreground">
-              Solo Founder & Engineer
-            </span>
-          </div>
-          <p className="text-muted-foreground">Jun, 2021 - Present</p>
-        </div>
-        <div className="grid grid-cols-2 gap-6 -sm:grid-cols-1 place-items-center">
-          {projects?.map((project) => (
-            <ProjectCard project={project} key={project.id} />
-          ))}
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2 }}
+      className="space-y-6"
+      id="projects"
+    >
+      <div className="flex items-center justify-between">
+        <SectionTitle
+          title="Projects"
+          icon={<Folder className="w-4 h-4" />}
+          variant="large"
+        />
+        <Link
+          href="/projects"
+          className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+        >
+          View all
+          <ArrowRight className="w-3.5 h-3.5" />
+        </Link>
+      </div>
+
+      {/* Brand header */}
+      <div className="flex items-center gap-3">
+        <Image
+          src="/images/offcod8.webp"
+          alt="offcod8"
+          width={40}
+          height={40}
+          className="rounded-lg"
+        />
+        <div>
+          <p className="font-medium">offcod8</p>
+          <p className="text-sm text-muted-foreground">
+            Solo Founder & Engineer · Jun 2021 — Present
+          </p>
         </div>
       </div>
-    </div>
+
+      {/* Project cards */}
+      <div className="space-y-3">
+        {sideProjects.map((project) => (
+          <motion.div key={project.id} variants={itemVariants}>
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => router.push(`/project/${project.slug}`)}
+              onKeyDown={(e) => handleRowKeyDown(e, project.slug)}
+              className="group flex gap-4 p-4 rounded-xl border border-border bg-card hover:bg-card/80 hover:border-accent/30 transition-all duration-200 cursor-pointer"
+            >
+              <div className="relative hidden md:block md:w-28 aspect-video rounded-lg overflow-hidden bg-secondary shrink-0">
+                <Image
+                  src={project.thumbnail}
+                  alt={project.title}
+                  fill
+                  sizes="(max-width: 640px) 96px, 112px"
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-start justify-between gap-2 mb-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h4 className="font-semibold group-hover:text-accent transition-colors">
+                      {project.title}
+                    </h4>
+                    {project.isActive && (
+                      <ActiveBadge variant="minimal" />
+                    )}
+                  </div>
+                  <span className="text-xs text-muted-foreground whitespace-nowrap shrink-0">
+                    {project.date || "Present"}
+                  </span>
+                </div>
+                <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+                  {project.tagline}
+                </p>
+                <div className="flex items-center justify-between gap-3 flex-wrap">
+                  <div className="flex items-center gap-1.5">
+                    {[...(project.stack.fe || []), ...(project.stack.be || [])]
+                      .slice(0, 5)
+                      .map((tech) => (
+                        <StackIcon
+                          key={tech}
+                          name={tech}
+                          size={12}
+                          showLabel={false}
+                          showTooltip
+                          className="text-muted-foreground"
+                        />
+                      ))}
+                  </div>
+                  {project.links && (project.links.github || project.links.web) && (
+                    <div className="flex items-center gap-2">
+                      {project.links.github && (
+                        <a
+                          href={project.links.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-xs text-muted-foreground hover:text-accent flex items-center gap-1"
+                        >
+                          GitHub
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      )}
+                      {project.links.web && (
+                        <a
+                          href={project.links.web}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-xs text-muted-foreground hover:text-accent flex items-center gap-1"
+                        >
+                          Live
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </motion.div>
   );
 };
 

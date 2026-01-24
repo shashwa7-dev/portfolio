@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
-import { fontFamily } from "tailwindcss/defaultTheme";
 import plugin from "tailwindcss/plugin";
+import { fontFamily } from "tailwindcss/defaultTheme";
+
 const config: Config = {
   darkMode: ["class"],
   content: [
@@ -16,8 +17,13 @@ const config: Config = {
         blink: "blink 1s step-end infinite",
         "marquee-left": "marquee-left var(--duration, 40s) linear infinite",
         "marquee-up": "marquee-up var(--duration, 40s) linear infinite",
+        "loading-bar": "loading-bar 1.2s ease-in-out infinite",
       },
       keyframes: {
+        "loading-bar": {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(300%)" },
+        },
         "marquee-left": {
           from: { transform: "translateX(0)" },
           to: { transform: "translateX(calc(-100% - var(--gap)))" },
@@ -35,11 +41,6 @@ const config: Config = {
           "100%": { opacity: "1" },
         },
       },
-
-      float: {
-        "0%, 100%": { transform: "translateY(0px)" },
-        "50%": { transform: "translateY(-5px)" },
-      },
       container: {
         center: true,
         screens: {
@@ -47,26 +48,14 @@ const config: Config = {
         },
       },
       screens: {
-        "-2xl": {
-          max: "1535px",
-        },
-        "-xl": {
-          max: "1279px",
-        },
-        "-lg": {
-          max: "1023px",
-        },
-        "-md": {
-          max: "767px",
-        },
-        "-sm": {
-          max: "639px",
-        },
+        "-2xl": { max: "1535px" },
+        "-xl": { max: "1279px" },
+        "-lg": { max: "1023px" },
+        "-md": { max: "767px" },
+        "-sm": { max: "639px" },
       },
-
       fontFamily: {
-        mono: ["var(--font-spaceGrotesk)", ...fontFamily.mono],
-        sans: ["var(--font-stoke)", ...fontFamily.sans],
+        sans: ["var(--font-jakarta)", ...fontFamily.sans],
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
@@ -77,73 +66,77 @@ const config: Config = {
         "2000": "2000ms",
         "4000": "4000ms",
       },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+      },
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
-
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
+        },
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
         },
-
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
         },
-
         muted: {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
         },
-
-        /* Text hierarchy */
-        subtitle: "hsl(var(--subtitle))",
-        "subtitle-muted": "hsl(var(--subtitle-muted))",
-
-        /* Form + layout */
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-
-        /* Buttons */
-        button: {
-          secondary: {
-            DEFAULT: "hsl(var(--button-secondary))",
-            foreground: "hsl(var(--button-secondary-foreground))",
-            hover: "hsl(var(--button-secondary-hover))",
-          },
-          danger: {
-            DEFAULT: "hsl(var(--button-danger))",
-            hover: "hsl(var(--button-danger-hover))",
-          },
+        chart: {
+          "1": "hsl(var(--chart-1))",
+          "2": "hsl(var(--chart-2))",
+          "3": "hsl(var(--chart-3))",
+          "4": "hsl(var(--chart-4))",
+          "5": "hsl(var(--chart-5))",
         },
       },
     },
   },
   plugins: [
-    plugin(function ({ addUtilities }: any) {
-      const newUtilities = {
-        ".ws-tighter": {
-          wordSpacing: "-0.1rem",
+    plugin(function ({ addUtilities }) {
+      const newUtilities: Record<string, Record<string, string>> = {
+        ".center-absolute": {
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
         },
-        ".ws-tight": {
-          wordSpacing: "0.1rem",
-        },
-        ".ws-normal": {
-          wordSpacing: "0.25rem",
-        },
-        ".ws-wide": {
-          wordSpacing: "0.5rem",
+        ".scrollbar-hide": {
+          "-ms-overflow-style": "none",
+          "scrollbar-width": "none",
+          "&::-webkit-scrollbar": {
+            display: "none",
+          },
         },
       };
 
       addUtilities(newUtilities, ["responsive"]);
     }),
+    require("tailwindcss-animate"),
   ],
 };
+
 export default config;

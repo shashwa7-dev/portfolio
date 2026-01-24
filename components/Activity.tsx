@@ -1,14 +1,12 @@
 "use client";
 import React from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import SpotifyLastListen from "./SpotifyLastListen";
 import { containerVariants, itemVariants } from "@/lib/motionVariants";
 import SectionTitle from "./common/SectionTitle";
-import { Zap } from "feather-icons-react";
-import { Icon } from "@iconify/react";
-import Button from "./common/Button";
-import Book from "./common/Book";
+import { Zap, ArrowRight } from "feather-icons-react";
+import BookListItem from "./BookListItem";
 import { books } from "@/lib/books";
 
 const Activity = () => {
@@ -18,46 +16,52 @@ const Activity = () => {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.3 }}
-      className="text-sm grid gap-3"
+      className="space-y-6"
     >
-      <SectionTitle title="Activity" icon={<Zap className={"w-4 h-4"} />} />
+      <SectionTitle title="Activity" icon={<Zap className="w-3.5 h-3.5" />} />
 
       {/* Blogs Section */}
-      <motion.div variants={itemVariants} className="grid gap-1">
-        <p className="italic font-sans text-subtitle">Blogs</p>
-        <Link href="/blogs">
-          <Button size="sm" variant="primary">
-            <Icon
-              icon={"streamline-block:content-write"}
-              fontSize={"0.75rem"}
-            />
-            <span className="hover:underline">Checkout blogs</span>
-          </Button>
+      <motion.div variants={itemVariants} className="space-y-2">
+        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+          Writing
+        </p>
+        <Link
+          href="/blogs"
+          className="group font-medium flex items-center gap-2 text-lg hover:text-accent transition-colors"
+        >
+          <span>Check out my blog posts</span>
+          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
         </Link>
       </motion.div>
 
       {/* Reading Section */}
-      <motion.div variants={itemVariants} className="grid gap-2">
+      <motion.div variants={itemVariants} className="space-y-3">
         <div className="flex items-center justify-between">
-          <p className="italic font-sans text-subtitle">Currently Reading</p>
-          <Link href={"/books"}>
-            <p className="text-xs">View More</p>
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            Currently Reading
+          </p>
+          <Link
+            href="/books"
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            View All
           </Link>
         </div>
-
-        <motion.div
+        <motion.ul
           variants={containerVariants}
-          className="grid grid-cols-3 gap-2"
+          className="flex flex-col gap-2"
         >
           {books.slice(0, 3).map((book) => (
-            <Book {...book} key={book.slug} />
+            <BookListItem {...book} key={book.slug} />
           ))}
-        </motion.div>
+        </motion.ul>
       </motion.div>
 
       {/* Spotify Section */}
-      <motion.div variants={itemVariants} className="grid gap-1">
-        <p className="italic font-sans text-subtitle">Last listen</p>
+      <motion.div variants={itemVariants} className="space-y-2">
+        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+          Last Played
+        </p>
         <SpotifyLastListen />
       </motion.div>
     </motion.div>

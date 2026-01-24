@@ -1,27 +1,33 @@
-import { SVGS } from "../SVGS";
-import { buttonClasses } from "./Button/button.styles";
+import { ExternalLink } from "feather-icons-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface LinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   name: string;
   link?: string;
+  variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
+  size?: "default" | "sm" | "lg" | "icon";
 }
 
 export const Link: React.FC<LinkProps> = ({
   name,
   link,
+  variant = "default",
+  size = "sm",
   className,
   ...props
 }) => {
   return (
-    <a
-      href={link}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={buttonClasses({ variant: "primary", size: "sm" })}
-      {...props}
-    >
-      <span className="capitalize">{name}</span>{" "}
-      <SVGS.Link className="w-[10px] h-[10px]" />
-    </a>
+    <Button asChild variant={variant} size={size} className={cn(className)}>
+      <a
+        href={link}
+        target="_blank"
+        rel="noopener noreferrer"
+        {...props}
+      >
+        <span className="capitalize">{name}</span>
+        <ExternalLink className="size-4" />
+      </a>
+    </Button>
   );
 };

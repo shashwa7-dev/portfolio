@@ -1,45 +1,39 @@
 import React from "react";
 import ToolsAndStack from "./ToolStack";
-import Navbar from "./Navbar";
-import { buttonClasses } from "./common/Button/button.styles";
 
 const Intro = () => {
   return (
-    <div className="flex justify-between">
-      <div className="flex flex-col relative max-w-[80%]">
-        <div className="flex items-center gap-1 relative w-fit">
-          <div className="w-[22.5px] h-[22.5px] md:w-[25px] md:h-[25px] overflow-hidden rounded-md">
-            <img
-              src={"./apple-touch-icon.png"}
-              className="w-full h-full object-cover object-center"
-              alt="protfolio assistant"
-            />
-          </div>
-          <h1 className="text-3xl mb-0.5 -md:text-2xl  text-secondary-foreground font-sans">
-            {"Shashwat Tripathi"}
-          </h1>
+    <div className="space-y-4">
+      <div className="flex items-center gap-3">
+        <div className="w-12 h-12 overflow-hidden rounded-full ring-2 ring-border">
+          <img
+            src="./apple-touch-icon.png"
+            className="w-full h-full object-cover"
+            alt="Shashwat Tripathi"
+          />
         </div>
-        <h2 className="font-bold text-base md:text-lg w-fit text-muted-foreground mb-2">
-          <span className="text-amber-500">{"Frontend Engineer"}</span>
-          {" . Fullstack Capable"}
-        </h2>
-        <div className="flex items-center">
-          <a
-            className={buttonClasses({
-              size: "sm",
-              variant: "secondary",
-
-              className: "!flex-shrink-0 !bg-muted",
-            })}
-            href={"mailto:contact@shashwa7.in"}
-          >
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            <span>Open to Work</span>
-          </a>
-          <ToolsAndStack />
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Shashwat Tripathi
+          </h1>
+          <p className="text-muted-foreground">
+            <span className="text-accent font-medium">Frontend Engineer</span>
+            <span>{" [ Fullstack Capable ]"}</span>
+          </p>
         </div>
       </div>
-      <Navbar />
+
+      <div className="flex items-center gap-2">
+        <a
+          href="mailto:contact@shashwa7.in"
+          className="inline-flex items-center gap-2 text-sm px-3 py-1.5 rounded-full bg-secondary hover:bg-secondary/80 transition-colors"
+        >
+          <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+          <span>Open to Work</span>
+        </a>
+        <ToolsAndStack />
+      </div>
+
     </div>
   );
 };

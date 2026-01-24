@@ -1,24 +1,8 @@
-import React, { ButtonHTMLAttributes } from "react";
-import { buttonClasses, ButtonSize, ButtonVariant } from "./button.styles";
+import React from "react";
+import { Button as ShadcnButton, ButtonProps } from "@/components/ui/button";
 
-interface BtnProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-  asChild?: boolean;
-}
+// Re-export shadcn Button as default
+export default ShadcnButton;
 
-const Button = ({
-  children,
-  variant = "secondary",
-  size = "md",
-  className,
-  ...props
-}: BtnProps) => {
-  return (
-    <button className={buttonClasses({ variant, size, className })} {...props}>
-      {children}
-    </button>
-  );
-};
-
-export default Button;
+// Also export the ButtonProps type
+export type { ButtonProps };

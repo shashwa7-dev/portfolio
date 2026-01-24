@@ -1,21 +1,12 @@
 import { formatDate, getBlogPosts } from "@/app/blogs/utils";
 import Link from "next/link";
-import SectionTitle from "./common/SectionTitle";
-import Button from "./common/Button";
-import { Icon } from "@iconify/react";
+import { Badge } from "@/components/ui/badge";
 
 export function BlogPosts() {
   let allBlogs = getBlogPosts();
 
   return (
     <div className="text-sm grid gap-4">
-      <SectionTitle
-        variant="huge"
-        title={"My Blogs"}
-        icon={
-          <Icon icon={"streamline-block:content-write"} className="w-6 h-6" />
-        }
-      />
       <div>
         {allBlogs
           .sort((a, b) => {
@@ -43,7 +34,7 @@ export function BlogPosts() {
               <div className="w-full grid gap-1 p-3">
                 <div>
                   <p className="text-lg text-secondary-foreground font-sans">{`${post.metadata.title}`}</p>
-                  <p className="text-s7-gray300 text-xs">
+                  <p className="text-muted-foreground text-xs">
                     {formatDate(post.metadata.publishedAt, false)}
                   </p>
                 </div>
@@ -51,9 +42,13 @@ export function BlogPosts() {
                 <div className="flex gap-2 flex-wrap mt-2">
                   {JSON.parse(post.metadata.tags).map(
                     (tag: string, id: number) => (
-                      <Button key={id} size="sm" variant="danger">
+                      <Badge
+                        key={id}
+                        variant="secondary"
+                        className="text-accent"
+                      >
                         {tag}
-                      </Button>
+                      </Badge>
                     )
                   )}
                 </div>

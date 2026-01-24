@@ -1,125 +1,113 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Briefcase, Folder } from "feather-icons-react";
-import { Icon } from "@iconify/react";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { Menu, X } from "feather-icons-react";
 
 const navLinks = [
-  { label: "Work", icon: <Briefcase className="w-5 h-5" />, href: "#work" },
-  {
-    label: "Side Quest",
-    icon: <Icon icon="line-md:map-marker-loop" className="w-5 h-5" />,
-    href: "#projects",
-  },
-  { label: "Blogs", icon: <Folder className="w-5 h-5" />, href: "/blogs" },
+  { label: "Work", href: "#work" },
+  { label: "Projects", href: "#projects" },
+  { label: "Stack", href: "#tech_stack" },
+  { label: "Blog", href: "/blogs" },
 ];
 
-const hamburgerVariants = {
-  closedTop: { rotate: 0, y: 0 },
-  openTop: { rotate: 45, y: 6 },
-  closedBottom: { rotate: 0, y: 0 },
-  openBottom: { rotate: -45, y: -6 },
-};
-
 export default function Navbar() {
-  const [open, setOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLDivElement>(null);
-  const closeMenu = () => setOpen(false);
-
-  // Prevent body scroll when menu is open
-  useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "auto";
-  }, [open]);
-
-  // Close menu on outside click
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as Node;
-      if (
-        menuRef.current &&
-        !menuRef.current.contains(target) &&
-        buttonRef.current &&
-        !buttonRef.current.contains(target)
-      ) {
-        setOpen(false);
-      }
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
     };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-    if (open) document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [open]);
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
 
   return (
-    <nav className="relative z-[1000]">
-      {/* Hamburger */}
-      <div
-        className={`fixed top-6 right-6 z-[1001] flex flex-col gap-[6px] cursor-pointer items-center justify-center w-9 h-9 transition-colors ${
-          open ? "text-secondary-foreground" : "text-foreground"
-        }`}
-        ref={buttonRef}
-        onClick={(e) => {
-          e.stopPropagation();
-          setOpen((prev) => !prev);
-        }}
+    <>
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+            ? "bg-background/80 backdrop-blur-md border-b border-border"
+            : "bg-transparent"
+          }`}
       >
-        <motion.div
-          variants={hamburgerVariants}
-          animate={open ? "openTop" : "closedTop"}
-          transition={{ duration: 0.3 }}
-          className="w-[25px] h-[2px] bg-current rounded-sm"
-        />
-        <motion.div
-          variants={hamburgerVariants}
-          animate={open ? "openBottom" : "closedBottom"}
-          transition={{ duration: 0.3 }}
-          className="w-[20px] h-[2px] bg-current rounded-sm"
-        />
-      </div>
+        <nav className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
+          {/* Logo */}
+          <a href="/" className="font-semibold text-lg tracking-tight">
+            S7
+          </a>
 
-      {open && (
-        <div className="fixed top-0 left-0 w-full h-[100dvh] bg-black/50 origin-top z-[999] rounded-lg" />
-      )}
-      {/* Animated Fullscreen Menu */}
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            ref={menuRef}
-            initial={{ scaleY: 0, opacity: 0 }}
-            animate={{ scaleY: 1, opacity: 1 }}
-            exit={{ scaleY: 0, opacity: 0 }}
-            transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="fixed top-0 left-0 w-full  origin-top z-[999] rounded-lg p-2"
+          {/* Desktop nav */}
+          <ul className="hidden md:flex items-center gap-6">
+            {navLinks.map((link) => (
+              <li key={link.label}>
+                <a
+                  href={link.href}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+
+          {/* Mobile menu button */}
+          <button
+            className="md:hidden p-2 -mr-2"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle menu"
           >
-            <div className="space-y-6  border  shadow-sm p-4 rounded-xl bg-card relative overflow-hidden">
-              <img
-                src={"/images/bg.gif"}
-                alt=""
-                className="absolute w-full h-full top-0 left-0 z-[0] opacity-5"
-              />
-              <ul className="flex flex-col items-end justify-end pt-10 gap-2 relative z-[1]">
-                {navLinks.map((link, i) => (
-                  <motion.li
-                    key={link.label}
-                    initial={{ x: -20, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ delay: 0.2 * i }}
-                    onClick={closeMenu}
-                    className="text-amber-500 hover:text-amber-500/50 cursor-pointer font-medium tracking-wide flex items-center gap-2 text-lg"
-                  >
-                    <a href={link.href} className="hover:text-amber-500/50">
+            {mobileOpen ? (
+              <X className="w-5 h-5" />
+            ) : (
+              <Menu className="w-5 h-5" />
+            )}
+          </button>
+        </nav>
+      </header>
+
+      {/* Mobile menu */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-background/95 backdrop-blur-sm z-40 md:hidden"
+              onClick={() => setMobileOpen(false)}
+            />
+            <motion.nav
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.2 }}
+              className="fixed top-14 left-0 right-0 z-40 md:hidden bg-background border-b border-border"
+            >
+              <ul className="max-w-2xl mx-auto px-4 py-4 space-y-1">
+                {navLinks.map((link) => (
+                  <li key={link.label}>
+                    <a
+                      href={link.href}
+                      onClick={() => setMobileOpen(false)}
+                      className="block py-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
                       {link.label}
                     </a>
-                    {link.icon}
-                  </motion.li>
+                  </li>
                 ))}
               </ul>
-            </div>
-          </motion.div>
+            </motion.nav>
+          </>
         )}
       </AnimatePresence>
-    </nav>
+    </>
   );
 }

@@ -15,19 +15,6 @@ export type Book = {
 };
 
 export const books: Book[] = [
-  //   {
-  //     slug: "build-a-llm",
-  //     name: "Build a LLM",
-  //     author: "Sebastian Raschka",
-  //     cover: "/books/book_build_LLM.JPG",
-  //     isDone: false,
-  //     chapters: [
-  //       { id: "ch1", title: "Introduction to LLMs", completed: false },
-  //       { id: "ch2", title: "Tokenization", completed: false },
-  //       { id: "ch3", title: "Transformer Architecture", completed: false },
-  //     ],
-  //   },
-
   {
     slug: "advanced-react",
     name: "Advanced React",

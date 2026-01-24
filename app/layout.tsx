@@ -1,20 +1,32 @@
 import type { Metadata } from "next";
-import { Space_Grotesk } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
+import dynamic from "next/dynamic";
 import "./globals.css";
 import { baseUrl } from "./sitemap";
-import localFont from "next/font/local";
 import { Analytics } from "@vercel/analytics/next";
-import Image from "next/image";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
-const stoke = localFont({
-  src: "../public/fonts/Somatic-Rounded.otf",
-  variable: "--font-stoke",
-});
-const spaceGrotesk = Space_Grotesk({
+const BottomFadeMask = dynamic(
+  () =>
+    import("@/components/BottomFadeMask").then((m) => ({
+      default: m.BottomFadeMask,
+    })),
+  { ssr: false }
+);
+
+// const AnimatedBackground = dynamic(
+//   () =>
+//     import("@/components/AnimatedBackground").then((m) => ({
+//       default: m.AnimatedBackground,
+//     })),
+//   { ssr: false }
+// );
+
+const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700", "800"],
   display: "swap",
-  variable: "--font-spaceGrotesk",
+  variable: "--font-jakarta",
 });
 
 export const metadata: Metadata = {
@@ -76,18 +88,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`bg-background text-foreground border-border ${spaceGrotesk.variable} ${stoke.variable} font-mono dark`}
+        className={`bg-background text-foreground border-border ${plusJakarta.variable} font-sans dark`}
       >
-        {children} <Analytics />
-        <div className="fixed top-0 left-0 z-[-1] opacity-10 w-full h-full">
-          <Image
-            src="/stardew.webp"
-            alt=""
-            fill
-            placeholder="blur"
-            blurDataURL="/stardew.webp"
-            className="object-cover"
-          />
+        {/* <AnimatedBackground /> */}
+        <div className="relative z-10">
+          <TooltipProvider>
+            {children}
+            <BottomFadeMask />
+            <Analytics />
+          </TooltipProvider>
         </div>
       </body>
     </html>

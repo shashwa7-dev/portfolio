@@ -5,9 +5,8 @@ interface SectionTitleProps {
   title: string;
   icon?: React.ReactNode;
   align?: "left" | "center" | "right";
-  underline?: boolean;
   className?: string;
-  variant?: "default" | "huge";
+  variant?: "default" | "large";
 }
 
 const alignMap = {
@@ -18,12 +17,12 @@ const alignMap = {
 
 const variantMap = {
   default: {
-    wrapper: "border-l-4 border-b p-0.5 px-1.5",
-    title: "text-base font-medium",
+    wrapper: "",
+    title: "text-sm font-semibold uppercase tracking-wider",
   },
-  huge: {
-    wrapper: "border-none p-0",
-    title: "text-3xl",
+  large: {
+    wrapper: "",
+    title: "text-xl font-semibold tracking-tight",
   },
 };
 
@@ -31,30 +30,34 @@ const SectionTitle: React.FC<SectionTitleProps> = ({
   title,
   icon,
   align = "left",
-  underline = true,
   className = "",
   variant = "default",
 }) => {
+  const showAccentBar = align === "left";
+
   return (
     <div
       className={cn(
-        "flex items-center gap-1.5",
+        "flex items-center gap-2.5",
         alignMap[align],
+        showAccentBar && "border-l-2 border-accent pl-3 -ml-px",
         variantMap[variant].wrapper,
         className
       )}
     >
-      {icon && <span>{icon}</span>}
-
-      <p
+      {icon && (
+        <span className="shrink-0 text-accent [&_svg]:stroke-[2.5]" aria-hidden>
+          {icon}
+        </span>
+      )}
+      <h2
         className={cn(
-          "font-sans text-secondary-foreground",
-          variantMap[variant].title,
-          underline && variant === "default" && "pb-1 border-border"
+          "text-foreground",
+          variantMap[variant].title
         )}
       >
         {title}
-      </p>
+      </h2>
     </div>
   );
 };

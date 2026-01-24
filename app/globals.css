@@ -1,16 +1,148 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/*UPDATING default border color*/
+
 @layer base {
+  :root {
+    /* E-ink inspired light theme – dim paper-like bg, readable ink & accents */
+    --background: 38 18% 90%;
+    --foreground: 28 14% 8%;
+    --card: 38 16% 92%;
+    --card-foreground: 28 14% 8%;
+    --popover: 38 16% 92%;
+    --popover-foreground: 28 14% 8%;
+    --primary: 28 14% 8%;
+    --primary-foreground: 38 15% 92%;
+    --secondary: 35 14% 85%;
+    --secondary-foreground: 28 12% 12%;
+    --muted: 36 12% 86%;
+    --muted-foreground: 28 10% 36%;
+    --accent: 32 85% 42%;
+    --accent-foreground: 38 15% 96%;
+    --destructive: 0 60% 45%;
+    --destructive-foreground: 38 15% 95%;
+    --border: 35 12% 82%;
+    --input: 35 12% 82%;
+    --ring: 32 85% 42%;
+    --radius: 0.5rem;
+    --chart-1: 12 70% 48%;
+    --chart-2: 160 52% 28%;
+    --chart-3: 197 45% 24%;
+    --chart-4: 40 75% 42%;
+    --chart-5: 24 75% 42%;
+
+    /* Syntax highlighting – darker, readable on dim cream */
+    --sh-class: 142 42% 26%;
+    --sh-identifier: 212 55% 24%;
+    --sh-sign: 30 75% 32%;
+    --sh-string: 108 38% 26%;
+    --sh-keyword: 18 72% 32%;
+    --sh-comment: 28 8% 42%;
+    --sh-jsxliterals: 222 48% 32%;
+  }
+
+  .dark {
+    /* E-ink inspired dark theme - warm, soft, easy on eyes */
+    --background: 30 6% 9%;
+    --foreground: 40 14% 84%;
+    --card: 30 5% 12%;
+    --card-foreground: 40 12% 82%;
+    --popover: 30 5% 12%;
+    --popover-foreground: 40 14% 84%;
+    --primary: 40 14% 84%;
+    --primary-foreground: 30 6% 9%;
+    --secondary: 30 4% 16%;
+    --secondary-foreground: 40 10% 75%;
+    --muted: 30 4% 18%;
+    --muted-foreground: 30 6% 50%;
+    --accent: 35 70% 55%;
+    --accent-foreground: 30 6% 9%;
+    --destructive: 0 50% 40%;
+    --destructive-foreground: 40 14% 90%;
+    --border: 30 4% 20%;
+    --input: 30 4% 16%;
+    --ring: 35 70% 55%;
+    --chart-1: 35 60% 55%;
+    --chart-2: 150 30% 45%;
+    --chart-3: 200 25% 50%;
+    --chart-4: 280 30% 55%;
+    --chart-5: 10 45% 55%;
+
+    /* Syntax highlighting - e-ink dark */
+    --sh-class: 100 25% 60%;
+    --sh-identifier: 40 10% 80%;
+    --sh-sign: 35 45% 60%;
+    --sh-string: 50 30% 60%;
+    --sh-keyword: 20 40% 60%;
+    --sh-comment: 30 5% 45%;
+    --sh-jsxliterals: 35 25% 65%;
+  }
+
   * {
-    border-color: hsl(var(--border));
+    @apply border-border;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "cv11", "ss01";
+    font-variation-settings: "opsz" 32;
+    line-height: 1.6;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.025em;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.25rem;
   }
 }
-/*FONT SPACING for font-sans: as the font used is bit tighter by default*/
-@layer base {
-  .font-sans {
-    letter-spacing: 0.02em;
+
+@layer utilities {
+  .content-bg {
+    background: hsl(var(--card));
+  }
+
+  .card-elevated {
+    background: hsl(var(--card));
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  }
+
+  .dark .card-elevated {
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.2);
+  }
+}
+
+/* Animations */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
   }
 }
 
@@ -31,156 +163,6 @@
     transform: rotate(0deg);
   }
 }
-html,
-body {
-  height: 100%;
-}
-
-/*light*/
-:root {
-  /* Background layers — warm daylight */
-  --background: 45, 40%, 96%; /* parchment daylight */
-  --foreground: 220, 20%, 12%; /* deep ink */
-
-  /* Cards — soft paper elevation */
-  --card: 45, 35%, 98%;
-  --card-foreground: 220, 18%, 14%;
-
-  /* Primary text & accents */
-  --primary: 30, 35%, 30%; /* warm wood */
-  --primary-foreground: 45, 40%, 96%;
-
-  /* Secondary — muted nature tones */
-  --secondary: 110, 20%, 85%; /* soft leaf */
-  --secondary-foreground: 220, 18%, 18%;
-
-  /* Muted / supporting UI */
-  --muted: 45, 25%, 90%;
-  --muted-foreground: 220, 10%, 40%;
-
-  /* Borders / inputs — organic separation */
-  --border: 45, 20%, 82%;
-  --input: 45, 20%, 88%;
-
-  /* Focus ring — warm glow */
-  --ring: 42, 70%, 55%;
-
-  /* --- Buttons --- */
-  --button-secondary: 45, 25%, 88%;
-  --button-secondary-foreground: 220, 18%, 18%;
-  --button-secondary-hover: 45, 25%, 82%;
-
-  /* --- Destructive (berry, not screaming red) --- */
-  --button-danger: 350, 55%, 55%;
-  --button-danger-hover: 350, 60%, 48%;
-
-  /* Syntax highlighting — daytime farm */
-  --sh-class: hsl(120, 35%, 45%); /* crop green */
-  --sh-identifier: hsl(200, 45%, 40%); /* river blue */
-  --sh-sign: hsl(42, 90%, 45%); /* sun gold */
-  --sh-string: hsl(90, 40%, 40%); /* leaf */
-  --sh-keyword: hsl(15, 65%, 45%); /* clay orange */
-  --sh-comment: hsl(45, 10%, 55%); /* dry wood */
-  --sh-jsxliterals: hsl(210, 50%, 45%);
-}
-.dark {
-  /* Background layers — night farm vibes */
-  --background: 220, 18%, 10%; /* deep night blue */
-  --foreground: 45, 30%, 88%; /* warm moonlight */
-  /* Cards — soft elevation, not cold */
-  --card: 210, 10%, 13%;
-  --card-foreground: 45, 25%, 85%;
-  /* Subtitle / supporting text */
-  --subtitle: 45, 15%, 72%; /* warm, soft */
-  --subtitle-muted: 45, 10%, 62%; /* quieter variant */
-  /* Muted / Borders — organic separation */
-  --muted: 210, 8%, 16%;
-  --muted-foreground: 45, 10%, 62%;
-  --border: 95, 10%, 26%; /* moss-tinted border */
-  --input: 95, 10%, 22%;
-
-  /* Primary & Secondary — wood / soil tones */
-  --primary: 30, 25%, 18%; /* dark wood */
-  --primary-foreground: 45, 35%, 90%;
-  --secondary: 110, 15%, 18%; /* forest soil */
-  --secondary-foreground: 45, 25%, 85%;
-
-  /* Muted / Borders — soft, not harsh */
-  --muted: 220, 15%, 16%;
-  --muted-foreground: 45, 10%, 65%;
-  --border: 30, 15%, 25%;
-  --input: 30, 15%, 22%;
-
-  /* --- Secondary buttons (quiet night) --- */
-  --button-secondary: 220, 16%, 20%; /* muted night */
-  --button-secondary-foreground: 45, 20%, 88%;
-  --button-secondary-hover: 220, 18%, 24%;
-
-  /* --- Destructive / danger (berry, not red) --- */
-  --button-danger: 350, 45%, 50%; /* muted berry */
-  --button-danger-hover: 350, 50%, 46%;
-
-  /* --- Focus / ring (soft glow) --- */
-  --ring: 42, 70%, 60%;
-
-  /* Syntax highlighting — Stardew-inspired */
-  --sh-class: hsl(120, 40%, 65%); /* crop green */
-  --sh-identifier: hsl(200, 55%, 70%); /* river blue */
-  --sh-sign: hsl(45, 90%, 65%); /* golden sun */
-  --sh-string: hsl(90, 45%, 65%); /* leaf green */
-  --sh-keyword: hsl(15, 70%, 65%); /* autumn orange */
-  --sh-comment: hsl(45, 10%, 50%); /* weathered wood */
-  --sh-jsxliterals: hsl(210, 60%, 70%); /* night sky */
-}
-@keyframes float {
-  0% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
-  100% {
-    transform: translateY(0px);
-  }
-}
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-body {
-  -webkit-font-smoothing: antialiased;
-}
-a:hover {
-  opacity: 0.7;
-  transition: all 0.1s ease;
-}
-@layer utilities {
-  /* Card UTILS */
-  .dark .content-bg {
-    background: linear-gradient(
-        160deg,
-        rgba(103, 103, 103, 0.25) 14%,
-        rgba(14, 14, 14, 0.2) 97.3%
-      ),
-      #0c0c0c;
-  }
-  .content-bg {
-    background: hsl(var(--card));
-  }
-  .content-shadow {
-    box-shadow: 0.6px 0.6px 0px rgba(255, 255, 255, 0.297),
-      inset 0px 4.8px 4.8px rgba(0, 0, 0, 0.2),
-      inset 2px 3px 1.2px rgba(0, 0, 0, 0.45);
-  }
-}
-
-.animate-spin-slow {
-  animation: spin-slow 4s linear infinite;
-}
-
-.animate-spin-reverse {
-  animation: spin-reverse 500ms linear;
-}
 
 @keyframes ellipsis {
   0% {
@@ -200,12 +182,30 @@ a:hover {
   }
 }
 
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 4s linear infinite;
+}
+
+.animate-spin-reverse {
+  animation: spin-reverse 500ms linear;
+}
+
 .dots::after {
   content: ".";
   animation: ellipsis 1.5s infinite steps(3, end);
 }
-/*MDX stylings*/
 
+/* Link hover effect */
+a:hover {
+  opacity: 0.9;
+  transition: opacity 0.15s ease;
+}
+
+/* MDX / Prose stylings */
 .prose .anchor {
   @apply absolute invisible no-underline;
   margin-left: -1em;
@@ -220,12 +220,11 @@ a:hover {
 }
 
 .prose a {
-  @apply underline transition-all underline-offset-2 decoration-[0.1em];
-  text-decoration-color: hsl(var(--muted-foreground));
+  @apply underline transition-all underline-offset-4 decoration-accent/50 hover:decoration-accent text-foreground;
 }
 
 .prose .anchor:after {
-  color: hsl(var(--muted-foreground));
+  @apply text-muted-foreground;
   content: "#";
 }
 
@@ -234,15 +233,11 @@ a:hover {
 }
 
 .prose pre {
-  background-color: hsl(var(--card));
-  border-color: hsl(var(--border));
-  @apply rounded-lg overflow-x-auto py-2 px-3 text-sm border;
+  @apply rounded-lg overflow-x-auto py-2 px-3 text-sm border bg-card border-border;
 }
 
 .prose code {
-  background-color: hsl(var(--card));
-  color: hsl(var(--card-foreground));
-  @apply px-1 py-0.5 rounded-lg;
+  @apply px-1 py-0.5 rounded-lg bg-card text-card-foreground;
 }
 
 .prose pre code {
@@ -259,43 +254,35 @@ a:hover {
 }
 
 .prose p {
-  @apply my-4;
-  color: hsl(var(--foreground));
+  @apply my-4 text-foreground;
 }
 
 .prose h1 {
-  @apply text-4xl font-medium  mt-6 mb-2 font-sans;
-  color: hsl(var(--foreground));
+  @apply text-3xl font-semibold mt-8 mb-4 tracking-tight text-foreground;
 }
 
 .prose h2 {
-  @apply text-xl font-medium  mt-6 mb-2 font-sans;
-  color: hsl(var(--foreground));
+  @apply text-2xl font-semibold mt-8 mb-3 tracking-tight text-foreground;
 }
 
 .prose h3 {
-  @apply text-xl font-medium  mt-6 mb-2 font-sans;
-  color: hsl(var(--foreground));
+  @apply text-xl font-semibold mt-6 mb-2 tracking-tight text-foreground;
 }
 
 .prose h4 {
-  @apply text-lg font-medium  mt-6 mb-2 font-sans;
-  color: hsl(var(--foreground));
+  @apply text-lg font-semibold mt-6 mb-2 text-foreground;
 }
 
 .prose strong {
-  @apply font-medium font-sans;
-  color: hsl(var(--foreground));
+  @apply font-semibold text-foreground;
 }
 
 .prose ul {
-  @apply list-disc pl-6;
-  color: hsl(var(--foreground));
+  @apply list-disc pl-6 text-foreground;
 }
 
 .prose ol {
-  @apply list-decimal pl-6;
-  color: hsl(var(--foreground));
+  @apply list-decimal pl-6 text-foreground;
 }
 
 .prose > :first-child {
@@ -325,7 +312,7 @@ table {
   max-width: fit-content;
   overflow-x: auto;
   white-space: nowrap;
-  color: hsl(var(--foreground));
+  @apply text-foreground;
 }
 
 .title {
