@@ -17,7 +17,7 @@ const Activity = () => {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.3 }}
-      className="space-y-6"
+      className="space-y-8"
     >
       <SectionTitle title="Activity" icon={<Icon icon='solar:speaker-minimalistic-line-duotone' className="w-5 h-5" />} />
 
