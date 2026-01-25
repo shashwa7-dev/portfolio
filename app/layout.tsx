@@ -5,8 +5,9 @@ import "./globals.css";
 import { baseUrl } from "./sitemap";
 import { Analytics } from "@vercel/analytics/next";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import Brand from "@/components/Brand";
 import Footer from "@/components/Footer";
+import UmamiAnalytics from "@/components/Umami";
+import NoScript from "@/components/NoScript";
 
 const BottomFadeMask = dynamic(
   () =>
@@ -92,12 +93,14 @@ export default function RootLayout({
       <body
         className={`bg-background text-foreground border-border ${plusJakarta.variable} font-sans dark`}
       >
+        <NoScript />
         <AnimatedBackground />
         <div className="relative z-10">
           <TooltipProvider>
             {children}
             <BottomFadeMask />
             <Analytics />
+            <UmamiAnalytics  />
           </TooltipProvider>
         </div>
         <Footer />
