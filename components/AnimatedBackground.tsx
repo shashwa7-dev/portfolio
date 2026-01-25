@@ -73,7 +73,7 @@ export function AnimatedBackground() {
         <AnimatePresence>
             <motion.div
                 key="animated-background"
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 3 }}
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 2 }}
                 className="fixed inset-0 z-0 pointer-events-none overflow-hidden opacity-50"
                 aria-hidden="true"
             >
