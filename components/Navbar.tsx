@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Menu, X } from "feather-icons-react";
+import Link from "next/link";
 
 const navLinks = [
   { label: "Work", href: "#work" },
@@ -49,12 +50,13 @@ export default function Navbar() {
           <ul className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => (
               <li key={link.label}>
-                <a
+                <Link
+                  key={link.label}
                   href={link.href}
                   className="block px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground rounded-full hover:bg-muted/50 transition-all duration-200 hover:scale-105 origin-center"
                 >
                   {link.label}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>

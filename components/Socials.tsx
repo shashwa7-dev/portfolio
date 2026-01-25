@@ -32,7 +32,7 @@ const Socials = () => {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.3 }}
-      className="space-y-4"
+      className="space-y-8"
     >
       <SectionTitle title="Connect" icon={<Icon icon="solar:sticker-smile-circle-line-duotone" className="w-5 h-5" />} />
       <motion.div

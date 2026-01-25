@@ -59,7 +59,7 @@ const StackSection = ({
 
 const TechStack = () => {
   return (
-    <div className="space-y-6" id="tech_stack">
+    <div className="space-y-8" id="tech_stack">
       <SectionTitle
         title="Tech Stack"
         icon={<Icon icon='solar:layers-minimalistic-line-duotone' className="w-5 h-5" />}

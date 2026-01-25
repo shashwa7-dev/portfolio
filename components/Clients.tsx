@@ -54,7 +54,7 @@ const Clients = () => {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.2 }}
-      className="space-y-5"
+      className="space-y-8"
     >
       <SectionTitle
         title="Clients & Contributions"

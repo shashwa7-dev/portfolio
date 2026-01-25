@@ -21,7 +21,7 @@ type ScrollMap = {
 const blobConfig: { className: string; scrollMap: ScrollMap }[] = [
     {
         className:
-            "absolute -top-[40%] -left-[20%] w-[50vmax] h-[50vmax] rounded-full opacity-[0.12] dark:opacity-[0.1] blur-3xl",
+            "absolute -top-[40%] -left-[20%] w-[60vmax] h-[60vmax] rounded-full opacity-[0.12] dark:opacity-[0.1] blur-3xl",
         scrollMap: {
             x: [0, 0.4, 0.7, 1],
             y: [0, 0.4, 0.7, 1],
@@ -54,7 +54,7 @@ function ScrollBlob({
         <motion.div
             className={className}
             style={{
-                background: "hsl(var(--accent)/0.7)",
+                background: "hsl(var(--accent)/0.6)",
                 ...(reduceMotion ? {} : { x, y, scale }),
             }}
         />
@@ -73,7 +73,7 @@ export function AnimatedBackground() {
         <AnimatePresence>
             <motion.div
                 key="animated-background"
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 1 }}
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 3 }}
                 className="fixed inset-0 z-0 pointer-events-none overflow-hidden opacity-50"
                 aria-hidden="true"
             >

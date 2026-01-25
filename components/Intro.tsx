@@ -33,7 +33,6 @@ const Intro = () => {
         </a>
         <ToolsAndStack />
       </div>
-
     </div>
   );
 };
