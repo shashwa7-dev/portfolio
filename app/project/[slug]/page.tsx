@@ -3,7 +3,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, ExternalLink, Play, Github, Twitter } from "feather-icons-react";
+import { ArrowLeft, ExternalLink, Play, Github, Twitter, Download } from "feather-icons-react";
 import { getSideProject } from "@/lib/projectsData";
 import { ActiveBadge } from "@/components/common/ActiveBadge";
 import StackIcon from "@/components/common/StackIcon";
@@ -89,6 +89,17 @@ export default function ProjectPage({
                 >
                   <ExternalLink className="w-4 h-4" />
                   Live Demo
+                </a>
+              )}
+              {project.links.download && (
+                <a
+                  href={project.links.download}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors text-sm"
+                >
+                  <Download className="w-4 h-4" />
+                  Download
                 </a>
               )}
               {project.links.producthunt && (

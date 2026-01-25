@@ -4,6 +4,7 @@ export type TSideProject = {
   id: string;
   slug: string;
   title: string;
+  icon?: string;
   tagline: string;
   isRecent?: boolean;
   description: string;
@@ -17,6 +18,7 @@ export type TSideProject = {
     github?: string;
     twitter?: string;
     web?: string;
+    download?: string;
     producthunt?: string;
   };
   stack: { fe?: StackName[]; be?: StackName[] };
@@ -52,14 +54,14 @@ Built with React + Vite, this tool explores browser rendering and export edge ca
     date: "Jan 2026",
   },
   {
-    id: "focus-pro",
-    slug: "focus-pro",
-    title: "f0cusPro",
+    id: "kiryoku",
+    slug: "kiryoku",
+    title: "Kiryouku",
     tagline: "Productivity tool that blocks distracting sites",
     isRecent: true,
     description:
       "Desktop productivity tool built with ElectronJS that blocks distracting websites using an HTTP proxy.",
-    longDescription: `f0cusPro is a tiny productive tool that blocks distracting sites when you need to focus. Under the hood, it uses a simple HTTP proxy that intercepts requests and blocks blacklisted domains.
+    longDescription: `Kiryouku is a tiny productive tool that blocks distracting sites when you need to focus. Under the hood, it uses a simple HTTP proxy that intercepts requests and blocks blacklisted domains.
 
 I built this after seeing similar features as premium offerings in apps like stayinsession.com. The tool is simple but effective - yes, a VPN could bypass it, but the goal is to add just enough friction to keep you on track.
 `,
@@ -74,10 +76,11 @@ I built this after seeing similar features as premium offerings in apps like sta
       be: ["electron"],
     },
     links: {
+      download: "https://github.com/shashwa7-dev/focus-pro/releases/tag/v0.1.0",
       github: "https://github.com/shashwa7-dev/focus-pro",
-      twitter: "https://x.com/offcod8/status/1998007706041659638",
+      twitter: "https://x.com/offcod8/status/2015526005000327662",
     },
-    thumbnail: "/projects/project_focus_pro.JPG",
+    thumbnail: "/projects/kiryoku.webp",
     date: "Dec 2025",
   },
   {

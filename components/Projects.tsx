@@ -91,9 +91,9 @@ const Projects = () => {
             >
               <div className="relative hidden md:block md:w-28 aspect-video rounded-lg overflow-hidden bg-secondary shrink-0">
                 <Image
-                  src={project.thumbnail}
+                  src={project.icon || project.thumbnail}
                   alt={project.title}
-                  fill
+                  fill  
                   sizes="(max-width: 640px) 96px, 112px"
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
                 />
