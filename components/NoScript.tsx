@@ -3,10 +3,10 @@
 export default function NoScript() {
   return (
     <noscript>
-      <div className="max-w-2xl mx-auto space-y-10 flex justify-center items-center p-4 py-10">
-        <div className="max-w-lg w-full space-y-4 text-center">
+      <div className="max-w-[90dvw] md:max-w-lg mx-auto space-y-10 flex justify-center items-center p-6 fixed bottom-24 inset-x-0  rounded-xl border shadow-lg bg-background/80 z-50 backdrop-blur-sm">
+        <div className="space-y-4 text-center">
           <div className="flex justify-center items-center gap-2 text-accent">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
               <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
                 <path stroke-dasharray="4" d="M12 3v2">
                   <animate fill="freeze" attributeName="stroke-dashoffset" dur="0.2s" values="4;0" />
@@ -30,12 +30,12 @@ export default function NoScript() {
                 </path>
               </g>
             </svg>
-            <h1 className="text-3xl font-semibold text-foreground leading-tight">
+            <h4 className="text-xl font-semibold text-foreground leading-tight">
               JavaScript is Disabled
-            </h1>
+            </h4>
           </div>
 
-          <p className="text-base text-muted-foreground leading-relaxed max-w-md mx-auto">
+          <p className="text-sm text-muted-foreground leading-relaxed max-w-md mx-auto">
             This portfolio requires JavaScript to function properly. Please enable
             JavaScript in your browser settings to continue.
           </p>
