@@ -2,7 +2,7 @@
 
 export default function NoScript() {
   return (
-    <noscript>
+
       <div className="max-w-2xl mx-auto space-y-10 flex justify-center items-center p-4 py-10">
         <div className="max-w-lg w-full space-y-4 text-center">
           <div className="flex justify-center items-center gap-2 text-accent">
@@ -41,6 +41,6 @@ export default function NoScript() {
           </p>
         </div>
       </div>
-    </noscript>
+
   );
 }

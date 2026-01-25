@@ -94,6 +94,7 @@ export default function RootLayout({
         className={`bg-background text-foreground border-border ${plusJakarta.variable} font-sans dark`}
       >
         <AnimatedBackground />
+        <NoScript />
         <div className="relative z-10">
           <TooltipProvider>
             {children}
@@ -102,7 +103,6 @@ export default function RootLayout({
             <UmamiAnalytics  />
           </TooltipProvider>
         </div>
-        <NoScript />
         <Footer />
       </body>
     </html>
