@@ -15,7 +15,7 @@ const S7Bot = dynamic(() => import("@/components/ChatBot"), {
 
 export default function Home() {
   return (
-    <main className="min-h-screen relative">
+    <main className="relative">
       <Navbar />
       <div className="max-w-2xl mx-auto px-4 pt-8 pb-10 space-y-10">
         {/* Hero / About */}
