@@ -97,12 +97,12 @@ export default function RootLayout({
         <div className="relative z-10">
           <TooltipProvider>
             {children}
-            <NoScript />
             <BottomFadeMask />
             <Analytics />
             <UmamiAnalytics  />
           </TooltipProvider>
         </div>
+        <NoScript />
         <Footer />
       </body>
     </html>
