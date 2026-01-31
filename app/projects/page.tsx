@@ -10,7 +10,7 @@ export const metadata = {
 
 export default function ProjectsPage() {
   return (
-    <main className="min-h-screen">
+    <main>
       <div className="max-w-2xl mx-auto px-4 py-16 space-y-8">
         {/* Back link */}
         <Link
@@ -46,8 +46,8 @@ export default function ProjectsPage() {
 
         {/* Projects grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {sideProjects.map((project) => (
-            <SideProjectCard key={project.id} project={project} />
+          {sideProjects.map((project,index) => (
+            <SideProjectCard key={project.id} project={project} index={index} />
           ))}
         </div>
       </div>

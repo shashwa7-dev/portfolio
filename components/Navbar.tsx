@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Menu, X } from "feather-icons-react";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 const navLinks = [
   { label: "Work", href: "#work" },
@@ -14,7 +15,7 @@ const navLinks = [
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
-
+  const [activeTab, setActiveTab] = useState<string | null>(null);
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
     return () => {
@@ -29,14 +30,15 @@ export default function Navbar() {
         <motion.nav
           initial={{ opacity: 0, y: 10, }}
           animate={{ opacity: 1, y: 0, }}
-          transition={{ duration: 0.5, delay: 1 }}
+          transition={{ duration: 0.5 }}
           className="pointer-events-auto flex items-center gap-1 rounded-full bg-background/75 dark:bg-background/60 backdrop-blur-xl border border-border shadow-lg shadow-black/5 dark:shadow-black/20 p-2 md:px-4"
           role="navigation"
+          onMouseLeave={() => setTimeout(() => setActiveTab(null), 100)}
         >
           {/* Logo */}
           <a
             href="/"
-            className="font-semibold text-sm tracking-tight p-1 px-2 rounded-full text-foreground hover:bg-muted/50 transition-colors"
+            className="font-semibold text-sm tracking-tight p-1 px-2 rounded-full text-foreground transition-colors"
           >
             {"[S7.dev]"}
           </a>
@@ -49,21 +51,34 @@ export default function Navbar() {
           {/* Desktop nav — dock items */}
           <ul className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => (
-              <li key={link.label}>
+              <motion.li key={link.label}
+                className="relative"
+                onFocus={() => setActiveTab(link.label)}
+                onMouseOver={() => setActiveTab(link.label)}
+                onMouseLeave={() => setActiveTab(link.label)}>
+                {activeTab === link.label ? (
+                  <motion.div
+                    layoutId="tab-indicator"
+                    className={cn(
+                      'absolute inset-0 rounded-full transition-colors',
+                      'bg-muted/50',
+                    )}
+                  />
+                ) : null}
                 <Link
                   key={link.label}
                   href={link.href}
-                  className="block px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground rounded-full hover:bg-muted/50 transition-all duration-200 hover:scale-105 origin-center"
+                  className="block px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground rounded-full transition-all duration-200 hover:scale-105 origin-center"
                 >
                   {link.label}
                 </Link>
-              </li>
+              </motion.li>
             ))}
           </ul>
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden rounded-full hover:bg-muted/50 transition-colors"
+            className="md:hidden rounded-full hover:bg-muted/50 transition-colors px-2"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
             aria-expanded={mobileOpen}

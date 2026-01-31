@@ -12,9 +12,10 @@ import { motion } from "motion/react";
 
 interface SideProjectCardProps {
   project: TSideProject;
+  index: number;
 }
 
-export default function SideProjectCard({ project }: SideProjectCardProps) {
+export default function SideProjectCard({ project, index }: SideProjectCardProps) {
   const router = useRouter();
   const [videoOpen, setVideoOpen] = useState(false);
   const stack = useMemo(
@@ -33,7 +34,7 @@ export default function SideProjectCard({ project }: SideProjectCardProps) {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.3,delay: index * 0.15 }}
         className="group"
       >
         <motion.div
@@ -91,7 +92,7 @@ export default function SideProjectCard({ project }: SideProjectCardProps) {
                 <h3 className="font-semibold leading-tight group-hover:text-accent transition-colors">
                   {project.title}
                 </h3>
-                <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                <p className="text-sm text-muted-foreground mt-1 line-clamp-1">
                   {project.tagline}
                 </p>
               </div>

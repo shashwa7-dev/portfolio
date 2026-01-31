@@ -87,7 +87,7 @@ const Projects = () => {
               tabIndex={0}
               onClick={() => router.push(`/project/${project.slug}`)}
               onKeyDown={(e) => handleRowKeyDown(e, project.slug)}
-              className="group flex gap-4 p-4 rounded-xl border border-border bg-card hover:bg-card/80 hover:border-accent/30 transition-all duration-200 cursor-pointer"
+              className="group flex gap-4 p-2 rounded-xl border border-border bg-card hover:bg-card/80 hover:border-accent/30 transition-all duration-200 cursor-pointer"
             >
               <div className="relative hidden md:block md:w-28 aspect-video rounded-lg overflow-hidden bg-secondary shrink-0">
                 <Image
@@ -98,7 +98,7 @@ const Projects = () => {
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
-              <div className="min-w-0 flex-1">
+              <div className="min-w-0 flex-1 p-2">
                 <div className="flex items-start justify-between gap-2 mb-1">
                   <div className="flex items-center gap-2 flex-wrap">
                     <h4 className="font-semibold group-hover:text-accent transition-colors">

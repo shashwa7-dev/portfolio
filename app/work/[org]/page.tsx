@@ -126,10 +126,11 @@ export default async function OrgPage({
             Projects ({org.projects.length})
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {org.projects.map((project) => (
+            {org.projects.map((project,index) => (
               <CompactProjectCard
                 key={project.id}
                 project={project}
+                index={index}
                 href={`/work/${org.slug}/${project.slug}`}
               />
             ))}
