@@ -89,9 +89,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var t=localStorage.getItem("theme");var d=window.matchMedia("(prefers-color-scheme: dark)").matches;var dark=t==="dark"||(t===null&&d);document.documentElement.classList.toggle("dark",dark);})();`,
+          }}
+        />
+      </head>
       <body
-        className={`bg-background text-foreground border-border ${plusJakarta.variable} font-sans dark`}
+        className={`bg-background text-foreground border-border ${plusJakarta.variable} font-sans`}
       >
         <AnimatedBackground />
         <NoScript />

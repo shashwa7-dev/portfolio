@@ -3,43 +3,59 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    /* E-ink inspired light theme – dim paper-like bg, readable ink & accents */
-    --background: 38 18% 90%;
-    --foreground: 28 14% 8%;
-    --card: 38 16% 92%;
-    --card-foreground: 28 14% 8%;
-    --popover: 38 16% 92%;
-    --popover-foreground: 28 14% 8%;
-    --primary: 28 14% 8%;
-    --primary-foreground: 38 15% 92%;
-    --secondary: 35 14% 85%;
-    --secondary-foreground: 28 12% 12%;
-    --muted: 36 12% 86%;
-    --muted-foreground: 28 10% 36%;
-    --accent: 32 85% 42%;
-    --accent-foreground: 38 15% 96%;
-    --destructive: 0 60% 45%;
-    --destructive-foreground: 38 15% 95%;
-    --border: 35 12% 82%;
-    --input: 35 12% 82%;
-    --ring: 32 85% 42%;
-    --radius: 0.5rem;
-    --chart-1: 12 70% 48%;
-    --chart-2: 160 52% 28%;
-    --chart-3: 197 45% 24%;
-    --chart-4: 40 75% 42%;
-    --chart-5: 24 75% 42%;
+:root {
+  /* ===== Base surfaces (paper) ===== */
+  --background: 38 22% 100%;
+  --foreground: 220 18% 16%;
 
-    /* Syntax highlighting – darker, readable on dim cream */
-    --sh-class: 142 42% 26%;
-    --sh-identifier: 212 55% 24%;
-    --sh-sign: 30 75% 32%;
-    --sh-string: 108 38% 26%;
-    --sh-keyword: 18 72% 32%;
-    --sh-comment: 28 8% 42%;
-    --sh-jsxliterals: 222 48% 32%;
-  }
+  --card: 38 20% 94%;
+  --card-foreground: 220 18% 16%;
+
+  --popover: 38 20% 94%;
+  --popover-foreground: 220 18% 16%;
+
+  /* ===== Primary (text-first UI) ===== */
+  --primary: 220 18% 16%;
+  --primary-foreground: 38 25% 96%;
+
+  /* ===== Secondary surfaces ===== */
+  --secondary: 36 18% 88%;
+  --secondary-foreground: 220 14% 20%;
+
+  --muted: 36 14% 86%;
+  --muted-foreground: 220 10% 40%;
+
+  /* ===== Accent (INK BLUE — calm, authoritative) ===== */
+  --accent: 214 38% 36%;
+  --accent-foreground: 38 25% 96%;
+
+  /* ===== Feedback ===== */
+  --destructive: 0 55% 42%;
+  --destructive-foreground: 38 25% 96%;
+
+  /* ===== Borders / inputs ===== */
+  --border: 35 12% 82%;
+  --input: 35 12% 82%;
+  --ring: 214 38% 36%;
+
+  --radius: 0.5rem;
+
+  /* ===== Charts (muted, print-safe) ===== */
+  --chart-1: 214 38% 42%;
+  --chart-2: 160 32% 34%;
+  --chart-3: 32 45% 42%;
+  --chart-4: 42 55% 44%;
+  --chart-5: 8 48% 42%;
+
+  /* ===== Syntax highlighting (grain-safe) ===== */
+  --sh-class: 142 32% 30%;
+  --sh-identifier: 214 42% 30%;
+  --sh-sign: 30 55% 34%;
+  --sh-string: 108 30% 30%;
+  --sh-keyword: 214 55% 34%;
+  --sh-comment: 220 8% 44%;
+  --sh-jsxliterals: 222 38% 34%;
+}
 
   .dark {
     /* E-ink inspired dark theme - warm, soft, easy on eyes */

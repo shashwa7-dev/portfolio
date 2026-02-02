@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Menu, X } from "feather-icons-react";
+import { Menu, X, Sun, Moon } from "feather-icons-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { useDarkMode } from "@/app/hooks/useDarkMode";
 
 const navLinks = [
   { label: "Work", href: "#work" },
@@ -16,6 +17,7 @@ const navLinks = [
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string | null>(null);
+  const { isDarkMode, toggleDarkMode } = useDarkMode();
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
     return () => {
@@ -44,7 +46,7 @@ export default function Navbar() {
           </a>
 
           <span
-            className="w-px h-4 bg-border shrink-0 mx-1"
+            className="w-px h-4 bg-border shrink-0 mx-1 hidden md:block"
             aria-hidden="true"
           />
 
@@ -89,6 +91,25 @@ export default function Navbar() {
               <Menu className="w-5 h-5" />
             )}
           </button>
+          <span
+            className="w-px h-4 bg-border shrink-0 mx-1"
+            aria-hidden="true"
+          />
+
+          {/* Theme toggle */}
+          <button
+            type="button"
+            onClick={toggleDarkMode}
+            className="rounded-full p-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+            aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            {isDarkMode ? (
+              <Sun className="w-4 h-4" />
+            ) : (
+              <Moon className="w-4 h-4" />
+            )}
+          </button>
+
         </motion.nav>
       </header>
 
@@ -124,6 +145,28 @@ export default function Navbar() {
                     </a>
                   </li>
                 ))}
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      toggleDarkMode();
+                      setMobileOpen(false);
+                    }}
+                    className="flex items-center gap-2 w-full py-3 px-3 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                  >
+                    {isDarkMode ? (
+                      <>
+                        <Sun className="w-4 h-4" />
+                        Light mode
+                      </>
+                    ) : (
+                      <>
+                        <Moon className="w-4 h-4" />
+                        Dark mode
+                      </>
+                    )}
+                  </button>
+                </li>
               </ul>
             </motion.nav>
           </>
