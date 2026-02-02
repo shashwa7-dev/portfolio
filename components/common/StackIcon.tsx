@@ -159,7 +159,7 @@ export default function StackIcon({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 px-2 py-1 text-xs rounded-md bg-secondary text-secondary-foreground",
+        "inline-flex items-center gap-1.5 px-2 py-1 text-xs rounded-md bg-secondary text-secondary-foreground border",
         className
       )}
     >

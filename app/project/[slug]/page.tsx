@@ -74,7 +74,7 @@ export default function ProjectPage({
                   href={project.links.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-foreground text-background hover:bg-foreground/90 transition-colors text-sm font-medium"
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-foreground text-background hover:bg-foreground/90 transition-colors text-sm font-medium border"
                 >
                   <Github className="w-4 h-4" />
                   Source
@@ -85,7 +85,7 @@ export default function ProjectPage({
                   href={project.links.web}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors text-sm"
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors text-sm border"
                 >
                   <ExternalLink className="w-4 h-4" />
                   Live Demo
@@ -96,7 +96,7 @@ export default function ProjectPage({
                   href={project.links.download}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors text-sm"
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors text-sm border"
                 >
                   <Download className="w-4 h-4" />
                   Download
@@ -107,7 +107,7 @@ export default function ProjectPage({
                   href={project.links.producthunt}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors text-sm"
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors text-sm  border"
                 >
                   <ExternalLink className="w-4 h-4" />
                   Product Hunt
@@ -118,7 +118,7 @@ export default function ProjectPage({
                   href={project.links.twitter}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors text-sm"
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors text-sm border"
                 >
                   <Twitter className="w-4 h-4" />
                   Twitter

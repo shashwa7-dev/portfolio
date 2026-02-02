@@ -11,7 +11,7 @@ const Footer = () => {
           <p>
             &copy; {new Date().getFullYear()} {" / S7.dev / "}
             <a
-              href="https://github.com/shashwa7-dev/portfolio/blob/main/LICENSE"
+              href="https://github.com/shashwa7-dev/portfolio/blob/master/LICENSE"
               target="_blank"
               rel="noopener noreferrer"
               className="text-foreground hover:text-accent transition-colors underline underline-offset-4"

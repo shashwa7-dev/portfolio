@@ -87,7 +87,7 @@ export function AnimatedBackground() {
                     />
                 ))}
                 <div
-                    className="absolute inset-0 opacity-[0.2] dark:opacity-[0.4]"
+                    className="absolute inset-0 opacity-[0.25] dark:opacity-[0.4]"
                     style={{
                         backgroundImage: `url("${GRAIN_SVG_VARIANT_B}")`,
                         backgroundSize: "180px 180px",
