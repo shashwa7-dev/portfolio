@@ -86,7 +86,7 @@ export default function Navbar() {
                 <Link
                   key={link.label}
                   href={link.href}
-                  className="block px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground rounded-full transition-all duration-200 hover:scale-105 origin-center"
+                  className="block px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground rounded-full transition-[color,transform] duration-150 ease-[--ease-out] active:scale-[0.95]"
                 >
                   {link.label}
                 </Link>
@@ -96,7 +96,7 @@ export default function Navbar() {
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden rounded-full hover:bg-muted/50 transition-colors px-2"
+            className="md:hidden rounded-full hover:bg-muted/50 transition-[color,background-color,transform] duration-150 px-2 active:scale-[0.92]"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
             aria-expanded={mobileOpen}
@@ -117,7 +117,7 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => setSettingsOpen((o) => !o)}
-              className="rounded-full p-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+              className="rounded-full p-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-[color,background-color,transform] duration-150 active:scale-[0.92]"
               aria-label="Settings"
               aria-expanded={settingsOpen}
             >
@@ -127,11 +127,11 @@ export default function Navbar() {
             <AnimatePresence>
               {settingsOpen && (
                 <motion.div
-                  initial={{ opacity: 0, y: 4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 4 }}
-                  transition={{ duration: 0.15 }}
-                  className="absolute bottom-[38px] right-0 mb-2 w-48 rounded-xl bg-card/95 backdrop-blur-xl border border-border shadow-sm p-1 z-50 overflow-hidden"
+                  initial={{ opacity: 0, y: 4, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 4, scale: 0.96 }}
+                  transition={{ duration: 0.15, ease: [0.23, 1, 0.32, 1] }}
+                  className="absolute bottom-[38px] right-0 mb-2 w-48 rounded-xl bg-card/95 backdrop-blur-xl border border-border shadow-sm p-1 z-50 overflow-hidden origin-bottom-right"
                   role="menu"
                 >
                   <button

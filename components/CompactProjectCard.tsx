@@ -48,7 +48,7 @@ export default function CompactProjectCard({
         <div
           onClick={handleCardClick}
           className={cn(
-            "block rounded-lg border border-border bg-card/50 hover:bg-card overflow-hidden transition-all duration-200",
+            "block rounded-lg border border-border bg-card/50 hover:bg-card overflow-hidden transition-[border-color,background-color,transform,box-shadow] duration-200 ease-[--ease-out] hover:-translate-y-0.5 hover:shadow-sm",
             href && "cursor-pointer hover:border-accent/30"
           )}
         >
@@ -59,7 +59,7 @@ export default function CompactProjectCard({
               alt={project.title}
               fill
               sizes="(max-width: 768px) 100vw, 33vw"
-              className="object-cover group-hover:scale-105 transition-transform duration-500"
+              className="object-cover group-hover:scale-[1.03] transition-transform duration-300 ease-[--ease-out]"
               loading="lazy"
             />
 

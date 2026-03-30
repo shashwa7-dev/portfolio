@@ -20,7 +20,7 @@ export function BlogPosts() {
           })
           .map((post) => (
             <Link
-              className="grid grid-cols-[250px_1fr] border rounded-md overflow-hidden -md:grid-cols-1 bg-card text-card-foreground"
+              className="grid grid-cols-[250px_1fr] border rounded-md overflow-hidden -md:grid-cols-1 bg-card text-card-foreground transition-[border-color,box-shadow] duration-200 ease-[--ease-out] hover:border-accent/30 hover:shadow-sm"
               href={`/blogs/${post.slug}`}
               key={post.slug}
             >

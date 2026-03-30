@@ -39,7 +39,7 @@ export default function SideProjectCard({ project, index }: SideProjectCardProps
       >
         <motion.div
           onClick={handleCardClick}
-          className="block rounded-xl border border-border bg-card hover:bg-card/90 overflow-hidden transition-all duration-200 hover:border-accent/30 shadow-sm hover:shadow-md cursor-pointer"
+          className="block rounded-xl border border-border bg-card hover:bg-card/90 overflow-hidden transition-[border-color,background-color,transform,box-shadow] duration-200 ease-[--ease-out] hover:border-accent/30 shadow-sm hover:shadow-md hover:-translate-y-0.5 cursor-pointer"
         >
           {/* Thumbnail */}
           <div className="relative aspect-video bg-secondary overflow-hidden">
@@ -48,7 +48,7 @@ export default function SideProjectCard({ project, index }: SideProjectCardProps
               alt={project.title}
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
-              className="object-cover group-hover:scale-105 transition-transform duration-500"
+              className="object-cover group-hover:scale-[1.03] transition-transform duration-300 ease-[--ease-out]"
               loading="lazy"
             />
 

@@ -101,7 +101,6 @@ export default function RootLayout({
       <body
         className={`bg-background text-foreground border-border ${plusJakarta.variable} font-sans`}
       >
-        <AnimatedBackground />
         <NoScript />
         <div className="relative z-10">
           <TooltipProvider>

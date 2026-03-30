@@ -50,20 +50,12 @@ const Activity = () => {
         </div>
         <motion.ul
           variants={containerVariants}
-          className="flex flex-col gap-2"
+          className="grid grid-cols-2 gap-2"
         >
           {books.slice(0, 3).map((book) => (
             <BookListItem {...book} key={book.slug} />
           ))}
         </motion.ul>
-      </motion.div>
-
-      {/* Spotify Section */}
-      <motion.div variants={itemVariants} className="space-y-2">
-        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-          Last Played
-        </p>
-        <SpotifyLastListen />
       </motion.div>
     </motion.div>
   );

@@ -41,16 +41,17 @@ export default function VideoModal({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
             onClick={onClose}
             className="fixed inset-0 bg-background/90 backdrop-blur-sm z-50"
           />
 
-          {/* Modal */}
+          {/* Modal — enter is deliberate, exit is snappy */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
+            exit={{ opacity: 0, scale: 0.98 }}
+            transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
             className="fixed inset-4 md:inset-12 lg:inset-20 z-50 flex items-center justify-center"
           >
             <div className="relative w-full h-full max-w-5xl mx-auto flex flex-col">
@@ -61,7 +62,7 @@ export default function VideoModal({
                 )}
                 <button
                   onClick={onClose}
-                  className="ml-auto p-2 rounded-lg hover:bg-secondary transition-colors"
+                  className="ml-auto p-2 rounded-lg hover:bg-secondary transition-[background-color,transform] duration-150 active:scale-[0.92]"
                   aria-label="Close video"
                 >
                   <X className="w-5 h-5" />

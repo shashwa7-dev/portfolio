@@ -46,7 +46,9 @@ const Socials = () => {
             href={link}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors border"
+            whileHover={{ y: -2 }}
+            transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors border active:scale-[0.97]"
           >
             <Icon className="w-4 h-4" />
             <span className="text-sm">{name}</span>
