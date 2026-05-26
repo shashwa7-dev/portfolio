@@ -6,6 +6,7 @@ export type TProject = {
   title: string;
   shortTitle?: string;
   isActive?: boolean;
+  featured?: boolean;
   description: string;
   highlights?: string[];
   thumbnail: string;
@@ -74,6 +75,7 @@ export const organizations: TOrganization[] = [
         slug: "playai-hub",
         title: "PlayAI Hub",
         shortTitle: "PlayAI Hub",
+        featured: true,
         description:
           "AI × DeFi platform unifying real-time chat streaming with workflow-driven interactions. Built core UI, chat streaming, workflow-preset sessions, and mission/reward flows for x402-powered agent-ready apps.",
         highlights: [
@@ -136,6 +138,7 @@ export const organizations: TOrganization[] = [
         slug: "coinbase-polygon-nft",
         title: "Coinbase × Polygon NFT",
         shortTitle: "CB × Polygon NFT",
+        featured: true,
         description:
           "High-scale NFT minting platform for user onboarding to Web3. Collaboration with Coinbase, Polygon, and partners achieving 100K mints on day one.",
         highlights: [
@@ -160,6 +163,7 @@ export const organizations: TOrganization[] = [
         slug: "polygon-copilot",
         title: "Polygon Copilot",
         shortTitle: "Polygon Copilot",
+        featured: true,
         description:
           "AI chatbot for Web3 developers using OpenAI GPT models, delivering blockchain insights within the zkEVM ecosystem.",
         highlights: [
@@ -237,6 +241,7 @@ export const organizations: TOrganization[] = [
         slug: "agent-experience",
         title: "Agent Experience",
         shortTitle: "0xRogueAgent",
+        featured: true,
         description:
           "AI-driven agent project on Solana with $ROGUE token for mission-based experiences and governance participation.",
         highlights: [
@@ -267,6 +272,7 @@ export const organizations: TOrganization[] = [
         slug: "node-explorer",
         title: "Node Explorer",
         shortTitle: "Node Explorer",
+        featured: true,
         description:
           "Node management platform for delegating PlayAI Oasis Nodes, enabling task execution and PlayAI Coin earnings.",
         highlights: [
