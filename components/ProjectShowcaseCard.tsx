@@ -22,6 +22,11 @@ export default function ProjectShowcaseCard({ project }: { project: ProjectCardD
             {project.badge}
           </span>
         )}
+        {project.metric && (
+          <span className="absolute bottom-3 left-3 rounded-full border border-border-strong bg-background/80 px-2 py-0.5 font-mono text-[9px] uppercase tracking-wide text-accent backdrop-blur">
+            {project.metric}
+          </span>
+        )}
         {project.preview && (
           <span className="absolute bottom-3 right-3 grid h-7 w-7 place-items-center rounded-full bg-background/80 text-foreground backdrop-blur">
             <Play className="h-3.5 w-3.5 fill-current" />

@@ -12,6 +12,7 @@ export type TProject = {
   thumbnail: string;
   preview?: string;
   date?: string;
+  metric?: string;
   links?: {
     github?: string;
     twitter?: string;
@@ -139,6 +140,7 @@ export const organizations: TOrganization[] = [
         title: "Coinbase × Polygon NFT",
         shortTitle: "CB × Polygon NFT",
         featured: true,
+        metric: "100K mints · day one",
         description:
           "High-scale NFT minting platform for user onboarding to Web3. Collaboration with Coinbase, Polygon, and partners achieving 100K mints on day one.",
         highlights: [
@@ -164,6 +166,7 @@ export const organizations: TOrganization[] = [
         title: "Polygon Copilot",
         shortTitle: "Polygon Copilot",
         featured: true,
+        metric: "Featured by Polygon",
         description:
           "AI chatbot for Web3 developers using OpenAI GPT models, delivering blockchain insights within the zkEVM ecosystem.",
         highlights: [
@@ -194,6 +197,7 @@ export const organizations: TOrganization[] = [
         slug: "nft-wrapped",
         title: "NFT Wrapped 2022",
         shortTitle: "NFT Wrapped",
+        metric: "250+ wraps in 24h",
         description:
           "Personalized, gamified NFT experience inspired by Spotify Wrapped. Concept to launch in 3 weeks with quests, leaderboards, and user personas.",
         highlights: [
@@ -295,6 +299,7 @@ export const organizations: TOrganization[] = [
         slug: "dehidden-quest",
         title: "Dehidden Quest × Web3Conf",
         shortTitle: "Web3Conf Quest",
+        metric: "2,000+ attendees",
         description:
           "Gamified Web3 onboarding at Web3Conf India 2022. Interactive booth challenges with on-chain tasks and reward redemption.",
         highlights: [

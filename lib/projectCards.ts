@@ -11,6 +11,7 @@ export type ProjectCardData = {
   stack: string[];
   badge?: string;
   caseStudy?: boolean;
+  metric?: string;
 };
 
 export function sideProjectToCard(p: TSideProject): ProjectCardData {
@@ -37,5 +38,6 @@ export function workProjectToCard(orgSlug: string, p: TProject): ProjectCardData
     preview: p.preview,
     stack: [...(p.stack.fe || []), ...(p.stack.be || [])],
     badge: p.isActive ? "Live" : undefined,
+    metric: p.metric,
   };
 }

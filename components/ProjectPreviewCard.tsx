@@ -11,6 +11,11 @@ export default function ProjectPreviewCard({ project }: { project: ProjectCardDa
     >
       <div className="relative h-12 w-[68px] shrink-0 overflow-hidden rounded-md bg-elevated">
         <Image src={project.thumbnail} alt={project.title} fill sizes="68px" className="object-cover" />
+        {project.metric && (
+          <span className="absolute inset-x-0 bottom-0 truncate bg-gradient-to-t from-black/75 to-transparent px-1.5 pb-0.5 pt-2 font-mono text-[8px] font-medium text-white">
+            {project.metric}
+          </span>
+        )}
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">
