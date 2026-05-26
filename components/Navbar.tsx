@@ -11,6 +11,7 @@ const navLinks = [
   { label: "Projects", href: "/#projects" },
   { label: "Writing", href: "/blogs" },
   { label: "Books", href: "/books" },
+  { label: "Design", href: "/design" },
 ];
 
 export function openCommandPalette() {
