@@ -4,6 +4,7 @@ import Projects from "@/components/Projects";
 import TechStack from "@/components/TechStack";
 import Clients from "@/components/Clients";
 import Activity from "@/components/Activity";
+import Faq from "@/components/Faq";
 import Socials from "@/components/Socials";
 import Navbar from "@/components/Navbar";
 import Divider from "@/components/layout/Divider";
@@ -27,6 +28,8 @@ export default function Home() {
       <Clients />
       <Divider />
       <Activity />
+      <Divider />
+      <Faq />
       <Divider />
       <Socials />
       <S7Bot />

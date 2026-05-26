@@ -23,7 +23,7 @@ const socials = [
 
 const Socials = () => {
   return (
-    <Section number="06" label="Contact" title="Let's build something good" width="reading">
+    <Section number="07" label="Contact" title="Let's build something good" width="reading">
       <div className="space-y-4">
         <a
           href="mailto:contact@shashwa7.in"
