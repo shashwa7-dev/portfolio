@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
 import dynamic from "next/dynamic";
 import "./globals.css";
 import { baseUrl } from "./sitemap";
@@ -26,11 +26,26 @@ const AnimatedBackground = dynamic(
   { ssr: false }
 );
 
-const plusJakarta = Plus_Jakarta_Sans({
+const fraunces = Fraunces({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
   display: "swap",
-  variable: "--font-jakarta",
+  variable: "--font-fraunces",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-inter",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  display: "swap",
+  variable: "--font-mono",
 });
 
 export const metadata: Metadata = {
@@ -99,7 +114,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`bg-background text-foreground border-border ${plusJakarta.variable} font-sans`}
+        className={`bg-background text-foreground border-border ${fraunces.variable} ${inter.variable} ${jetbrainsMono.variable} font-sans`}
       >
         <NoScript />
         <div className="relative z-10">
