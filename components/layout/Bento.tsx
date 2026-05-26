@@ -8,13 +8,8 @@ export default function Bento({
   children: React.ReactNode;
 }) {
   return (
-    <div
-      className={cn(
-        "grid gap-px overflow-hidden rounded-2xl bg-border p-px",
-        className
-      )}
-    >
-      {children}
+    <div className="overflow-hidden rounded-2xl border border-border">
+      <div className={cn("grid gap-px bg-border", className)}>{children}</div>
     </div>
   );
 }
