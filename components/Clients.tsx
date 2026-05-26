@@ -7,7 +7,7 @@ import { containerVariants } from "@/lib/motionVariants";
 import Section from "@/components/layout/Section";
 import { ArrowUpRight } from "feather-icons-react";
 
-const easeOut: [number, number, number, number] = [0.23, 1, 0.32, 1];
+const easeOut: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 const cardVariants: Variants = {
   hidden: { opacity: 0, y: 8 },

@@ -62,9 +62,7 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
 
         <div className="max-w-[760px] space-y-4">
           <Label>
-            {project.title}
-            {cs.year ? ` · ${cs.year}` : ""}
-            {cs.role ? ` · ${cs.role}` : ""}
+            {["Case Study", cs.year, cs.role].filter(Boolean).join(" · ")}
           </Label>
           <h1 className="font-serif text-[clamp(2.2rem,5vw,3rem)] font-medium leading-[1.03] tracking-[-0.02em]">
             {project.title}

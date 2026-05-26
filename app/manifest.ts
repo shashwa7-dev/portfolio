@@ -25,8 +25,8 @@ export default function manifest(): MetadataRoute.Manifest {
         purpose: "maskable",
       },
     ],
-    theme_color: "#1e1e1e",
-    background_color: "#f8f3dd",
+    theme_color: "#0B0B0F",
+    background_color: "#0B0B0F",
     display: "standalone",
   };
 }
