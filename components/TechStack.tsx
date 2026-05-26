@@ -1,8 +1,6 @@
 import React from "react";
-import SectionTitle from "./common/SectionTitle";
-import { Layers } from "feather-icons-react";
 import StackIcon from "./common/StackIcon";
-import { Icon } from "@iconify/react";
+import Section from "@/components/layout/Section";
 
 const frontendStacks = [
   "html",
@@ -42,71 +40,64 @@ const devopsStacks = [
 ] as const;
 const toolStacks = ["vscode", "figma", "notion", "postman"] as const;
 
-const StackSection = ({
-  title,
-  children,
-}: {
-  title: string;
+type CategoryRowProps = {
+  label: string;
   children: React.ReactNode;
-}) => (
-  <div className="space-y-2">
-    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-      {title}
-    </p>
-    <div className="flex flex-wrap gap-1.5">{children}</div>
+};
+
+const CategoryRow = ({ label, children }: CategoryRowProps) => (
+  <div className="grid grid-cols-1 gap-3 md:grid-cols-[120px_1fr] md:items-start">
+    <div className="font-mono text-[11px] uppercase tracking-[0.12em] text-subtle pt-1">
+      {label}
+    </div>
+    <div className="flex flex-wrap gap-2">{children}</div>
   </div>
 );
 
+const chipClass =
+  "rounded-[9px] border border-border bg-card px-3 py-2 text-sm text-muted-foreground inline-flex items-center gap-2";
+
 const TechStack = () => {
   return (
-    <div className="space-y-8" id="tech_stack">
-      <SectionTitle
-        title="Tech Stack"
-        icon={<Icon icon='solar:layers-minimalistic-line-duotone' className="w-5 h-5" />}
-      />
-
+    <Section id="tech_stack" label="Toolkit" width="reading">
       <div className="space-y-6">
-        {/* Frontend - full width */}
-        <StackSection title="Frontend">
+        <CategoryRow label="Frontend">
           {frontendStacks.map((name) => (
-            <StackIcon key={name} name={name} />
+            <StackIcon key={name} name={name} className={chipClass} />
           ))}
-        </StackSection>
+        </CategoryRow>
 
-        {/* Two column grid */}
-        <div className="grid md:grid-cols-2 gap-6">
-          <StackSection title="Backend & Database">
-            {backendStacks.map((name) => (
-              <StackIcon key={name} name={name} />
-            ))}
-          </StackSection>
+        <CategoryRow label="Backend & DB">
+          {backendStacks.map((name) => (
+            <StackIcon key={name} name={name} className={chipClass} />
+          ))}
+        </CategoryRow>
 
-          <StackSection title="DevOps & Infra">
-            {devopsStacks.map((name) => (
-              <StackIcon key={name} name={name} />
-            ))}
-          </StackSection>
+        <CategoryRow label="DevOps & Infra">
+          {devopsStacks.map((name) => (
+            <StackIcon key={name} name={name} className={chipClass} />
+          ))}
+        </CategoryRow>
 
-          <StackSection title="Protocols / APIs">
-            {protocolStacks.map((name) => (
-              <StackIcon key={name} name={name} />
-            ))}
-          </StackSection>
+        <CategoryRow label="Protocols / APIs">
+          {protocolStacks.map((name) => (
+            <StackIcon key={name} name={name} className={chipClass} />
+          ))}
+        </CategoryRow>
 
-          <StackSection title="AI Stack">
-            {aiStacks.map((name) => (
-              <StackIcon key={name} name={name} />
-            ))}
-          </StackSection>
+        <CategoryRow label="AI Stack">
+          {aiStacks.map((name) => (
+            <StackIcon key={name} name={name} className={chipClass} />
+          ))}
+        </CategoryRow>
 
-          <StackSection title="Tools">
-            {toolStacks.map((name) => (
-              <StackIcon key={name} name={name} />
-            ))}
-          </StackSection>
-        </div>
+        <CategoryRow label="Tools">
+          {toolStacks.map((name) => (
+            <StackIcon key={name} name={name} className={chipClass} />
+          ))}
+        </CategoryRow>
       </div>
-    </div>
+    </Section>
   );
 };
 
