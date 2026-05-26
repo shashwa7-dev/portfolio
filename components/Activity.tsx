@@ -10,7 +10,7 @@ import Section from "@/components/layout/Section";
 
 const Activity = () => {
   return (
-    <Section id="activity" label="Now" width="reading">
+    <Section id="activity" number="05" label="Now" title="What I'm up to" width="reading">
       <motion.div
         variants={containerVariants}
         initial="hidden"

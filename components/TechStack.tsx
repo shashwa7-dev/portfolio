@@ -59,7 +59,7 @@ const chipClass =
 
 const TechStack = () => {
   return (
-    <Section id="tech_stack" label="Toolkit" width="reading">
+    <Section id="tech_stack" number="03" label="Toolkit" title="Tools I reach for" width="reading">
       <div className="space-y-6">
         <CategoryRow label="Frontend">
           {frontendStacks.map((name) => (

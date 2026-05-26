@@ -23,16 +23,15 @@ const socials = [
 
 const Socials = () => {
   return (
-    <Section width="reading">
-      <div className="space-y-4 text-center">
-        <h2 className="font-serif text-3xl">Let&apos;s build something good.</h2>
+    <Section number="06" label="Contact" title="Let's build something good" width="reading">
+      <div className="space-y-4">
         <a
           href="mailto:contact@shashwa7.in"
           className="inline-block rounded-[9px] bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground hover:opacity-90 transition-opacity"
         >
           contact@shashwa7.in
         </a>
-        <div className="flex justify-center gap-4 pt-2 text-sm text-muted-foreground">
+        <div className="flex gap-4 pt-2 text-sm text-muted-foreground">
           {socials.map(({ name, link, Icon }) => (
             <a
               key={name}

@@ -4,6 +4,7 @@ import Label from "./Label";
 
 type Props = {
   id?: string;
+  number?: string;
   label?: string;
   title?: string;
   action?: React.ReactNode;
@@ -14,6 +15,7 @@ type Props = {
 
 export default function Section({
   id,
+  number,
   label,
   title,
   action,
@@ -24,10 +26,16 @@ export default function Section({
   return (
     <section id={id} className={cn("py-16 md:py-24", className)}>
       <Container width={width}>
-        {(label || title || action) && (
+        {(number || label || title || action) && (
           <div className="mb-8 flex items-end justify-between gap-4">
             <div className="space-y-1.5">
-              {label && <Label>{label}</Label>}
+              {(label || number) && (
+                <Label>
+                  {number && <span className="text-accent-hover">{number}</span>}
+                  {number && label ? "  /  " : ""}
+                  {label}
+                </Label>
+              )}
               {title && (
                 <h2 className="font-serif text-2xl md:text-[1.75rem] text-foreground">
                   {title}

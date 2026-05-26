@@ -59,7 +59,7 @@ const Clients = () => {
       whileInView="visible"
       viewport={{ once: true, amount: 0.2 }}
     >
-      <Section id="clients" label="Trusted by" width="reading">
+      <Section id="clients" number="04" label="Trusted by" title="Teams I've worked with" width="reading">
         <div className="grid grid-cols-2 -sm:grid-cols-1 gap-2.5">
           {clients.map((client, i) => (
             <motion.a
