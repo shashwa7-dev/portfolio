@@ -16,7 +16,8 @@ export default function BookListItem({
   cover,
   chapters,
   isDone,
-}: BookProps) {
+  variant = "card",
+}: BookProps & { variant?: "card" | "row" }) {
   const progress = useMemo(() => {
     if (!chapters.length) return 0;
     const completed = chapters.reduce(
@@ -27,10 +28,18 @@ export default function BookListItem({
   }, [chapters]);
 
   return (
-    <motion.li variants={itemVariants}>
+    <motion.li
+      variants={itemVariants}
+      className={cn(variant === "row" && "border-b border-border last:border-b-0")}
+    >
       <Link
         href={`/books/${slug}`}
-        className="group flex items-center gap-3 rounded-lg border bg-card p-3 transition-colors hover:border-accent/50 hover:bg-accent/5"
+        className={cn(
+          "group flex items-center gap-3 transition-colors",
+          variant === "card"
+            ? "rounded-lg border bg-card p-3 hover:border-accent/50 hover:bg-accent/5"
+            : "px-5 py-3 hover:bg-elevated"
+        )}
       >
         {/* Cover thumbnail */}
         <div className="relative h-14 w-10 shrink-0 overflow-hidden rounded border bg-muted">
