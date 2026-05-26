@@ -22,6 +22,19 @@ export type TSideProject = {
     producthunt?: string;
   };
   stack: { fe?: StackName[]; be?: StackName[] };
+  tags?: string[];
+  caseStudy?: {
+    role?: string;
+    year?: string;
+    overview?: string;
+    problem?: string;
+    constraints?: string[];
+    architecture?: string[] | string;
+    tradeoffs?: string[] | string;
+    performance?: string[] | string;
+    results?: { value: string; caption: string }[];
+    lessons?: string[] | string;
+  };
 };
 
 export const sideProjects: TSideProject[] = [
