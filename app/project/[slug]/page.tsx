@@ -1,232 +1,160 @@
-"use client";
-
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
-import { ArrowLeft, ExternalLink, Play, Github, Twitter, Download } from "feather-icons-react";
-import { getSideProject } from "@/lib/projectsData";
-import { ActiveBadge } from "@/components/common/ActiveBadge";
+import { ArrowLeft } from "feather-icons-react";
+import { getSideProject, getAllSideProjects } from "@/lib/projectsData";
+import { baseUrl } from "@/app/sitemap";
+import Container from "@/components/layout/Container";
+import Label from "@/components/layout/Label";
+import ProseGutter from "@/components/layout/ProseGutter";
 import StackIcon from "@/components/common/StackIcon";
-import VideoModal from "@/components/common/VideoModal";
-import { motion } from "motion/react";
-import { useState } from "react";
+import ProjectMedia from "@/components/project/ProjectMedia";
+import { softwareAppLd, ogUrl } from "@/lib/seo";
 
-export default function ProjectPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
-  const { slug } = params;
-  const project = getSideProject(slug);
-  const [videoOpen, setVideoOpen] = useState(false);
+export function generateStaticParams() {
+  return getAllSideProjects().map((p) => ({ slug: p.slug }));
+}
 
-  if (!project) {
-    notFound();
-  }
-
+export function generateMetadata({ params }: { params: { slug: string } }) {
+  const project = getSideProject(params.slug);
+  if (!project) return {};
+  const title = project.title;
+  const description = project.tagline;
   const stack = [...(project.stack.fe || []), ...(project.stack.be || [])];
+  const og = ogUrl({ title, subtitle: description, type: "project", label: stack.slice(0, 3).join(" · ") });
+  return {
+    title,
+    description,
+    alternates: { canonical: `${baseUrl}project/${project.slug}` },
+    openGraph: { title, description, type: "article", url: `${baseUrl}project/${project.slug}`, images: [{ url: og }] },
+    twitter: { card: "summary_large_image", title, description, images: [og] },
+  };
+}
+
+const toList = (v?: string[] | string) => (Array.isArray(v) ? v : v ? [v] : []);
+
+export default function ProjectPage({ params }: { params: { slug: string } }) {
+  const project = getSideProject(params.slug);
+  if (!project) return notFound();
+
+  const cs = project.caseStudy || {};
+  const stack = [...(project.stack.fe || []), ...(project.stack.be || [])];
+  const sections: { key: string; label: string; heading: string; body: string[] }[] = [
+    { key: "overview", label: "Overview", heading: "Overview", body: toList(cs.overview) },
+    { key: "problem", label: "The problem", heading: "Why this exists", body: toList(cs.problem) },
+    { key: "constraints", label: "Constraints", heading: "Constraints", body: toList(cs.constraints) },
+    { key: "architecture", label: "Architecture", heading: "How it's built", body: toList(cs.architecture) },
+    { key: "tradeoffs", label: "Tradeoffs", heading: "Tradeoffs", body: toList(cs.tradeoffs) },
+    { key: "performance", label: "Performance", heading: "Performance", body: toList(cs.performance) },
+    { key: "lessons", label: "Lessons", heading: "Lessons learned", body: toList(cs.lessons) },
+  ].filter((s) => s.body.length > 0);
 
   return (
-    <main className="min-h-screen">
-      <div className="max-w-2xl mx-auto px-4 py-16 space-y-10">
-        {/* Back link */}
-        <Link
-          href="/projects"
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Projects
+    <main className="py-16 md:py-24">
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareAppLd(project)) }}
+      />
+      <Container width="wide" className="space-y-8">
+        <Link href="/projects" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+          <ArrowLeft className="h-4 w-4" /> Back to projects
         </Link>
 
-        {/* Header */}
-        <motion.header
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="space-y-4"
-        >
-          {/* Meta badges */}
-          <div className="flex items-center gap-2">
-            {project.isRecent && (
-              <ActiveBadge variant="pill" label="Recent" />
-            )}
-            {project.date && (
-              <span className="text-xs text-muted-foreground tabular-nums">
-                {project.date}
-              </span>
-            )}
-          </div>
+        <div className="max-w-[760px] space-y-4">
+          <Label>
+            {project.title}
+            {cs.year ? ` · ${cs.year}` : ""}
+            {cs.role ? ` · ${cs.role}` : ""}
+          </Label>
+          <h1 className="font-serif text-[clamp(2.2rem,5vw,3rem)] font-medium leading-[1.03] tracking-[-0.02em]">
+            {project.title}
+          </h1>
+          <p className="text-lg text-muted-foreground">{project.tagline}</p>
+        </div>
 
-          {/* Title & Tagline */}
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">
-              {project.title}
-            </h1>
-            <p className="text-muted-foreground mt-1.5 leading-relaxed">
-              {project.tagline}
-            </p>
-          </div>
+        <ProjectMedia thumbnail={project.thumbnail} preview={project.preview} title={project.title} />
 
-          {/* Quick links */}
-          {project.links && (
-            <div className="flex items-center gap-3 pt-1">
-              {project.links.github && (
-                <a
-                  href={project.links.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-foreground text-background hover:bg-foreground/90 transition-colors text-sm font-medium border"
-                >
-                  <Github className="w-4 h-4" />
-                  Source
-                </a>
-              )}
-              {project.links.web && (
-                <a
-                  href={project.links.web}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors text-sm border"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  Live Demo
-                </a>
-              )}
-              {project.links.download && (
-                <a
-                  href={project.links.download}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors text-sm border"
-                >
-                  <Download className="w-4 h-4" />
-                  Download
-                </a>
-              )}
-              {project.links.producthunt && (
-                <a
-                  href={project.links.producthunt}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors text-sm  border"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  Product Hunt
-                </a>
-              )}
-              {project.links.twitter && (
-                <a
-                  href={project.links.twitter}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors text-sm border"
-                >
-                  <Twitter className="w-4 h-4" />
-                  Twitter
-                </a>
-              )}
-            </div>
-          )}
-        </motion.header>
-
-        {/* Thumbnail / Video */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="relative aspect-video rounded-xl overflow-hidden bg-secondary group"
-        >
-          <Image
-            src={project.thumbnail}
-            alt={project.title}
-            fill
-            className="object-cover"
-            priority
-          />
-          {project.preview && (
-            <button
-              onClick={() => setVideoOpen(true)}
-              className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity"
-            >
-              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white text-black text-sm font-medium">
-                <Play className="w-4 h-4 fill-current" />
-                Watch Demo
+        <ProseGutter
+          gutter={
+            <div className="space-y-5">
+              {cs.role && <GutterItem k="Role" v={cs.role} />}
+              {cs.year && <GutterItem k="Year" v={cs.year} />}
+              <div>
+                <div className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-subtle">Stack</div>
+                <div className="flex flex-wrap gap-2">
+                  {stack.map((t) => (
+                    <StackIcon key={t} name={t} size={14} showLabel />
+                  ))}
+                </div>
               </div>
-            </button>
-          )}
-        </motion.div>
-
-        {/* Content */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="space-y-10"
-        >
-          {/* Long description */}
-          {project.longDescription && (
-            <section className="space-y-4">
-              {project.longDescription.split("\n\n").map((paragraph, idx) => (
-                <p
-                  key={idx}
-                  className="text-muted-foreground leading-relaxed"
-                >
-                  {paragraph}
-                </p>
-              ))}
-            </section>
-          )}
-
-          {/* Divider */}
-          {project.highlights && project.highlights.length > 0 && (
-            <div className="h-px bg-border" />
-          )}
-
-          {/* Highlights */}
-          {project.highlights && project.highlights.length > 0 && (
-            <section className="space-y-4">
-              <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                Key Features
-              </h2>
-              <ul className="space-y-2.5">
-                {project.highlights.map((highlight, idx) => (
-                  <li
-                    key={idx}
-                    className="flex items-start gap-2.5 text-sm leading-relaxed"
-                  >
-                    <span className="mt-[0.4rem] w-1.5 h-1.5 rounded-full bg-accent/60 shrink-0" />
-                    <span className="text-muted-foreground">{highlight}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-
-          {/* Divider */}
-          <div className="h-px bg-border" />
-
-          {/* Tech Stack */}
-          <section className="space-y-4">
-            <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-              Built With
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {stack.map((tech) => (
-                <StackIcon key={tech} name={tech} showLabel />
-              ))}
+              {project.links && (
+                <div>
+                  <div className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-subtle">Links</div>
+                  <div className="flex flex-col gap-1 text-sm">
+                    {project.links.web && <a className="hover:text-accent" href={project.links.web} target="_blank" rel="noopener noreferrer">Live ↗</a>}
+                    {project.links.github && <a className="hover:text-accent" href={project.links.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a>}
+                    {project.links.download && <a className="hover:text-accent" href={project.links.download} target="_blank" rel="noopener noreferrer">Download ↗</a>}
+                    {project.links.producthunt && <a className="hover:text-accent" href={project.links.producthunt} target="_blank" rel="noopener noreferrer">Product Hunt ↗</a>}
+                  </div>
+                </div>
+              )}
             </div>
-          </section>
-        </motion.div>
-      </div>
+          }
+        >
+          <div className="space-y-9">
+            {sections.map((s) => (
+              <section key={s.key} className="space-y-2">
+                <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-accent">{s.label}</div>
+                <h2 className="font-serif text-2xl">{s.heading}</h2>
+                {s.body.length > 1 ? (
+                  <ul className="space-y-1.5">
+                    {s.body.map((line, i) => (
+                      <li key={i} className="flex gap-2.5 text-[15px] text-muted-foreground">
+                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent/60" />
+                        {line}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="max-w-[62ch] text-[15px] text-muted-foreground">{s.body[0]}</p>
+                )}
+              </section>
+            ))}
 
-      {/* Video Modal */}
-      {project.preview && (
-        <VideoModal
-          isOpen={videoOpen}
-          onClose={() => setVideoOpen(false)}
-          videoUrl={project.preview}
-          title={project.title}
-        />
-      )}
+            {cs.results && cs.results.length > 0 && (
+              <section className="space-y-3">
+                <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-accent">Results</div>
+                <h2 className="font-serif text-2xl">Impact</h2>
+                <div className="flex flex-wrap gap-3">
+                  {cs.results.map((r, i) => (
+                    <div key={i} className="rounded-xl border border-border bg-card px-4 py-3">
+                      <div className="font-serif text-2xl text-foreground">{r.value}</div>
+                      <div className="text-xs text-subtle">{r.caption}</div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {sections.length === 0 && !cs.results && project.longDescription && (
+              <div className="space-y-4">
+                {project.longDescription.split("\n\n").map((p, i) => (
+                  <p key={i} className="text-[15px] text-muted-foreground">{p}</p>
+                ))}
+              </div>
+            )}
+          </div>
+        </ProseGutter>
+      </Container>
     </main>
+  );
+}
+
+function GutterItem({ k, v }: { k: string; v: string }) {
+  return (
+    <div>
+      <div className="mb-1 font-mono text-[10px] uppercase tracking-[0.12em] text-subtle">{k}</div>
+      <div className="text-sm text-foreground">{v}</div>
+    </div>
   );
 }
