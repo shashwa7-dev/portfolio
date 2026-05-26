@@ -24,7 +24,7 @@ export default function Section({
   children,
 }: Props) {
   return (
-    <section id={id} className={cn("py-16 md:py-24", className)}>
+    <section id={id} className={cn("py-10 md:py-14", className)}>
       <Container width={width}>
         {(number || label || title || action) && (
           <div className="mb-8 flex items-end justify-between gap-4">

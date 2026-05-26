@@ -1,11 +1,18 @@
 import Container from "@/components/layout/Container";
 import Label from "@/components/layout/Label";
 import Reveal from "@/components/layout/Reveal";
-import ToolsAndStack from "./ToolStack";
+import Bento from "@/components/layout/Bento";
+
+const stats = [
+  { n: "1M+", c: "users reached" },
+  { n: "9+", c: "products shipped" },
+  { n: "4+ yrs", c: "building frontend" },
+  { n: "3", c: "major-brand partners" },
+];
 
 export default function About() {
   return (
-    <header className="pt-16 pb-8 md:pt-24">
+    <header className="pt-14 pb-6 md:pt-20">
       <Container width="reading">
         <Reveal className="space-y-6">
           <div className="flex items-center gap-3">
@@ -15,50 +22,40 @@ export default function About() {
             </div>
             <span className="inline-flex items-center gap-2 text-sm text-muted-foreground">
               <span className="h-2 w-2 rounded-full bg-emerald-500 ring-4 ring-emerald-500/15" />
-              Available for freelance &amp; full-time
+              Available for senior frontend / full-stack &amp; freelance
             </span>
           </div>
 
           <div className="space-y-3">
-            <Label>Frontend Engineer · Full-stack</Label>
-            <h1 className="font-serif text-[clamp(2.4rem,6vw,3.6rem)] font-medium leading-[1.03] tracking-[-0.02em] text-foreground">
-              I craft <span className="italic text-accent-hover">quality interfaces</span>, end to end.
+            <Label>Frontend Engineer · Web3 · AI</Label>
+            <h1 className="font-serif text-[clamp(2.2rem,5.5vw,3.4rem)] font-medium leading-[1.03] tracking-[-0.02em] text-foreground">
+              I build interfaces that <span className="italic text-accent-hover">ship and scale</span> to millions.
             </h1>
           </div>
 
-          <p className="max-w-[54ch] text-lg text-muted-foreground">
-            Hi, I&apos;m Shashwat — a frontend engineer who works across the stack. I build clean,
-            fast, accessible web apps with a focus on great design and seamless UX. Reach me at{" "}
-            <a
-              href="mailto:contact@shashwa7.in"
-              className="text-foreground underline decoration-accent underline-offset-4 hover:decoration-2"
-            >
+          <p className="max-w-[56ch] text-lg text-muted-foreground">
+            I&apos;m Shashwat — a frontend engineer who&apos;s shipped 9+ production products with Coinbase, Polygon &amp; Sentient. I turn complex AI &amp; Web3 ideas into fast, polished, accessible UIs. Reach me at{" "}
+            <a href="mailto:contact@shashwa7.in" className="text-foreground underline decoration-accent underline-offset-4 hover:decoration-2">
               contact@shashwa7.in
-            </a>
-            .
+            </a>.
           </p>
 
-          <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-subtle">
-            Shipped products used by 1M+ · Coinbase · Polygon · Sentient
-          </p>
+          <Bento className="grid-cols-2 sm:grid-cols-4">
+            {stats.map((s) => (
+              <div key={s.c} className="bg-card px-4 py-3.5">
+                <div className="font-serif text-2xl text-foreground">{s.n}</div>
+                <div className="mt-1 text-xs text-muted-foreground">{s.c}</div>
+              </div>
+            ))}
+          </Bento>
 
           <div className="flex flex-wrap items-center gap-3">
-            <a
-              href="/#projects"
-              className="rounded-[9px] bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-hover"
-            >
+            <a href="/#projects" className="rounded-[9px] bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-hover">
               View selected work →
             </a>
-            <a
-              href="mailto:contact@shashwa7.in"
-              className="rounded-[9px] border border-border-strong px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-elevated"
-            >
+            <a href="mailto:contact@shashwa7.in" className="rounded-[9px] border border-border-strong px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-elevated">
               Get in touch
             </a>
-          </div>
-
-          <div className="pt-2">
-            <ToolsAndStack />
           </div>
         </Reveal>
       </Container>
