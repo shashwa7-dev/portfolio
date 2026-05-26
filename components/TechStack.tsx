@@ -1,6 +1,8 @@
 import React from "react";
 import StackIcon from "./common/StackIcon";
 import Section from "@/components/layout/Section";
+import GridPanel from "@/components/layout/GridPanel";
+import { cn } from "@/lib/utils";
 
 const frontendStacks = [
   "html",
@@ -40,63 +42,47 @@ const devopsStacks = [
 ] as const;
 const toolStacks = ["vscode", "figma", "notion", "postman"] as const;
 
-type CategoryRowProps = {
+type Category = {
   label: string;
-  children: React.ReactNode;
+  stacks: readonly string[];
 };
 
-const CategoryRow = ({ label, children }: CategoryRowProps) => (
-  <div className="grid grid-cols-1 gap-3 md:grid-cols-[120px_1fr] md:items-start">
-    <div className="font-mono text-[11px] uppercase tracking-[0.12em] text-subtle pt-1">
-      {label}
-    </div>
-    <div className="flex flex-wrap gap-2">{children}</div>
-  </div>
-);
-
-const chipClass =
-  "rounded-[9px] border border-border bg-card px-3 py-2 text-sm text-muted-foreground inline-flex items-center gap-2";
+const categories: Category[] = [
+  { label: "Frontend", stacks: frontendStacks },
+  { label: "Backend & DB", stacks: backendStacks },
+  { label: "DevOps & Infra", stacks: devopsStacks },
+  { label: "Protocols / APIs", stacks: protocolStacks },
+  { label: "AI Stack", stacks: aiStacks },
+  { label: "Tools", stacks: toolStacks },
+];
 
 const TechStack = () => {
   return (
     <Section id="tech_stack" number="03" label="Toolkit" title="Tools I reach for" width="reading">
-      <div className="space-y-6">
-        <CategoryRow label="Frontend">
-          {frontendStacks.map((name) => (
-            <StackIcon key={name} name={name} className={chipClass} />
-          ))}
-        </CategoryRow>
-
-        <CategoryRow label="Backend & DB">
-          {backendStacks.map((name) => (
-            <StackIcon key={name} name={name} className={chipClass} />
-          ))}
-        </CategoryRow>
-
-        <CategoryRow label="DevOps & Infra">
-          {devopsStacks.map((name) => (
-            <StackIcon key={name} name={name} className={chipClass} />
-          ))}
-        </CategoryRow>
-
-        <CategoryRow label="Protocols / APIs">
-          {protocolStacks.map((name) => (
-            <StackIcon key={name} name={name} className={chipClass} />
-          ))}
-        </CategoryRow>
-
-        <CategoryRow label="AI Stack">
-          {aiStacks.map((name) => (
-            <StackIcon key={name} name={name} className={chipClass} />
-          ))}
-        </CategoryRow>
-
-        <CategoryRow label="Tools">
-          {toolStacks.map((name) => (
-            <StackIcon key={name} name={name} className={chipClass} />
-          ))}
-        </CategoryRow>
-      </div>
+      <GridPanel>
+        {categories.map((cat, i) => (
+          <div
+            key={cat.label}
+            className={cn(
+              "p-4 sm:grid sm:grid-cols-[140px_1fr] sm:gap-4 border-border",
+              i >= 1 && "border-t"
+            )}
+          >
+            <div className="font-mono text-[11px] uppercase tracking-[0.12em] text-subtle mb-2 sm:mb-0 sm:pt-0.5">
+              {cat.label}
+            </div>
+            <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+              {cat.stacks.map((name) => (
+                <StackIcon
+                  key={name}
+                  name={name as Parameters<typeof StackIcon>[0]["name"]}
+                  showLabel={false}
+                />
+              ))}
+            </div>
+          </div>
+        ))}
+      </GridPanel>
     </Section>
   );
 };

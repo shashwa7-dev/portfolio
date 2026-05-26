@@ -3,6 +3,8 @@ import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { organizations } from "@/lib/workData";
 import Section from "@/components/layout/Section";
+import GridPanel from "@/components/layout/GridPanel";
+import { cn } from "@/lib/utils";
 
 export default function ExperienceWork() {
   return (
@@ -68,34 +70,41 @@ export default function ExperienceWork() {
                       View all {org.projects.length} →
                     </Link>
                   </div>
-                  <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-                    {featured.map((p) => {
-                      const stack = [...(p.stack.fe || []), ...(p.stack.be || [])];
-                      return (
-                        <Link
-                          key={p.id}
-                          href={`/work/${org.slug}/${p.slug}`}
-                          className="group flex gap-3 rounded-xl border border-border bg-card p-2.5 transition-colors hover:border-border-strong"
-                        >
-                          <span className="relative h-[42px] w-[56px] shrink-0 overflow-hidden rounded-md bg-elevated">
-                            <Image src={p.thumbnail} alt={p.title} fill className="object-cover" sizes="56px" />
-                          </span>
-                          <span className="min-w-0 flex-1">
-                            <span className="flex items-center gap-1 text-[13px] font-semibold text-foreground">
-                              <span className="truncate">{p.shortTitle || p.title}</span>
-                              <ArrowUpRight className="h-3 w-3 shrink-0 text-subtle transition-colors group-hover:text-accent" />
+                  <GridPanel>
+                    <div className="grid grid-cols-1 sm:grid-cols-2">
+                      {featured.map((p, i) => {
+                        const stack = [...(p.stack.fe || []), ...(p.stack.be || [])];
+                        return (
+                          <Link
+                            key={p.id}
+                            href={`/work/${org.slug}/${p.slug}`}
+                            className={cn(
+                              "group flex gap-3 p-3 transition-colors hover:bg-elevated border-border",
+                              i >= 1 && "border-t",
+                              i >= 2 ? "sm:border-t" : "sm:border-t-0",
+                              i % 2 === 1 && "sm:border-l"
+                            )}
+                          >
+                            <span className="relative h-[42px] w-[56px] shrink-0 overflow-hidden rounded-md bg-elevated">
+                              <Image src={p.thumbnail} alt={p.title} fill className="object-cover" sizes="56px" />
                             </span>
-                            <span className="mt-0.5 line-clamp-1 block text-[11.5px] text-accent-hover">
-                              {p.highlights?.[0] || p.description}
+                            <span className="min-w-0 flex-1">
+                              <span className="flex items-center gap-1 text-[13px] font-semibold text-foreground">
+                                <span className="truncate">{p.shortTitle || p.title}</span>
+                                <ArrowUpRight className="h-3 w-3 shrink-0 text-subtle transition-colors group-hover:text-accent" />
+                              </span>
+                              <span className="mt-0.5 line-clamp-1 block text-[11.5px] text-accent-hover">
+                                {p.highlights?.[0] || p.description}
+                              </span>
+                              <span className="mt-1.5 block font-mono text-[9px] uppercase tracking-wide text-subtle">
+                                {stack.slice(0, 3).join(" · ")}
+                              </span>
                             </span>
-                            <span className="mt-1.5 block font-mono text-[9px] uppercase tracking-wide text-subtle">
-                              {stack.slice(0, 3).join(" · ")}
-                            </span>
-                          </span>
-                        </Link>
-                      );
-                    })}
-                  </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </GridPanel>
                 </div>
               )}
             </div>
