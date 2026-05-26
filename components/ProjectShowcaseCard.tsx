@@ -1,18 +1,12 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ExternalLink } from "lucide-react";
-import type { TSideProject } from "@/lib/projectsData";
-import { ActiveBadge } from "./common/ActiveBadge";
+import { ArrowUpRight, Play } from "lucide-react";
+import type { ProjectCardData } from "@/lib/projectCards";
 
-function hasCaseStudy(p: TSideProject) {
-  return Boolean(p.caseStudy && Object.keys(p.caseStudy).length > 0);
-}
-
-export default function ProjectShowcaseCard({ project }: { project: TSideProject }) {
-  const stack = [...(project.stack.fe || []), ...(project.stack.be || [])];
+export default function ProjectShowcaseCard({ project }: { project: ProjectCardData }) {
   return (
     <Link
-      href={`/project/${project.slug}`}
+      href={project.href}
       className="group block overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:-translate-y-0.5 hover:border-border-strong"
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-elevated">
@@ -20,38 +14,32 @@ export default function ProjectShowcaseCard({ project }: { project: TSideProject
           src={project.thumbnail}
           alt={project.title}
           fill
-          sizes="(max-width: 760px) 100vw, 520px"
+          sizes="(max-width: 760px) 100vw, 380px"
           className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
         />
-      </div>
-      <div className="space-y-3 p-5">
-        <div className="flex items-center gap-2.5">
-          <h3 className="font-serif text-xl text-foreground">{project.title}</h3>
-          {project.isRecent && <ActiveBadge variant="minimal" label="Recent" />}
-        </div>
-        <p className="line-clamp-2 text-[15px] text-muted-foreground">{project.tagline}</p>
-        <div className="flex items-center justify-between gap-3">
-          <span className="font-mono text-[11px] uppercase tracking-wide text-subtle">
-            {stack.slice(0, 3).join(" · ")}
+        {project.badge && (
+          <span className="absolute left-3 top-3 rounded-full border border-border-strong bg-background/80 px-2 py-0.5 font-mono text-[9px] uppercase tracking-wide text-accent backdrop-blur">
+            {project.badge}
           </span>
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
-            {project.links?.web && (
-              <span className="inline-flex items-center gap-1 group-hover:text-accent">
-                Live <ExternalLink className="h-3 w-3" />
-              </span>
-            )}
-            {project.links?.github && (
-              <span className="inline-flex items-center gap-1 group-hover:text-accent">
-                GitHub <ExternalLink className="h-3 w-3" />
-              </span>
-            )}
-          </div>
-        </div>
-        {hasCaseStudy(project) && (
-          <div className="border-t border-border pt-3 text-[13px] text-accent">
-            Read case study →
-          </div>
         )}
+        {project.preview && (
+          <span className="absolute bottom-3 right-3 grid h-7 w-7 place-items-center rounded-full bg-background/80 text-foreground backdrop-blur">
+            <Play className="h-3.5 w-3.5 fill-current" />
+          </span>
+        )}
+      </div>
+      <div className="space-y-2.5 p-4">
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="font-serif text-lg text-foreground">{project.title}</h3>
+          <ArrowUpRight className="h-4 w-4 shrink-0 text-subtle transition-colors group-hover:text-accent" />
+        </div>
+        <p className="line-clamp-2 text-sm text-muted-foreground">{project.tagline}</p>
+        <div className="flex items-center justify-between gap-3">
+          <span className="font-mono text-[10px] uppercase tracking-wide text-subtle">
+            {project.stack.slice(0, 3).join(" · ")}
+          </span>
+          {project.caseStudy && <span className="text-[12px] text-accent">Case study →</span>}
+        </div>
       </div>
     </Link>
   );

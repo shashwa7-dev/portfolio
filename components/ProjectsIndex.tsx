@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import type { TSideProject } from "@/lib/projectsData";
 import { deriveFilters } from "@/lib/projectFilters";
 import ProjectShowcaseCard from "./ProjectShowcaseCard";
+import { sideProjectToCard } from "@/lib/projectCards";
 
 export default function ProjectsIndex({ projects }: { projects: TSideProject[] }) {
   const filters = useMemo(() => deriveFilters(projects), [projects]);
@@ -31,7 +32,7 @@ export default function ProjectsIndex({ projects }: { projects: TSideProject[] }
       )}
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         {shown.map((p) => (
-          <ProjectShowcaseCard key={p.id} project={p} />
+          <ProjectShowcaseCard key={p.id} project={sideProjectToCard(p)} />
         ))}
       </div>
     </div>
