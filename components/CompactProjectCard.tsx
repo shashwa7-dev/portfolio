@@ -3,7 +3,7 @@
 import React, { useMemo, useState } from "react";
 import { TProject } from "@/lib/workData";
 import { cn } from "@/lib/utils";
-import { ExternalLink, Play } from "feather-icons-react";
+import { ExternalLink, Play } from "lucide-react";
 import { ActiveBadge } from "./common/ActiveBadge";
 import StackIcon from "./common/StackIcon";
 import VideoModal from "./common/VideoModal";

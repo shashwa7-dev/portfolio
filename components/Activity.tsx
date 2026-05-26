@@ -5,7 +5,7 @@ import { motion } from "motion/react";
 import { containerVariants, itemVariants } from "@/lib/motionVariants";
 import BookListItem from "./BookListItem";
 import { books } from "@/lib/books";
-import { ArrowRight } from "feather-icons-react";
+import { ArrowRight } from "lucide-react";
 import Section from "@/components/layout/Section";
 
 const Activity = () => {

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft } from "feather-icons-react";
+import { ArrowLeft } from "lucide-react";
 import { getSideProject, getAllSideProjects } from "@/lib/projectsData";
 import { baseUrl } from "@/app/sitemap";
 import Container from "@/components/layout/Container";

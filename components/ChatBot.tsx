@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { SVGS } from "./SVGS";
 import { Button } from "@/components/ui/button";
-import { X, MessageCircle } from "feather-icons-react";
+import { X, MessageCircle } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
 const TIMEOUT_DURATION = 10000;

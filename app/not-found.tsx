@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
-import { Home, ArrowLeft } from "feather-icons-react";
+import { Home, ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Play } from "feather-icons-react";
+import { Play } from "lucide-react";
 import VideoModal from "@/components/common/VideoModal";
 
 export default function ProjectMedia({

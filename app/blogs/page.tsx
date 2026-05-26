@@ -1,6 +1,6 @@
 import { BlogPosts } from "../../components/BlogPosts";
 import Link from "next/link";
-import { ArrowLeft } from "feather-icons-react";
+import { ArrowLeft } from "lucide-react";
 
 export const metadata = {
   title: "Blog",

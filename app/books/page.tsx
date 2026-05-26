@@ -1,7 +1,7 @@
 import Book from "@/components/common/Book";
 import { books } from "@/lib/books";
 import Link from "next/link";
-import { ArrowLeft } from "feather-icons-react";
+import { ArrowLeft } from "lucide-react";
 import { ogUrl } from "@/lib/seo";
 import { baseUrl } from "@/app/sitemap";
 

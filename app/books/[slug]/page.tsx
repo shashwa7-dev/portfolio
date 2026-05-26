@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Link as LinkCTA } from "@/components/common/Link";
-import { ArrowLeft } from "feather-icons-react";
+import { ArrowLeft } from "lucide-react";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl } from "@/lib/seo";
 

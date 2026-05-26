@@ -2,7 +2,7 @@
 
 import { Book as BookProps } from "@/lib/books";
 import { cn } from "@/lib/utils";
-import { Icon } from "@iconify/react";
+import { CheckCircle2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -32,10 +32,7 @@ export default function Book({
       className="relative aspect-[2/3] w-full rounded-lg overflow-hidden border bg-card block"
     >
       {isDone && (
-        <Icon
-          icon={"bitcoin-icons:verify-filled"}
-          className="w-8 h-8 absolute top-0 right-0 text-green-500 z-[10]"
-        />
+        <CheckCircle2 className="w-8 h-8 absolute top-0 right-0 text-green-500 z-[10]" />
       )}
       {/* Skeleton */}
       {!loaded && (

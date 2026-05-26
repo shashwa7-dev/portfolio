@@ -5,7 +5,7 @@ import Image from "next/image";
 import { motion, type Variants } from "motion/react";
 import { containerVariants } from "@/lib/motionVariants";
 import Section from "@/components/layout/Section";
-import { ArrowUpRight } from "feather-icons-react";
+import { ArrowUpRight } from "lucide-react";
 
 const easeOut: [number, number, number, number] = [0.22, 1, 0.36, 1];
 

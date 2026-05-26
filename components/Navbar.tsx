@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
-import { Sun, Moon } from "feather-icons-react";
+import { Sun, Moon } from "lucide-react";
 import { useDarkMode } from "@/app/hooks/useDarkMode";
 
 const navLinks = [

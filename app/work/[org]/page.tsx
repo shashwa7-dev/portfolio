@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, ExternalLink } from "feather-icons-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import { organizations, getOrganization } from "@/lib/workData";
 import CompactProjectCard from "@/components/CompactProjectCard";
 
