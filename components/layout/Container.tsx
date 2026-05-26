@@ -20,7 +20,7 @@ export default function Container({
       id={id}
       className={cn(
         "mx-auto w-full px-6",
-        width === "reading" ? "max-w-[680px]" : "max-w-[1080px]",
+        width === "reading" ? "max-w-[760px]" : "max-w-[1080px]",
         className
       )}
     >

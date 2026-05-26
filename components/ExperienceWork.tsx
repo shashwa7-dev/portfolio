@@ -12,9 +12,9 @@ export default function ExperienceWork() {
       number="01"
       label="Experience & Work"
       title="Where I've worked, and what I shipped"
-      width="wide"
+      width="reading"
     >
-      <div className="relative max-w-[860px] pl-8">
+      <div className="relative pl-8">
         {/* timeline rail */}
         <span className="absolute left-[7px] top-2 bottom-2 w-px bg-border-strong" aria-hidden />
 

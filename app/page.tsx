@@ -6,6 +6,7 @@ import Clients from "@/components/Clients";
 import Activity from "@/components/Activity";
 import Socials from "@/components/Socials";
 import Navbar from "@/components/Navbar";
+import Divider from "@/components/layout/Divider";
 import dynamic from "next/dynamic";
 
 const S7Bot = dynamic(() => import("@/components/ChatBot"), { ssr: false });
@@ -16,11 +17,17 @@ export default function Home() {
     <main className="relative">
       <Navbar />
       <About />
+      <Divider />
       <ExperienceWork />
+      <Divider />
       <Projects />
+      <Divider />
       <TechStack />
+      <Divider />
       <Clients />
+      <Divider />
       <Activity />
+      <Divider />
       <Socials />
       <S7Bot />
       <CommandPalette />
