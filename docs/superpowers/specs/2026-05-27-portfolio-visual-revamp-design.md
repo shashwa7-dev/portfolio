@@ -237,3 +237,54 @@ Separate Experience page, Resume page, GitHub contribution graph, testimonials s
 - **Font weight on Fraunces** — verify rendering/legibility of the serif at body-adjacent sizes; keep it to display/headings only.
 - **Light mode** ships alongside dark but dark is the default and primary QA target.
 - **OG font loading on Edge** — confirm font binary fetch works within `ImageResponse` size/time limits; bundle locally if needed.
+
+---
+
+## 15. Revision 2 — Structure, Consistency & Cleanup (2026-05-27)
+
+After the initial build, a strategic review reprioritized the page around **professional experience** (the strongest job-seeking asset) and surfaced consistency/cleanup needs. The visual direction (graphite+indigo, Fraunces/Inter/JetBrains Mono, primitives) is unchanged; the **information architecture, section consistency, and feature set** change as below. All decisions were validated in the visual companion.
+
+### 15.1 New information architecture (homepage order)
+1. **Hero** — adds a one-line **proof statement** ("Shipped products used by 1M+ · Coinbase, Polygon, Sentient").
+2. **Experience & Work (combined)** — promoted near the top; the page's anchor. Each role is a block; for roles with projects, the standout projects nest underneath (projects shown in the context where they were built).
+3. **Side Projects** — demoted to a small secondary strip ("Things I build for fun"): PaperNoise, Kiryouku, Eatri8 as a compact list, linking to `/projects`. No longer the primary showcase.
+4. **Toolkit** (tech stack)
+5. **Trusted by** (clients) — kept as its own strip.
+6. **Now** — Writing + Reading (books). **Music/Spotify removed.**
+7. **Contact**
+
+Rationale: the side projects are basic; the real credibility is the professional work (1M+ users, Coinbase/Polygon partnerships, AI×Web3). Lead with proof.
+
+### 15.2 Combined Experience & Work section (new component)
+- Roles connected by a **vertical timeline rail** (node per role; green node = current role) — replaces hard divider lines between roles.
+- **ShopOS** (current): "Currently building" badge + highlights, no project cards.
+- **Dehidden**: role + 1–2 highlights + a 2-col grid of **5 featured project cards** + "View all 9 →" linking to `/work/dehidden`. Featured (curated): **Coinbase × Polygon NFT, PlayAI Hub, Polygon Copilot, Node Explorer, Agent Experience**.
+- **Cope.Studio**: compact internship block.
+- **Project cards are small/tight** (~54px thumbnail, condensed text): thumbnail or ▶video · title · one headline metric · mono stack · link. Cards link to the work-project detail route (`/work/[org]/[project]`).
+- **Data:** add `featured?: boolean` to `TProject` in `lib/workData.ts` and mark the 5 selected projects. The combined section reads featured work projects from `workData`, not from `sideProjects`.
+
+### 15.3 Section consistency system (apply to ALL sections)
+- The `Section` primitive gains an optional `number` prop. Every section renders an identical header: **numbered mono eyebrow** (`01 / EXPERIENCE & WORK`) + **serif title**, left-aligned, identical margins.
+- **No horizontal divider lines** between sections — **whitespace (~96px) + the numbered eyebrow** create the rhythm. Remove `Separator`/`border-top` section dividers.
+- Numbering: 01 Experience & Work · 02 Side Projects · 03 Toolkit · 04 Trusted by · 05 Now · 06 Contact. Hero is the un-numbered intro.
+- Every section (and the hero) inherits this exact treatment — fixes the current uneven, piecemeal headers.
+
+### 15.4 Remove sound effects
+- Delete `app/providers/SoundProvider.tsx`, `components/IntroSound.tsx`, and sound assets `public/sound/mouse-click.wav`, `public/sound/intro.mp3`.
+- Remove the `SoundProvider` wrapper from `app/layout.tsx` and the **sound/mute toggle** from `components/Navbar.tsx` (drop `useSound`).
+- Remove any remaining `useSound`/`IntroSound` references.
+
+### 15.5 Remove music (Spotify) integration
+- Delete `components/SpotifyLastListen.tsx`, `components/LoginButton.tsx`, and API routes `app/api/last-listened`, `app/api/auth`, `app/api/callback`, `app/api/refresh-token`.
+- Decouple `app/api/chat/route.ts` from Spotify (it references it) — the ChatBot stays (Gemini), minus any "now playing" context.
+- "Now" section keeps Writing + Reading only. This also removes the pre-existing `/api/last-listened` `nextUrl.origin` build error.
+- Leave incidental textual references (e.g., "inspired by Spotify Wrapped" in a project description, a `spotify` tech-icon name) untouched.
+
+### 15.6 Icon consolidation (lightweight, 3G-friendly)
+- **UI icons → `lucide-react`** (tree-shakeable). Migrate all `feather-icons-react` and `@iconify/react` UI-icon usages.
+- **Tech/brand logos → `simple-icons`** (per-icon imports, tree-shaken, monochrome) used in the **Toolkit** section; rewrite `StackIcon` to use it. Stack tags on cards use **mono text**, not logos.
+- **Remove `@iconify/react` and `feather-icons-react`** from dependencies.
+- **Verify**: check `next build` First-Load-JS after migration; if `simple-icons` adds meaningful weight, fall back to **text-only** tech labels in the Toolkit too. Target: snappy on 3G, bundle no larger than before (should be smaller — iconify runtime removed).
+
+### 15.7 Out of scope (unchanged)
+Resume page, dedicated Experience page (it's now the combined home section), GitHub graph, testimonials, AI search.
