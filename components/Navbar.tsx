@@ -3,9 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
-import { Sun, Moon, Volume2, VolumeX } from "feather-icons-react";
+import { Sun, Moon } from "feather-icons-react";
 import { useDarkMode } from "@/app/hooks/useDarkMode";
-import { useSound } from "@/app/providers/SoundProvider";
 
 const navLinks = [
   { label: "Work", href: "/#experience" },
@@ -20,7 +19,6 @@ export function openCommandPalette() {
 
 export default function Navbar() {
   const { isDarkMode, toggleDarkMode } = useDarkMode();
-  const { muted, toggleMuted } = useSound();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -51,14 +49,6 @@ export default function Navbar() {
             className="flex items-center gap-1.5 rounded-lg border border-border-strong px-2.5 py-1.5 font-mono text-[11px] text-muted-foreground transition-colors hover:text-foreground"
           >
             <span className="text-[13px] leading-none">⌘</span> K
-          </button>
-          <button
-            type="button"
-            onClick={toggleMuted}
-            aria-label={muted ? "Unmute sounds" : "Mute sounds"}
-            className="grid h-8 w-8 place-items-center rounded-lg border border-border-strong text-muted-foreground transition-colors hover:text-foreground"
-          >
-            {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
           </button>
           <button
             type="button"
