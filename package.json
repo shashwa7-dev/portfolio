@@ -27,6 +27,7 @@
     "nodemailer": "^7.0.11",
     "react": "^18",
     "react-dom": "^18",
+    "simple-icons": "^16.21.0",
     "sugar-high": "^0.8.2",
     "tailwind-merge": "^3.4.0",
     "tailwindcss-animate": "^1.0.7"
