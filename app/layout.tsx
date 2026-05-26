@@ -68,7 +68,7 @@ export const metadata: Metadata = {
         url: ogUrl({ title: "Shashwat Tripathi", subtitle: "Frontend Engineer · Crafting quality interfaces", type: "home" }),
         width: 1200,
         height: 630,
-        alt: "Shashwat Tripathi — Frontend Engineer",
+        alt: "Shashwat Tripathi, Frontend Engineer",
       },
     ],
   },

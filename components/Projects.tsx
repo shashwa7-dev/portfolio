@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { sideProjects } from "@/lib/projectsData";
 import { sideProjectToCard } from "@/lib/projectCards";
 import ProjectPreviewCard from "./ProjectPreviewCard";
@@ -13,8 +14,8 @@ export default function Projects() {
       title="Things I build for fun"
       width="reading"
       action={
-        <Link href="/projects" className="text-sm text-muted-foreground transition-colors hover:text-accent">
-          View all →
+        <Link href="/projects" className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-accent">
+          View all <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       }
     >

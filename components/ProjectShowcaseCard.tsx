@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowUpRight, Play } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Play } from "lucide-react";
 import type { ProjectCardData } from "@/lib/projectCards";
 
 export default function ProjectShowcaseCard({ project }: { project: ProjectCardData }) {
@@ -43,7 +43,7 @@ export default function ProjectShowcaseCard({ project }: { project: ProjectCardD
           <span className="font-mono text-[10px] uppercase tracking-wide text-subtle">
             {project.stack.slice(0, 3).join(" · ")}
           </span>
-          {project.caseStudy && <span className="text-[12px] text-accent">Case study →</span>}
+          {project.caseStudy && <span className="inline-flex items-center gap-1 text-[12px] text-accent">Case study <ArrowRight className="h-3.5 w-3.5" /></span>}
         </div>
       </div>
     </Link>

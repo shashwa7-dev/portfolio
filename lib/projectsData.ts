@@ -45,8 +45,8 @@ export const sideProjects: TSideProject[] = [
     isRecent: true,
     tagline: "Where pixels pretend to be paper.",
     description:
-      "A small experimental tool to create vintage-style cards with real textures, classic ink palettes, and old-school typography — entirely in the browser.",
-    longDescription: `PaperNoise is a small experimental tool to create vintage-style cards with real textures, classic ink palettes, and old-school typography — entirely in the browser.
+      "A small experimental tool to create vintage-style cards with real textures, classic ink palettes, and old-school typography, entirely in the browser.",
+    longDescription: `PaperNoise is a small experimental tool to create vintage-style cards with real textures, classic ink palettes, and old-school typography, entirely in the browser.
 
   No templates. No AI fluff. Just code and texture obsession.
 
@@ -63,11 +63,11 @@ Built with React + Vite, this tool explores browser rendering and export edge ca
       role: "Design & Engineering",
       year: "2026",
       overview:
-        "PaperNoise renders tactile, print-like cards entirely client-side. The challenge was making screen pixels feel like physical paper — and exporting them at high quality without any server.",
+        "PaperNoise renders tactile, print-like cards entirely client-side. The challenge was making screen pixels feel like physical paper, and exporting them at high quality without any server.",
       problem:
         "Existing tools lean on templates or generic filters. I wanted real texture compositing and ink-palette control, with an export that survives the browser's canvas quirks.",
       constraints: [
-        "100% client-side — no server rendering or storage",
+        "100% client-side, no server rendering or storage",
         "Exports must be deterministic and high-resolution",
         "Runs smoothly on mid-range laptops",
       ],

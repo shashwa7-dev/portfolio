@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { ArrowRight } from "lucide-react";
 import { organizations } from "@/lib/workData";
 import Section from "@/components/layout/Section";
 import ProjectPreviewCard from "@/components/ProjectPreviewCard";
@@ -54,7 +55,7 @@ export default function ExperienceWork() {
               <ul className="mt-3 space-y-1.5">
                 {org.highlights.slice(0, 2).map((h, i) => (
                   <li key={i} className="flex gap-2.5 text-[13.5px] text-muted-foreground">
-                    <span className="mt-2 h-px w-3 shrink-0 bg-subtle" />
+                    <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-accent/60" />
                     {h}
                   </li>
                 ))}
@@ -65,8 +66,8 @@ export default function ExperienceWork() {
                 <div className="mt-5">
                   <div className="mb-3 flex items-baseline justify-between">
                     <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-subtle">Featured projects</span>
-                    <Link href={`/work/${org.slug}`} className="text-xs text-muted-foreground transition-colors hover:text-accent">
-                      View all {org.projects.length} →
+                    <Link href={`/work/${org.slug}`} className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-accent">
+                      View all {org.projects.length} <ArrowRight className="h-3.5 w-3.5" />
                     </Link>
                   </div>
                   <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">

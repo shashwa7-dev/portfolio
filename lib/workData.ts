@@ -47,7 +47,7 @@ export const organizations: TOrganization[] = [
     description:
       "Frontend engineer at ShopOS, building and maintaining UIs for an AI-native commerce platform, including workflows for product creation, management, marketing, and sales",
     highlights: [
-      "Frontend for commerce flows—create, manage, market & sell",
+      "Frontend for commerce flows: create, manage, market & sell",
       "Reusable UI components and design-system contributions",
       "Collaborating with product and design on feature rollout",
     ],

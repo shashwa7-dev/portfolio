@@ -107,7 +107,7 @@ export const books: Book[] = [
     cover: "/books/book_webperformance.webp",
     link: "https://www.getwebperf.com/",
     description:
-      "A practical guide for frontend developers to understand, profile, and optimize React web applications. The book focuses on real-world performance issues—rendering, bundle size, data fetching, and interaction latency—using modern tools and techniques to build faster, more responsive apps.",
+      "A practical guide for frontend developers to understand, profile, and optimize React web applications. The book focuses on real-world performance issues: rendering, bundle size, data fetching, and interaction latency, using modern tools and techniques to build faster, more responsive apps.",
     isDone: false,
     chapters: [
       { id: "ch1", title: "Hello and Welcome!", completed: true },

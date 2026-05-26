@@ -23,7 +23,7 @@ export default function Activity() {
         </div>
         <div className="col-span-full flex items-center justify-between bg-card px-5 py-3">
           <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-subtle">Currently Reading</p>
-          <Link href="/books" className="text-xs text-muted-foreground transition-colors hover:text-foreground">View all →</Link>
+          <Link href="/books" className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground">View all <ArrowRight className="h-3.5 w-3.5" /></Link>
         </div>
         {books.slice(0, 3).map((book) => (
           <div key={book.slug} className="col-span-full bg-card">

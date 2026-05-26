@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: { params: Promise<{ org: stri
   if (!org) return { title: "Not Found" };
   return {
     title: `${org.name} · Work`,
-    description: `Projects built at ${org.name} — ${org.role}`,
+    description: `Projects built at ${org.name}, ${org.role}`,
   };
 }
 
