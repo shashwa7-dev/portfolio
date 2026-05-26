@@ -3,7 +3,7 @@ import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
 import dynamic from "next/dynamic";
 import "./globals.css";
 import { baseUrl } from "./sitemap";
-import { ogUrl } from "@/lib/seo";
+import { ogUrl, personLd, websiteLd } from "@/lib/seo";
 import { Analytics } from "@vercel/analytics/next";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SoundProvider } from "@/app/providers/SoundProvider";
@@ -112,6 +112,11 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `(function(){var t=localStorage.getItem("theme");var d=window.matchMedia("(prefers-color-scheme: dark)").matches;var dark=t==="dark"||(t===null&&d);document.documentElement.classList.toggle("dark",dark);})();`,
           }}
+        />
+        <script
+          type="application/ld+json"
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{ __html: JSON.stringify([personLd(), websiteLd()]) }}
         />
       </head>
       <body

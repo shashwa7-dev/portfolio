@@ -21,3 +21,28 @@ export function softwareAppLd(p: TSideProject) {
     author: { "@type": "Person", name: "Shashwat Tripathi" },
   };
 }
+
+export function personLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: "Shashwat Tripathi",
+    url: baseUrl,
+    jobTitle: "Frontend Engineer",
+    email: "mailto:contact@shashwa7.in",
+    sameAs: [
+      "https://github.com/shashwa7-dev",
+      "https://x.com/offcod8",
+      "https://www.linkedin.com/in/shashwa7/",
+    ],
+  };
+}
+
+export function websiteLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Shashwat Tripathi",
+    url: baseUrl,
+  };
+}
