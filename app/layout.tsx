@@ -3,6 +3,7 @@ import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
 import dynamic from "next/dynamic";
 import "./globals.css";
 import { baseUrl } from "./sitemap";
+import { ogUrl } from "@/lib/seo";
 import { Analytics } from "@vercel/analytics/next";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SoundProvider } from "@/app/providers/SoundProvider";
@@ -65,9 +66,9 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: `${baseUrl}og-image.png?v=3.0`,
-        width: 1600,
-        height: 900,
+        url: ogUrl({ title: "Shashwat Tripathi", subtitle: "Frontend Engineer · Crafting quality interfaces", type: "home" }),
+        width: 1200,
+        height: 630,
         alt: "Shashwat Tripathi — Frontend Engineer",
       },
     ],
@@ -77,7 +78,7 @@ export const metadata: Metadata = {
     title: "S7.dev",
     description:
       "Frontend Engineer | Crafting sleek, responsive interfaces with great design and seamless UX.",
-    images: [`${baseUrl}og-image.png?v=3.0`],
+    images: [ogUrl({ title: "Shashwat Tripathi", subtitle: "Frontend Engineer · Crafting quality interfaces", type: "home" })],
   },
   icons: {
     icon: [{ url: "/favicon.svg", sizes: "32x32", type: "image/svg" }],

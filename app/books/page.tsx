@@ -2,10 +2,18 @@ import Book from "@/components/common/Book";
 import { books } from "@/lib/books";
 import Link from "next/link";
 import { ArrowLeft } from "feather-icons-react";
+import { ogUrl } from "@/lib/seo";
+import { baseUrl } from "@/app/sitemap";
 
 export const metadata = {
   title: "Books",
   description: "Books I've read and am currently reading.",
+  alternates: { canonical: `${baseUrl}books` },
+  openGraph: {
+    title: "Books",
+    description: "What I'm reading",
+    images: [{ url: ogUrl({ title: "Books", subtitle: "What I'm reading", type: "books" }) }],
+  },
 };
 
 export default function BooksPage() {
