@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { organizations } from "@/lib/workData";
 import Section from "@/components/layout/Section";
-import ProjectShowcaseCard from "@/components/ProjectShowcaseCard";
+import ProjectPreviewCard from "@/components/ProjectPreviewCard";
 import { workProjectToCard } from "@/lib/projectCards";
 
 export default function ExperienceWork() {
@@ -69,9 +69,9 @@ export default function ExperienceWork() {
                       View all {org.projects.length} →
                     </Link>
                   </div>
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
                     {featured.map((p) => (
-                      <ProjectShowcaseCard key={p.id} project={workProjectToCard(org.slug, p)} />
+                      <ProjectPreviewCard key={p.id} project={workProjectToCard(org.slug, p)} />
                     ))}
                   </div>
                 </div>
