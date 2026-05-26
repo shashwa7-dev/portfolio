@@ -4,94 +4,72 @@
 
 @layer base {
 :root {
-  /* ===== Base surfaces (paper) ===== */
-  --background: 38 22% 100%;
-  --foreground: 220 18% 16%;
-
-  --card: 38 18% 93%;
-  --card-foreground: 224 20% 14%;
-
-  --popover: 38 20% 94%;
-  --popover-foreground: 220 18% 16%;
-
-  /* ===== Primary (text-first UI) ===== */
-  --primary: 220 18% 16%;
-  --primary-foreground: 38 25% 96%;
-
-  /* ===== Secondary surfaces ===== */
-  --secondary: 36 18% 88%;
-  --secondary-foreground: 220 14% 20%;
-
-  --muted: 36 14% 86%;
-  --muted-foreground: 220 10% 40%;
-
-  /* ===== Accent (INK BLUE — calm, authoritative) ===== */
-  --accent: 214 38% 36%;
-  --accent-foreground: 38 25% 96%;
-
-  /* ===== Feedback ===== */
-  --destructive: 0 55% 42%;
-  --destructive-foreground: 38 25% 96%;
-
-  /* ===== Borders / inputs ===== */
-  --border: 35 12% 82%;
-  --input: 35 12% 82%;
-  --ring: 214 38% 36%;
-
-  --radius: 0.5rem;
-
-  /* ===== Charts (muted, print-safe) ===== */
-  --chart-1: 214 38% 42%;
-  --chart-2: 160 32% 34%;
-  --chart-3: 32 45% 42%;
-  --chart-4: 42 55% 44%;
-  --chart-5: 8 48% 42%;
-
-  /* ===== Syntax highlighting (grain-safe) ===== */
-  --sh-class: 142 32% 30%;
-  --sh-identifier: 214 42% 30%;
-  --sh-sign: 30 55% 34%;
-  --sh-string: 108 30% 30%;
-  --sh-keyword: 214 55% 34%;
-  --sh-comment: 220 8% 44%;
-  --sh-jsxliterals: 222 38% 34%;
+  /* Light (mirrored) */
+  --background: 240 33% 99%;
+  --foreground: 240 8% 9%;
+  --card: 0 0% 100%;
+  --card-foreground: 240 8% 9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 8% 9%;
+  --elevated: 240 16% 96%;
+  --primary: 240 8% 9%;
+  --primary-foreground: 240 33% 99%;
+  --secondary: 240 16% 96%;
+  --secondary-foreground: 240 8% 9%;
+  --muted: 240 16% 96%;
+  --muted-foreground: 240 5% 38%;
+  --subtle: 240 4% 56%;
+  --accent: 242 69% 61%;
+  --accent-foreground: 0 0% 100%;
+  --accent-hover: 242 69% 67%;
+  --destructive: 0 65% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 240 14% 91%;
+  --border-strong: 240 12% 85%;
+  --input: 240 14% 91%;
+  --ring: 242 69% 61%;
+  --radius: 0.75rem;
+  --sh-class: 242 50% 50%;
+  --sh-identifier: 240 8% 20%;
+  --sh-sign: 240 5% 45%;
+  --sh-string: 160 40% 38%;
+  --sh-keyword: 242 69% 55%;
+  --sh-comment: 240 5% 55%;
+  --sh-jsxliterals: 242 50% 50%;
 }
 
   .dark {
-    /* E-ink inspired dark theme - warm, soft, easy on eyes */
-    --background: 30 6% 9%;
-    --foreground: 36 8% 90%;
-    --card: 30 5% 12%;
-    --card-foreground: 36 7% 88%;
-    --popover: 30 5% 12%;
-    --popover-foreground: 36 8% 90%;
-    --primary: 36 8% 90%;
-    --primary-foreground: 30 6% 9%;
-    --secondary: 30 4% 16%;
-    --secondary-foreground: 36 6% 80%;
-    --muted: 30 4% 18%;
-    --muted-foreground: 30 5% 58%;
-    --accent: 35 70% 55%;
-    --accent-foreground: 30 6% 9%;
-    --destructive: 0 50% 45%;
-    --destructive-foreground: 36 8% 92%;
-    --border: 30 4% 22%;
-    --input: 30 4% 18%;
-    --ring: 35 70% 55%;
-    --chart-1: 35 60% 58%;
-    --chart-2: 150 30% 50%;
-    --chart-3: 200 25% 55%;
-    --chart-4: 280 30% 58%;
-    --chart-5: 10 45% 55%;
-
-    /* Syntax highlighting - e-ink dark */
-    --sh-class: 100 28% 65%;
-    --sh-identifier: 36 8% 82%;
-    --sh-sign: 35 45% 65%;
-    --sh-string: 50 32% 65%;
-    --sh-keyword: 20 42% 65%;
-    --sh-comment: 30 5% 50%;
-    --sh-jsxliterals: 35 28% 68%;
+    /* Graphite + Indigo (default) */
+    --background: 240 15% 5%;
+    --foreground: 240 6% 93%;
+    --card: 240 13% 9%;
+    --card-foreground: 240 6% 93%;
+    --popover: 240 13% 13%;
+    --popover-foreground: 240 6% 93%;
+    --elevated: 240 13% 13%;
+    --primary: 240 6% 93%;
+    --primary-foreground: 240 15% 5%;
+    --secondary: 240 13% 13%;
+    --secondary-foreground: 240 6% 85%;
+    --muted: 240 10% 16%;
+    --muted-foreground: 240 6% 63%;
+    --subtle: 240 4% 45%;
+    --accent: 241 84% 68%;
+    --accent-foreground: 0 0% 100%;
+    --accent-hover: 242 86% 73%;
+    --destructive: 0 60% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 10% 16%;
+    --border-strong: 240 10% 20%;
+    --input: 240 10% 16%;
+    --ring: 241 84% 68%;
+    --sh-class: 241 70% 75%;
+    --sh-identifier: 240 6% 82%;
+    --sh-sign: 240 5% 55%;
+    --sh-string: 160 35% 65%;
+    --sh-keyword: 241 80% 78%;
+    --sh-comment: 240 5% 50%;
+    --sh-jsxliterals: 241 60% 72%;
   }
 
   * {
@@ -106,34 +84,20 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "cv11", "ss01";
-    font-variation-settings: "opsz" 32;
-    line-height: 1.6;
+    line-height: 1.65;
     text-rendering: optimizeLegibility;
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-weight: 600;
-    line-height: 1.25;
-    letter-spacing: -0.025em;
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-fraunces), Georgia, serif;
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
   }
 
-  h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-  }
-
-  h2 {
-    font-size: 1.5rem;
-  }
-
-  h3 {
-    font-size: 1.25rem;
-  }
+  h1 { font-size: 2.25rem; }
+  h2 { font-size: 1.75rem; }
+  h3 { font-size: 1.25rem; }
 }
 
 @layer utilities {
@@ -217,7 +181,7 @@
 
 /* Custom easing curves — punchier than defaults */
 :root {
-  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
