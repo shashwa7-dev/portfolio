@@ -58,6 +58,34 @@ Built with React + Vite, this tool explores browser rendering and export edge ca
       "Export-safe rendering using dom-to-image-more",
     ],
     stack: { fe: ["react", "typescript"] },
+    tags: ["web", "tools"],
+    caseStudy: {
+      role: "Design & Engineering",
+      year: "2026",
+      overview:
+        "PaperNoise renders tactile, print-like cards entirely client-side. The challenge was making screen pixels feel like physical paper — and exporting them at high quality without any server.",
+      problem:
+        "Existing tools lean on templates or generic filters. I wanted real texture compositing and ink-palette control, with an export that survives the browser's canvas quirks.",
+      constraints: [
+        "100% client-side — no server rendering or storage",
+        "Exports must be deterministic and high-resolution",
+        "Runs smoothly on mid-range laptops",
+      ],
+      architecture: [
+        "Layered texture + tint compositing pipeline",
+        "Export-safe rendering via dom-to-image-more",
+        "Deterministic high-res PNG output",
+      ],
+      tradeoffs:
+        "Chose dom-to-image-more over canvas-native export for fidelity, accepting a larger dependency to avoid cross-browser canvas tainting issues.",
+      results: [
+        { value: "<1s", caption: "export time" },
+        { value: "100%", caption: "client-side" },
+        { value: "Launched", caption: "on Product Hunt" },
+      ],
+      lessons:
+        "Texture realism is mostly about blend modes and grain, not resolution. Constraining scope to one beautiful thing shipped faster than a flexible editor would have.",
+    },
     links: {
       github: "https://github.com/shashwa7-dev/papernoise-offcod8",
       producthunt: "https://www.producthunt.com/products/papernoise",
