@@ -1,8 +1,8 @@
 import About from "@/components/About";
+import ExperienceWork from "@/components/ExperienceWork";
 import Projects from "@/components/Projects";
-import Work from "@/components/Work";
-import Clients from "@/components/Clients";
 import TechStack from "@/components/TechStack";
+import Clients from "@/components/Clients";
 import Activity from "@/components/Activity";
 import Socials from "@/components/Socials";
 import Navbar from "@/components/Navbar";
@@ -16,10 +16,10 @@ export default function Home() {
     <main className="relative">
       <Navbar />
       <About />
+      <ExperienceWork />
       <Projects />
-      <Work />
-      <Clients />
       <TechStack />
+      <Clients />
       <Activity />
       <Socials />
       <S7Bot />

@@ -38,6 +38,10 @@ export default function About() {
             .
           </p>
 
+          <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-subtle">
+            Shipped products used by 1M+ · Coinbase · Polygon · Sentient
+          </p>
+
           <div className="flex flex-wrap items-center gap-3">
             <a
               href="/#projects"

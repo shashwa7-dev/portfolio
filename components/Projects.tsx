@@ -1,33 +1,44 @@
 import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import { sideProjects } from "@/lib/projectsData";
 import Section from "@/components/layout/Section";
-import Reveal from "@/components/layout/Reveal";
-import ProjectShowcaseCard from "./ProjectShowcaseCard";
 
 export default function Projects() {
   return (
     <Section
       id="projects"
-      width="wide"
-      label="Selected Work"
-      title="Things I've built"
+      number="02"
+      label="Side Projects"
+      title="Things I build for fun"
+      width="reading"
       action={
         <Link href="/projects" className="text-sm text-muted-foreground transition-colors hover:text-accent">
-          View all projects →
+          View all →
         </Link>
       }
     >
-      <Reveal stagger className="grid grid-cols-1 gap-5 md:grid-cols-2">
-        {sideProjects.map((p) => (
-          <ProjectShowcaseCard key={p.id} project={p} />
-        ))}
-        <Link
-          href="/projects"
-          className="flex items-center justify-center rounded-2xl border border-dashed border-border-strong p-8 text-center text-sm text-muted-foreground transition-colors hover:text-accent"
-        >
-          + more on the projects page →
-        </Link>
-      </Reveal>
+      <ul className="space-y-1">
+        {sideProjects.map((p) => {
+          const stack = [...(p.stack.fe || []), ...(p.stack.be || [])];
+          return (
+            <li key={p.id}>
+              <Link
+                href={`/project/${p.slug}`}
+                className="group -mx-3 flex items-baseline gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-elevated"
+              >
+                <span className="font-medium text-foreground">{p.title}</span>
+                <span className="hidden truncate text-sm text-muted-foreground sm:block">{p.tagline}</span>
+                <span className="ml-auto flex shrink-0 items-center gap-2.5">
+                  <span className="hidden font-mono text-[10px] uppercase tracking-wide text-subtle sm:inline">
+                    {stack.slice(0, 2).join(" · ")}
+                  </span>
+                  <ArrowUpRight className="h-3.5 w-3.5 text-subtle transition-colors group-hover:text-accent" />
+                </span>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
     </Section>
   );
 }
