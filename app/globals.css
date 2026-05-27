@@ -194,22 +194,6 @@
   }
 }
 
-/* Animated underline utility */
-.animated-underline {
-  background-image: linear-gradient(hsl(var(--accent)), hsl(var(--accent)));
-  background-size: 0% 1.5px;
-  background-position: 0 100%;
-  background-repeat: no-repeat;
-  padding-bottom: 1px;
-  transition: background-size 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.animated-underline:hover {
-  background-size: 100% 1.5px;
-}
-@media (prefers-reduced-motion: reduce) {
-  .animated-underline { transition: none; }
-}
-
 /* Reduced motion: keep opacity fades, remove transforms */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

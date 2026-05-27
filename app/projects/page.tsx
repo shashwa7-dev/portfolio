@@ -21,7 +21,7 @@ export const metadata = {
 export default function ProjectsPage() {
   return (
     <main className="py-16 md:py-24">
-      <Container width="wide" className="space-y-8">
+      <Container width="reading" className="space-y-8">
         <Link href="/#projects" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" /> Back to home
         </Link>

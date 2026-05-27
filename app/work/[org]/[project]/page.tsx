@@ -8,6 +8,7 @@ import {  getOrganization, getProjectFromOrg } from "@/lib/workData";
 import { ActiveBadge } from "@/components/common/ActiveBadge";
 import StackIcon from "@/components/common/StackIcon";
 import VideoModal from "@/components/common/VideoModal";
+import Container from "@/components/layout/Container";
 import { motion } from "motion/react";
 import { useState } from "react";
 
@@ -28,8 +29,8 @@ export default function WorkProjectPage({
   const stack = [...(project.stack.fe || []), ...(project.stack.be || [])];
 
   return (
-    <main className="min-h-screen">
-      <div className="max-w-2xl mx-auto px-4 py-16 space-y-8">
+    <main className="min-h-screen py-16">
+      <Container width="reading" className="space-y-8">
         {/* Back link */}
         <Link
           href={`/work/${org.slug}`}
@@ -201,7 +202,7 @@ export default function WorkProjectPage({
             </div>
           )}
         </motion.div>
-      </div>
+      </Container>
 
       {/* Video Modal */}
       {project.preview && (

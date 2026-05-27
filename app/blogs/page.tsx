@@ -12,7 +12,7 @@ export const metadata = {
 export default function Page() {
   return (
     <main className="py-16 md:py-24">
-      <Container width="wide" className="space-y-8">
+      <Container width="reading" className="space-y-8">
         <div className="space-y-4">
           <Link
             href="/"
