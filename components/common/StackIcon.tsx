@@ -1,13 +1,56 @@
 "use client";
 
 import React from "react";
-import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  siReact,
+  siTypescript,
+  siNextdotjs,
+  siTailwindcss,
+  siFramer,
+  siGreensock,
+  siReactquery,
+  siNodedotjs,
+  siGraphql,
+  siExpress,
+  siPostgresql,
+  siMongodb,
+  siFirebase,
+  siSolana,
+  siWeb3dotjs,
+  siStyledcomponents,
+  siChakraui,
+  siElectron,
+  siGooglegemini,
+  siJavascript,
+  siHtml5,
+  siBun,
+  siVercel,
+  siCloudflare,
+  siSupabase,
+  siGit,
+  siGithub,
+  siPostman,
+  siFigma,
+  siSpotify,
+  siYoutube,
+  siDocker,
+  siApollographql,
+  siSocketdotio,
+  siOpensea,
+  siShadcnui,
+  siWebrtc,
+  siCss,
+  siAnthropic,
+  siPlaystation,
+  siWagmi,
+  siNotion,
+} from "simple-icons";
 
 export type StackName =
   | "html"
@@ -61,68 +104,114 @@ export type StackName =
   | "coffee"
   | "opensea";
 
+type SI = { path: string; title: string };
+
+const iconMap: Partial<Record<StackName, SI>> = {
+  react: siReact,
+  typescript: siTypescript,
+  next: siNextdotjs,
+  tailwind: siTailwindcss,
+  motion: siFramer,
+  gsap: siGreensock,
+  reactQuery: siReactquery,
+  node: siNodedotjs,
+  graphql: siGraphql,
+  express: siExpress,
+  postgres: siPostgresql,
+  postgress: siPostgresql,
+  mongodb: siMongodb,
+  firebase: siFirebase,
+  solana: siSolana,
+  web3js: siWeb3dotjs,
+  styledComponents: siStyledcomponents,
+  chakraui: siChakraui,
+  electron: siElectron,
+  googleGemini: siGooglegemini,
+  javascript: siJavascript,
+  html: siHtml5,
+  bun: siBun,
+  vercel: siVercel,
+  cloudflare: siCloudflare,
+  supabase: siSupabase,
+  git: siGit,
+  github: siGithub,
+  postman: siPostman,
+  figma: siFigma,
+  spotify: siSpotify,
+  youtube: siYoutube,
+  docker: siDocker,
+  apollo: siApollographql,
+  websocket: siSocketdotio,
+  opensea: siOpensea,
+  shadcn: siShadcnui,
+  webrtc: siWebrtc,
+  css: siCss,
+  claude: siAnthropic,
+  playstation: siPlaystation,
+  wagmi: siWagmi,
+  notion: siNotion,
+  // canva, openai, aws, zustand, vscode, restAPI, coffee → text fallback
+};
+
+const labelMap: Record<StackName, string> = {
+  vscode: "VS Code",
+  restAPI: "REST API",
+  figma: "Figma",
+  playstation: "PlayStation",
+  canva: "Canva",
+  coffee: "Coffee",
+  openai: "OpenAI",
+  claude: "Claude",
+  postman: "Postman",
+  notion: "Notion",
+  html: "HTML5",
+  github: "GitHub",
+  spotify: "Spotify",
+  youtube: "YouTube",
+  git: "Git",
+  css: "CSS3",
+  bun: "Bun",
+  javascript: "JavaScript",
+  typescript: "TypeScript",
+  googleGemini: "Google Gemini",
+  vercel: "Vercel",
+  zustand: "Zustand",
+  supabase: "Supabase",
+  mongodb: "MongoDB",
+  opensea: "OpenSea",
+  postgress: "PostgreSQL",
+  cloudflare: "Cloudflare",
+  chakraui: "Chakra UI",
+  electron: "Electron",
+  wagmi: "Wagmi",
+  solana: "Solana",
+  shadcn: "shadcn/ui",
+  react: "React",
+  express: "Express",
+  web3js: "Web3.js",
+  next: "Next.js",
+  styledComponents: "Styled Components",
+  tailwind: "Tailwind CSS",
+  gsap: "GSAP",
+  motion: "Framer Motion",
+  reactQuery: "React Query",
+  apollo: "Apollo GraphQL",
+  node: "Node.js",
+  graphql: "GraphQL",
+  websocket: "WebSocket",
+  webrtc: "WebRTC",
+  postgres: "PostgreSQL",
+  firebase: "Firebase",
+  aws: "AWS",
+  docker: "Docker",
+};
+
 type StackProps = {
   name: StackName;
   size?: number;
   showLabel?: boolean;
   showTooltip?: boolean;
   className?: string;
-};
-
-const iconMap: Record<StackName, { icon: string; label: string }> = {
-  vscode: { icon: "devicon-plain:vscode", label: "VS Code" },
-  restAPI: { icon: "dashicons:rest-api", label: "REST API" },
-  figma: { icon: "simple-icons:figma", label: "Figma" },
-  playstation: { icon: "simple-icons:playstation", label: "PlayStation" },
-  canva: { icon: "simple-icons:canva", label: "Canva" },
-  coffee: { icon: "line-md:coffee-half-empty-twotone-loop", label: "Coffee" },
-  openai: { icon: "simple-icons:openai", label: "OpenAI" },
-  claude: { icon: "simple-icons:claude", label: "Claude" },
-  postman: { icon: "simple-icons:postman", label: "Postman" },
-  notion: { icon: "devicon-plain:notion", label: "Notion" },
-  html: { icon: "simple-icons:html5", label: "HTML5" },
-  github: { icon: "simple-icons:github", label: "GitHub" },
-  spotify: { icon: "dashicons:spotify", label: "Spotify" },
-  youtube: { icon: "simple-icons:youtube", label: "YouTube" },
-  git: { icon: "simple-icons:git", label: "Git" },
-  css: { icon: "simple-icons:css", label: "CSS3" },
-  bun: { icon: "simple-icons:bun", label: "Bun" },
-  javascript: { icon: "simple-icons:javascript", label: "JavaScript" },
-  typescript: { icon: "simple-icons:typescript", label: "TypeScript" },
-  googleGemini: { icon: "simple-icons:googlegemini", label: "Google Gemini" },
-  vercel: { icon: "simple-icons:vercel", label: "Vercel" },
-  zustand: { icon: "devicon-plain:zustand", label: "Zustand" },
-  supabase: { icon: "simple-icons:supabase", label: "Supabase" },
-  mongodb: { icon: "simple-icons:mongodb", label: "MongoDB" },
-  opensea: { icon: "simple-icons:opensea", label: "OpenSea" },
-  postgress: { icon: "simple-icons:postgresql", label: "PostgreSQL" },
-  cloudflare: { icon: "simple-icons:cloudflare", label: "Cloudflare" },
-  chakraui: { icon: "simple-icons:chakraui", label: "Chakra UI" },
-  electron: { icon: "simple-icons:electron", label: "Electron" },
-  wagmi: { icon: "simple-icons:wagmi", label: "Wagmi" },
-  solana: { icon: "simple-icons:solana", label: "Solana" },
-  shadcn: { icon: "simple-icons:shadcnui", label: "shadcn/ui" },
-  react: { icon: "simple-icons:react", label: "React" },
-  express: { icon: "simple-icons:express", label: "Express" },
-  web3js: { icon: "simple-icons:web3dotjs", label: "Web3.js" },
-  next: { icon: "simple-icons:nextdotjs", label: "Next.js" },
-  styledComponents: {
-    icon: "devicon-plain:styledcomponents",
-    label: "Styled Components",
-  },
-  tailwind: { icon: "simple-icons:tailwindcss", label: "Tailwind CSS" },
-  gsap: { icon: "simple-icons:gsap", label: "GSAP" },
-  motion: { icon: "simple-icons:framer", label: "Framer Motion" },
-  reactQuery: { icon: "simple-icons:reactquery", label: "React Query" },
-  apollo: { icon: "simple-icons:apollographql", label: "Apollo GraphQL" },
-  node: { icon: "simple-icons:nodedotjs", label: "Node.js" },
-  graphql: { icon: "simple-icons:graphql", label: "GraphQL" },
-  websocket: { icon: "simple-icons:socketdotio", label: "WebSocket" },
-  webrtc: { icon: "simple-icons:webrtc", label: "WebRTC" },
-  postgres: { icon: "simple-icons:postgresql", label: "PostgreSQL" },
-  firebase: { icon: "simple-icons:firebase", label: "Firebase" },
-  aws: { icon: "simple-icons:amazonwebservices", label: "AWS" },
-  docker: { icon: "simple-icons:docker", label: "Docker" },
 };
 
 export default function StackIcon({
@@ -132,39 +221,61 @@ export default function StackIcon({
   showTooltip = false,
   className = "",
 }: StackProps) {
-  const stack = iconMap[name];
-  if (!stack) return null;
+  const label = labelMap[name];
+  if (!label) return null;
 
-  // Icon only with tooltip
+  const si = iconMap[name];
+  const glyph = si ? (
+    <svg
+      role="img"
+      aria-label={label}
+      viewBox="0 0 24 24"
+      width={size}
+      height={size}
+      fill="currentColor"
+      className="shrink-0"
+    >
+      <path d={si.path} />
+    </svg>
+  ) : null;
+
   if (!showLabel) {
-    const icon = (
+    const node = (
       <span
-        className={cn("inline-flex cursor-default", className)}
+        className={cn(
+          "inline-flex items-center text-muted-foreground transition-colors hover:text-foreground",
+          className
+        )}
       >
-        <Icon icon={stack.icon} width={size} height={size} />
+        {glyph || (
+          <span className="font-mono text-[10px] uppercase tracking-wide">
+            {label}
+          </span>
+        )}
       </span>
     );
     if (showTooltip) {
       return (
         <Tooltip delayDuration={0}>
-          <TooltipTrigger asChild>{icon}</TooltipTrigger>
-          <TooltipContent>{stack.label}</TooltipContent>
+          <TooltipTrigger asChild>{node}</TooltipTrigger>
+          <TooltipContent>{label}</TooltipContent>
         </Tooltip>
       );
     }
-    return icon;
+    return node;
   }
 
-  // With label (pill style)
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 px-2 py-1 text-xs rounded-md bg-secondary text-secondary-foreground border",
+        "group inline-flex items-center gap-1.5 rounded-md border border-border bg-secondary px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground",
         className
       )}
     >
-      <Icon icon={stack.icon} width={size} height={size} />
-      <span>{stack.label}</span>
+      <span className="text-subtle transition-colors group-hover:text-foreground">
+        {glyph}
+      </span>
+      <span>{label}</span>
     </span>
   );
 }

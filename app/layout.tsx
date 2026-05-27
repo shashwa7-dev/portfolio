@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
 import dynamic from "next/dynamic";
 import "./globals.css";
 import { baseUrl } from "./sitemap";
+import { ogUrl, personLd, websiteLd } from "@/lib/seo";
 import { Analytics } from "@vercel/analytics/next";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { SoundProvider } from "@/app/providers/SoundProvider";
 import Footer from "@/components/Footer";
 import UmamiAnalytics from "@/components/Umami";
 import NoScript from "@/components/NoScript";
@@ -26,11 +26,26 @@ const AnimatedBackground = dynamic(
   { ssr: false }
 );
 
-const plusJakarta = Plus_Jakarta_Sans({
+const fraunces = Fraunces({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
   display: "swap",
-  variable: "--font-jakarta",
+  variable: "--font-fraunces",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-inter",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  display: "swap",
+  variable: "--font-mono",
 });
 
 export const metadata: Metadata = {
@@ -50,10 +65,10 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: `${baseUrl}og-image.png?v=3.0`,
-        width: 1600,
-        height: 900,
-        alt: "Shashwat Tripathi — Frontend Engineer",
+        url: ogUrl({ title: "Shashwat Tripathi", subtitle: "Frontend Engineer · Crafting quality interfaces", type: "home" }),
+        width: 1200,
+        height: 630,
+        alt: "Shashwat Tripathi, Frontend Engineer",
       },
     ],
   },
@@ -62,7 +77,7 @@ export const metadata: Metadata = {
     title: "S7.dev",
     description:
       "Frontend Engineer | Crafting sleek, responsive interfaces with great design and seamless UX.",
-    images: [`${baseUrl}og-image.png?v=3.0`],
+    images: [ogUrl({ title: "Shashwat Tripathi", subtitle: "Frontend Engineer · Crafting quality interfaces", type: "home" })],
   },
   icons: {
     icon: [{ url: "/favicon.svg", sizes: "32x32", type: "image/svg" }],
@@ -97,16 +112,19 @@ export default function RootLayout({
             __html: `(function(){var t=localStorage.getItem("theme");var d=window.matchMedia("(prefers-color-scheme: dark)").matches;var dark=t==="dark"||(t===null&&d);document.documentElement.classList.toggle("dark",dark);})();`,
           }}
         />
+        <script
+          type="application/ld+json"
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{ __html: JSON.stringify([personLd(), websiteLd()]) }}
+        />
       </head>
       <body
-        className={`bg-background text-foreground border-border ${plusJakarta.variable} font-sans`}
+        className={`bg-background text-foreground border-border ${fraunces.variable} ${inter.variable} ${jetbrainsMono.variable} font-sans`}
       >
         <NoScript />
         <div className="relative z-10">
           <TooltipProvider>
-            <SoundProvider>
-              {children}
-            </SoundProvider>
+            {children}
           </TooltipProvider>
           <BottomFadeMask />
           <Analytics />

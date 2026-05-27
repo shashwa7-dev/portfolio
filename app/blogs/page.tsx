@@ -1,6 +1,8 @@
 import { BlogPosts } from "../../components/BlogPosts";
 import Link from "next/link";
-import { ArrowLeft } from "feather-icons-react";
+import { ArrowLeft } from "lucide-react";
+import Container from "@/components/layout/Container";
+import Label from "@/components/layout/Label";
 
 export const metadata = {
   title: "Blog",
@@ -9,8 +11,8 @@ export const metadata = {
 
 export default function Page() {
   return (
-    <main className="min-h-screen">
-      <div className="max-w-2xl mx-auto px-4 py-16 space-y-8">
+    <main className="py-16 md:py-24">
+      <Container width="wide" className="space-y-8">
         <div className="space-y-4">
           <Link
             href="/"
@@ -19,13 +21,18 @@ export default function Page() {
             <ArrowLeft className="w-4 h-4" />
             Back
           </Link>
-          <h1 className="text-3xl font-semibold tracking-tight">Blog</h1>
-          <p className="text-muted-foreground">
-            Thoughts, learnings, and things I find interesting.
-          </p>
+          <div className="space-y-2">
+            <Label>Writing</Label>
+            <h1 className="font-serif text-[clamp(2rem,5vw,2.75rem)] font-medium tracking-[-0.02em]">
+              Blog
+            </h1>
+            <p className="text-muted-foreground">
+              Thoughts, learnings, and things I find interesting.
+            </p>
+          </div>
         </div>
         <BlogPosts />
-      </div>
+      </Container>
     </main>
   );
 }

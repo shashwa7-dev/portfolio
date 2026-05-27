@@ -6,11 +6,13 @@ export type TProject = {
   title: string;
   shortTitle?: string;
   isActive?: boolean;
+  featured?: boolean;
   description: string;
   highlights?: string[];
   thumbnail: string;
   preview?: string;
   date?: string;
+  metric?: string;
   links?: {
     github?: string;
     twitter?: string;
@@ -45,7 +47,7 @@ export const organizations: TOrganization[] = [
     description:
       "Frontend engineer at ShopOS, building and maintaining UIs for an AI-native commerce platform, including workflows for product creation, management, marketing, and sales",
     highlights: [
-      "Frontend for commerce flows—create, manage, market & sell",
+      "Frontend for commerce flows: create, manage, market & sell",
       "Reusable UI components and design-system contributions",
       "Collaborating with product and design on feature rollout",
     ],
@@ -74,6 +76,7 @@ export const organizations: TOrganization[] = [
         slug: "playai-hub",
         title: "PlayAI Hub",
         shortTitle: "PlayAI Hub",
+        featured: true,
         description:
           "AI × DeFi platform unifying real-time chat streaming with workflow-driven interactions. Built core UI, chat streaming, workflow-preset sessions, and mission/reward flows for x402-powered agent-ready apps.",
         highlights: [
@@ -136,6 +139,8 @@ export const organizations: TOrganization[] = [
         slug: "coinbase-polygon-nft",
         title: "Coinbase × Polygon NFT",
         shortTitle: "CB × Polygon NFT",
+        featured: true,
+        metric: "100K mints · day one",
         description:
           "High-scale NFT minting platform for user onboarding to Web3. Collaboration with Coinbase, Polygon, and partners achieving 100K mints on day one.",
         highlights: [
@@ -160,6 +165,8 @@ export const organizations: TOrganization[] = [
         slug: "polygon-copilot",
         title: "Polygon Copilot",
         shortTitle: "Polygon Copilot",
+        featured: true,
+        metric: "Featured by Polygon",
         description:
           "AI chatbot for Web3 developers using OpenAI GPT models, delivering blockchain insights within the zkEVM ecosystem.",
         highlights: [
@@ -190,6 +197,7 @@ export const organizations: TOrganization[] = [
         slug: "nft-wrapped",
         title: "NFT Wrapped 2022",
         shortTitle: "NFT Wrapped",
+        metric: "250+ wraps in 24h",
         description:
           "Personalized, gamified NFT experience inspired by Spotify Wrapped. Concept to launch in 3 weeks with quests, leaderboards, and user personas.",
         highlights: [
@@ -237,6 +245,7 @@ export const organizations: TOrganization[] = [
         slug: "agent-experience",
         title: "Agent Experience",
         shortTitle: "0xRogueAgent",
+        featured: true,
         description:
           "AI-driven agent project on Solana with $ROGUE token for mission-based experiences and governance participation.",
         highlights: [
@@ -267,6 +276,7 @@ export const organizations: TOrganization[] = [
         slug: "node-explorer",
         title: "Node Explorer",
         shortTitle: "Node Explorer",
+        featured: true,
         description:
           "Node management platform for delegating PlayAI Oasis Nodes, enabling task execution and PlayAI Coin earnings.",
         highlights: [
@@ -289,6 +299,7 @@ export const organizations: TOrganization[] = [
         slug: "dehidden-quest",
         title: "Dehidden Quest × Web3Conf",
         shortTitle: "Web3Conf Quest",
+        metric: "2,000+ attendees",
         description:
           "Gamified Web3 onboarding at Web3Conf India 2022. Interactive booth challenges with on-chain tasks and reward redemption.",
         highlights: [

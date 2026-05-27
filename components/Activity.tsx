@@ -1,64 +1,36 @@
-"use client";
-import React from "react";
 import Link from "next/link";
-import { motion } from "motion/react";
-import SpotifyLastListen from "./SpotifyLastListen";
-import { containerVariants, itemVariants } from "@/lib/motionVariants";
-import SectionTitle from "./common/SectionTitle";
-import { Zap, ArrowRight } from "feather-icons-react";
-import BookListItem from "./BookListItem";
+import { ArrowRight } from "lucide-react";
 import { books } from "@/lib/books";
-import { Icon } from "@iconify/react";
+import BookListItem from "./BookListItem";
+import Section from "@/components/layout/Section";
+import Bento from "@/components/layout/Bento";
 
-const Activity = () => {
+export default function Activity() {
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.3 }}
-      className="space-y-8"
-    >
-      <SectionTitle title="Activity" icon={<Icon icon='solar:speaker-minimalistic-line-duotone' className="w-5 h-5" />} />
-
-      {/* Blogs Section */}
-      <motion.div variants={itemVariants} className="space-y-2">
-        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-          Writing
-        </p>
-        <Link
-          href="/blogs"
-          className="group font-medium flex items-center gap-2 text-lg hover:text-accent transition-colors"
-        >
-          <span>Check out my blog posts</span>
-          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-        </Link>
-      </motion.div>
-
-      {/* Reading Section */}
-      <motion.div variants={itemVariants} className="space-y-3">
-        <div className="flex items-center justify-between">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-            Currently Reading
-          </p>
-          <Link
-            href="/books"
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            View All
+    <Section id="activity" number="05" label="Now" title="What I'm up to" width="reading">
+      <Bento className="grid-cols-1 sm:grid-cols-2">
+        <div className="bg-card p-5">
+          <p className="mb-2.5 font-mono text-[10px] uppercase tracking-[0.12em] text-subtle">Writing</p>
+          <Link href="/blogs" className="group inline-flex items-center gap-2 text-base font-medium transition-colors hover:text-accent">
+            Read my blog posts <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </Link>
+          <p className="mt-2 text-xs text-muted-foreground">Notes on frontend, Web3 &amp; building products.</p>
         </div>
-        <motion.ul
-          variants={containerVariants}
-          className="grid grid-cols-2 gap-2"
-        >
-          {books.slice(0, 3).map((book) => (
-            <BookListItem {...book} key={book.slug} />
-          ))}
-        </motion.ul>
-      </motion.div>
-    </motion.div>
+        <div className="bg-card p-5">
+          <p className="mb-2.5 font-mono text-[10px] uppercase tracking-[0.12em] text-subtle">Currently</p>
+          <p className="font-serif text-xl text-foreground">Building at ShopOS</p>
+          <p className="mt-1 text-xs text-muted-foreground">AI-native commerce · open to freelance.</p>
+        </div>
+        <div className="col-span-full flex items-center justify-between bg-card px-5 py-3">
+          <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-subtle">Currently Reading</p>
+          <Link href="/books" className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground">View all <ArrowRight className="h-3.5 w-3.5" /></Link>
+        </div>
+        {books.slice(0, 3).map((book) => (
+          <div key={book.slug} className="col-span-full bg-card">
+            <BookListItem {...book} variant="row" />
+          </div>
+        ))}
+      </Bento>
+    </Section>
   );
-};
-
-export default Activity;
+}

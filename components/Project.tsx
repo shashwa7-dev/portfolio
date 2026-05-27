@@ -3,7 +3,7 @@
 import React from "react";
 import { SVGS } from "./SVGS";
 import { cn } from "@/lib/utils";
-import { Icon as Iconify } from "@iconify/react";
+import { ExternalLink } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 
 // Re-export types from data files for backward compatibility
@@ -46,7 +46,7 @@ export const Social = ({
       className={cn(buttonVariants({ variant: "secondary", size: "sm" }), className)}
     >
       {type === "opensea" ? (
-        <Iconify icon="simple-icons:opensea" className="w-3 h-3" />
+        <ExternalLink className="w-3 h-3" />
       ) : (
         <Icon className="w-3 h-3" />
       )}

@@ -6,24 +6,24 @@ export function useDarkMode() {
 
   useLayoutEffect(() => {
     const savedTheme = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
-    ).matches;
-
-    const shouldUseDark =
-      savedTheme === "dark" || (savedTheme === null && prefersDark);
-
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const shouldUseDark = savedTheme === "dark" || (savedTheme === null && prefersDark);
     setIsDarkMode(shouldUseDark);
     document.documentElement.classList.toggle("dark", shouldUseDark);
   }, []);
 
+  useEffect(() => {
+    const sync = () => setIsDarkMode(document.documentElement.classList.contains("dark"));
+    window.addEventListener("themechange", sync);
+    return () => window.removeEventListener("themechange", sync);
+  }, []);
+
   const toggleDarkMode = () => {
-    setIsDarkMode((prev) => {
-      const newMode = !prev;
-      localStorage.setItem("theme", newMode ? "dark" : "light");
-      document.documentElement.classList.toggle("dark", newMode);
-      return newMode;
-    });
+    const next = !document.documentElement.classList.contains("dark");
+    document.documentElement.classList.toggle("dark", next);
+    localStorage.setItem("theme", next ? "dark" : "light");
+    setIsDarkMode(next);
+    window.dispatchEvent(new Event("themechange"));
   };
 
   return { isDarkMode, toggleDarkMode };

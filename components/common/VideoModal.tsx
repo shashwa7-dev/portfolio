@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { X } from "feather-icons-react";
+import { X } from "lucide-react";
 
 interface VideoModalProps {
   isOpen: boolean;

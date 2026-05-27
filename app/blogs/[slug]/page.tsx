@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { CustomMDX } from "@/components/common/mdx";
 import { formatDate, getBlogPosts } from "../utils";
 import { baseUrl } from "@/app/sitemap";
+import { ogUrl } from "@/lib/seo";
 import { Badge } from "@/components/ui/badge";
 
 export async function generateStaticParams() {
@@ -24,9 +25,7 @@ export function generateMetadata({ params }: any) {
     summary: description,
     image,
   } = post.metadata;
-  let ogImage = image
-    ? image
-    : `${baseUrl}/og?title=${encodeURIComponent(title)}`;
+  let ogImage = image ? image : ogUrl({ title, subtitle: description, type: "post" });
 
   return {
     title,
@@ -36,7 +35,7 @@ export function generateMetadata({ params }: any) {
       description,
       type: "article",
       publishedTime,
-      url: `${baseUrl}/blog/${post.slug}`,
+      url: `${baseUrl}blogs/${post.slug}`,
       images: [
         {
           url: ogImage,
@@ -49,6 +48,7 @@ export function generateMetadata({ params }: any) {
       description,
       images: [ogImage],
     },
+    alternates: { canonical: `${baseUrl}blogs/${post.slug}` },
   };
 }
 
@@ -74,11 +74,11 @@ export default function Blog({ params }: any) {
             description: post.metadata.summary,
             image: post.metadata.image
               ? `${baseUrl}${post.metadata.image}`
-              : `/og?title=${encodeURIComponent(post.metadata.title)}`,
-            url: `${baseUrl}/blogs/${post.slug}`,
+              : ogUrl({ title: post.metadata.title, type: "post" }),
+            url: `${baseUrl}blogs/${post.slug}`,
             author: {
               "@type": "Person",
-              name: "My Portfolio",
+              name: "Shashwat Tripathi",
             },
           }),
         }}

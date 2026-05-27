@@ -1,61 +1,52 @@
 import { formatDate, getBlogPosts } from "@/app/blogs/utils";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
+import { ArrowUpRight } from "lucide-react";
 
 export function BlogPosts() {
-  let allBlogs = getBlogPosts();
+  const posts = getBlogPosts().sort((a, b) =>
+    new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt) ? -1 : 1
+  );
 
   return (
-    <div className="text-sm grid gap-4">
-      <div>
-        {allBlogs
-          .sort((a, b) => {
-            if (
-              new Date(a.metadata.publishedAt) >
-              new Date(b.metadata.publishedAt)
-            ) {
-              return -1;
-            }
-            return 1;
-          })
-          .map((post) => (
-            <Link
-              className="grid grid-cols-[250px_1fr] border rounded-md overflow-hidden -md:grid-cols-1 bg-card text-card-foreground transition-[border-color,box-shadow] duration-200 ease-[--ease-out] hover:border-accent/30 hover:shadow-sm"
-              href={`/blogs/${post.slug}`}
-              key={post.slug}
-            >
-              <div className="grid place-items-center -md:h-[150px] overflow-hidden">
-                <img
-                  src={post.metadata.image}
-                  alt={post.metadata.title}
-                  className="w-full h-full object-cover object-center"
-                />
-              </div>
-              <div className="w-full grid gap-1 p-3">
-                <div>
-                  <p className="text-lg text-secondary-foreground font-sans">{`${post.metadata.title}`}</p>
-                  <p className="text-muted-foreground text-xs">
-                    {formatDate(post.metadata.publishedAt, false)}
-                  </p>
-                </div>
-                <p>{post.metadata.summary}</p>
-                <div className="flex gap-2 flex-wrap mt-2">
-                  {JSON.parse(post.metadata.tags).map(
-                    (tag: string, id: number) => (
-                      <Badge
-                        key={id}
-                        variant="secondary"
-                        className="text-accent"
-                      >
-                        {tag}
-                      </Badge>
-                    )
-                  )}
-                </div>
-              </div>
-            </Link>
-          ))}
-      </div>
+    <div className="grid gap-4 sm:grid-cols-2">
+      {posts.map((post) => (
+        <Link
+          key={post.slug}
+          href={`/blogs/${post.slug}`}
+          className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:-translate-y-0.5 hover:border-border-strong"
+        >
+          {post.metadata.image && (
+            <div className="relative aspect-[16/9] overflow-hidden bg-elevated">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={post.metadata.image}
+                alt={post.metadata.title}
+                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+              />
+            </div>
+          )}
+          <div className="flex flex-1 flex-col gap-2 p-4">
+            <span className="font-mono text-[10px] uppercase tracking-wide text-subtle">
+              {formatDate(post.metadata.publishedAt, false)}
+            </span>
+            <div className="flex items-start justify-between gap-2">
+              <h3 className="font-serif text-lg leading-snug text-foreground">{post.metadata.title}</h3>
+              <ArrowUpRight className="mt-1 h-4 w-4 shrink-0 text-subtle transition-colors group-hover:text-accent" />
+            </div>
+            <p className="line-clamp-2 text-sm text-muted-foreground">{post.metadata.summary}</p>
+            <div className="mt-auto flex flex-wrap gap-1.5 pt-2">
+              {JSON.parse(post.metadata.tags).map((tag: string, i: number) => (
+                <span
+                  key={i}
+                  className="rounded-full border border-border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wide text-muted-foreground"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        </Link>
+      ))}
     </div>
   );
 }

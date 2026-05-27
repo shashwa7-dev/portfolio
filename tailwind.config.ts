@@ -54,7 +54,9 @@ const config: Config = {
         "-sm": { max: "639px" },
       },
       fontFamily: {
-        sans: ["var(--font-jakarta)", ...fontFamily.sans],
+        sans: ["var(--font-inter)", ...fontFamily.sans],
+        serif: ["var(--font-fraunces)", "Georgia", "serif"],
+        mono: ["var(--font-mono)", ...fontFamily.mono],
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
@@ -104,6 +106,10 @@ const config: Config = {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
+        elevated: "hsl(var(--elevated))",
+        subtle: "hsl(var(--subtle))",
+        "border-strong": "hsl(var(--border-strong))",
+        "accent-hover": "hsl(var(--accent-hover))",
         chart: {
           "1": "hsl(var(--chart-1))",
           "2": "hsl(var(--chart-2))",

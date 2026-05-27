@@ -1,142 +1,86 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, ExternalLink } from "feather-icons-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import { organizations, getOrganization } from "@/lib/workData";
-import CompactProjectCard from "@/components/CompactProjectCard";
+import Container from "@/components/layout/Container";
+import Label from "@/components/layout/Label";
+import ProjectShowcaseCard from "@/components/ProjectShowcaseCard";
+import { workProjectToCard } from "@/lib/projectCards";
 
 export async function generateStaticParams() {
-  return organizations.map((org) => ({
-    org: org.slug,
-  }));
+  return organizations.map((org) => ({ org: org.slug }));
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ org: string }>;
-}) {
+export async function generateMetadata({ params }: { params: Promise<{ org: string }> }) {
   const { org: orgSlug } = await params;
   const org = getOrganization(orgSlug);
   if (!org) return { title: "Not Found" };
   return {
-    title: `${org.name} Projects`,
-    description: `Projects built at ${org.name} - ${org.role}`,
+    title: `${org.name} · Work`,
+    description: `Projects built at ${org.name}, ${org.role}`,
   };
 }
 
-export default async function OrgPage({
-  params,
-}: {
-  params: Promise<{ org: string }>;
-}) {
+export default async function OrgPage({ params }: { params: Promise<{ org: string }> }) {
   const { org: orgSlug } = await params;
   const org = getOrganization(orgSlug);
-
-  if (!org) {
-    notFound();
-  }
+  if (!org) notFound();
 
   return (
-    <main className="min-h-screen">
-      <div className="max-w-2xl mx-auto px-4 py-16 space-y-10">
-        {/* Back link */}
-        <Link
-          href="/#work"
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Home
+    <main className="py-16 md:py-24">
+      <Container width="wide" className="space-y-10">
+        <Link href="/#experience" className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground">
+          <ArrowLeft className="h-4 w-4" /> Back to home
         </Link>
 
-        {/* Organization header */}
-        <header className="space-y-5">
-          <div className="flex items-center gap-4">
-            {/* Logo */}
-            <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-secondary shrink-0">
-              <Image
-                src={org.logo}
-                alt={org.name}
-                fill
-                className="object-cover"
-                sizes="48px"
-              />
-            </div>
-
-            {/* Title & Meta */}
-            <div className="flex-1 min-w-0">
+        <header className="space-y-4">
+          <div className="flex items-center gap-3">
+            <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-elevated ring-1 ring-border">
+              <Image src={org.logo} alt={org.name} fill className="object-cover" sizes="48px" />
+            </span>
+            <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-semibold tracking-tight">
-                  {org.name}
-                </h1>
+                <h1 className="font-serif text-3xl font-medium tracking-tight">{org.name}</h1>
                 {org.link && (
-                  <a
-                    href={org.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-1 rounded-md hover:bg-secondary transition-colors"
-                  >
-                    <ExternalLink className="w-4 h-4 text-muted-foreground" />
+                  <a href={org.link} target="_blank" rel="noopener noreferrer" className="text-muted-foreground transition-colors hover:text-accent">
+                    <ExternalLink className="h-4 w-4" />
                   </a>
                 )}
               </div>
               <p className="text-sm text-muted-foreground">
                 {org.role}
-                <span className="mx-1.5 text-border">·</span>
-                <span className="tabular-nums">{org.duration}</span>
+                <span className="mx-1.5 text-border-strong">·</span>
+                <span className="font-mono text-xs tabular-nums text-subtle">{org.duration}</span>
               </p>
             </div>
           </div>
-
-          {/* Description */}
-          {org.description && (
-            <p className="text-muted-foreground leading-relaxed">
-              {org.description}
-            </p>
-          )}
+          {org.description && <p className="max-w-[62ch] text-muted-foreground">{org.description}</p>}
         </header>
 
-        {/* Divider */}
-        <div className="h-px bg-border" />
-
-        {/* Key highlights */}
-        <section className="space-y-4">
-          <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-            Key Contributions
-          </h2>
-          <ul className="space-y-2.5">
-            {org.highlights.map((highlight, idx) => (
-              <li
-                key={idx}
-                className="flex items-start gap-2.5 text-sm leading-relaxed"
-              >
-                <span className="mt-[0.4rem] w-1.5 h-1.5 rounded-full bg-accent/60 shrink-0" />
-                <span className="text-muted-foreground">{highlight}</span>
+        <section className="space-y-3">
+          <Label>Key contributions</Label>
+          <ul className="space-y-2">
+            {org.highlights.map((h, i) => (
+              <li key={i} className="flex gap-2.5 text-sm text-muted-foreground">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent/60" />
+                {h}
               </li>
             ))}
           </ul>
         </section>
 
-        {/* Divider */}
-        <div className="h-px bg-border" />
-
-        {/* Projects grid */}
-        <section className="space-y-5">
-          <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-            Projects ({org.projects.length})
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {org.projects.map((project,index) => (
-              <CompactProjectCard
-                key={project.id}
-                project={project}
-                index={index}
-                href={`/work/${org.slug}/${project.slug}`}
-              />
-            ))}
-          </div>
-        </section>
-      </div>
+        {org.projects.length > 0 && (
+          <section className="space-y-4">
+            <Label>Projects ({org.projects.length})</Label>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {org.projects.map((p) => (
+                <ProjectShowcaseCard key={p.id} project={workProjectToCard(org.slug, p)} />
+              ))}
+            </div>
+          </section>
+        )}
+      </Container>
     </main>
   );
 }

@@ -4,8 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Link as LinkCTA } from "@/components/common/Link";
-import { ArrowLeft } from "feather-icons-react";
+import { ArrowLeft } from "lucide-react";
 import { baseUrl } from "@/app/sitemap";
+import { ogUrl } from "@/lib/seo";
 
 type Props = {
   params: { slug: string };
@@ -18,7 +19,7 @@ export function generateMetadata({ params }: Props) {
   const { name: title, description, cover: image } = book;
   const ogImage = image
     ? image
-    : `${baseUrl}/og?title=${encodeURIComponent(book.name)}`;
+    : ogUrl({ title: book.name, type: "books" });
   return {
     title: book.name,
     description: book.description,
@@ -26,7 +27,7 @@ export function generateMetadata({ params }: Props) {
       title,
       description,
       type: "website",
-      url: `${baseUrl}/books/${book.slug}`,
+      url: `${baseUrl}books/${book.slug}`,
       siteName: "S7.dev",
       images: [{ url: ogImage }],
     },

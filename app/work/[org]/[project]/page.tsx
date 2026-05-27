@@ -3,7 +3,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, ExternalLink, Play } from "feather-icons-react";
+import { ArrowLeft, ExternalLink, Play } from "lucide-react";
 import {  getOrganization, getProjectFromOrg } from "@/lib/workData";
 import { ActiveBadge } from "@/components/common/ActiveBadge";
 import StackIcon from "@/components/common/StackIcon";

@@ -1,56 +1,38 @@
 import Link from "next/link";
-import { ArrowLeft } from "feather-icons-react";
+import { ArrowLeft } from "lucide-react";
 import { sideProjects } from "@/lib/projectsData";
-import SideProjectCard from "@/components/SideProjectCard";
+import { baseUrl } from "@/app/sitemap";
+import Container from "@/components/layout/Container";
+import Label from "@/components/layout/Label";
+import ProjectsIndex from "@/components/ProjectsIndex";
+import { ogUrl } from "@/lib/seo";
 
 export const metadata = {
-  title: "Side Projects",
+  title: "Projects",
   description: "Personal projects and experiments I've built.",
+  alternates: { canonical: `${baseUrl}projects` },
+  openGraph: {
+    title: "Projects",
+    description: "Personal projects and experiments I've built.",
+    images: [{ url: ogUrl({ title: "Projects", subtitle: "Things I've built", type: "generic", label: "Work" }) }],
+  },
 };
 
 export default function ProjectsPage() {
   return (
-    <main>
-      <div className="max-w-2xl mx-auto px-4 py-16 space-y-8">
-        {/* Back link */}
-        <Link
-          href="/#projects"
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Home
+    <main className="py-16 md:py-24">
+      <Container width="wide" className="space-y-8">
+        <Link href="/#projects" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+          <ArrowLeft className="h-4 w-4" /> Back to home
         </Link>
-
-        {/* Header */}
-        <div className="space-y-4 pb-8 border-b border-border">
-          <div className="flex items-center gap-3">
-            <img
-              src="/images/offcod8.webp"
-              alt="offcod8"
-              className="w-14 h-14 rounded-xl"
-            />
-            <div>
-              <h1 className="text-3xl font-semibold tracking-tight">
-                Side Projects
-              </h1>
-              <p className="text-muted-foreground">
-                offcod8 · Solo Founder & Engineer
-              </p>
-            </div>
-          </div>
-          <p className="text-muted-foreground">
-            Personal projects and experiments I build to learn new technologies,
-            solve my own problems, or just for fun.
-          </p>
+        <div className="space-y-2">
+          <Label>Projects</Label>
+          <h1 className="font-serif text-[clamp(2rem,5vw,2.75rem)] font-medium tracking-[-0.02em]">
+            Everything I&apos;ve shipped
+          </h1>
         </div>
-
-        {/* Projects grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {sideProjects.map((project,index) => (
-            <SideProjectCard key={project.id} project={project} index={index} />
-          ))}
-        </div>
-      </div>
+        <ProjectsIndex projects={sideProjects} />
+      </Container>
     </main>
   );
 }

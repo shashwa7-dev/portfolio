@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "motion/react";
-import { ArrowRight, ExternalLink } from "feather-icons-react";
+import { ArrowRight, ExternalLink } from "lucide-react";
 import { TOrganization } from "@/lib/workData";
 import { itemVariants } from "@/lib/motionVariants";
 import { ActiveBadge } from "@/components/common/ActiveBadge";

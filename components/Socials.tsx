@@ -1,11 +1,7 @@
 "use client";
 import React from "react";
-import { motion } from "motion/react";
-import { containerVariants, itemVariants } from "@/lib/motionVariants";
-import { Smile } from "feather-icons-react";
-import SectionTitle from "./common/SectionTitle";
 import { SVGS } from "./SVGS";
-import { Icon } from "@iconify/react";
+import Section from "@/components/layout/Section";
 
 const socials = [
   {
@@ -27,35 +23,30 @@ const socials = [
 
 const Socials = () => {
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.3 }}
-      className="space-y-8"
-    >
-      <SectionTitle title="Connect" icon={<Icon icon="solar:sticker-smile-circle-line-duotone" className="w-5 h-5" />} />
-      <motion.div
-        variants={containerVariants}
-        className="flex flex-wrap gap-2 items-center"
-      >
-        {socials.map(({ name, link, Icon }) => (
-          <motion.a
-            key={name}
-            variants={itemVariants}
-            href={link}
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ y: -2 }}
-            transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors border active:scale-[0.97]"
-          >
-            <Icon className="w-4 h-4" />
-            <span className="text-sm">{name}</span>
-          </motion.a>
-        ))}
-      </motion.div>
-    </motion.div>
+    <Section number="07" label="Contact" title="Let's build something good" width="reading">
+      <div className="space-y-4">
+        <a
+          href="mailto:contact@shashwa7.in"
+          className="inline-block rounded-[9px] bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground hover:opacity-90 transition-opacity"
+        >
+          contact@shashwa7.in
+        </a>
+        <div className="flex gap-4 pt-2 text-sm text-muted-foreground">
+          {socials.map(({ name, link, Icon }) => (
+            <a
+              key={name}
+              href={link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 hover:text-accent transition-colors"
+            >
+              <Icon className="w-4 h-4" />
+              <span>{name}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </Section>
   );
 };
 

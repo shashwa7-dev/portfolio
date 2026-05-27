@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { containerVariants, cardVariants, hamburgerVariants } from "./variants";
-import { ArrowUpRight } from "feather-icons-react";
+import { ArrowUpRight } from "lucide-react";
 
 type CardNavLink = {
   label: string;
