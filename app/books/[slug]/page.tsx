@@ -7,6 +7,7 @@ import { Link as LinkCTA } from "@/components/common/Link";
 import { ArrowLeft } from "lucide-react";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl } from "@/lib/seo";
+import Container from "@/components/layout/Container";
 
 type Props = {
   params: { slug: string };
@@ -48,8 +49,8 @@ export default function BookPage({ params }: Props) {
   const isComplete = completedCount === book.chapters.length;
 
   return (
-    <main className="min-h-screen">
-      <div className="mx-auto max-w-2xl space-y-10 px-4 py-16">
+    <main className="min-h-screen py-16">
+      <Container width="reading" className="space-y-10">
         {/* Back link */}
         <Link
           href="/books"
@@ -145,7 +146,7 @@ export default function BookPage({ params }: Props) {
             ))}
           </ul>
         </section>
-      </div>
+      </Container>
     </main>
   );
 }

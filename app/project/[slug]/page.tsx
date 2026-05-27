@@ -55,12 +55,12 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
         suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareAppLd(project)) }}
       />
-      <Container width="wide" className="space-y-8">
+      <Container width="reading" className="space-y-8">
         <Link href="/projects" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" /> Back to projects
         </Link>
 
-        <div className="max-w-[760px] space-y-4">
+        <div className="space-y-4">
           <Label>
             {["Case Study", cs.year, cs.role].filter(Boolean).join(" · ")}
           </Label>

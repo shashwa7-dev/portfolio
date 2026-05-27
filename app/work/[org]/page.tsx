@@ -29,7 +29,7 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
 
   return (
     <main className="py-16 md:py-24">
-      <Container width="wide" className="space-y-10">
+      <Container width="reading" className="space-y-10">
         <Link href="/#experience" className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground">
           <ArrowLeft className="h-4 w-4" /> Back to home
         </Link>

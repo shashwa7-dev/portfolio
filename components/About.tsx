@@ -4,6 +4,8 @@ import Container from "@/components/layout/Container";
 import Label from "@/components/layout/Label";
 import Bento from "@/components/layout/Bento";
 import HeroTitle from "@/components/HeroTitle";
+import Marker from "@/components/common/Marker";
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 import { clients } from "@/lib/clients";
 
 const stats = [
@@ -61,11 +63,8 @@ export default function About() {
             I&apos;m Shashwat, a frontend engineer who&apos;s shipped 9+
             production products with top Web3 and AI teams. I turn complex ideas
             into fast, polished, accessible UIs. Reach me at{" "}
-            <a
-              href="mailto:contact@shashwa7.in"
-              className="text-foreground animated-underline"
-            >
-              contact@shashwa7.in
+            <a href="mailto:contact@shashwa7.in" className="text-foreground">
+              <Marker variant="marker">contact@shashwa7.in</Marker>
             </a>
             .
           </p>
@@ -75,23 +74,28 @@ export default function About() {
             <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-subtle">
               Worked with
             </span>
-            <div className="flex items-center">
-              {clients.map((c, i) => (
-                <span
-                  key={c.name}
-                  title={c.name}
-                  className={`group relative h-7 w-7 overflow-hidden rounded-full bg-secondary ring-2 ring-background border ${i > 0 ? "-ml-2" : ""}`}
-                >
-                  <Image
-                    src={c.img}
-                    alt={c.name}
-                    fill
-                    sizes="28px"
-                    className="object-cover grayscale transition-[filter] duration-300 hover:grayscale-0"
-                  />
-                </span>
-              ))}
-            </div>
+            <TooltipProvider delayDuration={150}>
+              <div className="flex items-center">
+                {clients.map((c, i) => (
+                  <Tooltip key={c.name}>
+                    <TooltipTrigger asChild>
+                      <span
+                        className={`group relative h-7 w-7 overflow-hidden rounded-full bg-secondary ring-2 ring-background border transition duration-200 ease-out hover:z-10 hover:-translate-y-1 hover:scale-110 hover:shadow-md ${i > 0 ? "-ml-2" : ""}`}
+                      >
+                        <Image
+                          src={c.img}
+                          alt={c.name}
+                          fill
+                          sizes="28px"
+                          className="object-cover grayscale transition-[filter] duration-300 group-hover:grayscale-0"
+                        />
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent>{c.name}</TooltipContent>
+                  </Tooltip>
+                ))}
+              </div>
+            </TooltipProvider>
           </div>
 
           {/* stats */}
@@ -107,7 +111,7 @@ export default function About() {
           {/* CTAs */}
           <div className="flex flex-wrap items-center gap-3">
             <a
-              href="/#projects"
+              href="/#experience"
               className="inline-flex items-center gap-2 rounded-[9px] bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-hover"
             >
               View selected work <ArrowRight className="h-4 w-4" />

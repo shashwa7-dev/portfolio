@@ -2,6 +2,7 @@ import Book from "@/components/common/Book";
 import { books } from "@/lib/books";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import Container from "@/components/layout/Container";
 import { ogUrl } from "@/lib/seo";
 import { baseUrl } from "@/app/sitemap";
 
@@ -18,8 +19,8 @@ export const metadata = {
 
 export default function BooksPage() {
   return (
-    <main className="min-h-screen">
-      <div className="max-w-2xl mx-auto px-4 py-16 space-y-8">
+    <main className="min-h-screen py-16">
+      <Container width="reading" className="space-y-8">
         <div className="space-y-4">
           <Link
             href="/"
@@ -41,7 +42,7 @@ export default function BooksPage() {
               <Book key={book.slug} {...book} />
             ))}
         </div>
-      </div>
+      </Container>
     </main>
   );
 }

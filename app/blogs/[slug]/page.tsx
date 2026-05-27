@@ -4,6 +4,7 @@ import { formatDate, getBlogPosts } from "../utils";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl } from "@/lib/seo";
 import { Badge } from "@/components/ui/badge";
+import Container from "@/components/layout/Container";
 
 export async function generateStaticParams() {
   let posts = getBlogPosts();
@@ -60,7 +61,7 @@ export default function Blog({ params }: any) {
   }
 
   return (
-    <section className="max-w-2xl mx-auto px-4 py-16 relative">
+    <Container as="section" width="reading" className="py-16 relative">
       <script
         type="application/ld+json"
         suppressHydrationWarning
@@ -99,6 +100,6 @@ export default function Blog({ params }: any) {
       <article className="prose">
         <CustomMDX source={post.content} />
       </article>
-    </section>
+    </Container>
   );
 }
