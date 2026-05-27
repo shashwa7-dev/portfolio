@@ -1,5 +1,6 @@
 "use client";
 
+import { Fragment } from "react";
 import { motion, useReducedMotion } from "motion/react";
 
 const segments: { text: string; accent?: boolean }[] = [
@@ -31,21 +32,17 @@ export default function HeroTitle() {
   return (
     <h1 className={H1_CLASS}>
       {words.map((item, i) => (
-        <span key={i} className="inline-block overflow-hidden align-bottom">
+        <Fragment key={i}>
           <motion.span
-            initial={{ opacity: 0, y: "0.5em", filter: "blur(4px)" }}
+            initial={{ opacity: 0, y: 10, filter: "blur(4px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{
-              duration: 0.5,
-              delay: i * 0.05,
-              ease: [0.22, 1, 0.36, 1],
-            }}
+            transition={{ duration: 0.5, delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}
             className={`inline-block ${item.accent ? "italic text-accent-hover" : ""}`}
           >
             {item.w}
           </motion.span>
           {i < words.length - 1 ? " " : ""}
-        </span>
+        </Fragment>
       ))}
     </h1>
   );

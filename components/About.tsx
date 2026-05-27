@@ -38,10 +38,10 @@ export default function About() {
               </span>
             </div>
             <div>
-              <div className="text-[17px] font-semibold text-foreground">
+              <div className="text-[17px] font-semibold leading-tight text-foreground">
                 Shashwat Tripathi
               </div>
-              <div className="mt-1">
+              <div className="mt-0.5">
                 <Label>Frontend Engineer · Web3 · AI</Label>
               </div>
             </div>
@@ -63,7 +63,7 @@ export default function About() {
             into fast, polished, accessible UIs. Reach me at{" "}
             <a
               href="mailto:contact@shashwa7.in"
-              className="text-foreground underline decoration-accent underline-offset-4 hover:decoration-2"
+              className="text-foreground animated-underline"
             >
               contact@shashwa7.in
             </a>

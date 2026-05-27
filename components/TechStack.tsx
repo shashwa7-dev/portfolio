@@ -1,7 +1,6 @@
 import React from "react";
 import StackIcon, { StackName } from "./common/StackIcon";
 import Section from "@/components/layout/Section";
-import Bento from "@/components/layout/Bento";
 
 const frontendStacks: StackName[] = [
   "html",
@@ -58,23 +57,18 @@ const categories: Category[] = [
 const TechStack = () => {
   return (
     <Section id="tech_stack" number="03" label="Toolkit" title="Tools I reach for" width="reading">
-      <Bento className="grid-cols-1">
+      <div className="flex flex-col gap-6">
         {categories.map((cat) => (
-          <div
-            key={cat.label}
-            className="bg-card p-4 sm:grid sm:grid-cols-[120px_1fr] sm:gap-4"
-          >
-            <div className="font-mono text-[11px] uppercase tracking-[0.12em] text-subtle">
-              {cat.label}
-            </div>
-            <div className="mt-2.5 flex flex-wrap gap-2 sm:mt-0">
+          <div key={cat.label}>
+            <div className="mb-2.5 font-mono text-[11px] uppercase tracking-[0.12em] text-subtle">{cat.label}</div>
+            <div className="flex flex-wrap gap-2">
               {cat.items.map((t) => (
                 <StackIcon key={t} name={t} showLabel />
               ))}
             </div>
           </div>
         ))}
-      </Bento>
+      </div>
     </Section>
   );
 };
