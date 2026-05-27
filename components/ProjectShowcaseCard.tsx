@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, ArrowUpRight, Play } from "lucide-react";
 import type { ProjectCardData } from "@/lib/projectCards";
+import StackIcon, { type StackName } from "@/components/common/StackIcon";
 
 export default function ProjectShowcaseCard({ project }: { project: ProjectCardData }) {
   return (
@@ -40,9 +41,11 @@ export default function ProjectShowcaseCard({ project }: { project: ProjectCardD
         </div>
         <p className="line-clamp-2 text-sm text-muted-foreground">{project.tagline}</p>
         <div className="flex items-center justify-between gap-3">
-          <span className="font-mono text-[10px] uppercase tracking-wide text-subtle">
-            {project.stack.slice(0, 3).join(" · ")}
-          </span>
+          <div className="flex items-center gap-2 text-subtle">
+            {project.stack.slice(0, 5).map((t) => (
+              <StackIcon key={t} name={t as StackName} size={16} showLabel={false} showTooltip />
+            ))}
+          </div>
           {project.caseStudy && <span className="inline-flex items-center gap-1 text-[12px] text-accent">Case study <ArrowRight className="h-3.5 w-3.5" /></span>}
         </div>
       </div>

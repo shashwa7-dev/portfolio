@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import type { ProjectCardData } from "@/lib/projectCards";
+import StackIcon, { type StackName } from "@/components/common/StackIcon";
 
 export default function ProjectPreviewCard({ project }: { project: ProjectCardData }) {
   return (
@@ -26,9 +27,11 @@ export default function ProjectPreviewCard({ project }: { project: ProjectCardDa
           <ArrowUpRight className="ml-auto h-3.5 w-3.5 shrink-0 text-subtle transition-colors group-hover:text-accent" />
         </div>
         <p className="line-clamp-1 text-xs text-muted-foreground">{project.tagline}</p>
-        <span className="mt-1 block font-mono text-[9px] uppercase tracking-wide text-subtle">
-          {project.stack.slice(0, 3).join(" · ")}
-        </span>
+        <div className="mt-1.5 flex items-center gap-1.5 text-subtle">
+          {project.stack.slice(0, 4).map((t) => (
+            <StackIcon key={t} name={t as StackName} size={13} showLabel={false} />
+          ))}
+        </div>
       </div>
     </Link>
   );
