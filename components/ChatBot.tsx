@@ -2,8 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { SVGS } from "./SVGS";
-import { Button } from "@/components/ui/button";
-import { X, MessageCircle } from "lucide-react";
+import { X, MessageCircle, Send } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
 const TIMEOUT_DURATION = 10000;
@@ -261,7 +260,7 @@ const S7Bot = () => {
             transition={{ duration: 0.2 }}
             className="fixed bottom-[60px] right-4 -md:right-2.5 -md:hidden"
           >
-            <div className="bg-card rounded-lg border shadow-lg px-3 py-2 max-w-[200px]">
+            <div className="rounded-xl border border-border-strong bg-card shadow-md px-3 py-2 max-w-[200px]">
               <p className="text-xs text-card-foreground">
                 {notificationText}
                 <span className="ml-0.5 animate-blink">|</span>
@@ -280,11 +279,11 @@ const S7Bot = () => {
             exit={{ scale: 0, opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
             onClick={() => setIsOpen(true)}
-            className="fixed bottom-4 right-4 -md:right-2.5 w-11 h-11 rounded-xl overflow-hidden border-2 border-border shadow-lg hover:shadow-xl transition-shadow bg-card"
+            className="fixed bottom-4 right-4 -md:right-2.5 h-12 w-12 rounded-2xl overflow-hidden ring-1 ring-border-strong shadow-lg bg-card hover:scale-105 transition-transform"
           >
             <img
               src={"./truffycc.png"}
-              className="w-full h-full object-cover object-center hover:scale-110 transition-transform"
+              className="w-full h-full object-cover object-center"
               alt="truffy assistant"
             />
           </motion.button>
@@ -300,35 +299,34 @@ const S7Bot = () => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="bg-card rounded-xl shadow-xl border w-80 max-h-[500px] flex flex-col overflow-hidden"
+            className="w-[360px] max-h-[520px] rounded-2xl border border-border bg-elevated shadow-2xl flex flex-col overflow-hidden"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-3 border-b bg-secondary/30">
+            <div className="flex items-center justify-between border-b border-border bg-card px-4 py-3">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 overflow-hidden rounded-lg">
+                <div className="relative h-9 w-9 overflow-hidden rounded-xl flex-shrink-0">
                   <img
                     src={"./truffycc.png"}
                     className="w-full h-full object-cover object-center"
                     alt="portfolio assistant"
                   />
+                  <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-500 ring-2 ring-card" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-medium leading-tight">
+                  <h3 className="font-serif text-[15px] leading-tight text-foreground">
                     Truffy
                   </h3>
-                  <p className="text-[10px] text-muted-foreground">
+                  <p className="font-mono text-[10px] uppercase tracking-wide text-subtle">
                     Gemini 2.5 Flash
                   </p>
                 </div>
               </div>
-              <Button
+              <button
                 onClick={handleClose}
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0"
+                className="rounded-lg p-1.5 hover:bg-elevated text-muted-foreground transition-colors"
               >
                 <X className="w-4 h-4" />
-              </Button>
+              </button>
             </div>
 
             {/* Messages */}
@@ -338,13 +336,13 @@ const S7Bot = () => {
             >
               {messages.length === 0 && (
                 <div className="flex flex-col items-center justify-center h-full text-center py-4">
-                  <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center mb-2">
+                  <div className="w-10 h-10 rounded-full bg-elevated flex items-center justify-center mb-2">
                     <MessageCircle className="w-5 h-5 text-muted-foreground" />
                   </div>
                   <p className="text-sm text-muted-foreground mb-4">
                     Ask me anything about Shashwat!
                   </p>
-                  
+
                   {/* Sample prompts */}
                   <div className="w-full space-y-2">
                     {[
@@ -358,7 +356,7 @@ const S7Bot = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 + idx * 0.05 }}
                         onClick={() => sendMessage(prompt)}
-                        className="w-full text-left px-3 py-2.5 text-xs rounded-lg border border-border hover:bg-secondary/50 hover:border-accent/30 transition-all text-muted-foreground hover:text-foreground"
+                        className="w-full text-left rounded-xl border border-border bg-card px-3 py-2.5 text-xs text-muted-foreground hover:border-border-strong hover:text-foreground transition-all"
                       >
                         {prompt}
                       </motion.button>
@@ -374,10 +372,10 @@ const S7Bot = () => {
                   className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   <div
-                    className={`px-3 py-2 rounded-xl text-sm max-w-[85%] ${
+                    className={`px-3 py-2 text-sm max-w-[85%] ${
                       msg.role === "user"
-                        ? "bg-foreground text-background"
-                        : "bg-secondary text-secondary-foreground"
+                        ? "bg-accent text-accent-foreground rounded-2xl rounded-br-md"
+                        : "bg-card border border-border text-foreground rounded-2xl rounded-bl-md"
                     }`}
                   >
                     {msg.role !== "user" && !msg.content && isStreaming && (
@@ -391,7 +389,7 @@ const S7Bot = () => {
             </div>
 
             {/* Input */}
-            <form onSubmit={handleSubmit} className="p-3 border-t bg-secondary/30">
+            <form onSubmit={handleSubmit} className="border-t border-border bg-card p-3">
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -401,16 +399,15 @@ const S7Bot = () => {
                     emailState ? "Type your response..." : "Ask a question..."
                   }
                   disabled={isStreaming}
-                  className="flex-1 px-3 py-2 border rounded-lg text-sm bg-background focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
+                  className="flex-1 px-3 py-2 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
                 />
-                <Button
+                <button
                   type="submit"
                   disabled={isStreaming || !message.trim()}
-                  size="sm"
-                  className="px-4"
+                  className="flex items-center justify-center h-9 w-9 rounded-xl bg-accent text-accent-foreground hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
                 >
-                  {isStreaming ? "..." : "Send"}
-                </Button>
+                  <Send className="h-4 w-4" />
+                </button>
               </div>
             </form>
           </motion.div>
