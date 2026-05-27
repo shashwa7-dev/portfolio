@@ -3,7 +3,6 @@ import { ArrowLeft } from "lucide-react";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl } from "@/lib/seo";
 import Navbar from "@/components/Navbar";
-import Container from "@/components/layout/Container";
 import Section from "@/components/layout/Section";
 import Label from "@/components/layout/Label";
 import Bento from "@/components/layout/Bento";
@@ -117,34 +116,32 @@ export default function DesignPage() {
       <Navbar />
 
       {/* Intro */}
-      <Section width="reading" className="pt-16 md:pt-20">
-        <Container width="reading">
-          <Link
-            href="/"
-            className="mb-8 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
-          >
-            <ArrowLeft className="h-4 w-4" /> Back to home
-          </Link>
-          <div className="space-y-4">
-            <Label>Design System</Label>
-            <h1 className="font-serif text-[clamp(2rem,5vw,2.75rem)] font-medium tracking-[-0.02em] text-foreground">
-              The system behind this site
-            </h1>
-            <p className="text-base text-muted-foreground leading-relaxed max-w-prose">
-              Every color, typeface, spacing step, and interaction on this
-              portfolio is driven by the tokens and primitives documented here.
-              The full reference lives in{" "}
-              <span className="font-mono text-[13px] text-foreground bg-card px-1.5 py-0.5 rounded border border-border">
-                docs/design-system.md
-              </span>{" "}
-              and a reusable Claude Code skill in{" "}
-              <span className="font-mono text-[13px] text-foreground bg-card px-1.5 py-0.5 rounded border border-border">
-                .claude/skills/design-system/SKILL.md
-              </span>
-              . Feel free to learn from, fork, or adapt any of it.
-            </p>
-          </div>
-        </Container>
+      <Section width="reading" className="pt-10 md:pt-14">
+        <Link
+          href="/"
+          className="mb-8 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="h-4 w-4" /> Back to home
+        </Link>
+        <div className="space-y-4">
+          <Label>Design System</Label>
+          <h1 className="font-serif text-[clamp(2rem,5vw,2.75rem)] font-medium tracking-[-0.02em] text-foreground">
+            The system behind this site
+          </h1>
+          <p className="text-base text-muted-foreground leading-relaxed max-w-prose">
+            Every color, typeface, spacing step, and interaction on this
+            portfolio is driven by the tokens and primitives documented here.
+            The full reference lives in{" "}
+            <span className="font-mono text-[13px] text-foreground bg-card px-1.5 py-0.5 rounded border border-border">
+              docs/design-system.md
+            </span>{" "}
+            and a reusable Claude Code skill in{" "}
+            <span className="font-mono text-[13px] text-foreground bg-card px-1.5 py-0.5 rounded border border-border">
+              .claude/skills/design-system/SKILL.md
+            </span>
+            . Feel free to learn from, fork, or adapt any of it.
+          </p>
+        </div>
       </Section>
 
       <Divider />
@@ -256,8 +253,8 @@ export default function DesignPage() {
           .
         </p>
 
-        {/* Family chips */}
-        <div className="mb-8 flex flex-wrap gap-3">
+        {/* Family blocks */}
+        <div className="mb-8 grid gap-4 sm:grid-cols-3">
           {[
             { family: "Fraunces", cls: "font-serif", role: "Headings" },
             { family: "Inter", cls: "font-sans", role: "Body / UI" },
@@ -265,7 +262,7 @@ export default function DesignPage() {
           ].map(({ family, cls, role }) => (
             <div
               key={family}
-              className="rounded-xl border border-border bg-card px-5 py-4 min-w-[160px]"
+              className="rounded-xl border border-border bg-card px-5 py-4"
             >
               <p
                 className={`${cls} text-xl text-foreground leading-none mb-2`}
@@ -280,7 +277,7 @@ export default function DesignPage() {
         </div>
 
         {/* Type scale */}
-        <div className="rounded-xl border border-border overflow-hidden">
+        <div>
           <TypeRow
             label="Display"
             classNames="font-serif text-[clamp(2rem,5vw,2.75rem)] font-medium tracking-[-0.02em] text-foreground"
@@ -712,27 +709,25 @@ export default function DesignPage() {
 
       {/* Footer note */}
       <Section width="reading" className="pt-8 pb-16">
-        <Container width="reading">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm text-muted-foreground">
-              All tokens live in{" "}
-              <code className="font-mono text-[12px] bg-card px-1.5 py-0.5 rounded border border-border">
-                app/globals.css
-              </code>{" "}
-              and{" "}
-              <code className="font-mono text-[12px] bg-card px-1.5 py-0.5 rounded border border-border">
-                tailwind.config.ts
-              </code>
-              .
-            </p>
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
-            >
-              <ArrowLeft className="h-4 w-4" /> Back to home
-            </Link>
-          </div>
-        </Container>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-muted-foreground">
+            All tokens live in{" "}
+            <code className="font-mono text-[12px] bg-card px-1.5 py-0.5 rounded border border-border">
+              app/globals.css
+            </code>{" "}
+            and{" "}
+            <code className="font-mono text-[12px] bg-card px-1.5 py-0.5 rounded border border-border">
+              tailwind.config.ts
+            </code>
+            .
+          </p>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft className="h-4 w-4" /> Back to home
+          </Link>
+        </div>
       </Section>
     </main>
   );
