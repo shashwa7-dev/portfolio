@@ -61,7 +61,7 @@ export default function Blog({ params }: any) {
   }
 
   return (
-    <Container as="section" width="reading" className="py-16 relative">
+    <Container as="section" width="reading" className="py-8 md:py-12 relative">
       <script
         type="application/ld+json"
         suppressHydrationWarning

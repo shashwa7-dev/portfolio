@@ -1,7 +1,5 @@
 import Book from "@/components/common/Book";
 import { books } from "@/lib/books";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import Container from "@/components/layout/Container";
 import { ogUrl } from "@/lib/seo";
 import { baseUrl } from "@/app/sitemap";
@@ -19,16 +17,9 @@ export const metadata = {
 
 export default function BooksPage() {
   return (
-    <main className="min-h-screen py-16">
+    <main className="min-h-screen py-8 md:py-12">
       <Container width="reading" className="space-y-8">
         <div className="space-y-4">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back
-          </Link>
           <h1 className="text-3xl font-semibold tracking-tight">Book Shelf</h1>
           <p className="text-muted-foreground">
             Books I've read and am currently reading.

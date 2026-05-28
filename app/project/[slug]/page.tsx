@@ -49,7 +49,7 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
   ].filter((s) => s.body.length > 0);
 
   return (
-    <main className="py-16 md:py-24">
+    <main className="py-8 md:py-12">
       <script
         type="application/ld+json"
         suppressHydrationWarning

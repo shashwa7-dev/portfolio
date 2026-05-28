@@ -3,7 +3,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, ExternalLink, Play } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, ExternalLink, Play } from "lucide-react";
 import {  getOrganization, getProjectFromOrg } from "@/lib/workData";
 import { ActiveBadge } from "@/components/common/ActiveBadge";
 import StackIcon from "@/components/common/StackIcon";
@@ -30,7 +30,7 @@ export default function WorkProjectPage({
   const stack = [...(project.stack.fe || []), ...(project.stack.be || [])];
 
   return (
-    <main className="min-h-screen py-16">
+    <main className="min-h-screen py-8 md:py-12">
       <Container width="reading" className="space-y-8">
         {/* Back link */}
         <Link
@@ -66,17 +66,21 @@ export default function WorkProjectPage({
             </div>
           </div>
 
-          {/* Organization badge */}
-          <div className="flex items-center gap-2">
+          {/* Organization badge — links back to /work/[org] */}
+          <Link
+            href={`/work/${org.slug}`}
+            className="group inline-flex items-center gap-2 self-start rounded-lg border border-border bg-card px-2.5 py-1.5 transition-colors hover:border-accent/60"
+          >
             <img
               src={org.logo}
               alt={org.name}
-              className="w-6 h-6 rounded-lg"
+              className="h-5 w-5 rounded-md"
             />
-            <span className="text-sm text-muted-foreground">
-              Built at {org.name}
+            <span className="text-sm text-muted-foreground transition-colors group-hover:text-accent">
+              Built at <span className="font-semibold text-foreground group-hover:text-accent">{org.name}</span>
             </span>
-          </div>
+            <ArrowUpRight className="h-3.5 w-3.5 text-subtle transition-[color,transform] group-hover:-translate-y-0.5 group-hover:text-accent" />
+          </Link>
         </motion.div>
 
         {/* Thumbnail / Video */}

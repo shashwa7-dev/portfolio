@@ -1,10 +1,8 @@
 import { books } from "@/lib/books";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Link as LinkCTA } from "@/components/common/Link";
-import { ArrowLeft } from "lucide-react";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl } from "@/lib/seo";
 import Container from "@/components/layout/Container";
@@ -49,17 +47,8 @@ export default function BookPage({ params }: Props) {
   const isComplete = completedCount === book.chapters.length;
 
   return (
-    <main className="min-h-screen py-16">
+    <main className="min-h-screen py-8 md:py-12">
       <Container width="reading" className="space-y-10">
-        {/* Back link */}
-        <Link
-          href="/books"
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Book Shelf
-        </Link>
-
         {/* Header */}
         <header className="flex flex-col gap-6 md:flex-row md:items-start">
           <div className="relative w-36 shrink-0 overflow-hidden rounded-xl border border-border bg-secondary aspect-[2/3] md:w-40">

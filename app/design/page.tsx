@@ -1,13 +1,12 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl } from "@/lib/seo";
-import Navbar from "@/components/Navbar";
 import Section from "@/components/layout/Section";
 import Label from "@/components/layout/Label";
 import Bento from "@/components/layout/Bento";
 import Divider from "@/components/layout/Divider";
 import StackIcon from "@/components/common/StackIcon";
+import Marker from "@/components/common/Marker";
 
 export const metadata = {
   title: "Design System",
@@ -112,17 +111,11 @@ function RadiusSwatch({
 
 export default function DesignPage() {
   return (
-    <main className="relative pb-24">
-      <Navbar />
-
-      {/* Intro */}
-      <Section width="reading" className="pt-10 md:pt-14">
-        <Link
-          href="/"
-          className="mb-8 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="h-4 w-4" /> Back to home
-        </Link>
+    <main className="relative py-8 md:py-12">
+      {/* Intro — zero only the TOP padding so main's py-8/12 controls spacing
+          against the nav; keep Section's bottom padding so the Divider below
+          isn't flush against the paragraph. */}
+      <Section width="reading" className="pt-0 md:pt-0">
         <div className="space-y-4">
           <Label>Design System</Label>
           <h1 className="font-serif text-[clamp(2rem,5vw,2.75rem)] font-medium tracking-[-0.02em] text-foreground">
@@ -132,13 +125,18 @@ export default function DesignPage() {
             Every color, typeface, spacing step, and interaction on this
             portfolio is driven by the tokens and primitives documented here.
             The full reference lives in{" "}
-            <span className="font-mono text-[13px] text-foreground bg-card px-1.5 py-0.5 rounded border border-border">
-              docs/design-system.md
+            <span className="font-mono text-[13px] text-foreground">
+              <Marker variant="marker">docs/design-system.md</Marker>
             </span>{" "}
             and a reusable Claude Code skill in{" "}
-            <span className="font-mono text-[13px] text-foreground bg-card px-1.5 py-0.5 rounded border border-border">
-              .claude/skills/design-system/SKILL.md
-            </span>
+            <Link
+              href="/skills/design-system"
+              className="font-mono text-[13px] text-foreground transition-colors hover:text-accent"
+            >
+              <Marker variant="marker" delay={0.15}>
+                .claude/skills/design-system/SKILL.md
+              </Marker>
+            </Link>
             . Feel free to learn from, fork, or adapt any of it.
           </p>
         </div>
@@ -721,12 +719,6 @@ export default function DesignPage() {
             </code>
             .
           </p>
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
-          >
-            <ArrowLeft className="h-4 w-4" /> Back to home
-          </Link>
         </div>
       </Section>
     </main>

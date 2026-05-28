@@ -1,6 +1,4 @@
 import { BlogPosts } from "../../components/BlogPosts";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import Container from "@/components/layout/Container";
 import Label from "@/components/layout/Label";
 
@@ -11,16 +9,9 @@ export const metadata = {
 
 export default function Page() {
   return (
-    <main className="py-16 md:py-24">
+    <main className="py-8 md:py-12">
       <Container width="reading" className="space-y-8">
         <div className="space-y-4">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back
-          </Link>
           <div className="space-y-2">
             <Label>Writing</Label>
             <h1 className="font-serif text-[clamp(2rem,5vw,2.75rem)] font-medium tracking-[-0.02em]">
