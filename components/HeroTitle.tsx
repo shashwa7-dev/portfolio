@@ -2,6 +2,7 @@
 
 import { Fragment } from "react";
 import { motion, useReducedMotion } from "motion/react";
+import { blurInVariants } from "@/lib/motionVariants";
 
 const segments: { text: string; accent?: boolean }[] = [
   { text: "I build interfaces that" },
@@ -34,9 +35,10 @@ export default function HeroTitle() {
       {words.map((item, i) => (
         <Fragment key={i}>
           <motion.span
-            initial={{ opacity: 0, y: 10, filter: "blur(4px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 0.5, delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}
+            variants={blurInVariants}
+            initial="hidden"
+            animate="visible"
+            custom={i}
             className={`inline-block ${item.accent ? "italic text-accent-hover" : ""}`}
           >
             {item.w}

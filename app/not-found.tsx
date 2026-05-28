@@ -6,6 +6,12 @@ import { Home, ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
+import {
+  dialogPopVariants,
+  slideUpVariants,
+  fadeInVariants,
+  duration,
+} from "@/lib/motionVariants";
 
 export default function NotFound() {
   const router = useRouter();
@@ -17,9 +23,9 @@ export default function NotFound() {
         <div className="text-center space-y-8 w-full">
           {/* Profile Image */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
+            variants={dialogPopVariants}
+            initial="hidden"
+            animate="visible"
             className="flex justify-center"
           >
             <div className="relative w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden ring-2 ring-border">
@@ -35,9 +41,10 @@ export default function NotFound() {
 
           {/* Animated 404 */}
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
+            variants={slideUpVariants}
+            initial="hidden"
+            animate="visible"
+            transition={{ delay: 0.2 }}
             className="text-9xl md:text-[12rem] font-bold tracking-tight flex items-center justify-center gap-2"
           >
             <span className="bg-gradient-to-br from-foreground via-foreground to-muted-foreground bg-clip-text text-transparent">
@@ -51,9 +58,10 @@ export default function NotFound() {
 
           {/* Message */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
+            variants={slideUpVariants}
+            initial="hidden"
+            animate="visible"
+            transition={{ delay: 0.2 }}
             className="space-y-4"
           >
             <h2 className="text-2xl md:text-3xl font-semibold">
@@ -67,9 +75,10 @@ export default function NotFound() {
 
           {/* Actions */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
+            variants={slideUpVariants}
+            initial="hidden"
+            animate="visible"
+            transition={{ delay: 0.4 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4"
           >
             <Button
@@ -93,9 +102,10 @@ export default function NotFound() {
 
           {/* Decorative elements */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6, duration: 1 }}
+            variants={fadeInVariants}
+            initial="hidden"
+            animate="visible"
+            transition={{ delay: 0.6, duration: duration.hero * 2 }}
             className="pt-12 space-y-2"
           >
             <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">

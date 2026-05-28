@@ -3,6 +3,7 @@
 import React, { useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { X } from "lucide-react";
+import { backdropFadeVariants, dialogPopVariants } from "@/lib/motionVariants";
 
 interface VideoModalProps {
   isOpen: boolean;
@@ -38,20 +39,20 @@ export default function VideoModal({
         <>
           {/* Backdrop */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
+            variants={backdropFadeVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
             onClick={onClose}
             className="fixed inset-0 bg-background/90 backdrop-blur-sm z-50"
           />
 
           {/* Modal — enter is deliberate, exit is snappy */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.98 }}
-            transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
+            variants={dialogPopVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
             className="fixed inset-4 md:inset-12 lg:inset-20 z-50 flex items-center justify-center"
           >
             <div className="relative w-full h-full max-w-5xl mx-auto flex flex-col">

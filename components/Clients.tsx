@@ -3,19 +3,17 @@
 import React from "react";
 import Image from "next/image";
 import { motion, type Variants } from "motion/react";
-import { containerVariants } from "@/lib/motionVariants";
+import { containerVariants, ease, duration } from "@/lib/motionVariants";
 import Section from "@/components/layout/Section";
 import { ArrowUpRight } from "lucide-react";
 import { clients } from "@/lib/clients";
-
-const easeOut: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 const cardVariants: Variants = {
   hidden: { opacity: 0, y: 8 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.4, ease: easeOut, delay: i * 0.06 },
+    transition: { duration: duration.slow, ease: ease.out, delay: i * 0.06 },
   }),
 };
 

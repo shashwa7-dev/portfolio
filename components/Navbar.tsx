@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
+import { collapseHeightVariants } from "@/lib/motionVariants";
 import { Sun, Moon } from "lucide-react";
 import { useDarkMode } from "@/app/hooks/useDarkMode";
 
@@ -74,9 +75,10 @@ export default function Navbar() {
       <AnimatePresence>
         {mobileOpen && (
           <motion.ul
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
+            variants={collapseHeightVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
             className="overflow-hidden border-t border-border px-6 md:hidden"
           >
             {navLinks.map((l) => (

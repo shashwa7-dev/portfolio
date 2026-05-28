@@ -11,6 +11,7 @@ import VideoModal from "@/components/common/VideoModal";
 import Container from "@/components/layout/Container";
 import { motion } from "motion/react";
 import { useState } from "react";
+import { slideUpVariants } from "@/lib/motionVariants";
 
 export default function WorkProjectPage({
   params,
@@ -42,8 +43,9 @@ export default function WorkProjectPage({
 
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          variants={slideUpVariants}
+          initial="hidden"
+          animate="visible"
           className="space-y-4"
         >
           <div className="flex items-start justify-between gap-4">
@@ -79,8 +81,9 @@ export default function WorkProjectPage({
 
         {/* Thumbnail / Video */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          variants={slideUpVariants}
+          initial="hidden"
+          animate="visible"
           transition={{ delay: 0.1 }}
           className="relative aspect-video rounded-xl overflow-hidden bg-secondary group"
         >
@@ -106,8 +109,9 @@ export default function WorkProjectPage({
 
         {/* Description */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          variants={slideUpVariants}
+          initial="hidden"
+          animate="visible"
           transition={{ delay: 0.2 }}
           className="space-y-6"
         >
