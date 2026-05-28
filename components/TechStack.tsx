@@ -39,6 +39,14 @@ const devopsStacks: StackName[] = [
   "vercel",
 ];
 const toolStacks: StackName[] = ["vscode", "figma", "notion", "postman"];
+const testingTrackingStacks: StackName[] = [
+  "playwright",
+  "vitest",
+  "posthog",
+  "sentry",
+  "googleAnalytics",
+  "vercelAnalytics",
+];
 
 type Category = {
   label: string;
@@ -51,6 +59,7 @@ const categories: Category[] = [
   { label: "DevOps & Infra", items: devopsStacks },
   { label: "Protocols / APIs", items: protocolStacks },
   { label: "AI Stack", items: aiStacks },
+  { label: "Testing & Tracking", items: testingTrackingStacks },
   { label: "Tools", items: toolStacks },
 ];
 
