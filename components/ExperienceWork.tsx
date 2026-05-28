@@ -5,6 +5,7 @@ import { organizations } from "@/lib/workData";
 import Section from "@/components/layout/Section";
 import ProjectPreviewCard from "@/components/ProjectPreviewCard";
 import { workProjectToCard } from "@/lib/projectCards";
+import DiaryCTA from "@/components/common/DiaryCTA";
 
 export default function ExperienceWork() {
   return (
@@ -19,11 +20,16 @@ export default function ExperienceWork() {
         {/* timeline rail */}
         <span className="absolute left-[7px] top-2 bottom-2 w-px bg-border-strong" aria-hidden />
 
-        {organizations.map((org) => {
+        {organizations.map((org, idx) => {
           const isCurrent = org.duration.includes("Present");
+          const isLast = idx === organizations.length - 1;
           const featured = org.projects.filter((p) => p.featured);
           return (
             <div key={org.id} className="relative pb-12 last:pb-0">
+              {/* mask the timeline rail below the last node so it doesn't trail off */}
+              {isLast && (
+                <span className="absolute -left-[25px] top-3 bottom-0 w-px bg-background" aria-hidden />
+              )}
               {/* node */}
               <span
                 className={`absolute -left-8 top-1 grid h-4 w-4 place-items-center rounded-full border-2 bg-background ${
@@ -60,6 +66,9 @@ export default function ExperienceWork() {
                   </li>
                 ))}
               </ul>
+
+              {/* diary CTA — renders nothing when this org has no diary record */}
+              <DiaryCTA orgSlug={org.slug} size="sm" className="mt-4" />
 
               {/* featured projects */}
               {featured.length > 0 && (
