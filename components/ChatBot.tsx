@@ -1,9 +1,31 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
-import { SVGS } from "./SVGS";
-import { X, MessageCircle, Send } from "lucide-react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import {
+  X,
+  MessageCircle,
+  Send,
+  Copy,
+  Check,
+  ArrowDown,
+  Cpu,
+  Briefcase,
+  Sparkles,
+} from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import MarkdownMessage from "./chat/MarkdownMessage";
+import { cn } from "@/lib/utils";
+import {
+  popoverUpVariants,
+  fabPopVariants,
+  chatWindowVariants,
+  slideUpVariants,
+  pillUpVariants,
+  hoverLiftRotate,
+  hoverZoom,
+  tapPress,
+  spring,
+} from "@/lib/motionVariants";
 
 const TIMEOUT_DURATION = 10000;
 const NOTIFICATION_MESSAGES = [
@@ -42,6 +64,10 @@ const S7Bot = () => {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const typingTimerRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Auto-scroll lock — only nudge to bottom when the user is already there.
+  const [isAtBottom, setIsAtBottom] = useState(true);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+
   const cleanup = () => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -60,13 +86,31 @@ const S7Bot = () => {
     setEmailState(null);
   };
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  const scrollToBottom = useCallback((behavior: ScrollBehavior = "smooth") => {
+    messagesEndRef.current?.scrollIntoView({ behavior });
+  }, []);
+
+  // Track whether the user is pinned to the bottom (within 24px slack).
+  const onMessagesScroll = () => {
+    const el = chatWindowRef.current;
+    if (!el) return;
+    const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 24;
+    setIsAtBottom(atBottom);
   };
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (isAtBottom) scrollToBottom();
+  }, [messages, isAtBottom, scrollToBottom]);
+
+  const handleCopy = async (content: string, index: number) => {
+    try {
+      await navigator.clipboard.writeText(content);
+      setCopiedIndex(index);
+      setTimeout(() => setCopiedIndex(null), 1500);
+    } catch {
+      // ignore
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -254,10 +298,10 @@ const S7Bot = () => {
       <AnimatePresence>
         {!isOpen && showNotification && (
           <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
+            variants={popoverUpVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
             className="fixed bottom-[60px] right-4 -md:right-2.5 -md:hidden"
           >
             <div className="rounded-xl border border-border-strong bg-card shadow-md px-3 py-2 max-w-[200px]">
@@ -274,17 +318,21 @@ const S7Bot = () => {
       <AnimatePresence>
         {!isOpen && (
           <motion.button
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            variants={fabPopVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            whileHover={hoverLiftRotate}
+            whileTap={tapPress}
             onClick={() => setIsOpen(true)}
-            className="fixed bottom-4 right-4 -md:right-2.5 h-12 w-12 rounded-2xl overflow-hidden ring-1 ring-border-strong shadow-lg bg-card hover:scale-105 transition-transform"
+            className="fixed bottom-4 right-4 -md:right-2.5 h-12 w-12 rounded-2xl overflow-hidden ring-1 ring-border-strong shadow-lg bg-card"
           >
-            <img
+            <motion.img
               src={"./truffycc.png"}
-              className="w-full h-full object-cover object-center"
               alt="truffy assistant"
+              className="w-full h-full object-cover object-center"
+              whileHover={hoverZoom}
+              transition={spring.hoverIn}
             />
           </motion.button>
         )}
@@ -295,10 +343,10 @@ const S7Bot = () => {
         {isOpen && (
           <motion.div
             ref={chatContainerRef}
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            variants={chatWindowVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
             className="w-[360px] max-h-[520px] rounded-2xl border border-border bg-elevated shadow-2xl flex flex-col overflow-hidden"
           >
             {/* Header */}
@@ -330,10 +378,12 @@ const S7Bot = () => {
             </div>
 
             {/* Messages */}
-            <div
-              ref={chatWindowRef}
-              className="flex-1 overflow-y-auto p-3 space-y-3 min-h-[280px] max-h-[340px]"
-            >
+            <div className="relative flex-1">
+              <div
+                ref={chatWindowRef}
+                onScroll={onMessagesScroll}
+                className="h-full overflow-y-auto p-3 space-y-3 min-h-[280px] max-h-[340px]"
+              >
               {messages.length === 0 && (
                 <div className="flex flex-col items-center justify-center h-full text-center py-4">
                   <div className="w-10 h-10 rounded-full bg-elevated flex items-center justify-center mb-2">
@@ -346,46 +396,116 @@ const S7Bot = () => {
                   {/* Sample prompts */}
                   <div className="w-full space-y-2">
                     {[
-                      "What tech stack does Shashwat use?",
-                      "Tell me about his work experience",
-                      "What projects has he built?",
-                    ].map((prompt, idx) => (
+                      {
+                        prompt: "What tech stack does Shashwat use?",
+                        Icon: Cpu,
+                      },
+                      {
+                        prompt: "Tell me about his work experience",
+                        Icon: Briefcase,
+                      },
+                      {
+                        prompt: "What projects has he built?",
+                        Icon: Sparkles,
+                      },
+                    ].map(({ prompt, Icon }, idx) => (
                       <motion.button
                         key={idx}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
+                        variants={slideUpVariants}
+                        initial="hidden"
+                        animate="visible"
                         transition={{ delay: 0.1 + idx * 0.05 }}
                         onClick={() => sendMessage(prompt)}
-                        className="w-full text-left rounded-xl border border-border bg-card px-3 py-2.5 text-xs text-muted-foreground hover:border-border-strong hover:text-foreground transition-all"
+                        className="w-full flex items-center gap-2 text-left rounded-xl border border-border bg-card px-3 py-2.5 text-xs text-muted-foreground hover:border-border-strong hover:text-foreground transition-all"
                       >
-                        {prompt}
+                        <Icon className="h-3.5 w-3.5 shrink-0 text-accent/70" />
+                        <span>{prompt}</span>
                       </motion.button>
                     ))}
                   </div>
                 </div>
               )}
-              {messages.map((msg, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-                >
-                  <div
-                    className={`px-3 py-2 text-sm max-w-[85%] ${
-                      msg.role === "user"
-                        ? "bg-accent text-accent-foreground rounded-2xl rounded-br-md"
-                        : "bg-card border border-border text-foreground rounded-2xl rounded-bl-md"
-                    }`}
+              {messages.map((msg, index) => {
+                const isLast = index === messages.length - 1;
+                const isStreamingThis = isStreaming && isLast && msg.role === "assistant";
+                const showThinking =
+                  msg.role === "assistant" && !msg.content && isStreaming;
+                const showCopy =
+                  msg.role === "assistant" && !!msg.content && !isStreamingThis;
+                return (
+                  <motion.div
+                    key={index}
+                    variants={slideUpVariants}
+                    initial="hidden"
+                    animate="visible"
+                    className={`group/msg flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                   >
-                    {msg.role !== "user" && !msg.content && isStreaming && (
-                      <span className="text-muted-foreground">Thinking...</span>
-                    )}
-                    {msg.content}
-                  </div>
-                </motion.div>
-              ))}
+                    <div
+                      className={cn(
+                        "relative px-3 py-2 text-sm max-w-[85%]",
+                        msg.role === "user"
+                          ? "bg-accent text-accent-foreground rounded-2xl rounded-br-md"
+                          : "bg-card border border-border text-foreground rounded-2xl rounded-bl-md"
+                      )}
+                    >
+                      {showThinking ? (
+                        <TypingDots />
+                      ) : msg.role === "assistant" ? (
+                        <>
+                          <MarkdownMessage content={msg.content} />
+                          {isStreamingThis && (
+                            <span className="ml-0.5 inline-block h-3 w-[2px] -mb-0.5 animate-blink bg-accent align-baseline" />
+                          )}
+                        </>
+                      ) : (
+                        <span className="whitespace-pre-wrap">{msg.content}</span>
+                      )}
+
+                      {showCopy && (
+                        <button
+                          type="button"
+                          onClick={() => handleCopy(msg.content, index)}
+                          aria-label="Copy message"
+                          className={cn(
+                            "absolute -bottom-2 -right-2 inline-flex h-6 w-6 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm transition-opacity hover:text-foreground",
+                            copiedIndex === index
+                              ? "opacity-100 text-accent"
+                              : "opacity-0 group-hover/msg:opacity-100"
+                          )}
+                        >
+                          {copiedIndex === index ? (
+                            <Check className="h-3 w-3" />
+                          ) : (
+                            <Copy className="h-3 w-3" />
+                          )}
+                        </button>
+                      )}
+                    </div>
+                  </motion.div>
+                );
+              })}
               <div ref={messagesEndRef} />
+              </div>
+
+              {/* New messages pill — appears when user is scrolled up while content arrives */}
+              <AnimatePresence>
+                {!isAtBottom && messages.length > 0 && (
+                  <motion.button
+                    type="button"
+                    onClick={() => {
+                      scrollToBottom();
+                      setIsAtBottom(true);
+                    }}
+                    variants={pillUpVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    className="absolute bottom-2 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-[11px] text-muted-foreground shadow-md hover:text-foreground"
+                  >
+                    <ArrowDown className="h-3 w-3" /> New messages
+                  </motion.button>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Input */}
@@ -416,5 +536,29 @@ const S7Bot = () => {
     </div>
   );
 };
+
+/** Three pulsing dots, shown in the assistant bubble while waiting for the first token. */
+function TypingDots() {
+  return (
+    <span className="inline-flex items-center gap-1 py-0.5" aria-label="Truffy is typing">
+      {[0, 1, 2].map((i) => (
+        <span
+          key={i}
+          className="h-1.5 w-1.5 rounded-full bg-muted-foreground/70"
+          style={{
+            animation: "chatDotPulse 1.2s ease-in-out infinite",
+            animationDelay: `${i * 0.15}s`,
+          }}
+        />
+      ))}
+      <style jsx>{`
+        @keyframes chatDotPulse {
+          0%, 80%, 100% { opacity: 0.25; transform: translateY(0); }
+          40% { opacity: 1; transform: translateY(-2px); }
+        }
+      `}</style>
+    </span>
+  );
+}
 
 export default S7Bot;
