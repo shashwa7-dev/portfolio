@@ -28,7 +28,7 @@ export const diaries: TOrgDiary[] = [
   {
     org: "shopos",
     overview:
-      "Frontend consultant at ShopOS, an AI-native commerce platform. I owned merchant-facing surfaces across the AI agents, workflow authoring, and chat experience used to create, manage, market, and sell. Worked across the main app, the admin console, and the shared design-system package.",
+      "Frontend engineer at ShopOS, an AI-native commerce platform. I own merchant-facing surfaces across the AI agents, workflow authoring, and chat experience used to create, manage, market, and sell. I work across the main app, the admin console, and the shared design-system package.",
     overviewHighlight: "AI-native commerce platform",
     featured: [
       {
@@ -129,37 +129,8 @@ export const diaries: TOrgDiary[] = [
         stack: ["next", "react", "typescript", "tailwind", "reactQuery"],
       },
     ],
-    other: [
-      {
-        title: "Spaces module redesign",
-        summary:
-          "Three-tab layout, ownership-based view/edit, publish dialog improvements, mobile-responsive tabs, PostHog event coverage.",
-        date: "May 2026",
-      },
-      {
-        title: "Modernized Playwright E2E suite",
-        summary:
-          "Testid-first locator strategy, page-object fixtures, agents test coverage, CI hardening.",
-        date: "May 2026",
-      },
-      {
-        title: "Brand Memory preview",
-        summary:
-          "Preview surface for the workspace-level brand kit consumed by generation flows.",
-        date: "Feb 2026",
-      },
-      {
-        title: "Onboarding V3 fixes",
-        summary: "Fail-status logic, scroll bug, input-bug.",
-        date: "Apr 2026",
-      },
-      {
-        title: "Pricing UI iteration",
-        summary:
-          "Multiple rounds of refinements and a cancellation-plan flow.",
-        date: "Jan – Mar 2026",
-      },
-    ],
+    // No "Also shipped" — featured entries above are the bar; smaller work
+    // doesn't earn its own surface here.
   },
 ];
 

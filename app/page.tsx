@@ -6,7 +6,6 @@ import Clients from "@/components/Clients";
 import Activity from "@/components/Activity";
 import Faq from "@/components/Faq";
 import Socials from "@/components/Socials";
-import Navbar from "@/components/Navbar";
 import Divider from "@/components/layout/Divider";
 import dynamic from "next/dynamic";
 
@@ -16,7 +15,6 @@ const CommandPalette = dynamic(() => import("@/components/CommandPalette"), { ss
 export default function Home() {
   return (
     <main className="relative">
-      <Navbar />
       <About />
       <Divider />
       <ExperienceWork />

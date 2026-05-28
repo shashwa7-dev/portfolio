@@ -10,7 +10,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 // Pre-compiled patterns to keep the per-request work cheap.
 const blogRoute = /^\/blogs\/([^/]+)\/?$/;
-const diaryRoute = /^\/work\/([^/]+)\/log\/?$/;
+const orgRoute = /^\/work\/([^/]+)\/?$/;
+const skillRoute = /^\/skills\/([^/]+)\/?$/;
 
 export function middleware(req: NextRequest) {
   const accept = req.headers.get("accept");
@@ -20,6 +21,13 @@ export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   if (wantsMarkdown) {
+    // Homepage — composes a markdown site summary from workData + clients.
+    if (pathname === "/" || pathname === "") {
+      const res = NextResponse.rewrite(new URL("/markdown", req.url));
+      res.headers.append("Vary", "Accept");
+      return res;
+    }
+
     const blog = blogRoute.exec(pathname);
     if (blog) {
       const res = NextResponse.rewrite(
@@ -29,10 +37,19 @@ export function middleware(req: NextRequest) {
       return res;
     }
 
-    const diary = diaryRoute.exec(pathname);
-    if (diary) {
+    const org = orgRoute.exec(pathname);
+    if (org) {
       const res = NextResponse.rewrite(
-        new URL(`/work/${diary[1]}/log/markdown`, req.url)
+        new URL(`/work/${org[1]}/markdown`, req.url)
+      );
+      res.headers.append("Vary", "Accept");
+      return res;
+    }
+
+    const skill = skillRoute.exec(pathname);
+    if (skill) {
+      const res = NextResponse.rewrite(
+        new URL(`/skills/${skill[1]}/markdown`, req.url)
       );
       res.headers.append("Vary", "Accept");
       return res;
@@ -50,5 +67,5 @@ export function middleware(req: NextRequest) {
 // patterns below admit anything under those prefixes; the per-request regex
 // inside `middleware()` filters to the exact shape we rewrite.
 export const config = {
-  matcher: ["/blogs/:path*", "/work/:path*"],
+  matcher: ["/", "/blogs/:path*", "/work/:path*", "/skills/:path*"],
 };

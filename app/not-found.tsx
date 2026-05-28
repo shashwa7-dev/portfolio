@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import { Home, ArrowLeft } from "lucide-react";
 import Image from "next/image";
-import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import {
   dialogPopVariants,
@@ -18,7 +17,6 @@ export default function NotFound() {
 
   return (
     <main className="min-h-screen relative">
-      <Navbar />
       <div className="max-w-2xl mx-auto px-4 pt-32 pb-16 flex items-center justify-center min-h-[calc(100vh-4rem)]">
         <div className="text-center space-y-8 w-full">
           {/* Profile Image */}

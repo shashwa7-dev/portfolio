@@ -1,13 +1,15 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { organizations, getOrganization } from "@/lib/workData";
+import { getDiary } from "@/lib/diaryData";
 import Container from "@/components/layout/Container";
 import Label from "@/components/layout/Label";
+import Divider from "@/components/layout/Divider";
 import ProjectShowcaseCard from "@/components/ProjectShowcaseCard";
 import { workProjectToCard } from "@/lib/projectCards";
-import DiaryCTA from "@/components/common/DiaryCTA";
+import DiaryEntry from "@/components/common/DiaryEntry";
+import { EmploymentTag, OrgLinkChip } from "@/components/common/OrgChips";
 
 export async function generateStaticParams() {
   return organizations.map((org) => ({ org: org.slug }));
@@ -19,7 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<{ org: stri
   if (!org) return { title: "Not Found" };
   return {
     title: `${org.name} · Work`,
-    description: `Projects built at ${org.name}, ${org.role}`,
+    description: `Work, projects, and long-form contributions log at ${org.name}, ${org.role}.`,
   };
 }
 
@@ -27,15 +29,13 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
   const { org: orgSlug } = await params;
   const org = getOrganization(orgSlug);
   if (!org) notFound();
+  const diary = getDiary(orgSlug);
 
   return (
-    <main className="py-16 md:py-24">
+    <main className="py-8 md:py-12">
       <Container width="reading" className="space-y-10">
-        <Link href="/#experience" className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground">
-          <ArrowLeft className="h-4 w-4" /> Back to home
-        </Link>
-
-        <header className="space-y-4">
+        {/* ── Header ─────────────────────────────────────────────────── */}
+        <header className="space-y-5">
           <div className="flex items-center gap-3">
             <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-elevated ring-1 ring-border">
               <Image src={org.logo} alt={org.name} fill className="object-cover" sizes="48px" />
@@ -49,17 +49,28 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
                   </a>
                 )}
               </div>
-              <p className="text-sm text-muted-foreground">
-                {org.role}
-                <span className="mx-1.5 text-border-strong">·</span>
+              <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
+                <span>{org.role}</span>
+                <EmploymentTag employment={org.employment} />
+                <span className="text-border-strong">·</span>
                 <span className="font-mono text-xs tabular-nums text-subtle">{org.duration}</span>
               </p>
             </div>
           </div>
-          {org.description && <p className="max-w-[62ch] text-muted-foreground">{org.description}</p>}
+          {org.description && <p className="max-w-[62ch] text-[15px] leading-relaxed text-muted-foreground">{org.description}</p>}
+
+          {/* outbound links — site / app / X (each guard short-circuits internally) */}
+          {org.links && (
+            <div className="flex flex-wrap items-center gap-1.5">
+              {org.links.web && <OrgLinkChip href={org.links.web} label="Site" icon="external" />}
+              {org.links.app && <OrgLinkChip href={org.links.app} label="App" icon="external" />}
+              {org.links.twitter && <OrgLinkChip href={org.links.twitter} label="X" icon="external" />}
+            </div>
+          )}
         </header>
 
-        <section className="space-y-3">
+        {/* ── Key contributions ──────────────────────────────────────── */}
+        <section className="space-y-3 rounded-2xl border border-border bg-card p-5">
           <Label>Key contributions</Label>
           <ul className="space-y-2">
             {org.highlights.map((h, i) => (
@@ -71,25 +82,49 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
           </ul>
         </section>
 
+        {/* ── Projects ───────────────────────────────────────────────── */}
         {org.projects.length > 0 && (
-          <section className="space-y-4">
-            <Label>Projects ({org.projects.length})</Label>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {org.projects.map((p) => (
-                <ProjectShowcaseCard key={p.id} project={workProjectToCard(org.slug, p)} />
-              ))}
-            </div>
-          </section>
+          <>
+            <Divider />
+            <section className="space-y-4">
+              <div className="flex items-baseline justify-between">
+                <h2 className="font-serif text-xl font-medium tracking-tight">Projects</h2>
+                <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-subtle">
+                  {org.projects.length} shipped
+                </span>
+              </div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {org.projects.map((p) => (
+                  <ProjectShowcaseCard key={p.id} project={workProjectToCard(org.slug, p)} />
+                ))}
+              </div>
+            </section>
+          </>
         )}
 
-        <DiaryCTA
-          orgSlug={org.slug}
-          orgName={org.name}
-          includeOrgName
-          size="md"
-          className="border-t border-border pt-8"
-        />
+        {/* ── Diary entries ──────────────────────────────────────────── */}
+        {diary && (
+          <>
+            <Divider />
+            <section id="diary" className="scroll-mt-16 space-y-6">
+              <div className="flex items-baseline justify-between">
+                <h2 className="font-serif text-xl font-medium tracking-tight">What I built</h2>
+                <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-subtle">
+                  {diary.featured.length} featured
+                </span>
+              </div>
+              <ol className="divide-y divide-border">
+                {diary.featured.map((entry, idx) => (
+                  <li key={entry.id} className="py-10 first:pt-0 last:pb-0">
+                    <DiaryEntry entry={entry} index={idx + 1} />
+                  </li>
+                ))}
+              </ol>
+            </section>
+          </>
+        )}
       </Container>
     </main>
   );
 }
+

@@ -30,9 +30,18 @@ export type TOrganization = {
   logo: string;
   role: string;
   duration: string;
+  /** Engagement type — surfaced as a small pill next to the role. */
+  employment?: "full-time" | "contract";
   description: string;
   highlights: string[];
+  /** Single canonical link — used as the org name link if `links` isn't set. */
   link?: string;
+  /** Multiple labelled outbound links (e.g. landing site, app, X profile). */
+  links?: {
+    web?: string;
+    app?: string;
+    twitter?: string;
+  };
   projects: TProject[];
 };
 
@@ -42,10 +51,15 @@ export const organizations: TOrganization[] = [
     slug: "shopos",
     name: "ShopOS",
     logo: "/images/shopos.jpeg",
-    role: "Frontend Dev Consultant",
+    role: "Frontend Engineer",
+    employment: "full-time",
     duration: "Jan 2026 - Present",
     description:
       "Frontend engineer at ShopOS, an AI-native commerce platform. Shipping merchant-facing surfaces across AI agents, workflow authoring, and chat for create, manage, market, and sell flows.",
+    links: {
+      web: "https://shopos.ai/",
+      app: "https://app.shopos.ai/",
+    },
     highlights: [
       "Migrated the Enterprise dashboard from a separate iframe-hosted repo into the main app.",
       "Built Canvas Builder for visual workflow authoring and the content-rich tiptap chat input.",
@@ -59,6 +73,7 @@ export const organizations: TOrganization[] = [
     name: "Dehidden",
     logo: "/images/dehidden_logo.jpeg",
     role: "Frontend Developer (Web3)",
+    employment: "contract",
     duration: "Jan 2022 - Dec 2025",
     description:
       "Building AI × Web3 products including DeFi platforms, NFT minting solutions, and blockchain integrations.",
