@@ -5,7 +5,8 @@ import { organizations } from "@/lib/workData";
 import Section from "@/components/layout/Section";
 import ProjectPreviewCard from "@/components/ProjectPreviewCard";
 import { workProjectToCard } from "@/lib/projectCards";
-import DiaryCTA from "@/components/common/DiaryCTA";
+import MarkerLink from "@/components/common/MarkerLink";
+import { EmploymentTag, OrgLinkChip } from "@/components/common/OrgChips";
 
 export default function ExperienceWork() {
   return (
@@ -40,22 +41,49 @@ export default function ExperienceWork() {
                 <span className={`h-1.5 w-1.5 rounded-full ${isCurrent ? "bg-emerald-500" : "bg-subtle"}`} />
               </span>
 
-              {/* role header */}
-              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                <div className="flex items-center gap-2.5">
-                  <span className="relative h-7 w-7 overflow-hidden rounded-md bg-elevated ring-1 ring-border">
+              {/* Row 1: identity (logo + name as one Link) | duration */}
+              <div className="flex items-center justify-between gap-3">
+                <Link
+                  href={`/work/${org.slug}`}
+                  className="group/orglink flex min-w-0 items-center gap-2.5 transition-colors"
+                >
+                  <span className="relative h-7 w-7 shrink-0 overflow-hidden rounded-md bg-elevated ring-1 ring-border transition-[box-shadow] group-hover/orglink:ring-accent/50">
                     <Image src={org.logo} alt={org.name} fill className="object-cover" sizes="28px" />
                   </span>
-                  <h3 className="font-serif text-lg text-foreground">{org.name}</h3>
-                  {isCurrent && (
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/60 px-2 py-0.5 font-mono text-[9px] uppercase tracking-wide text-emerald-500">
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Currently building
-                    </span>
+                  <h3 className="truncate font-serif text-lg text-foreground transition-colors group-hover/orglink:text-accent">
+                    {org.name}
+                  </h3>
+                </Link>
+                <span className="shrink-0 font-mono text-xs tabular-nums text-subtle">
+                  {org.duration}
+                </span>
+              </div>
+
+              {/* Row 2: role (designation) first, then tags after */}
+              <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1.5">
+                <span className="text-sm text-accent-hover">{org.role}</span>
+                <EmploymentTag employment={org.employment} />
+                {isCurrent && (
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/60 px-2 py-0.5 font-mono text-[9px] uppercase tracking-wide text-emerald-500">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Currently building
+                  </span>
+                )}
+              </div>
+
+              {/* org links — landing site, app, etc. */}
+              {org.links && (org.links.web || org.links.app || org.links.twitter) && (
+                <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                  {org.links.web && (
+                    <OrgLinkChip href={org.links.web} label="Site" />
+                  )}
+                  {org.links.app && (
+                    <OrgLinkChip href={org.links.app} label="App" />
+                  )}
+                  {org.links.twitter && (
+                    <OrgLinkChip href={org.links.twitter} label="X" />
                   )}
                 </div>
-                <span className="ml-auto font-mono text-xs tabular-nums text-subtle">{org.duration}</span>
-              </div>
-              <div className="mt-1 text-sm text-accent-hover">{org.role}</div>
+              )}
 
               {/* highlights (top 2) */}
               <ul className="mt-3 space-y-1.5">
@@ -67,8 +95,12 @@ export default function ExperienceWork() {
                 ))}
               </ul>
 
-              {/* diary CTA — renders nothing when this org has no diary record */}
-              <DiaryCTA orgSlug={org.slug} size="sm" className="mt-4" />
+              {/* Deep-dive CTA — the org page now includes the full diary inline */}
+              <div className="mt-4">
+                <MarkerLink href={`/work/${org.slug}`} size="sm" tone="foreground">
+                  See what I built at {org.name}
+                </MarkerLink>
+              </div>
 
               {/* featured projects */}
               {featured.length > 0 && (
@@ -93,3 +125,4 @@ export default function ExperienceWork() {
     </Section>
   );
 }
+
