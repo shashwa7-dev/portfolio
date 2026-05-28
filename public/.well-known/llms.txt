@@ -1,0 +1,46 @@
+# Shashwat Tripathi — Frontend Engineer
+
+> Frontend engineer who's shipped 9+ production products with top Web3 and AI
+> teams. Currently frontend consultant at ShopOS, an AI-native commerce
+> platform. Previously led frontend at Dehidden across DeFi platforms, NFT
+> minting (1M+ users, 100K mints day one), and AI x Web3 launches with
+> Coinbase, Polygon, and Sentient.
+
+## Quick links
+
+- Site: https://www.shashwa7.in/
+- Contact: contact@shashwa7.in
+- GitHub: https://github.com/shashwa7-dev
+
+## Discovery
+
+- Sitemap: https://www.shashwa7.in/sitemap.xml
+- RSS feed: https://www.shashwa7.in/rss
+- Web manifest: https://www.shashwa7.in/manifest.webmanifest
+
+## Content negotiation
+
+Pages with markdown source return `text/markdown` when requested with
+`Accept: text/markdown`:
+
+- Blog posts: `/blogs/<slug>` (e.g. https://www.shashwa7.in/blogs/truffy-agent)
+- Work diaries: `/work/<org>/log` (e.g. https://www.shashwa7.in/work/shopos/log)
+
+Other pages return their default HTML representation regardless of Accept.
+
+## What you'll find
+
+- `/` — homepage, includes hero, experience, projects, books, clients.
+- `/work/<org>` — overview of a role + projects shipped there.
+- `/work/<org>/log` — long-form contributions log ("diary") for that role.
+- `/work/<org>/<project>` — individual project case study.
+- `/blogs` — index of writing.
+- `/blogs/<slug>` — individual post.
+- `/projects` — independent / side projects.
+- `/books` — reading list with notes.
+- `/design` — design-system reference page.
+
+## Content usage preferences
+
+See `https://www.shashwa7.in/robots.txt` for `Content-Signal` declarations.
+Summary: search yes, agent at-read yes, AI training no.
