@@ -6,6 +6,7 @@ import { baseUrl } from "./sitemap";
 import { ogUrl, personLd, websiteLd } from "@/lib/seo";
 import { Analytics } from "@vercel/analytics/next";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import UmamiAnalytics from "@/components/Umami";
 import NoScript from "@/components/NoScript";
@@ -124,6 +125,7 @@ export default function RootLayout({
         <NoScript />
         <div className="relative z-10">
           <TooltipProvider>
+            <Navbar />
             {children}
           </TooltipProvider>
           <BottomFadeMask />

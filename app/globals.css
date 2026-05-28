@@ -86,6 +86,52 @@
     font-feature-settings: "cv11", "ss01";
     line-height: 1.65;
     text-rendering: optimizeLegibility;
+    /* Reserve scrollbar space so layout doesn't shift when content overflows. */
+    scrollbar-gutter: stable;
+  }
+
+  /* ── Themed scrollbar ──
+     Thin, accent-aware, transparent track. Falls back to native on platforms
+     that ignore these (iOS Safari, etc.). The `pre` rule below intentionally
+     keeps code-block scrollbars hidden — higher specificity wins. */
+
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--accent) / 0.5) transparent;
+  }
+
+  /* WebKit / Chromium / Edge */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--accent) / 0.35);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    border-radius: 9999px;
+    transition: background-color 150ms var(--ease-out);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--accent) / 0.6);
+  }
+  ::-webkit-scrollbar-thumb:active {
+    background-color: hsl(var(--accent));
+  }
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  /* Touch devices: tighter scrollbar so it doesn't crowd small viewports. */
+  @media (max-width: 640px) {
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
   }
 
   h1, h2, h3, h4, h5, h6 {
