@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { containerVariants, cardVariants, hamburgerVariants } from "./variants";
+import { fadeInVariants } from "@/lib/motionVariants";
 import { ArrowUpRight } from "lucide-react";
 
 type CardNavLink = {
@@ -89,9 +90,10 @@ const CardNav: React.FC<CardNavProps> = ({
           {isOpen && (
             <motion.div
               className="card-nav-content relative mt-[60px] p-2 flex flex-col items-stretch gap-2 md:flex-row md:items-end md:gap-[12px]"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              variants={fadeInVariants}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
             >
               {items.slice(0, 3).map((item, idx) => (
                 <motion.div

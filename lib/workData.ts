@@ -45,11 +45,11 @@ export const organizations: TOrganization[] = [
     role: "Frontend Dev Consultant",
     duration: "Jan 2026 - Present",
     description:
-      "Frontend engineer at ShopOS, building and maintaining UIs for an AI-native commerce platform, including workflows for product creation, management, marketing, and sales",
+      "Frontend engineer at ShopOS, an AI-native commerce platform. Shipping merchant-facing surfaces across AI agents, workflow authoring, and chat for create, manage, market, and sell flows.",
     highlights: [
-      "Frontend for commerce flows: create, manage, market & sell",
-      "Reusable UI components and design-system contributions",
-      "Collaborating with product and design on feature rollout",
+      "Migrated the Enterprise dashboard from a separate iframe-hosted repo into the main app.",
+      "Built Canvas Builder for visual workflow authoring and the content-rich tiptap chat input.",
+      "Shipped the media carousel for AI asset review and the Skills Library across two apps.",
     ],
     projects: [],
   },

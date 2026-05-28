@@ -7,6 +7,7 @@ import Container from "@/components/layout/Container";
 import Label from "@/components/layout/Label";
 import ProjectShowcaseCard from "@/components/ProjectShowcaseCard";
 import { workProjectToCard } from "@/lib/projectCards";
+import DiaryCTA from "@/components/common/DiaryCTA";
 
 export async function generateStaticParams() {
   return organizations.map((org) => ({ org: org.slug }));
@@ -80,6 +81,14 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
             </div>
           </section>
         )}
+
+        <DiaryCTA
+          orgSlug={org.slug}
+          orgName={org.name}
+          includeOrgName
+          size="md"
+          className="border-t border-border pt-8"
+        />
       </Container>
     </main>
   );

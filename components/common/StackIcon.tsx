@@ -50,6 +50,10 @@ import {
   siPlaystation,
   siWagmi,
   siNotion,
+  siPosthog,
+  siSentry,
+  siGoogleanalytics,
+  siVitest,
 } from "simple-icons";
 
 export type StackName =
@@ -102,7 +106,13 @@ export type StackName =
   | "restAPI"
   | "playstation"
   | "coffee"
-  | "opensea";
+  | "opensea"
+  | "playwright"
+  | "vitest"
+  | "posthog"
+  | "sentry"
+  | "googleAnalytics"
+  | "vercelAnalytics";
 
 type SI = { path: string; title: string };
 
@@ -150,7 +160,12 @@ const iconMap: Partial<Record<StackName, SI>> = {
   playstation: siPlaystation,
   wagmi: siWagmi,
   notion: siNotion,
-  // canva, openai, aws, zustand, vscode, restAPI, coffee → text fallback
+  posthog: siPosthog,
+  sentry: siSentry,
+  googleAnalytics: siGoogleanalytics,
+  vitest: siVitest,
+  // canva, openai, aws, zustand, vscode, restAPI, coffee, playwright,
+  // vercelAnalytics → text fallback (no simple-icons entry)
 };
 
 const labelMap: Record<StackName, string> = {
@@ -204,6 +219,12 @@ const labelMap: Record<StackName, string> = {
   firebase: "Firebase",
   aws: "AWS",
   docker: "Docker",
+  playwright: "Playwright",
+  vitest: "Vitest",
+  posthog: "PostHog",
+  sentry: "Sentry",
+  googleAnalytics: "Google Analytics",
+  vercelAnalytics: "Vercel Analytics",
 };
 
 type StackProps = {

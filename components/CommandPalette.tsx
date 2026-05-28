@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
+import { backdropFadeVariants, popoverDownVariants } from "@/lib/motionVariants";
 import { useDarkMode } from "@/app/hooks/useDarkMode";
 import { buildCommands, filterCommands, type Command } from "@/lib/commandData";
 
@@ -68,9 +69,10 @@ export default function CommandPalette() {
       {open && (
         <motion.div
           className="fixed inset-0 z-[60] flex items-start justify-center bg-black/40 px-4 pt-[15vh]"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          variants={backdropFadeVariants}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
           onClick={() => setOpen(false)}
           role="dialog"
           aria-modal="true"
@@ -78,10 +80,10 @@ export default function CommandPalette() {
         >
           <motion.div
             className="w-full max-w-[540px] overflow-hidden rounded-2xl border border-border-strong bg-elevated shadow-2xl"
-            initial={{ opacity: 0, y: -8, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.98 }}
-            transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+            variants={popoverDownVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
             onClick={(e) => e.stopPropagation()}
             onKeyDown={onListKey}
           >
