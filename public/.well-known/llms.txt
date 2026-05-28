@@ -1,10 +1,11 @@
 # Shashwat Tripathi — Frontend Engineer
 
-> Frontend engineer who's shipped 9+ production products with top Web3 and AI
-> teams. Currently frontend consultant at ShopOS, an AI-native commerce
-> platform. Previously led frontend at Dehidden across DeFi platforms, NFT
-> minting (1M+ users, 100K mints day one), and AI x Web3 launches with
-> Coinbase, Polygon, and Sentient.
+> Frontend engineer building AI-first product surfaces. Currently consultant
+> at ShopOS, an AI-native commerce platform, where I ship merchant-facing
+> agent UIs, workflow authoring (Canvas Builder), and content-rich chat.
+> Across 9+ production products with top AI and Web3 teams. Previously led
+> frontend at Dehidden across AI x DeFi platforms, NFT minting (1M+ users,
+> 100K mints day one), and launches with Coinbase, Polygon, and Sentient.
 
 ## Quick links
 
@@ -23,21 +24,24 @@
 Pages with markdown source return `text/markdown` when requested with
 `Accept: text/markdown`:
 
-- Blog posts: `/blogs/<slug>` (e.g. https://www.shashwa7.in/blogs/truffy-agent)
-- Work diaries: `/work/<org>/log` (e.g. https://www.shashwa7.in/work/shopos/log)
+- Homepage:    `/` (site summary)
+- Blog posts:  `/blogs/<slug>` (e.g. https://www.shashwa7.in/blogs/truffy-agent)
+- Org pages:   `/work/<org>` (includes long-form contributions log)
+- Skills:      `/skills/<slug>` (e.g. https://www.shashwa7.in/skills/design-system)
 
 Other pages return their default HTML representation regardless of Accept.
 
 ## What you'll find
 
 - `/` — homepage, includes hero, experience, projects, books, clients.
-- `/work/<org>` — overview of a role + projects shipped there.
-- `/work/<org>/log` — long-form contributions log ("diary") for that role.
+- `/work/<org>` — overview of a role + projects shipped + long-form contributions log.
 - `/work/<org>/<project>` — individual project case study.
 - `/blogs` — index of writing.
 - `/blogs/<slug>` — individual post.
 - `/projects` — independent / side projects.
 - `/books` — reading list with notes.
+- `/skills` — Claude Code skills I author and share publicly.
+- `/skills/<slug>` — an individual skill's full text (also negotiable as text/markdown).
 - `/design` — design-system reference page.
 
 ## Content usage preferences
