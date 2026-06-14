@@ -5,7 +5,7 @@ export type Command = {
   label: string;
   group: "Navigation" | "Projects" | "Actions";
   href?: string;
-  action?: "toggle-theme" | "copy-email";
+  action?: "toggle-theme" | "copy-email" | "open-shortcuts";
 };
 
 export function buildCommands(): Command[] {
@@ -25,6 +25,7 @@ export function buildCommands(): Command[] {
   const actions: Command[] = [
     { id: "act-theme", label: "Toggle theme", group: "Actions", action: "toggle-theme" },
     { id: "act-email", label: "Copy email", group: "Actions", action: "copy-email" },
+    { id: "act-shortcuts", label: "Keyboard shortcuts", group: "Actions", action: "open-shortcuts" },
   ];
   return nav.concat(projects, actions);
 }
