@@ -7,10 +7,6 @@ import Activity from "@/components/Activity";
 import Faq from "@/components/Faq";
 import Socials from "@/components/Socials";
 import Divider from "@/components/layout/Divider";
-import dynamic from "next/dynamic";
-
-const S7Bot = dynamic(() => import("@/components/ChatBot"), { ssr: false });
-const CommandPalette = dynamic(() => import("@/components/CommandPalette"), { ssr: false });
 
 export default function Home() {
   return (
@@ -30,8 +26,6 @@ export default function Home() {
       <Faq />
       <Divider />
       <Socials />
-      <S7Bot />
-      <CommandPalette />
     </main>
   );
 }

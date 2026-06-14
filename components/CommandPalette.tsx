@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { backdropFadeVariants, popoverDownVariants } from "@/lib/motionVariants";
@@ -13,6 +13,7 @@ export default function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const [active, setActive] = useState(0);
+  const activeRef = useRef<HTMLButtonElement>(null);
 
   const all = useMemo(() => buildCommands(), []);
   const results = useMemo(() => filterCommands(all, q), [all, q]);
@@ -41,12 +42,16 @@ export default function CommandPalette() {
     }
   }, [open]);
   useEffect(() => setActive(0), [q]);
+  useEffect(() => {
+    activeRef.current?.scrollIntoView({ block: "nearest" });
+  }, [active]);
 
   const run = (c: Command) => {
     setOpen(false);
     if (c.href) router.push(c.href);
     else if (c.action === "toggle-theme") toggleDarkMode();
     else if (c.action === "copy-email") navigator.clipboard?.writeText("contact@shashwa7.in");
+    else if (c.action === "open-shortcuts") window.dispatchEvent(new CustomEvent("open-shortcuts"));
   };
 
   const onListKey = (e: React.KeyboardEvent) => {
@@ -110,6 +115,7 @@ export default function CommandPalette() {
                       return (
                         <button
                           key={c.id}
+                          ref={idx === active ? activeRef : undefined}
                           onMouseEnter={() => setActive(idx)}
                           onClick={() => run(c)}
                           className={`flex w-full items-center rounded-[9px] px-3 py-2 text-left text-sm ${

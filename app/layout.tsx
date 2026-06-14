@@ -27,6 +27,15 @@ const AnimatedBackground = dynamic(
   { ssr: false }
 );
 
+const S7Bot = dynamic(() => import("@/components/ChatBot"), { ssr: false });
+const CommandPalette = dynamic(() => import("@/components/CommandPalette"), {
+  ssr: false,
+});
+const KeyboardShortcuts = dynamic(
+  () => import("@/components/KeyboardShortcuts"),
+  { ssr: false }
+);
+
 const fraunces = Fraunces({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
@@ -127,6 +136,9 @@ export default function RootLayout({
           <TooltipProvider>
             <Navbar />
             {children}
+            <CommandPalette />
+            <KeyboardShortcuts />
+            <S7Bot />
           </TooltipProvider>
           <BottomFadeMask />
           <Analytics />
