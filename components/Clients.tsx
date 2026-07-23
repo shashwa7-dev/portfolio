@@ -3,37 +3,41 @@
 import React from "react";
 import Image from "next/image";
 import { motion, type Variants } from "motion/react";
-import { containerVariants, ease, duration } from "@/lib/motionVariants";
+import { ease, duration, stagger } from "@/lib/motionVariants";
 import Section from "@/components/layout/Section";
 import { ArrowUpRight } from "lucide-react";
 import { clients } from "@/lib/clients";
 
+// The parent orchestrates the cascade via staggerChildren; each card only
+// describes its own fade-up. (Previously the card ALSO added `delay: i * 0.06`
+// on top of the parent stagger, so the two compounded into a slow, laggy
+// diagonal. One stagger source only.)
+const listVariants: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: stagger.tight, delayChildren: stagger.tight } },
+};
+
 const cardVariants: Variants = {
   hidden: { opacity: 0, y: 8 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: duration.slow, ease: ease.out, delay: i * 0.06 },
-  }),
+  visible: { opacity: 1, y: 0, transition: { duration: duration.base, ease: ease.out } },
 };
 
 const Clients = () => {
   return (
     <motion.div
-      variants={containerVariants}
+      variants={listVariants}
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.2 }}
     >
       <Section id="clients" number="04" label="Trusted by" title="Teams I've worked with" width="reading">
         <div className="grid grid-cols-2 -sm:grid-cols-1 gap-2.5">
-          {clients.map((client, i) => (
+          {clients.map((client) => (
             <motion.a
               key={client.name}
               href={client.link}
               target="_blank"
               rel="noopener noreferrer"
-              custom={i}
               variants={cardVariants}
               className="group flex items-center gap-3 px-3 py-2.5 rounded-xl border border-border bg-card/60 transition-[border-color,background-color,transform,box-shadow] duration-200 ease-[--ease-out] hover:bg-card hover:border-accent/30 hover:-translate-y-px hover:shadow-sm active:scale-[0.98]"
             >
