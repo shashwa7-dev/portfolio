@@ -8,11 +8,12 @@ const config: Config = {
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  future: {
+    hoverOnlyWhenSupported: true,
+  },
   theme: {
     extend: {
       animation: {
-        fadeIn: "fadeIn 1s ease-in-out forwards",
-        float: "float 1s ease-in-out infinite",
         blink: "blink 1s step-end infinite",
         "marquee-left": "marquee-left var(--duration, 40s) linear infinite",
         "marquee-up": "marquee-up var(--duration, 40s) linear infinite",
@@ -34,10 +35,6 @@ const config: Config = {
         blink: {
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: "0" },
-        },
-        fadeIn: {
-          "0%": { opacity: "0" },
-          "100%": { opacity: "1" },
         },
       },
       container: {
@@ -62,10 +59,6 @@ const config: Config = {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
-      },
-      transitionDuration: {
-        "2000": "2000ms",
-        "4000": "4000ms",
       },
       borderRadius: {
         lg: "var(--radius)",
