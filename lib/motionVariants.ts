@@ -10,13 +10,34 @@ import type { Variants, Transition } from "motion/react";
 export const ease = {
   out: [0.22, 1, 0.36, 1] as const,
   modal: [0.23, 1, 0.32, 1] as const,
+  /** Expo-style settle used by the hero word cycle (same curve as the ShopOS landing hero). */
+  expo: [0.16, 1, 0.3, 1] as const,
 } as const;
 
 export const duration = {
   fast: 0.15,
   base: 0.2,
+  med: 0.3,
   slow: 0.4,
   hero: 0.5,
+} as const;
+
+/**
+ * Hero accent-phrase word cycle (ported from the ShopOS landing hero):
+ * words slide up in one by one, hold, slide up out one by one, repeat.
+ * Consumed by lib/useHeadingCycle.ts + components/HeroTitle.tsx.
+ */
+export const wordCycle = {
+  /** ms between each word entering */
+  enterStaggerMs: 120,
+  /** ms between each word exiting */
+  exitStaggerMs: 80,
+  /** ms the full phrase holds before exiting */
+  holdMs: 2000,
+  /** ms pause after the last word exits before the next phrase enters */
+  settleMs: 200,
+  /** CSS transition for each word span */
+  transition: `transform ${duration.slow}s cubic-bezier(${ease.expo.join(", ")}), opacity ${duration.med}s ease`,
 } as const;
 
 export const spring = {
@@ -123,17 +144,6 @@ export const collapseHeightVariants: Variants = {
   hidden: { opacity: 0, height: 0 },
   visible: { opacity: 1, height: "auto" },
   exit: { opacity: 0, height: 0 },
-};
-
-/** Per-word blur-in for hero titles. Use `custom={index}` to stagger via delay. */
-export const blurInVariants: Variants = {
-  hidden: { opacity: 0, y: 10, filter: "blur(4px)" },
-  visible: (i: number = 0) => ({
-    opacity: 1,
-    y: 0,
-    filter: "blur(0px)",
-    transition: { duration: duration.hero, delay: i * 0.05, ease: ease.out },
-  }),
 };
 
 /** Compact pill that floats up a few pixels — "new messages" indicators, small toasts. */

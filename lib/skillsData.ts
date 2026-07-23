@@ -11,6 +11,7 @@ import path from "path";
  */
 const PUBLIC_SKILLS: { slug: string; dir: string }[] = [
   { slug: "design-system", dir: "design-system" },
+  { slug: "transitions-dev", dir: "transitions-dev" },
 ];
 
 export type TSkillFrontmatter = {

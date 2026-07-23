@@ -15,6 +15,7 @@ export function buildCommands(): Command[] {
     { id: "nav-writing", label: "Writing", group: "Navigation", href: "/blogs" },
     { id: "nav-books", label: "Books", group: "Navigation", href: "/books" },
     { id: "nav-design", label: "Design system", group: "Navigation", href: "/design" },
+    { id: "nav-motion", label: "Motion system", group: "Navigation", href: "/motion" },
   ];
   const projects: Command[] = getAllSideProjects().map((p) => ({
     id: `proj-${p.slug}`,
