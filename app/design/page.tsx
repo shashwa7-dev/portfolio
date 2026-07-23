@@ -585,7 +585,7 @@ export default function DesignPage() {
               Text with an{" "}
               <a
                 href="#"
-                className="text-foreground underline decoration-accent/50 underline-offset-4 transition-all hover:decoration-accent"
+                className="text-foreground underline decoration-accent/50 underline-offset-4 transition-colors hover:decoration-accent"
               >
                 accent-tinted underline
               </a>{" "}
@@ -602,7 +602,7 @@ export default function DesignPage() {
             <input
               type="text"
               placeholder="Focus to see ring..."
-              className="w-full max-w-sm rounded-lg border border-border bg-card px-4 py-2.5 text-sm text-foreground placeholder:text-subtle outline-none ring-ring/0 transition-all focus:ring-2 focus:ring-ring/60"
+              className="w-full max-w-sm rounded-lg border border-border bg-card px-4 py-2.5 text-sm text-foreground placeholder:text-subtle outline-none ring-ring/0 transition-[box-shadow,border-color] focus:ring-2 focus:ring-ring/60"
               readOnly
             />
             <code className="mt-2 block font-mono text-[10px] text-subtle">

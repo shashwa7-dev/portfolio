@@ -8,7 +8,7 @@ export default function ProjectShowcaseCard({ project }: { project: ProjectCardD
   return (
     <Link
       href={project.href}
-      className="group block overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:-translate-y-0.5 hover:border-border-strong"
+      className="group block overflow-hidden rounded-2xl border border-border bg-card transition-[transform,border-color] duration-300 hover:-translate-y-0.5 hover:border-border-strong"
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-elevated">
         <Image

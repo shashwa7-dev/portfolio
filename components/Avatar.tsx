@@ -240,21 +240,21 @@ const Avatar = ({ isDarkMode }: { isDarkMode: boolean }) => {
         cy={baseY + position.y}
         r={eyeState.radius}
         fill={themeColors.eyeFill}
-        className="transition-all duration-200"
+        className="transition-[transform,opacity] duration-200"
       />
       <circle
         cx={baseX - 1.5 + position.x}
         cy={baseY - 2.5 + position.y}
         r={eyeState.highlightRadius}
         fill="#fff"
-        className="transition-all duration-200"
+        className="transition-[transform,opacity] duration-200"
       />
     </g>
   );
 
   return (
     <div
-      className="relative transition-all duration-300"
+      className="relative transition-transform duration-300"
       onMouseEnter={() => handleAvatarHover(true)}
       onMouseLeave={() => handleAvatarHover(false)}
     >

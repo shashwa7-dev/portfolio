@@ -62,7 +62,7 @@ export default function BookListItem({
           >
             <div
               className={cn(
-                "h-1 rounded-full transition-all",
+                "h-1 rounded-full transition-[width]",
                 progress >= 100 ? "bg-green-500" : "bg-muted-foreground"
               )}
               style={{ width: `${progress}%` }}
@@ -116,7 +116,7 @@ export default function BookListItem({
           >
             <div
               className={cn(
-                "h-1 rounded-full transition-all",
+                "h-1 rounded-full transition-[width]",
                 progress >= 100 ? "bg-green-500" : "bg-muted-foreground"
               )}
               style={{ width: `${progress}%` }}

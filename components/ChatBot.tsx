@@ -416,7 +416,7 @@ const S7Bot = () => {
                         animate="visible"
                         transition={{ delay: 0.1 + idx * 0.05 }}
                         onClick={() => sendMessage(prompt)}
-                        className="w-full flex items-center gap-2 text-left rounded-xl border border-border bg-card px-3 py-2.5 text-xs text-muted-foreground hover:border-border-strong hover:text-foreground transition-all"
+                        className="w-full flex items-center gap-2 text-left rounded-xl border border-border bg-card px-3 py-2.5 text-xs text-muted-foreground hover:border-border-strong hover:text-foreground transition-colors"
                       >
                         <Icon className="h-3.5 w-3.5 shrink-0 text-accent/70" />
                         <span>{prompt}</span>

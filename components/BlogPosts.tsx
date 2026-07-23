@@ -13,7 +13,7 @@ export function BlogPosts() {
         <Link
           key={post.slug}
           href={`/blogs/${post.slug}`}
-          className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:-translate-y-0.5 hover:border-border-strong"
+          className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-[transform,border-color] duration-300 hover:-translate-y-0.5 hover:border-border-strong"
         >
           {post.metadata.image && (
             <div className="relative aspect-[16/9] overflow-hidden bg-elevated">

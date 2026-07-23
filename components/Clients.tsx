@@ -43,7 +43,7 @@ const Clients = () => {
                   alt={client.name}
                   fill
                   sizes="32px"
-                  className="object-cover opacity-60 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0"
+                  className="object-cover opacity-60 grayscale transition-[opacity,filter] duration-300 hover:opacity-100 hover:grayscale-0"
                 />
               </div>
 
