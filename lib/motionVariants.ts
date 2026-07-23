@@ -108,6 +108,13 @@ export const popoverDownVariants: Variants = {
   exit: { opacity: 0, y: -8, scale: 0.98, transition: { duration: duration.fast, ease: ease.out } },
 };
 
+/** Keyboard-summoned surfaces (⌘K palette, ? overlay): fast in, faster out, minimal travel. */
+export const keyboardSurfaceVariants: Variants = {
+  hidden: { opacity: 0, y: -4, scale: 0.99 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: duration.fast, ease: ease.out } },
+  exit: { opacity: 0, scale: 0.99, transition: { duration: 0.1, ease: ease.out } },
+};
+
 /** Popover that floats up from below — small toasts, notification bubbles. */
 export const popoverUpVariants: Variants = {
   hidden: { opacity: 0, y: 10, scale: 0.95 },

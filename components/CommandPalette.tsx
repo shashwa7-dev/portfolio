@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
-import { backdropFadeVariants, popoverDownVariants } from "@/lib/motionVariants";
+import { backdropFadeVariants, keyboardSurfaceVariants } from "@/lib/motionVariants";
 import { useDarkMode } from "@/app/hooks/useDarkMode";
 import { buildCommands, filterCommands, type Command } from "@/lib/commandData";
 
@@ -85,7 +85,7 @@ export default function CommandPalette() {
         >
           <motion.div
             className="w-full max-w-[540px] overflow-hidden rounded-2xl border border-border-strong bg-elevated shadow-2xl"
-            variants={popoverDownVariants}
+            variants={keyboardSurfaceVariants}
             initial="hidden"
             animate="visible"
             exit="exit"

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { X } from "lucide-react";
-import { backdropFadeVariants, dialogPopVariants } from "@/lib/motionVariants";
+import { backdropFadeVariants, keyboardSurfaceVariants } from "@/lib/motionVariants";
 import { useDarkMode } from "@/app/hooks/useDarkMode";
 import { goToShortcuts, shortcutGroups } from "@/lib/shortcutsData";
 
@@ -92,7 +92,7 @@ export default function KeyboardShortcuts() {
         >
           <motion.div
             className="w-full max-w-[420px] overflow-hidden rounded-2xl border border-border-strong bg-elevated shadow-2xl"
-            variants={dialogPopVariants}
+            variants={keyboardSurfaceVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
