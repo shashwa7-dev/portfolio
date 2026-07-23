@@ -1,20 +1,21 @@
 import { Variants } from "motion/react";
+import { ease, duration, stagger } from "@/lib/motionVariants";
 
 export const containerVariants: Variants = {
   closed: {
     height: 60,
     transition: {
       type: "tween",
-      duration: 0.4,
+      duration: duration.slow,
     },
   },
   open: {
     height: "auto",
     transition: {
       type: "tween",
-      duration: 0.4,
+      duration: duration.slow,
       when: "beforeChildren",
-      staggerChildren: 0.08,
+      staggerChildren: stagger.loose,
     },
   },
 };
@@ -25,22 +26,22 @@ export const cardVariants: Variants = {
     opacity: 1,
     y: 0,
     transition: {
-      delay: i * 0.08,
-      duration: 0.4,
-      ease: "easeOut",
+      delay: i * stagger.loose,
+      duration: duration.slow,
+      ease: ease.out,
     },
   }),
   exit: {
     opacity: 0,
     y: 20,
-    transition: { duration: 0.25 },
+    transition: { duration: duration.base },
   },
 };
 
 export const hamburgerVariants: Variants = {
-  closedTop: { rotate: 0, y: 0, transition: { duration: 0.3 } },
-  openTop: { rotate: 45, y: 4, transition: { duration: 0.3 } },
+  closedTop: { rotate: 0, y: 0, transition: { duration: duration.med } },
+  openTop: { rotate: 45, y: 4, transition: { duration: duration.med } },
 
-  closedBottom: { rotate: 0, y: 0, transition: { duration: 0.3 } },
-  openBottom: { rotate: -45, y: -4, transition: { duration: 0.3 } },
+  closedBottom: { rotate: 0, y: 0, transition: { duration: duration.med } },
+  openBottom: { rotate: -45, y: -4, transition: { duration: duration.med } },
 };

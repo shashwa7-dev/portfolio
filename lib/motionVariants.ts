@@ -22,6 +22,8 @@ export const duration = {
   hero: 0.5,
   /** Long draw-on strokes (Marker underline). */
   draw: 0.7,
+  /** Ambient background fades. */
+  ambient: 2,
 } as const;
 
 /** Per-item stagger offsets (seconds). Use instead of literal `i * 0.05`. */

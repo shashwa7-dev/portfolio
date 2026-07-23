@@ -25,6 +25,7 @@ import {
   hoverZoom,
   tapPress,
   spring,
+  stagger,
 } from "@/lib/motionVariants";
 
 const TIMEOUT_DURATION = 10000;
@@ -414,7 +415,7 @@ const S7Bot = () => {
                         variants={slideUpVariants}
                         initial="hidden"
                         animate="visible"
-                        transition={{ delay: 0.1 + idx * 0.05 }}
+                        transition={{ delay: stagger.loose + idx * stagger.tight }}
                         whileTap={tapPress}
                         onClick={() => sendMessage(prompt)}
                         className="w-full flex items-center gap-2 text-left rounded-xl border border-border bg-card px-3 py-2.5 text-xs text-muted-foreground hover:border-border-strong hover:text-foreground transition-colors"
@@ -552,6 +553,7 @@ function TypingDots() {
           }}
         />
       ))}
+      {/* decorative loop, intentionally local */}
       <style jsx>{`
         @keyframes chatDotPulse {
           0%, 80%, 100% { opacity: 0.25; transform: translateY(0); }

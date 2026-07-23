@@ -11,7 +11,7 @@ import VideoModal from "@/components/common/VideoModal";
 import Container from "@/components/layout/Container";
 import { motion } from "motion/react";
 import { useState } from "react";
-import { slideUpVariants } from "@/lib/motionVariants";
+import { slideUpVariants, stagger } from "@/lib/motionVariants";
 
 export default function WorkProjectPage({
   params,
@@ -88,7 +88,7 @@ export default function WorkProjectPage({
           variants={slideUpVariants}
           initial="hidden"
           animate="visible"
-          transition={{ delay: 0.1 }}
+          transition={{ delay: stagger.loose }}
           className="relative aspect-video rounded-xl overflow-hidden bg-secondary group"
         >
           <Image
@@ -116,7 +116,7 @@ export default function WorkProjectPage({
           variants={slideUpVariants}
           initial="hidden"
           animate="visible"
-          transition={{ delay: 0.2 }}
+          transition={{ delay: stagger.section }}
           className="space-y-6"
         >
           <p className="text-muted-foreground leading-relaxed">

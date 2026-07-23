@@ -23,7 +23,7 @@ export default function AvatarWithThemeSwitch() {
               toggleDarkMode();
             }
           }}
-          className="w-3 h-3 cursor-pointer transition-transform duration-500 ease-in-out hover:scale-110 active:scale-95"
+          className="w-3 h-3 cursor-pointer transition-transform duration-300 ease-[--ease-out] hover:scale-110 active:scale-95"
         >
           {isDarkMode ? (
             <SVGS.Moon className="w-full h-full" />

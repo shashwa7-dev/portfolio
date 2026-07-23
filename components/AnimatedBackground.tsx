@@ -8,7 +8,7 @@ import {
     useTransform,
     type MotionValue,
 } from "motion/react";
-import { fadeInVariants } from "@/lib/motionVariants";
+import { fadeInVariants, duration } from "@/lib/motionVariants";
 
 type ScrollMap = {
     x: number[];
@@ -77,8 +77,8 @@ export function AnimatedBackground() {
                 variants={fadeInVariants}
                 initial="hidden"
                 animate="visible"
-                exit="hidden"
-                transition={{ duration: 2 }}
+                exit={{ opacity: 0, transition: { duration: duration.med } }}
+                transition={{ duration: duration.ambient }}
                 className="fixed inset-0 z-0 pointer-events-none overflow-hidden opacity-50 isolate"
                 aria-hidden="true"
             >

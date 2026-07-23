@@ -6,6 +6,7 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
+import { useReducedMotion } from "motion/react";
 
 interface MousePosition {
   x: number;
@@ -46,6 +47,7 @@ const Avatar = ({ isDarkMode }: { isDarkMode: boolean }) => {
   const [isBlinking, setIsBlinking] = useState(false);
 
   const svgRef = useRef<SVGSVGElement>(null);
+  const reduce = useReducedMotion();
 
   // Memoized theme colors to prevent recalculation
   const themeColors: ThemeColors = useMemo(
@@ -67,8 +69,10 @@ const Avatar = ({ isDarkMode }: { isDarkMode: boolean }) => {
     [isDarkMode]
   );
 
-  // Optimized blinking with cleanup
+  // Optimized blinking with cleanup — skipped entirely under reduced motion.
   useEffect(() => {
+    if (reduce) return;
+
     const getRandomBlinkInterval = () => 3000 + Math.random() * 2000;
 
     let timeoutId: NodeJS.Timeout;
@@ -94,10 +98,12 @@ const Avatar = ({ isDarkMode }: { isDarkMode: boolean }) => {
       clearTimeout(timeoutId);
       clearTimeout(blinkTimeoutId);
     };
-  }, [isHovering]);
+  }, [isHovering, reduce]);
 
-  // Throttled mouse tracking for performance
+  // Throttled mouse tracking for performance — no-op under reduced motion, eyes stay centered.
   useEffect(() => {
+    if (reduce) return;
+
     let animationFrame: number;
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -112,12 +118,12 @@ const Avatar = ({ isDarkMode }: { isDarkMode: boolean }) => {
       window.removeEventListener("mousemove", handleMouseMove);
       cancelAnimationFrame(animationFrame);
     };
-  }, []);
+  }, [reduce]);
 
   // Optimized eye position calculation
   const calculateEyePosition = useCallback(
     (eyeCenterX: number, eyeCenterY: number): EyePosition => {
-      if (isHovering || !svgRef.current) return { x: 0, y: 0 };
+      if (reduce || isHovering || !svgRef.current) return { x: 0, y: 0 };
 
       const svgRect = svgRef.current.getBoundingClientRect();
       const actualEyeCenterX =
@@ -138,7 +144,7 @@ const Avatar = ({ isDarkMode }: { isDarkMode: boolean }) => {
         y: Math.sin(angle) * distance * 0.5,
       };
     },
-    [mousePos, isHovering]
+    [mousePos, isHovering, reduce]
   );
 
   // Update both eye positions together

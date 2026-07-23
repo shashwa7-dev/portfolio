@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView, useReducedMotion } from "motion/react";
-import { ease } from "@/lib/motionVariants";
+import { ease, duration } from "@/lib/motionVariants";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -56,9 +56,9 @@ export default function Marker({
           initial={{ pathLength: reduce ? 1 : 0, opacity: reduce ? 1 : 0 }}
           animate={{ pathLength: drawn ? 1 : 0, opacity: drawn ? 1 : 0 }}
           transition={{
-            pathLength: { duration: reduce ? 0 : 0.7, delay: reduce ? 0 : delay, ease: ease.out },
+            pathLength: { duration: reduce ? 0 : duration.draw, delay: reduce ? 0 : delay, ease: ease.out },
             // snap visible exactly when the draw starts so no stray cap-dots show at rest
-            opacity: { duration: 0.01, delay: reduce ? 0 : delay },
+            opacity: { duration: 0.01 /* snap, not a transition */, delay: reduce ? 0 : delay },
           }}
         />
       </svg>
