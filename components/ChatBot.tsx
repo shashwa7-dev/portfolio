@@ -371,7 +371,7 @@ const S7Bot = () => {
               </div>
               <button
                 onClick={handleClose}
-                className="rounded-lg p-1.5 hover:bg-elevated text-muted-foreground transition-colors"
+                className="rounded-lg p-1.5 hover:bg-elevated text-muted-foreground transition-[color,background-color,transform] duration-150 ease-[--ease-out] active:scale-[0.94]"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -415,6 +415,7 @@ const S7Bot = () => {
                         initial="hidden"
                         animate="visible"
                         transition={{ delay: 0.1 + idx * 0.05 }}
+                        whileTap={tapPress}
                         onClick={() => sendMessage(prompt)}
                         className="w-full flex items-center gap-2 text-left rounded-xl border border-border bg-card px-3 py-2.5 text-xs text-muted-foreground hover:border-border-strong hover:text-foreground transition-colors"
                       >
@@ -500,7 +501,7 @@ const S7Bot = () => {
                     initial="hidden"
                     animate="visible"
                     exit="exit"
-                    className="absolute bottom-2 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-[11px] text-muted-foreground shadow-md hover:text-foreground"
+                    className="absolute bottom-2 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-[11px] text-muted-foreground shadow-md transition-[color,transform] duration-150 ease-[--ease-out] hover:text-foreground active:scale-[0.94]"
                   >
                     <ArrowDown className="h-3 w-3" /> New messages
                   </motion.button>
@@ -524,7 +525,7 @@ const S7Bot = () => {
                 <button
                   type="submit"
                   disabled={isStreaming || !message.trim()}
-                  className="flex items-center justify-center h-9 w-9 rounded-xl bg-accent text-accent-foreground hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
+                  className="flex items-center justify-center h-9 w-9 rounded-xl bg-accent text-accent-foreground hover:opacity-90 transition-[opacity,transform] duration-150 ease-[--ease-out] disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0 active:scale-[0.94]"
                 >
                   <Send className="h-4 w-4" />
                 </button>

@@ -14,7 +14,16 @@ export default function AvatarWithThemeSwitch() {
       <div className="flex items-center w-fit absolute -bottom-3 left-0 right-0 mx-auto rounded-xl border-4 overflow-hidden bg-card p-1 gap-2">
         <div
           onClick={toggleDarkMode}
-          className="w-3 h-3 cursor-pointer transition-transform duration-500 ease-in-out hover:scale-110"
+          role="button"
+          tabIndex={0}
+          aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              toggleDarkMode();
+            }
+          }}
+          className="w-3 h-3 cursor-pointer transition-transform duration-500 ease-in-out hover:scale-110 active:scale-95"
         >
           {isDarkMode ? (
             <SVGS.Moon className="w-full h-full" />

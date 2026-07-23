@@ -106,7 +106,7 @@ export default function KeyboardShortcuts() {
                 type="button"
                 onClick={() => setHelpOpen(false)}
                 aria-label="Close"
-                className="text-subtle transition-colors hover:text-foreground"
+                className="text-subtle transition-[color,transform] duration-150 ease-[--ease-out] hover:text-foreground active:scale-[0.94]"
               >
                 <X className="h-4 w-4" />
               </button>

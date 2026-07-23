@@ -35,7 +35,7 @@ export default function WorkProjectPage({
         {/* Back link */}
         <Link
           href={`/work/${org.slug}`}
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-[color,transform] duration-150 ease-[--ease-out] active:scale-[0.97]"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to {org.name}
@@ -167,7 +167,7 @@ export default function WorkProjectPage({
                     href={project.links.web}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors text-sm"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-[color,background-color,transform] duration-150 ease-[--ease-out] text-sm active:scale-[0.97]"
                   >
                     <ExternalLink className="w-4 h-4" />
                     Visit Website
@@ -178,7 +178,7 @@ export default function WorkProjectPage({
                     href={project.links.github}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors text-sm"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-[color,background-color,transform] duration-150 ease-[--ease-out] text-sm active:scale-[0.97]"
                   >
                     <ExternalLink className="w-4 h-4" />
                     GitHub
@@ -189,7 +189,7 @@ export default function WorkProjectPage({
                     href={project.links.twitter}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors text-sm"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-[color,background-color,transform] duration-150 ease-[--ease-out] text-sm active:scale-[0.97]"
                   >
                     <ExternalLink className="w-4 h-4" />
                     Twitter
@@ -200,7 +200,7 @@ export default function WorkProjectPage({
                     href={project.links.opensea}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors text-sm"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-[color,background-color,transform] duration-150 ease-[--ease-out] text-sm active:scale-[0.97]"
                   >
                     <ExternalLink className="w-4 h-4" />
                     OpenSea
