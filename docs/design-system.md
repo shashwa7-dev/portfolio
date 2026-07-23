@@ -300,6 +300,16 @@ All animation is powered by **Motion** (Framer Motion, imported as `motion/react
 
 All CSS animations and transitions are collapsed to `0.01ms` when `prefers-reduced-motion: reduce` is set (handled globally in `globals.css`). Motion (Framer Motion) respects this automatically via `useReducedMotion` in the `Reveal` component.
 
+### Motion tokens (live at /motion)
+
+`/motion` renders every token below as a replayable demo. The scale:
+
+- **Durations**: `duration.fast 150ms` (hovers, exits, tooltips) / `duration.base 200ms` (popovers, dropdowns, modals) / `duration.med 300ms` (crossfades, opacity beats) / `duration.slow 400ms` (reveals, page-level entrances) / `duration.hero 500ms` (hero emphasis moments)
+- **Easings**: `ease.out`, `ease.modal`, `ease.expo`
+- **Stagger**: fixed per-item steps, see `lib/motionVariants.ts`
+
+Rules: exits animate faster than enters; keyboard surfaces (command palette, shortcuts overlay) are near-instant; no literal durations or easing curves outside `lib/motionVariants.ts` (CSS mirrors them as custom properties in `globals.css`).
+
 ---
 
 ## Copywriting Rules

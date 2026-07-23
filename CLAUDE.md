@@ -48,7 +48,7 @@ Concrete triggers that REQUIRE a memory-file update:
 ## Other conventions in this repo
 
 - **No em-dashes** in any user-facing copy. Use periods, colons, parentheses, or rephrase. (This applies to UI strings, blog content, and `data/agent-memory.md` itself.)
-- **All Framer Motion variants and tokens** live in `lib/motionVariants.ts`. Never paste literal easings like `[0.22, 1, 0.36, 1]` or duration numbers like `0.4` into a component — import the named token instead.
+- **All Framer Motion variants and tokens** live in `lib/motionVariants.ts`, mirrored as CSS custom properties in `app/globals.css`. Never paste literal easings like `[0.22, 1, 0.36, 1]` or duration numbers like `0.4` into a component — import the named token instead. A vendored `transitions-dev` skill with production-ready patterns lives at `.claude/skills/transitions-dev/`.
 - **All Marker highlight helpers** go through `lib/markerHighlight.ts` (`withMarker`, `fullMarker`).
 - **All markdown-emitter routes** (`app/*/markdown/route.ts`) use `lib/markdownResponse.ts` for the response factory + frontmatter helpers.
 - **Page padding** is standardized at `py-8 md:py-12` on the `<main>` of every secondary route. Match this when adding a new top-level route.
@@ -77,4 +77,5 @@ npm run lint     # next lint
 - Project case-study: `app/work/[org]/[project]/page.tsx`.
 - Blog: `app/blogs/*` with MDX posts under `app/blogs/posts/`.
 - Skills index: `app/skills/page.tsx` reads `.claude/skills/<slug>/SKILL.md`.
+- Motion system: `app/motion/page.tsx` + `components/motion/` — live demos of the motionVariants tokens.
 - Agent discovery: `app/robots.txt/route.ts`, `public/.well-known/llms.txt`, `app/markdown/route.ts`, `middleware.ts`, `docs/dns-aid.md`.

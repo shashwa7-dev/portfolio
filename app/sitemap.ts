@@ -20,6 +20,10 @@ export default async function sitemap() {
       url: `${baseUrl}books`,
       lastModified: today,
     },
+    {
+      url: `${baseUrl}motion`,
+      lastModified: today,
+    },
   ];
 
   const projects = getAllSideProjects().map((p) => ({

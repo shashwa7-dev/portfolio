@@ -700,6 +700,16 @@ export default function DesignPage() {
             </code>{" "}
             to get a fade-up on first viewport entry.
           </p>
+          <p className="mt-3 text-[13px] text-muted-foreground">
+            See these tokens live and replayable at{" "}
+            <Link
+              href="/motion"
+              className="text-foreground underline decoration-accent/50 underline-offset-4 hover:decoration-accent"
+            >
+              /motion
+            </Link>
+            .
+          </p>
         </div>
       </Section>
 
