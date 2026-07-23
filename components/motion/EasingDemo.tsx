@@ -19,8 +19,14 @@ export default function EasingDemo() {
             <motion.div
               className="absolute -top-1 h-4 w-4 rounded-full bg-accent"
               initial={{ left: "0%" }}
-              animate={{ left: "calc(100% - 16px)" }}
-              transition={{ duration: duration.hero, ease: c.value }}
+              animate={{ left: ["0%", "calc(100% - 16px)", "0%"] }}
+              transition={{
+                duration: duration.hero * 2,
+                ease: c.value,
+                repeat: Infinity,
+                repeatDelay: duration.med,
+                times: [0, 0.5, 1],
+              }}
             />
           </div>
         </div>

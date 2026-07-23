@@ -47,11 +47,14 @@ export default function MotionPage() {
           variables. motion/react drives anything with state or exits; plain CSS handles hovers and loops. Durations stay
           under 300ms for UI, exits run faster than enters, and keyboard-summoned surfaces barely animate at all.
         </p>
+        <p className="mt-3 font-mono text-xs text-subtle">
+          Every card below is live. Click a stage to replay it, or interact with the ones that invite it.
+        </p>
         <Bento className="mt-8 grid-cols-1 md:grid-cols-2">
-          <DemoCard title="Easing curves" engine="motion/react" tokens={["ease.out", "ease.modal", "ease.expo"]}>
+          <DemoCard title="Easing curves" engine="motion/react" tokens={["ease.out", "ease.modal", "ease.expo"]} loop>
             <EasingDemo />
           </DemoCard>
-          <DemoCard title="Duration scale" engine="motion/react" tokens={["duration.fast → hero"]}>
+          <DemoCard title="Duration scale" engine="motion/react" tokens={["duration.fast → hero"]} loop>
             <DurationDemo />
           </DemoCard>
         </Bento>
@@ -71,6 +74,7 @@ export default function MotionPage() {
             engine="motion/react"
             tokens={["spring.soft", "spring.pop", "spring.hoverIn"]}
             replayable={false}
+            hint="click to toggle"
           >
             <SpringDemo />
           </DemoCard>
@@ -79,6 +83,7 @@ export default function MotionPage() {
             engine="CSS"
             tokens={["active:scale-[0.97]", "tapPress"]}
             replayable={false}
+            hint="press and hold"
           >
             <PressDemo />
           </DemoCard>
@@ -87,6 +92,7 @@ export default function MotionPage() {
             engine="motion/react"
             tokens={["duration.fast", "ease.out", "blur(2px)"]}
             replayable={false}
+            hint="click to swap"
           >
             <TextSwapDemo />
           </DemoCard>
@@ -95,7 +101,13 @@ export default function MotionPage() {
       <Divider />
       <Section number="03" label="in the wild" title="Patterns used on this site" width="reading">
         <Bento className="grid-cols-1 md:grid-cols-2">
-          <DemoCard title="Hero word cycle" engine="CSS" tokens={["wordCycle", "ease.expo", "duration.slow"]} replayable={false}>
+          <DemoCard
+            title="Hero word cycle"
+            engine="CSS"
+            tokens={["wordCycle", "ease.expo", "duration.slow"]}
+            replayable={false}
+            hint="loops continuously"
+          >
             <WordCycleDemo />
           </DemoCard>
           <DemoCard title="Marker draw" engine="motion/react" tokens={["duration.draw", "ease.out"]}>
@@ -106,6 +118,7 @@ export default function MotionPage() {
             engine="motion/react"
             tokens={["layoutId", "duration.base", "ease.out"]}
             replayable={false}
+            hint="click a tab"
           >
             <SlidingTabsDemo />
           </DemoCard>
@@ -114,6 +127,7 @@ export default function MotionPage() {
             engine="CSS"
             tokens={["grid-template-rows", "duration.med", "ease.out"]}
             replayable={false}
+            hint="click to expand"
           >
             <AccordionDemo />
           </DemoCard>

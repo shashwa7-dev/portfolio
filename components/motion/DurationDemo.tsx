@@ -18,8 +18,15 @@ export default function DurationDemo() {
             <motion.div
               className="h-full origin-left rounded-full bg-accent"
               initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: d.s, ease: ease.out }}
+              animate={{ scaleX: [0, 1, 1, 0] }}
+              transition={{
+                duration: duration.hero * 2,
+                ease: ease.out,
+                repeat: Infinity,
+                repeatDelay: duration.med,
+                // grow over the token's real fraction of the shared window, hold, then reset
+                times: [0, d.s / (duration.hero * 2), 0.85, 1],
+              }}
             />
           </div>
           <span className="w-12 text-right font-mono text-[10px] text-subtle">{d.s * 1000}ms</span>
