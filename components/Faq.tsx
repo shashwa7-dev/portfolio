@@ -1,4 +1,4 @@
-import { ChevronDown } from "lucide-react";
+import Accordion from "@/components/common/Accordion";
 import Section from "@/components/layout/Section";
 import { faqLd } from "@/lib/seo";
 
@@ -18,15 +18,11 @@ export default function Faq() {
         suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd(faqs)) }}
       />
-      <div className="overflow-hidden rounded-2xl border border-border divide-y divide-border">
+      <div className="overflow-hidden rounded-2xl border border-border">
         {faqs.map((f) => (
-          <details key={f.q} className="group [&_summary::-webkit-details-marker]:hidden">
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 font-medium text-foreground transition-colors hover:bg-card">
-              <span>{f.q}</span>
-              <ChevronDown className="h-4 w-4 shrink-0 text-subtle transition-transform duration-200 group-open:rotate-180" />
-            </summary>
-            <p className="px-5 pb-4 text-[15px] leading-relaxed text-muted-foreground">{f.a}</p>
-          </details>
+          <Accordion key={f.q} summary={f.q}>
+            {f.a}
+          </Accordion>
         ))}
       </div>
     </Section>
