@@ -20,6 +20,20 @@ export const duration = {
   med: 0.3,
   slow: 0.4,
   hero: 0.5,
+  /** Long draw-on strokes (Marker underline). */
+  draw: 0.7,
+} as const;
+
+/** Per-item stagger offsets (seconds). Use instead of literal `i * 0.05`. */
+export const stagger = {
+  /** Tight lists: chips, palette rows. */
+  tight: 0.04,
+  /** Default list/grid stagger. */
+  base: 0.06,
+  /** Card grids, nav cards. */
+  loose: 0.08,
+  /** Sequenced page sections (404 page blocks). */
+  section: 0.2,
 } as const;
 
 /**
@@ -62,16 +76,6 @@ export const containerVariants: Variants = {
   },
 };
 
-/** Container that slides itself up while staggering children. */
-export const slideUpContainerVariants: Variants = {
-  hidden: { opacity: 0, y: 16 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { staggerChildren: 0.06, ease: ease.out, duration: duration.slow },
-  },
-};
-
 /** Default child item for stagger containers. */
 export const itemVariants: Variants = {
   hidden: { opacity: 0, y: 12 },
@@ -100,29 +104,29 @@ export const slideUpVariants: Variants = {
 /** Popover that drops down from above (`y:-8`) with a touch of scale. */
 export const popoverDownVariants: Variants = {
   hidden: { opacity: 0, y: -8, scale: 0.98 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.18, ease: ease.out } },
-  exit: { opacity: 0, y: -8, scale: 0.98, transition: { duration: 0.18, ease: ease.out } },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: duration.base, ease: ease.out } },
+  exit: { opacity: 0, y: -8, scale: 0.98, transition: { duration: duration.fast, ease: ease.out } },
 };
 
 /** Popover that floats up from below — small toasts, notification bubbles. */
 export const popoverUpVariants: Variants = {
   hidden: { opacity: 0, y: 10, scale: 0.95 },
   visible: { opacity: 1, y: 0, scale: 1, transition: { duration: duration.base } },
-  exit: { opacity: 0, y: 10, scale: 0.95, transition: { duration: duration.base } },
+  exit: { opacity: 0, y: 10, scale: 0.95, transition: { duration: duration.fast } },
 };
 
 /** Modal/dialog panel — gentle scale with a custom curve. */
 export const dialogPopVariants: Variants = {
   hidden: { opacity: 0, scale: 0.96 },
   visible: { opacity: 1, scale: 1, transition: { duration: duration.base, ease: ease.modal } },
-  exit: { opacity: 0, scale: 0.98, transition: { duration: duration.base, ease: ease.modal } },
+  exit: { opacity: 0, scale: 0.98, transition: { duration: duration.fast, ease: ease.modal } },
 };
 
 /** Pure fade for backdrops / overlays. */
 export const backdropFadeVariants: Variants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { duration: duration.base, ease: ease.modal } },
-  exit: { opacity: 0, transition: { duration: duration.base, ease: ease.modal } },
+  exit: { opacity: 0, transition: { duration: duration.fast, ease: ease.modal } },
 };
 
 /** FAB pop-in: starts small + rotated, lands upright. Exits fast. */
@@ -142,8 +146,8 @@ export const chatWindowVariants: Variants = {
 /** Accordion-style height collapse. Pair with overflow-hidden on the consumer. */
 export const collapseHeightVariants: Variants = {
   hidden: { opacity: 0, height: 0 },
-  visible: { opacity: 1, height: "auto" },
-  exit: { opacity: 0, height: 0 },
+  visible: { opacity: 1, height: "auto", transition: { duration: duration.med, ease: ease.out } },
+  exit: { opacity: 0, height: 0, transition: { duration: duration.base, ease: ease.out } },
 };
 
 /** Compact pill that floats up a few pixels — "new messages" indicators, small toasts. */
@@ -159,7 +163,6 @@ export const pillUpVariants: Variants = {
 // These are animation targets, not full variants. Compose them with
 // a transition prop on the consumer if a non-default feel is needed.
 
-export const hoverLift = { scale: 1.06 } as const;
 export const hoverLiftRotate = { scale: 1.06, rotate: -3 } as const;
 export const hoverZoom = { scale: 1.08 } as const;
 export const tapPress = { scale: 0.94 } as const;
