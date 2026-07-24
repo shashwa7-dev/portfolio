@@ -141,6 +141,13 @@ export default function MotionPage() {
           <Link href="/skills" className="underline decoration-accent/50 underline-offset-4 hover:decoration-accent">
             skills page
           </Link>
+          . For the theory behind these choices, read the{" "}
+          <Link
+            href="/motion/principles"
+            className="underline decoration-accent/50 underline-offset-4 hover:decoration-accent"
+          >
+            12 principles applied to UI
+          </Link>
           .
         </p>
       </Section>
