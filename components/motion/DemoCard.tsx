@@ -48,7 +48,7 @@ export default function DemoCard({
 
   return (
     <div ref={ref} className="flex flex-col bg-card">
-      <div className="relative border-b border-border">
+      <div className="relative border-border">
         {canReplay && (
           <button
             type="button"
@@ -73,7 +73,7 @@ export default function DemoCard({
         )}
       </div>
 
-      <div className="flex items-start justify-between gap-3 p-4">
+      <div className="flex items-start justify-between gap-3 p-4 mt-auto border-t">
         <div className="min-w-0">
           <h3 className="font-serif text-[15px] leading-tight text-foreground">{title}</h3>
           <p className="mt-1 truncate font-mono text-[10px] text-subtle">{tokens.join("  ·  ")}</p>

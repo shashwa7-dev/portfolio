@@ -41,13 +41,13 @@ export default function MotionPage() {
   return (
     <main className="py-8 md:py-12">
       <Section number="01" label="foundation" title="One scale, two engines" width="reading">
-        <p className="text-muted-foreground">
+        <p className="text-muted-foreground mb-10">
           Every animation on this site reads from the same tokens in{" "}
           <code className="rounded bg-card px-1 py-0.5 font-mono text-xs">lib/motionVariants.ts</code>, mirrored as CSS
           variables. motion/react drives anything with state or exits; plain CSS handles hovers and loops. Durations stay
           under 300ms for UI, exits run faster than enters, and keyboard-summoned surfaces barely animate at all.
         </p>
-        <Bento className="mt-10 grid-cols-1">
+        <Bento className="grid-cols-2 ">
           <DemoCard title="Easing curves" engine="motion/react" tokens={["ease.out", "ease.modal", "ease.expo"]} loop>
             <EasingDemo />
           </DemoCard>
