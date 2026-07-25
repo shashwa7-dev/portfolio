@@ -5,17 +5,15 @@ import { useInView } from "motion/react";
 import { RotateCcw } from "lucide-react";
 
 /**
- * Bento cell for a motion demo: title, engine tag, token chips, and a stage.
+ * Bento cell for a motion demo: header (title + engine), a recessed stage, and
+ * a footer (token chips + hint).
  *
  * Three interaction modes, chosen per demo:
- * - `replayable` (default): the whole stage is a click-to-replay target with a
- *   visible hint, and the corner button replays too. For mount-triggered
- *   animations (reveals, draws, the principle demos).
- * - `replayable={false}` + `hint`: the demo owns its own interaction (a spring
- *   toggle, tabs, a like button). The stage is passive; the hint tells the user
- *   what to do ("click to toggle").
- * - `loop`: the demo animates continuously as a living reference (easing,
- *   duration scales). No replay affordance, it never goes static.
+ * - `replayable` (default): the whole stage is a click-to-replay target and the
+ *   corner button replays too. For mount-triggered animations.
+ * - `replayable={false}` + `hint`: the demo owns its interaction (a toggle, tabs,
+ *   a like button). The stage is passive; the hint says what to do.
+ * - `loop`: the demo animates continuously as a living reference. No replay.
  *
  * Children mount only once scrolled into view so enter animations are seen.
  */
@@ -41,21 +39,27 @@ export default function DemoCard({
   const inView = useInView(ref, { once: true, margin: "-80px" });
   const replay = () => setRunId((n) => n + 1);
 
-  // A looping demo drives itself; only mount-triggered demos expose replay.
   const canReplay = replayable && !loop;
-  const stageHint = hint ?? (canReplay ? "click to replay" : loop ? "loops continuously" : undefined);
+  const stageHint = hint ?? (canReplay ? "click to replay" : loop ? "loops" : undefined);
   const stage = (
-    <div key={runId} className="flex w-full items-center justify-center px-2">
+    <div key={runId} className="flex w-full items-center justify-center">
       {inView ? children : null}
     </div>
   );
+  const stageClass =
+    "relative flex min-h-[168px] flex-1 items-center justify-center overflow-hidden rounded-xl border border-border bg-background/50 px-6 py-8";
 
   return (
-    <div ref={ref} className="group/demo flex flex-col gap-4 bg-card p-6">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h3 className="font-serif text-lg text-foreground">{title}</h3>
-          <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-subtle">{engine}</p>
+    <div ref={ref} className="group/demo flex min-h-[300px] flex-col bg-card p-5">
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div className="space-y-1.5">
+          <h3 className="font-serif text-base leading-none text-foreground">{title}</h3>
+          <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-subtle">
+            <span
+              className={`h-1.5 w-1.5 rounded-full ${engine === "CSS" ? "bg-muted-foreground" : "bg-accent"}`}
+            />
+            {engine}
+          </span>
         </div>
         {canReplay && (
           <button
@@ -74,25 +78,26 @@ export default function DemoCard({
           type="button"
           onClick={replay}
           aria-label={`Replay ${title}`}
-          className="flex min-h-[140px] flex-1 cursor-pointer items-center justify-center rounded-xl border border-transparent transition-colors duration-150 ease-[--ease-out] hover:border-border hover:bg-elevated/40"
+          className={`${stageClass} cursor-pointer transition-colors duration-150 ease-[--ease-out] hover:border-border-strong hover:bg-background/70`}
         >
           {stage}
         </button>
       ) : (
-        <div className="flex min-h-[140px] flex-1 items-center justify-center">{stage}</div>
+        <div className={stageClass}>{stage}</div>
       )}
 
-      <div className="flex items-end justify-between gap-3">
+      <div className="mt-4 flex items-end justify-between gap-3">
         <div className="flex flex-wrap gap-1.5">
           {tokens.map((t) => (
-            <span key={t} className="rounded-full bg-accent/15 px-2 py-0.5 font-mono text-[10px] text-accent">
+            <span
+              key={t}
+              className="rounded-md bg-accent/10 px-1.5 py-0.5 font-mono text-[10px] text-accent"
+            >
               {t}
             </span>
           ))}
         </div>
-        {stageHint && (
-          <span className="shrink-0 font-mono text-[10px] text-subtle">{stageHint}</span>
-        )}
+        {stageHint && <span className="shrink-0 font-mono text-[10px] text-subtle">{stageHint}</span>}
       </div>
     </div>
   );
