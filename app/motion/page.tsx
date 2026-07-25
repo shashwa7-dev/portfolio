@@ -50,7 +50,7 @@ export default function MotionPage() {
         <p className="mt-4 font-mono text-xs text-subtle">
           Every card below is live. Click a stage to replay it, or interact with the ones that invite it.
         </p>
-        <Bento className="mt-10 grid-cols-1 md:mt-12 md:grid-cols-2">
+        <Bento className="mt-10 grid-cols-1 md:mt-12">
           <DemoCard title="Easing curves" engine="motion/react" tokens={["ease.out", "ease.modal", "ease.expo"]} loop>
             <EasingDemo />
           </DemoCard>
@@ -59,7 +59,6 @@ export default function MotionPage() {
             engine="motion/react"
             tokens={["duration.fast → hero"]}
             replayable={false}
-            hint="shorter finishes first"
           >
             <DurationDemo />
           </DemoCard>

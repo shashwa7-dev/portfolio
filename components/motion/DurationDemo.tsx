@@ -19,7 +19,7 @@ export default function DurationDemo() {
   const [racing, setRacing] = useState(false);
 
   return (
-    <div className="flex w-full max-w-sm flex-col gap-4">
+    <div className="mx-auto flex w-full max-w-md flex-col gap-5">
       <div className="space-y-3.5">
         {steps.map((d) => (
           <div key={d.name} className="flex items-center gap-3">

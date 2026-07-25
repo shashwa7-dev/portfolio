@@ -5,16 +5,15 @@ import { useInView } from "motion/react";
 import { RotateCcw } from "lucide-react";
 
 /**
- * Bento cell for a motion demo. A fixed-height canvas stage on top (the demo
- * lives here, vertically centered) with clean meta below. Every card is the
- * same height so a grid of them reads as one system.
+ * Bento cell for a motion demo: the demo sits in a stage sized to its content
+ * (a modest min-height keeps small demos from collapsing), with a compact meta
+ * strip below (title, tokens, engine). No token chips or hint labels, so a grid
+ * of cards reads clean.
  *
- * Interaction modes:
- * - `replayable` (default): the stage is a click-to-replay target; a small
- *   replay button floats in the corner. For mount-triggered animations.
- * - `replayable={false}` + `hint`: the demo owns its interaction. Stage is
- *   passive; the hint says what to do.
- * - `loop`: the demo runs continuously as a living reference. No replay.
+ * - `replayable` (default): stage is a click-to-replay target; a replay button
+ *   floats in the corner. For mount-triggered animations.
+ * - `replayable={false}`: the demo owns its interaction (a visible button/toggle).
+ * - `loop`: the demo runs continuously. No replay.
  *
  * Children mount only once scrolled into view so enter animations are seen.
  */
@@ -25,7 +24,6 @@ export default function DemoCard({
   children,
   replayable = true,
   loop = false,
-  hint,
 }: {
   title: string;
   engine: "motion/react" | "CSS";
@@ -33,25 +31,25 @@ export default function DemoCard({
   children: ReactNode;
   replayable?: boolean;
   loop?: boolean;
+  /** hint is accepted by callers but no longer rendered; interactivity is shown by the demo's own controls */
   hint?: string;
 }) {
   const [runId, setRunId] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
   const replay = () => setRunId((n) => n + 1);
-
   const canReplay = replayable && !loop;
-  const stageHint = hint ?? (loop ? "loops" : canReplay ? "click to replay" : undefined);
+
   const inner = (
-    <div key={runId} className="flex w-full items-center justify-center px-6">
+    <div key={runId} className="flex w-full items-center justify-center">
       {inView ? children : null}
     </div>
   );
-  const stageBase = "flex h-56 w-full items-center justify-center bg-background/40";
+  const stageBase = "relative flex min-h-[148px] flex-1 items-center justify-center px-6 py-8";
 
   return (
     <div ref={ref} className="flex flex-col bg-card">
-      <div className="relative border-b border-border">
+      <div className="relative flex flex-1 flex-col border-b border-border">
         {canReplay && (
           <button
             type="button"
@@ -67,7 +65,7 @@ export default function DemoCard({
             type="button"
             aria-label={`Replay ${title}`}
             onClick={replay}
-            className={`${stageBase} cursor-pointer transition-colors duration-150 ease-[--ease-out] hover:bg-background/70`}
+            className={`${stageBase} w-full cursor-pointer transition-colors duration-150 ease-[--ease-out] hover:bg-muted/20`}
           >
             {inner}
           </button>
@@ -76,31 +74,17 @@ export default function DemoCard({
         )}
       </div>
 
-      <div className="p-5">
-        <div className="flex items-center justify-between gap-3">
-          <h3 className="font-serif text-base leading-none text-foreground">{title}</h3>
-          <span className="inline-flex shrink-0 items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-subtle">
-            <span
-              className={`h-1.5 w-1.5 rounded-full ${engine === "CSS" ? "bg-muted-foreground" : "bg-accent"}`}
-            />
-            {engine}
-          </span>
+      <div className="flex items-start justify-between gap-3 p-4">
+        <div className="min-w-0">
+          <h3 className="font-serif text-[15px] leading-tight text-foreground">{title}</h3>
+          <p className="mt-1 truncate font-mono text-[10px] text-subtle">{tokens.join("  ·  ")}</p>
         </div>
-        <div className="mt-3 flex items-center justify-between gap-3">
-          <div className="flex flex-wrap gap-1.5">
-            {tokens.map((t) => (
-              <span
-                key={t}
-                className="rounded-md bg-accent/10 px-1.5 py-0.5 font-mono text-[10px] text-accent"
-              >
-                {t}
-              </span>
-            ))}
-          </div>
-          {stageHint && (
-            <span className="shrink-0 font-mono text-[10px] text-subtle">{stageHint}</span>
-          )}
-        </div>
+        <span className="inline-flex shrink-0 items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-subtle">
+          <span
+            className={`h-1.5 w-1.5 rounded-full ${engine === "CSS" ? "bg-muted-foreground" : "bg-accent"}`}
+          />
+          {engine}
+        </span>
       </div>
     </div>
   );

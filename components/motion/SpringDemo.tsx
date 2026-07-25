@@ -28,6 +28,7 @@ export default function SpringDemo() {
           </div>
         </div>
       ))}
+      <span className="block pt-1 text-center font-mono text-[10px] text-subtle">tap to move</span>
     </button>
   );
 }
