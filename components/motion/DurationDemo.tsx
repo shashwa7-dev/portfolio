@@ -4,41 +4,44 @@ import { useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { ease, duration } from "@/lib/motionVariants";
 
+const max = duration.hero;
 const steps = (["fast", "base", "med", "slow", "hero"] as const).map((k) => ({
   name: `duration.${k}`,
   s: duration[k],
+  // bar length is proportional to duration, so the scale reads at rest
+  pct: (duration[k] / max) * 100,
 }));
 
 /**
- * A race: every dot travels the same track, each over its own token duration,
- * so the ordering (fast arrives first, hero last) is the visible lesson. The
- * user drives it with race / reset instead of watching a passive loop.
+ * Each bar fills from empty over its own token duration, all starting together
+ * on race. duration.fast reaches full while duration.hero is still filling, so
+ * the speed difference is the visible lesson. The user drives it with the
+ * button (remount replays the fill).
  */
 export default function DurationDemo() {
   const reduce = useReducedMotion();
-  const [racing, setRacing] = useState(false);
+  const [runId, setRunId] = useState(0);
 
   return (
-    <div className="mx-auto flex w-full max-w-md flex-col gap-5">
-      <div className="space-y-3.5">
+    <div className="mx-auto flex w-full max-w-md flex-col gap-6">
+      <div key={runId} className="space-y-3.5">
         {steps.map((d) => (
           <div key={d.name} className="flex items-center gap-3">
             <span className="w-24 shrink-0 font-mono text-[10px] text-subtle">{d.name}</span>
-            <div
-              className={`relative flex h-2 flex-1 items-center ${
-                racing ? "justify-end" : "justify-start"
-              }`}
-            >
-              {/* race lane + finish line */}
-              <span className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-border" />
-              <span className="absolute right-0 top-1/2 h-2.5 w-px -translate-y-1/2 bg-border-strong" />
-              <motion.div
-                layout
-                transition={reduce ? { duration: 0 } : { duration: d.s, ease: ease.out }}
-                className="relative h-2 w-2 rounded-full bg-accent"
-              />
+            <div className="flex h-1.5 flex-1 items-center">
+              <div
+                className="h-full overflow-hidden rounded-full bg-muted"
+                style={{ width: `${d.pct}%` }}
+              >
+                <motion.div
+                  className="h-full origin-left rounded-full bg-accent"
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={reduce ? { duration: 0 } : { duration: d.s, ease: ease.out }}
+                />
+              </div>
             </div>
-            <span className="w-11 shrink-0 text-right font-mono text-[10px] text-subtle">
+            <span className="w-11 shrink-0 text-right font-mono text-[10px] tabular-nums text-subtle">
               {d.s * 1000}ms
             </span>
           </div>
@@ -46,10 +49,10 @@ export default function DurationDemo() {
       </div>
       <button
         type="button"
-        onClick={() => setRacing((r) => !r)}
+        onClick={() => setRunId((n) => n + 1)}
         className="self-center rounded-full border border-border-strong px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground transition-[color,background-color,transform] duration-150 ease-[--ease-out] hover:bg-muted hover:text-foreground active:scale-[0.97]"
       >
-        {racing ? "reset" : "race"}
+        race again
       </button>
     </div>
   );

@@ -5,10 +5,10 @@ import { useInView } from "motion/react";
 import { RotateCcw } from "lucide-react";
 
 /**
- * Bento cell for a motion demo. The stage is only padding around the demo, so
- * it is always exactly as tall as its content (no flex-grow, no min-height, so
- * no empty band can form). A compact meta strip below carries the title, a
- * subtle token line, and the engine tag.
+ * Bento cell for a motion demo. The stage grows to fill the card and centers
+ * the demo, so cards of different content still read as one system (the demo
+ * sits in the optical middle, with symmetric padding, never top-pinned with a
+ * dead gap below). A compact meta strip is pinned to the bottom.
  *
  * - `replayable` (default): stage is a click-to-replay target; a replay button
  *   floats in the corner. For mount-triggered animations.
@@ -45,10 +45,11 @@ export default function DemoCard({
       {inView ? children : null}
     </div>
   );
+  const stageBase = "flex flex-1 items-center justify-center px-6 py-9";
 
   return (
     <div ref={ref} className="flex flex-col bg-card">
-      <div className="relative border-border">
+      <div className="relative flex flex-1 flex-col">
         {canReplay && (
           <button
             type="button"
@@ -64,16 +65,16 @@ export default function DemoCard({
             type="button"
             aria-label={`Replay ${title}`}
             onClick={replay}
-            className="flex w-full cursor-pointer items-center justify-center px-6 py-10 transition-colors duration-150 ease-[--ease-out] hover:bg-muted/20"
+            className={`${stageBase} w-full cursor-pointer transition-colors duration-150 ease-[--ease-out] hover:bg-muted/20`}
           >
             {inner}
           </button>
         ) : (
-          <div className="flex items-center justify-center px-6 py-10">{inner}</div>
+          <div className={stageBase}>{inner}</div>
         )}
       </div>
 
-      <div className="flex items-start justify-between gap-3 p-4 mt-auto border-t">
+      <div className="flex items-center justify-between gap-3 border-t border-border p-4">
         <div className="min-w-0">
           <h3 className="font-serif text-[15px] leading-tight text-foreground">{title}</h3>
           <p className="mt-1 truncate font-mono text-[10px] text-subtle">{tokens.join("  ·  ")}</p>
