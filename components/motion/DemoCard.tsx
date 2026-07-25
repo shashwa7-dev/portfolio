@@ -5,10 +5,10 @@ import { useInView } from "motion/react";
 import { RotateCcw } from "lucide-react";
 
 /**
- * Bento cell for a motion demo: the demo sits in a stage sized to its content
- * (a modest min-height keeps small demos from collapsing), with a compact meta
- * strip below (title, tokens, engine). No token chips or hint labels, so a grid
- * of cards reads clean.
+ * Bento cell for a motion demo. The stage is only padding around the demo, so
+ * it is always exactly as tall as its content (no flex-grow, no min-height, so
+ * no empty band can form). A compact meta strip below carries the title, a
+ * subtle token line, and the engine tag.
  *
  * - `replayable` (default): stage is a click-to-replay target; a replay button
  *   floats in the corner. For mount-triggered animations.
@@ -31,7 +31,7 @@ export default function DemoCard({
   children: ReactNode;
   replayable?: boolean;
   loop?: boolean;
-  /** hint is accepted by callers but no longer rendered; interactivity is shown by the demo's own controls */
+  /** accepted for API compatibility; interactivity is shown by the demo's own controls */
   hint?: string;
 }) {
   const [runId, setRunId] = useState(0);
@@ -45,11 +45,10 @@ export default function DemoCard({
       {inView ? children : null}
     </div>
   );
-  const stageBase = "relative flex min-h-[148px] flex-1 items-center justify-center px-6 py-8";
 
   return (
     <div ref={ref} className="flex flex-col bg-card">
-      <div className="relative flex flex-1 flex-col border-b border-border">
+      <div className="relative border-b border-border">
         {canReplay && (
           <button
             type="button"
@@ -65,12 +64,12 @@ export default function DemoCard({
             type="button"
             aria-label={`Replay ${title}`}
             onClick={replay}
-            className={`${stageBase} w-full cursor-pointer transition-colors duration-150 ease-[--ease-out] hover:bg-muted/20`}
+            className="flex w-full cursor-pointer items-center justify-center px-6 py-10 transition-colors duration-150 ease-[--ease-out] hover:bg-muted/20"
           >
             {inner}
           </button>
         ) : (
-          <div className={stageBase}>{inner}</div>
+          <div className="flex items-center justify-center px-6 py-10">{inner}</div>
         )}
       </div>
 
@@ -79,7 +78,7 @@ export default function DemoCard({
           <h3 className="font-serif text-[15px] leading-tight text-foreground">{title}</h3>
           <p className="mt-1 truncate font-mono text-[10px] text-subtle">{tokens.join("  ·  ")}</p>
         </div>
-        <span className="inline-flex shrink-0 items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-subtle">
+        <span className="inline-flex shrink-0 items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-subtle">
           <span
             className={`h-1.5 w-1.5 rounded-full ${engine === "CSS" ? "bg-muted-foreground" : "bg-accent"}`}
           />
