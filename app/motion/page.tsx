@@ -54,7 +54,13 @@ export default function MotionPage() {
           <DemoCard title="Easing curves" engine="motion/react" tokens={["ease.out", "ease.modal", "ease.expo"]} loop>
             <EasingDemo />
           </DemoCard>
-          <DemoCard title="Duration scale" engine="motion/react" tokens={["duration.fast → hero"]} loop>
+          <DemoCard
+            title="Duration scale"
+            engine="motion/react"
+            tokens={["duration.fast → hero"]}
+            replayable={false}
+            hint="shorter finishes first"
+          >
             <DurationDemo />
           </DemoCard>
         </Bento>
