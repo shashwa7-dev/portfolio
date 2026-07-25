@@ -2,7 +2,6 @@ import Link from "next/link";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl } from "@/lib/seo";
 import Section from "@/components/layout/Section";
-import Bento from "@/components/layout/Bento";
 import Divider from "@/components/layout/Divider";
 import DemoCard from "@/components/motion/DemoCard";
 import EasingDemo from "@/components/motion/EasingDemo";
@@ -47,7 +46,7 @@ export default function MotionPage() {
           variables. motion/react drives anything with state or exits; plain CSS handles hovers and loops. Durations stay
           under 300ms for UI, exits run faster than enters, and keyboard-summoned surfaces barely animate at all.
         </p>
-        <Bento className="grid-cols-1">
+        <div className="grid grid-cols-1 gap-5">
           <DemoCard title="Easing curves" engine="motion/react" tokens={["ease.out", "ease.modal", "ease.expo"]} loop>
             <EasingDemo />
           </DemoCard>
@@ -59,11 +58,11 @@ export default function MotionPage() {
           >
             <DurationDemo />
           </DemoCard>
-        </Bento>
+        </div>
       </Section>
       <Divider />
       <Section number="02" label="primitives" title="Variants and springs" width="reading">
-        <Bento className="grid-cols-1 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <DemoCard
             title="Stagger reveal"
             engine="motion/react"
@@ -98,11 +97,11 @@ export default function MotionPage() {
           >
             <TextSwapDemo />
           </DemoCard>
-        </Bento>
+        </div>
       </Section>
       <Divider />
       <Section number="03" label="in the wild" title="Patterns used on this site" width="reading">
-        <Bento className="grid-cols-1 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <DemoCard
             title="Hero word cycle"
             engine="CSS"
@@ -133,7 +132,7 @@ export default function MotionPage() {
           >
             <AccordionDemo />
           </DemoCard>
-        </Bento>
+        </div>
         <p className="mt-8 text-sm text-muted-foreground">
           Color, type, and spacing live in the{" "}
           <Link href="/design" className="underline decoration-accent/50 underline-offset-4 hover:decoration-accent">

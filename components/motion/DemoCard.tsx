@@ -45,10 +45,10 @@ export default function DemoCard({
       {inView ? children : null}
     </div>
   );
-  const stageBase = "flex flex-1 items-center justify-center px-6 py-9";
+  const stageBase = "flex flex-1 items-center justify-center px-8 py-12";
 
   return (
-    <div ref={ref} className="flex flex-col bg-card">
+    <div ref={ref} className="flex flex-col overflow-hidden rounded-2xl border border-border bg-card">
       <div className="relative flex flex-1 flex-col">
         {canReplay && (
           <button
@@ -74,7 +74,7 @@ export default function DemoCard({
         )}
       </div>
 
-      <div className="flex items-center justify-between gap-3 border-t border-border p-4">
+      <div className="flex items-center justify-between gap-3 border-t border-border p-5">
         <div className="min-w-0">
           <h3 className="font-serif text-[15px] leading-tight text-foreground">{title}</h3>
           <p className="mt-1 truncate font-mono text-[10px] text-subtle">{tokens.join("  ·  ")}</p>
