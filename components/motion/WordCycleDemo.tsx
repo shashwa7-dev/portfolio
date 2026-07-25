@@ -1,12 +1,14 @@
 "use client";
 
+import { useReducedMotion } from "motion/react";
 import { wordCycle } from "@/lib/motionVariants";
 import { useHeadingCycle } from "@/lib/useHeadingCycle";
 
 const phrases = ["enters word by word", "holds for a beat", "exits and loops"];
 
 export default function WordCycleDemo() {
-  const { words, visibleWords, exitWords, phase } = useHeadingCycle(phrases);
+  const reduce = useReducedMotion();
+  const { words, visibleWords, exitWords, phase } = useHeadingCycle(phrases, !!reduce);
 
   return (
     <p className="font-serif text-2xl italic text-accent-hover">

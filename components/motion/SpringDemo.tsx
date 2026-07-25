@@ -14,7 +14,12 @@ export default function SpringDemo() {
   const [right, setRight] = useState(false);
 
   return (
-    <button type="button" onClick={() => setRight((r) => !r)} className="w-full space-y-3" aria-label="Toggle springs">
+    <button
+      type="button"
+      onClick={() => setRight((r) => !r)}
+      className="w-full max-w-sm space-y-3"
+      aria-label="Toggle springs"
+    >
       {springs.map((s) => (
         <div key={s.name} className="flex items-center gap-3">
           <span className="w-24 shrink-0 text-left font-mono text-[10px] text-subtle">{s.name}</span>
@@ -23,7 +28,6 @@ export default function SpringDemo() {
           </div>
         </div>
       ))}
-      <p className="text-center font-mono text-[10px] text-subtle">click to toggle</p>
     </button>
   );
 }
