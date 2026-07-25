@@ -11,7 +11,7 @@ const curves = [
 
 export default function EasingDemo() {
   return (
-    <div className="flex flex-wrap items-end justify-center gap-x-6 gap-y-5">
+    <div className="flex items-end justify-center gap-4">
       {curves.map((c) => (
         <BezierPlot key={c.name} name={c.name} curve={c.curve} />
       ))}

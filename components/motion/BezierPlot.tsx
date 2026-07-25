@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { animate, motion, useMotionValue, useReducedMotion, useTransform } from "motion/react";
 import { duration } from "@/lib/motionVariants";
 
-const S = 88; // plot size in px (also the SVG coordinate space)
+const S = 76; // plot size in px (also the SVG coordinate space)
 
 // Cubic bezier component at parameter s, with P0 fixed at 0 and P3 at 1.
 function comp(s: number, p1: number, p2: number) {

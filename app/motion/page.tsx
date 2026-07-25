@@ -47,10 +47,10 @@ export default function MotionPage() {
           variables. motion/react drives anything with state or exits; plain CSS handles hovers and loops. Durations stay
           under 300ms for UI, exits run faster than enters, and keyboard-summoned surfaces barely animate at all.
         </p>
-        <p className="mt-3 font-mono text-xs text-subtle">
+        <p className="mt-4 font-mono text-xs text-subtle">
           Every card below is live. Click a stage to replay it, or interact with the ones that invite it.
         </p>
-        <Bento className="mt-8 grid-cols-1 md:grid-cols-2">
+        <Bento className="mt-10 grid-cols-1 md:mt-12 md:grid-cols-2">
           <DemoCard title="Easing curves" engine="motion/react" tokens={["ease.out", "ease.modal", "ease.expo"]} loop>
             <EasingDemo />
           </DemoCard>

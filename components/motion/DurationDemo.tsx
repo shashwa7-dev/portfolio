@@ -20,19 +20,22 @@ export default function DurationDemo() {
 
   return (
     <div className="flex w-full max-w-sm flex-col gap-4">
-      <div className="space-y-2.5">
+      <div className="space-y-3.5">
         {steps.map((d) => (
           <div key={d.name} className="flex items-center gap-3">
             <span className="w-24 shrink-0 font-mono text-[10px] text-subtle">{d.name}</span>
             <div
-              className={`flex h-4 flex-1 items-center rounded-full border border-border bg-muted px-1 ${
+              className={`relative flex h-2 flex-1 items-center ${
                 racing ? "justify-end" : "justify-start"
               }`}
             >
+              {/* race lane + finish line */}
+              <span className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-border" />
+              <span className="absolute right-0 top-1/2 h-2.5 w-px -translate-y-1/2 bg-border-strong" />
               <motion.div
                 layout
                 transition={reduce ? { duration: 0 } : { duration: d.s, ease: ease.out }}
-                className="h-2.5 w-2.5 rounded-full bg-accent"
+                className="relative h-2 w-2 rounded-full bg-accent"
               />
             </div>
             <span className="w-11 shrink-0 text-right font-mono text-[10px] text-subtle">
