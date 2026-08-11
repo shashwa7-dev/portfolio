@@ -72,7 +72,7 @@ The new ramp is near-neutral with a faint warm cast (hue 30 to 40 at 5 to 20 per
 --secondary-foreground: 35 9% 11%
 --muted:             38 20% 95.5%
 --muted-foreground:  35 7% 39%
---subtle:            35 6% 54%
+--subtle:             35 6% 44%
 --accent:            35 9% 11%
 --accent-foreground: 40 33% 99%
 --accent-hover:      35 9% 22%
@@ -101,7 +101,7 @@ The new ramp is near-neutral with a faint warm cast (hue 30 to 40 at 5 to 20 per
 --secondary-foreground: 35 6% 86%
 --muted:             30 6% 15%
 --muted-foreground:  35 6% 63%
---subtle:            30 5% 46%
+--subtle:             30 5% 50%
 --accent:            35 8% 94%
 --accent-foreground: 30 7% 6%
 --accent-hover:      35 8% 84%
