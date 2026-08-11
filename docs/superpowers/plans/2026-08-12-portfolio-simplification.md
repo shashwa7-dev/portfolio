@@ -35,6 +35,7 @@
 |---|---|
 | `scripts/verify-simplification.sh` | Executable gate. Encodes all 14 mechanical invariants. Single source of truth for "is this done" |
 | `components/ui/accordion.tsx` | shadcn/Radix accordion, generated then retokenized |
+| `components/common/IconSwap.tsx` | Crossfade between two states in a fixed grid cell. Shared by both copy buttons (Task 14) |
 
 **Deleted (26 route/showcase files, 8 component files, 29 skill files):**
 
@@ -1293,45 +1294,85 @@ import { duration, ease } from "@/lib/motionVariants";
 
 `mode="wait"` means the outgoing grid finishes before the incoming one starts, so the two never overlap. `initial={false}` means no fade on first paint, only on subsequent filter changes. Opacity-only, so reduced motion needs no branch here.
 
-- [ ] **Step 2: Crossfade the copy-button icon swap**
+- [ ] **Step 2: Extract a shared IconSwap component**
 
-`components/chat/CodeBlock.tsx:50-58` hard-cuts `<Copy/> Copy` to `<Check/> Copied`. Purpose: state indication plus feedback. Frequency: occasional.
+Two call sites need the same crossfade (`chat/CodeBlock.tsx:50-58` and `ChatBot.tsx:473-482`), so build it once. Create `components/common/IconSwap.tsx`:
 
-Stack both states in one grid cell so the button does not reflow, then crossfade. Note `scale(0.8)`, never `scale(0)`:
+```tsx
+import type { ReactNode } from "react";
+
+/**
+ * Crossfades between two states in a fixed grid cell so the container never
+ * reflows. Used by the copy buttons. Scales from 0.8, never 0: nothing in
+ * the real world appears from nothing.
+ *
+ * `aria-hidden` flips with the state so a screen reader announces only the
+ * active label, not both.
+ */
+export default function IconSwap({
+  swapped,
+  from,
+  to,
+  className = "",
+}: {
+  swapped: boolean;
+  from: ReactNode;
+  to: ReactNode;
+  className?: string;
+}) {
+  const base =
+    "col-start-1 row-start-1 inline-flex items-center gap-1 " +
+    "transition-[opacity,transform] duration-[var(--duration-fast)] ease-[--ease-out]";
+
+  return (
+    <span className={`inline-grid place-items-center ${className}`}>
+      <span
+        aria-hidden={swapped}
+        className={base}
+        style={{ opacity: swapped ? 0 : 1, transform: swapped ? "scale(0.8)" : "scale(1)" }}
+      >
+        {from}
+      </span>
+      <span
+        aria-hidden={!swapped}
+        className={base}
+        style={{ opacity: swapped ? 1 : 0, transform: swapped ? "scale(1)" : "scale(0.8)" }}
+      >
+        {to}
+      </span>
+    </span>
+  );
+}
+```
+
+Purpose: state indication plus feedback. Frequency: occasional. Both states occupy the same grid cell, so the button keeps a stable width.
+
+- [ ] **Step 3: Use IconSwap at both call sites**
+
+In `components/chat/CodeBlock.tsx`, replace the ternary that swaps the two `<>...</>` fragments:
 
 ```tsx
 <button
   type="button"
   onClick={onCopy}
   className={cn(
-    "inline-grid place-items-center rounded px-1.5 py-0.5 font-mono text-2xs uppercase tracking-wide",
+    "rounded px-1.5 py-0.5 font-mono text-2xs uppercase tracking-wide",
     "transition-[color,transform] duration-[var(--duration-fast)] active:scale-[0.97]",
     copied ? "text-foreground" : "text-muted-foreground hover:text-foreground"
   )}
   aria-label="Copy code"
 >
-  <span
-    aria-hidden={copied}
-    className="col-start-1 row-start-1 inline-flex items-center gap-1 transition-[opacity,transform] duration-[var(--duration-fast)] ease-[--ease-out]"
-    style={{ opacity: copied ? 0 : 1, transform: copied ? "scale(0.8)" : "scale(1)" }}
-  >
-    <Copy className="h-3 w-3" /> Copy
-  </span>
-  <span
-    aria-hidden={!copied}
-    className="col-start-1 row-start-1 inline-flex items-center gap-1 transition-[opacity,transform] duration-[var(--duration-fast)] ease-[--ease-out]"
-    style={{ opacity: copied ? 1 : 0, transform: copied ? "scale(1)" : "scale(0.8)" }}
-  >
-    <Check className="h-3 w-3" /> Copied
-  </span>
+  <IconSwap
+    swapped={copied}
+    from={<><Copy className="h-3 w-3" /> Copy</>}
+    to={<><Check className="h-3 w-3" /> Copied</>}
+  />
 </button>
 ```
 
-`aria-hidden` flips with the state so a screen reader announces only the active label. `text-accent` becomes `text-foreground` per Task 7.
+In `components/ChatBot.tsx:473-482`, the same pattern is keyed on `copiedIndex === index`, so pass `swapped={copiedIndex === index}` with that file's existing icons and labels.
 
-- [ ] **Step 3: Apply the same swap to the ChatBot copy button**
-
-`components/ChatBot.tsx:473-482` has the same pattern keyed on `copiedIndex === index`. Apply the identical stacked-span treatment, substituting `copiedIndex === index` for `copied`. Repeated here rather than cross-referenced because the two files may be edited independently.
+`text-accent` becomes `text-foreground` per Task 7.
 
 - [ ] **Step 4: Add press feedback to the filter chips**
 
