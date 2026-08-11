@@ -83,7 +83,6 @@
 
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "cv11", "ss01";
     line-height: 1.65;
     text-rendering: optimizeLegibility;
     /* Reserve scrollbar space so layout doesn't shift when content overflows. */
@@ -135,14 +134,14 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-fraunces), Georgia, serif;
-    font-weight: 500;
+    font-family: var(--font-sans);
+    font-weight: 600;
     line-height: 1.1;
-    letter-spacing: -0.015em;
+    letter-spacing: -0.02em;
   }
 
   h1 { font-size: 2.25rem; }
-  h2 { font-size: 1.75rem; }
+  h2 { font-size: 1.5rem; }
   h3 { font-size: 1.25rem; }
 }
 

@@ -51,9 +51,25 @@ const config: Config = {
         "-sm": { max: "639px" },
       },
       fontFamily: {
-        sans: ["var(--font-inter)", ...fontFamily.sans],
-        serif: ["var(--font-fraunces)", "Georgia", "serif"],
+        sans: ["var(--font-sans)", ...fontFamily.sans],
         mono: ["var(--font-mono)", ...fontFamily.mono],
+      },
+      fontSize: {
+        '2xs': ['0.625rem',  { lineHeight: '1.4' }],   // 10px, mono labels
+        xs:    ['0.6875rem', { lineHeight: '1.45' }],  // 11px
+        sm:    ['0.8125rem', { lineHeight: '1.55' }],  // 13px
+        base:  ['0.9375rem', { lineHeight: '1.65' }],  // 15px
+        lg:    ['1.0625rem', { lineHeight: '1.5' }],   // 17px
+        xl:    ['1.25rem',   { lineHeight: '1.4' }],   // 20px
+        '2xl': ['1.5rem',    { lineHeight: '1.25' }],  // 24px
+        '3xl': ['1.875rem',  { lineHeight: '1.15' }],  // 30px
+        '4xl': ['2.25rem',   { lineHeight: '1.08' }],  // 36px
+      },
+      letterSpacing: {
+        label:   '0.1em',
+        normal:  '0',
+        tight:   '-0.02em',
+        tighter: '-0.03em',
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

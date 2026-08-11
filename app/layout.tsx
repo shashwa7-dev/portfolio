@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
+import { DM_Sans, IBM_Plex_Mono } from "next/font/google";
 import dynamic from "next/dynamic";
 import "./globals.css";
 import { baseUrl } from "./sitemap";
@@ -20,22 +20,13 @@ const KeyboardShortcuts = dynamic(
   { ssr: false }
 );
 
-const fraunces = Fraunces({
+const dmSans = DM_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  style: ["normal", "italic"],
   display: "swap",
-  variable: "--font-fraunces",
+  variable: "--font-sans",
 });
 
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-  variable: "--font-inter",
-});
-
-const jetbrainsMono = JetBrains_Mono({
+const plexMono = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
   display: "swap",
@@ -113,7 +104,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`bg-background text-foreground border-border ${fraunces.variable} ${inter.variable} ${jetbrainsMono.variable} font-sans`}
+        className={`bg-background text-foreground border-border ${dmSans.variable} ${plexMono.variable} font-sans`}
       >
         <NoScript />
         <div className="relative z-10">
