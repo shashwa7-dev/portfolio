@@ -1,0 +1,393 @@
+# Portfolio Simplification: Color, Type, Motion, Routes
+
+**Date:** 2026-08-11
+**Status:** Approved (pending spec review)
+**Branch strategy:** new branch off `feat/global-shortcuts-and-palette-fixes` HEAD, deleting forward
+
+---
+
+## 1. Goal
+
+Make the site sell. Every decision below is judged against one question: does this help a hiring manager or prospective client decide to contact Shashwat?
+
+The current site loses on two counts. It looks unpolished (incoherent typography, a violet palette that reads as hobbyist), and it spends its surface area on inward-facing engineering showcases instead of on proof of shipped work.
+
+Three concrete outcomes:
+
+1. **A calmer, more professional surface.** Neutral warm palette, one coherent type scale, no decorative motion.
+2. **A smaller site that points at the work.** Delete the showcase routes. Navbar and command palette point at work, writing, and contact.
+3. **Motion that reads as craft rather than noise.** Fewer animations, all of them under Emil Kowalski's duration and easing rules.
+
+### Non-goals
+
+- No layout, spacing, or information-architecture changes. Structure stays as-is.
+- No copy rewrites beyond the hero headline (forced by removing the word cycle).
+- No changes to `/blogs`, `/books`, `/work`, `/project`, `/projects`, `/rss`, `/og`, `/api`.
+- No new features. This is subtraction plus retokenization.
+
+---
+
+## 2. Branch strategy
+
+Work on a new branch cut from current HEAD, not from `master`.
+
+Rationale: `master` already contains `/design`, `/skills`, and `/markdown`, so it does not remove the routes we want gone. Meanwhile `master` lacks ten commits of wanted work:
+
+| Missing from master | Evidence |
+|---|---|
+| `transition-all` cleanup | Master has it in 8 files; this branch has zero |
+| `hoverOnlyWhenSupported` | Absent from master's `tailwind.config.ts`. Without it, touch devices fire false hovers on tap |
+| Press feedback on pressables | Master: 4 files. This branch: 22 |
+| The `?` shortcuts overlay | `components/KeyboardShortcuts.tsx` and `lib/shortcutsData.ts` do not exist on master |
+| Motion token CSS vars | Master has 2 of the 11 |
+| The `grid-rows` collapse technique | Lives in `components/common/Accordion.tsx`, branch-only. The file is deleted in Part 4, but the technique moves to `Navbar.tsx` first |
+
+What master *would* give free: `/motion`, `/motion/principles`, all 24 `components/motion` demos, `transitions-dev`, and `useHeadingCycle` are all branch-only.
+
+That trade is bad. Resetting to `master` would hand back 8 files of `transition-all` and 18 unpressable buttons to re-fix, in exchange for saving a single `git rm -r`. Delete forward instead.
+
+---
+
+## 3. Part 1: Color (Paper palette)
+
+Replace the "Graphite + Indigo" palette in `app/globals.css`. Two changes at once: drop the indigo accent, and desaturate the neutral ramp, which currently carries a `240` hue on every gray.
+
+The new ramp is near-neutral with a faint warm cast (hue 30 to 40 at 5 to 20 percent saturation). It reads as black and white without feeling clinical.
+
+**No accent hue.** `--accent` becomes the foreground color. Emphasis comes from weight and contrast. Links get underlines rather than color. Two hues survive, both semantic, neither decorative: `--destructive` (red) and the availability dot (green).
+
+### Light
+
+```
+--background:        40 33% 98.5%
+--foreground:        35 9% 11%
+--card:              0 0% 100%
+--card-foreground:   35 9% 11%
+--popover:           0 0% 100%
+--popover-foreground:35 9% 11%
+--elevated:          38 20% 95.5%
+--primary:           35 9% 11%
+--primary-foreground:40 33% 99%
+--secondary:         38 20% 95.5%
+--secondary-foreground: 35 9% 11%
+--muted:             38 20% 95.5%
+--muted-foreground:  35 7% 39%
+--subtle:            35 6% 54%
+--accent:            35 9% 11%
+--accent-foreground: 40 33% 99%
+--accent-hover:      35 9% 22%
+--destructive:       0 65% 48%
+--destructive-foreground: 0 0% 100%
+--border:            36 16% 89.5%
+--border-strong:     36 14% 81%
+--input:             36 16% 89.5%
+--ring:              35 9% 30%
+--marker:            38 75% 55% / 0.16
+```
+
+### Dark
+
+```
+--background:        30 7% 5%
+--foreground:        35 6% 94%
+--card:              30 7% 8.5%
+--card-foreground:   35 6% 94%
+--popover:           30 7% 12%
+--popover-foreground:35 6% 94%
+--elevated:          30 7% 12%
+--primary:           35 6% 94%
+--primary-foreground:30 7% 6%
+--secondary:         30 6% 15%
+--secondary-foreground: 35 6% 86%
+--muted:             30 6% 15%
+--muted-foreground:  35 6% 63%
+--subtle:            30 5% 46%
+--accent:            35 8% 94%
+--accent-foreground: 30 7% 6%
+--accent-hover:      35 8% 84%
+--destructive:       0 60% 55%
+--destructive-foreground: 0 0% 100%
+--border:            30 6% 16%
+--border-strong:     30 6% 24%
+--input:             30 6% 16%
+--ring:              35 6% 70%
+--marker:            38 60% 70% / 0.16
+```
+
+### Syntax highlighting (`--sh-*`)
+
+Currently indigo-tinted. Retune to a warm-neutral scheme with restrained hue, so blog code blocks stay readable without reintroducing an interface accent. Code blocks are the one place color earns its keep.
+
+```
+Light: --sh-keyword 25 55% 38% | --sh-string 150 35% 32% | --sh-class 35 45% 34%
+       --sh-identifier 35 8% 22% | --sh-sign 35 5% 45% | --sh-comment 35 5% 55%
+       --sh-jsxliterals 25 45% 40%
+Dark:  --sh-keyword 30 70% 72% | --sh-string 150 32% 62% | --sh-class 38 55% 70%
+       --sh-identifier 35 6% 84% | --sh-sign 35 5% 55% | --sh-comment 35 5% 50%
+       --sh-jsxliterals 30 55% 68%
+```
+
+### Follow-on work
+
+- **Scrollbar** (`globals.css` lines 99 to 124) is accent-tinted. Move to `--border-strong` and `--subtle`.
+- **`--accent` consumers: 159 sites.** Most resolve correctly once `--accent` equals foreground, but each needs a read. Specific cases needing real decisions:
+  - `About.tsx` verified-check badge: `bg-accent text-white`. Becomes `bg-foreground text-background`.
+  - `Clients.tsx` logo row `hover:outline-accent`. Becomes `hover:outline-border-strong`.
+  - `.prose a` `decoration-accent/50 hover:decoration-accent`. Becomes `decoration-subtle hover:decoration-foreground`.
+  - `app/motion/page.tsx` and `app/design/page.tsx` accent links: moot, both deleted.
+- **`lib/markerHighlight.tsx`** (`withMarker`, `fullMarker`) and `components/common/Marker.tsx` need the new `--marker` wash.
+- **OG images** (`app/og/`) hardcode palette values. Retune to match.
+
+---
+
+## 4. Part 2: Typography
+
+### Families
+
+| Role | From | To | Loader |
+|---|---|---|---|
+| Sans (body + headings) | Inter | **DM Sans** | `next/font/google`, variable, omit `weight` |
+| Mono (labels + code) | JetBrains Mono | **IBM Plex Mono** | `next/font/google`, `weight: ["400","500"]` |
+| Serif (display) | Fraunces | **removed** | n/a |
+
+In `app/layout.tsx`, replace all three loaders. CSS variables collapse from `--font-inter` / `--font-fraunces` / `--font-mono` to `--font-sans` and `--font-mono`.
+
+DM Sans is a variable font on Google Fonts. Do not pass `weight`; let `next/font` serve the variable axis. IBM Plex Mono is static and needs explicit weights. Verify both at build.
+
+### Removing the serif
+
+- `app/globals.css` `h1..h6` currently sets `font-family: var(--font-fraunces)`. Change to `--font-sans`, `font-weight: 600`, `letter-spacing: -0.02em`.
+- **34 `font-serif` usages** must be removed, not remapped. After they are gone, delete the `serif` key from `tailwind.config.ts`. Leaving the key while removing the font would silently fall back to Georgia.
+- `HeroTitle.tsx`'s `H1_CLASS` uses `font-serif` plus an italic accent span. That file is deleted anyway (see Part 3).
+
+### The type scale
+
+`tailwind.config.ts` has **no `fontSize` and no `letterSpacing` scale**. That absence is the root cause of the unpolished feel: 132 arbitrary `text-[Npx]` values across 14 distinct sizes, including `text-[13.5px]` and `text-[12.5px]`, plus three competing trackings (`0.12em`, `0.14em`, `0.16em`) all styling the same uppercase mono label.
+
+Add both scales. This overrides Tailwind's defaults for `xs` through `4xl`, which is intentional: a tuned scale is the point.
+
+```ts
+fontSize: {
+  '2xs': ['0.625rem',  { lineHeight: '1.4' }],   // 10px, mono labels
+  xs:    ['0.6875rem', { lineHeight: '1.45' }],  // 11px
+  sm:    ['0.8125rem', { lineHeight: '1.55' }],  // 13px
+  base:  ['0.9375rem', { lineHeight: '1.65' }],  // 15px
+  lg:    ['1.0625rem', { lineHeight: '1.5' }],   // 17px
+  xl:    ['1.25rem',   { lineHeight: '1.4' }],   // 20px
+  '2xl': ['1.5rem',    { lineHeight: '1.25' }],  // 24px
+  '3xl': ['1.875rem',  { lineHeight: '1.15' }],  // 30px
+  '4xl': ['2.25rem',   { lineHeight: '1.08' }],  // 36px
+},
+letterSpacing: {
+  label:   '0.1em',    // the single uppercase-mono tracking
+  normal:  '0',
+  tight:   '-0.02em',
+  tighter: '-0.03em',
+},
+```
+
+**Migration mapping** for the 132 arbitrary values:
+
+| From | To |
+|---|---|
+| `text-[8px]`, `text-[9px]`, `text-[10px]` (59 uses) | `text-2xs` |
+| `text-[11px]` (33 uses) | `text-xs` |
+| `text-[12px]`, `text-[12.5px]`, `text-[13px]`, `text-[13.5px]` (22 uses) | `text-sm` |
+| `text-[14px]`, `text-[15px]`, `text-[16px]` (15 uses) | `text-base` |
+| `text-[17px]`, `text-[18px]` (2 uses) | `text-lg` |
+| `text-[22px]` (1 use) | `text-2xl` |
+| `tracking-[0.12em]`, `tracking-[0.14em]`, `tracking-[0.16em]` (33 uses) | `tracking-label` |
+
+Collapses 14 sizes to 9 named steps and 3 trackings to 1.
+
+---
+
+## 5. Part 3: Motion
+
+Audited against the `emil-design-eng`, `review-animations`, and `improve-animations` skills from `emilkowalski/skills`.
+
+### Delete
+
+| What | Files | Why |
+|---|---|---|
+| `/motion` showcase surface | `app/motion/` (2), `components/motion/` (24) | Pure showcase. Verified self-contained: nothing outside `app/motion` imports any of it |
+| Hero word cycle | `components/HeroTitle.tsx`, `lib/useHeadingCycle.ts`, `wordCycle` token | Infinite loop on the highest-traffic element, communicating nothing |
+| `AnimatedBackground` | `components/AnimatedBackground.tsx` (105 lines) + its `layout.tsx` dynamic import | Ambient decorative motion at `duration.ambient = 2s`, on every route |
+| Keyboard surface transitions | `keyboardSurfaceVariants` in `CommandPalette.tsx`, `KeyboardShortcuts.tsx` | Emil's hard rule: keyboard-initiated, 100+/day, no animation ever. Render instantly |
+
+**Hero replacement.** Freeze on the phrase already hardcoded in `HeroTitle.tsx`'s reduced-motion branch:
+
+> I build interfaces that **ship and scale** to millions.
+
+`ship and scale` becomes weight-600 sans in `--foreground`, not an italic colored span. Emphasis from weight. This also deletes the invisible widest-phrase sizer spans.
+
+**Deliberately kept:** `chatDotPulse` only (loading state, legitimate state indication). The FAQ accordion is removed, see Part 4.
+
+### Fix
+
+| # | Finding | Change |
+|---|---|---|
+| 1 | `duration.slow = 0.4` backs the four most-used entrance variants (25 usages) | **0.24**. Emil's budget is under 300ms for UI |
+| 2 | Three near-identical expo curves: `ease.out [0.22,1,0.36,1]`, `ease.modal [0.23,1,0.32,1]`, `ease.expo [0.16,1,0.3,1]`, plus `--ease-spring` and `--ease-expo` in CSS | Collapse to **one** `ease.out = [0.23, 1, 0.32, 1]` and one `--ease-out`. Keep `--ease-in-out` for on-screen movement only |
+| 3 | `tapPress` 0.94, `hoverZoom` 1.08, `hoverLiftRotate` 1.06 + rotate -3 | **0.97**, **1.02**, and drop the rotate. Emil: press feedback 0.95 to 0.98 |
+| 4 | `fabPopVariants` starts `scale: 0.5, rotate: -12` | **`scale: 0.96`**, no rotate. Nothing appears from nothing |
+| 5 | `collapseHeightVariants` animates `height` (Navbar mobile menu) | Apply the `grid-rows: 0fr -> 1fr` technique inline in `Navbar.tsx`. Height triggers layout, paint, and composite. The technique is currently in `Accordion.tsx`, which is being deleted, so carry the pattern over before removing the file |
+| 6 | Reduced motion nukes everything to `0.01ms !important` | Keep opacity and color transitions, drop transform-based movement only. Reduced motion means gentler, not zero |
+
+### Token cleanup
+
+Verified orphaned once the deletions land, so remove from `lib/motionVariants.ts`: `ease.expo`, `ease.modal`, `spring.soft`, `spring.pop`, `duration.ambient`, `wordCycle`.
+
+Surviving non-obvious consumers, confirmed by grep, so do not remove these: `spring.hoverIn`, `hoverLiftRotate`, `hoverZoom`, `fabPopVariants` (all `ChatBot.tsx`), `duration.draw` (`common/Marker.tsx`), `duration.hero` (`app/not-found.tsx`), `collapseHeightVariants` (`Navbar.tsx`).
+
+`lib/motionVariants.ts` goes from 177 lines to roughly 70. Keep it and `globals.css` in sync per the existing repo convention.
+
+---
+
+## 6. Part 4: Strip decorative UI
+
+Everything here is subtraction. The test applied to each item: does a visitor deciding whether to email Shashwat benefit from this?
+
+### The gradient divider
+
+`components/layout/Divider.tsx` renders `bg-gradient-to-r from-transparent via-border-strong to-transparent`. A fading gradient rule, repeated **7 times between the homepage's 8 sections**, plus 3 uses on `work/[org]` and 1 on `books/[slug]`.
+
+**Delete the component and all 11 usages.** The gradient is the conspicuous part, but even a flat rule is redundant here: every `Section` already opens with a number and label header (for example `06 / FAQ / Questions, answered`). A labeled header plus vertical rhythm is how section separation is done on a professional site. Two rules stacked on top of each other is noise.
+
+If a boundary reads as weak after the manual sweep, add `border-t border-border` to the `Section` primitive itself rather than reintroducing a standalone element.
+
+### The FAQ accordion
+
+Delete `components/common/Accordion.tsx`. **Keep every word of the FAQ copy**, rendered as a static list.
+
+This one is a sell decision more than a motion decision. The FAQ answers are the highest-intent copy on the site:
+
+> "Are you available for new work?" -> "Yes. I'm open to senior frontend and full-stack roles, plus freelance or consulting engagements. The fastest way to start is an email to contact@shashwa7.in."
+
+> "How do we get started?" -> "Email contact@shashwa7.in with a short note about your project or role, and I'll reply quickly."
+
+Hiding that behind a click works against the goal. Five short answers do not need progressive disclosure.
+
+New markup in `components/Faq.tsx`: each entry becomes a question in `font-medium text-foreground` with the answer directly beneath in `text-muted-foreground`, separated by `border-b border-border`. No button, no state, no chevron, no transition. Keep the `faqLd` structured-data script, which also means the answers become crawlable by search engines and by AI agents rather than sitting in collapsed DOM.
+
+### Dead and orphaned components
+
+Verified by grep. Delete all five, 270 lines:
+
+| File | Lines | Status |
+|---|---|---|
+| `components/common/Marquee.tsx` | 68 | No consumers. Infinite scroll animation |
+| `components/CurrentState.tsx` | 84 | No consumers |
+| `components/NFT.tsx` | 53 | Only consumer is `CurrentState.tsx`, also dead |
+| `components/AvatarWithThemeSwitch.tsx` | 37 | No consumers |
+| `components/layout/Reveal.tsx` | 28 | Only consumer is `app/design/page.tsx`, which is deleted. Also removes the last `whileInView` scroll reveal |
+
+### Ambient chrome
+
+| What | Decision |
+|---|---|
+| `components/BottomFadeMask.tsx` (39 lines, mounted in `layout.tsx`) | **Delete.** A decorative gradient overlay on every route |
+| `components/CurrentTime.tsx` (28 lines, in `Footer.tsx`) | **Delete.** A live clock on `setInterval(1000)` that re-renders forever on every page. Personal-site flourish, and a standing render cost |
+
+### The Marker highlight
+
+Keep, with the animation removed. After the route deletions its only real consumers are `components/About.tsx` (the email address in the lede) and `components/common/DiaryEntry.tsx`.
+
+The static highlight wash **stays** and is worth keeping: it draws the eye to `contact@shashwa7.in`, which directly serves the goal. The 700ms `duration.draw` draw-on animation **goes**. Static wash, zero motion. This orphans `duration.draw`, so remove that token too.
+
+---
+
+## 7. Part 5: Routes
+
+### Delete
+
+| Route | Files | Reason |
+|---|---|---|
+| `/motion`, `/motion/principles` | `app/motion/` + `components/motion/` (26 files, 1,467 lines) | Component and animation showcase. Consumed 18 of the last 28 commits and sells nothing |
+| `/design` | `app/design/page.tsx` (736 lines) | Documents a token system rather than showing work. Inward-facing, and currently contradicted by the 132 arbitrary type values it claims not to have. `docs/design-system.md` and the `design-system` skill remain in-repo for building |
+| `/skills` | `app/skills/page.tsx`, `app/skills/[slug]/page.tsx`, `app/skills/[slug]/markdown/route.ts`, `lib/skillsData.ts` (256 lines) | About tooling, not work. Drops to a one-item index once `transitions-dev` is removed |
+
+### Keep
+
+`/markdown` plus the `middleware.ts` content negotiation. Invisible to human visitors, 102 lines, and it makes the site legible to AI crawlers and to the Truffy assistant. Real capability, not showcase.
+
+`/books` stays. Personal-interest surface that supports the human read of the site, and it is cheap.
+
+### Unhook
+
+| File | Change |
+|---|---|
+| `components/Navbar.tsx:15` | Remove `{ label: "Design", href: "/design" }` |
+| `lib/commandData.ts:17-19` | Remove `nav-design`, `nav-motion`, `nav-principles` |
+| `lib/shortcutsData.ts:14-15` | Remove `d` (Design) and `m` (Motion) |
+| `app/sitemap.ts:24,28` | Remove both `motion` entries |
+| `middleware.ts` | Remove `skillRoute` regex, its rewrite branch, and `/skills/:path*` from the matcher |
+| `public/.well-known/llms.txt` | Remove lines 30, 43, 44, 45 (skills and design references) |
+| `.claude/skills/transitions-dev/` | Delete (29 files, ~3,700 lines). Competing source of truth: ~40 duplicated cubic-beziers overlapping `motionVariants.ts` |
+| `CLAUDE.md:51` | Remove the `transitions-dev` mention; update the motion-token convention text |
+| `CLAUDE.md` "Useful entry points" | Remove `/motion`, `/design`, `/skills` lines |
+| `docs/superpowers/plans/2026-07-24-motion-polish-and-showcase.md` | Delete. Describes routes that no longer exist |
+
+**Total removed: roughly 6,800 lines.** Breakdown: 2,705 route and component code (Part 5), 3,701 vendored `transitions-dev` skill, 394 decorative and dead components (Part 4).
+
+---
+
+## 8. Skills
+
+Install from `emilkowalski/skills` into `.claude/skills/`, replacing the `transitions-dev` approach with a single coherent source:
+
+- `emil-design-eng` (refresh the vendored copy; it predates the Base UI rename)
+- `improve-animations` plus `AUDIT.md` and `PLAN-TEMPLATE.md`
+- `review-animations` plus `STANDARDS.md`
+- `animate` plus `RECIPES.md`
+- `find-animation-opportunities`
+- `apple-design`
+
+Skipped, with reasons: `ask-sonner` (no toasts in this repo), `pick-ui-library` (no library decisions in scope), `prototype` (multi-version switcher, not needed), `animation-vocabulary` (teaches humans to prompt, redundant given the others).
+
+---
+
+## 9. The agent-memory rule
+
+`CLAUDE.md` requires updating `data/agent-memory.md` whenever portfolio facts change. This work changes the tech stack (fonts) and removes routes Truffy may reference.
+
+Required edits to `data/agent-memory.md`:
+- **Tech stack:** Inter, Fraunces, JetBrains Mono become DM Sans and IBM Plex Mono.
+- Remove any reference to `/motion`, `/design`, or `/skills` as places a visitor can go.
+
+No changes to roles, stats, projects, brands, or contact, so those sections stay as they are.
+
+---
+
+## 10. Verification
+
+No test script exists in this repo, so verification is build plus manual sweep.
+
+1. `npm run build` and `npm run lint` both clean.
+2. **Grep gates**, each must return zero:
+   - `text-\[[0-9.]*px\]` in `components/` and `app/`
+   - `tracking-\[[0-9.]*em\]` in `components/` and `app/`
+   - `font-serif` anywhere
+   - `transition-all` anywhere (currently zero, must stay zero)
+   - `accent` referencing a hue rather than foreground
+   - `Divider`, `Accordion`, `Marquee`, `CurrentState`, `NFT`, `AvatarWithThemeSwitch`, `Reveal`, `BottomFadeMask`, `CurrentTime` as imports anywhere
+   - `whileInView` anywhere (the last one lived in `Reveal.tsx`)
+   - `setInterval` outside `components/chat/` (the FAQ clock is gone; only chat polling may remain)
+3. **Route gate:** `/motion`, `/motion/principles`, `/design`, `/skills` all 404. `/markdown` still returns markdown. `curl -H "Accept: text/markdown"` on `/` and one blog post still works.
+4. **Manual sweep**, both themes, desktop and mobile viewport: homepage (static hero, stats bento, Clients row, section boundaries with no dividers, FAQ as a static list), one org page, one project case study, one blog post (syntax colors), `/books`, 404 page, command palette via Cmd+K, shortcuts overlay via `?`, Navbar mobile menu collapse, chat FAB open and close, Footer with the clock gone.
+5. **Motion gate:** confirm no animation exceeds 300ms except the Marker draw and the 404 sequence. Confirm the palette and shortcuts overlay appear with no transition.
+6. **Reduced motion:** enable it at OS level and confirm opacity transitions survive while movement stops.
+
+---
+
+## 11. Risks
+
+| Risk | Mitigation |
+|---|---|
+| Overriding Tailwind's `fontSize` defaults changes every existing `text-sm` / `text-base` / `text-lg` usage, not just the arbitrary ones | The manual sweep in step 4 is the gate. Expect to re-tune one or two steps after seeing real pages |
+| 159 `--accent` sites is the largest mechanical surface, and some are `text-white`-on-accent pairs that break when accent becomes foreground | Enumerate and read each. The four known-tricky cases are called out in Part 1 |
+| DM Sans has different metrics from Inter, so line lengths and wrap points shift | Sweep step 4 covers the hero, the lede at `max-w-[56ch]`, and card titles specifically |
+| Deleting `/skills` removes a live URL that may have inbound links | Acceptable. It is three months old and was never promoted. Next.js returns 404, which is correct for a removed page |
+| Removing the serif could make the hero feel flat, which was flagged during design review | Chosen deliberately. If it reads as too flat after the sweep, the fallback is Newsreader for `h1` only, already prototyped in the visual companion |
+| Removing all 11 dividers could make homepage sections run together | Sweep step 4 checks this explicitly. Documented fallback is `border-t border-border` on the `Section` primitive, not a standalone gradient element |
+| The static FAQ is taller than the collapsed accordion, pushing `Socials` further down | Acceptable and arguably correct: the answers are conversion copy and two of them contain the contact address. Length is the point |
