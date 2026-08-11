@@ -40,7 +40,7 @@ Rationale: `master` already contains `/design`, `/skills`, and `/markdown`, so i
 | Press feedback on pressables | Master: 4 files. This branch: 22 |
 | The `?` shortcuts overlay | `components/KeyboardShortcuts.tsx` and `lib/shortcutsData.ts` do not exist on master |
 | Motion token CSS vars | Master has 2 of the 11 |
-| The `grid-rows` collapse technique | Lives in `components/common/Accordion.tsx`, branch-only. The file is deleted in Part 4, but the technique moves to `Navbar.tsx` first |
+| The `grid-rows` collapse technique | Lives in `components/common/Accordion.tsx`, branch-only. That file is replaced by shadcn's accordion in Part 4, but the technique moves to `Navbar.tsx` first |
 
 What master *would* give free: `/motion`, `/motion/principles`, all 24 `components/motion` demos, `transitions-dev`, and `useHeadingCycle` are all branch-only.
 
@@ -221,7 +221,7 @@ Audited against the `emil-design-eng`, `review-animations`, and `improve-animati
 
 `ship and scale` becomes weight-600 sans in `--foreground`, not an italic colored span. Emphasis from weight. This also deletes the invisible widest-phrase sizer spans.
 
-**Deliberately kept:** `chatDotPulse` only (loading state, legitimate state indication). The FAQ accordion is removed, see Part 4.
+**Deliberately kept:** `chatDotPulse` (loading state, legitimate state indication) and the FAQ accordion, which moves to shadcn/Radix in Part 4. Disclosure is state indication, which is a valid purpose for motion.
 
 ### Fix
 
@@ -231,7 +231,7 @@ Audited against the `emil-design-eng`, `review-animations`, and `improve-animati
 | 2 | Three near-identical expo curves: `ease.out [0.22,1,0.36,1]`, `ease.modal [0.23,1,0.32,1]`, `ease.expo [0.16,1,0.3,1]`, plus `--ease-spring` and `--ease-expo` in CSS | Collapse to **one** `ease.out = [0.23, 1, 0.32, 1]` and one `--ease-out`. Keep `--ease-in-out` for on-screen movement only |
 | 3 | `tapPress` 0.94, `hoverZoom` 1.08, `hoverLiftRotate` 1.06 + rotate -3 | **0.97**, **1.02**, and drop the rotate. Emil: press feedback 0.95 to 0.98 |
 | 4 | `fabPopVariants` starts `scale: 0.5, rotate: -12` | **`scale: 0.96`**, no rotate. Nothing appears from nothing |
-| 5 | `collapseHeightVariants` animates `height` (Navbar mobile menu) | Apply the `grid-rows: 0fr -> 1fr` technique inline in `Navbar.tsx`. Height triggers layout, paint, and composite. The technique is currently in `Accordion.tsx`, which is being deleted, so carry the pattern over before removing the file |
+| 5 | `collapseHeightVariants` animates `height` (Navbar mobile menu) | Apply the `grid-rows: 0fr -> 1fr` technique inline in `Navbar.tsx`, carried over from the old `Accordion.tsx` before that file is replaced. Note this is still a layout animation, not a transform one. It is the least-bad option for an unknown-height collapse without JS measurement, and the Navbar menu is opened rarely enough to be within budget |
 | 6 | Reduced motion nukes everything to `0.01ms !important` | Keep opacity and color transitions, drop transform-based movement only. Reduced motion means gentler, not zero |
 
 ### Token cleanup
@@ -258,17 +258,33 @@ If a boundary reads as weak after the manual sweep, add `border-t border-border`
 
 ### The FAQ accordion
 
-Delete `components/common/Accordion.tsx`. **Keep every word of the FAQ copy**, rendered as a static list.
+**The accordion stays.** Replace the hand-rolled `components/common/Accordion.tsx` with shadcn's accordion, which wraps `@radix-ui/react-accordion`.
 
-This one is a sell decision more than a motion decision. The FAQ answers are the highest-intent copy on the site:
+shadcn is already configured in this repo (`components.json`, style `new-york`, `baseColor: neutral`, aliases pointing at `@/components/ui`), and Radix is already a dependency via `@radix-ui/react-tooltip`. So this is one command with no new primitive library:
 
-> "Are you available for new work?" -> "Yes. I'm open to senior frontend and full-stack roles, plus freelance or consulting engagements. The fastest way to start is an email to contact@shashwa7.in."
+```bash
+npx shadcn@latest add accordion
+```
 
-> "How do we get started?" -> "Email contact@shashwa7.in with a short note about your project or role, and I'll reply quickly."
+**Why replace rather than keep.** The hand-rolled component has four genuine defects:
 
-Hiding that behind a click works against the goal. Five short answers do not need progressive disclosure.
+| # | Defect | Impact |
+|---|---|---|
+| 1 | Collapsed content stays in the tab order and the accessibility tree. `grid-template-rows: 0fr` plus `overflow-hidden` hides it visually only | Screen readers announce collapsed answers. Focusable children inside collapsed panels remain tabbable. The FAQ answers contain email addresses that should be links, which would make this an active keyboard-navigation bug |
+| 2 | Panel has `id` and is referenced by `aria-controls`, but lacks `role="region"` and `aria-labelledby` | Incomplete WAI-ARIA accordion pattern |
+| 3 | Trigger is a bare `<button>`, not wrapped in a heading | The ARIA pattern wants a heading around each trigger so screen reader users can navigate the FAQ by heading, which matters for an FAQ specifically |
+| 4 | No arrow-key navigation between items | Up, Down, Home, End between headers. Radix provides this |
 
-New markup in `components/Faq.tsx`: each entry becomes a question in `font-medium text-foreground` with the answer directly beneath in `text-muted-foreground`, separated by `border-b border-border`. No button, no state, no chevron, no transition. Keep the `faqLd` structured-data script, which also means the answers become crawlable by search engines and by AI agents rather than sitting in collapsed DOM.
+Radix fixes all four.
+
+**Library choice, for the record.** Emil's `pick-ui-library` skill names [base-ui](https://base-ui.com) for unstyled accessible primitives, not Radix. But the same skill says to check what is installed first and not to churn a competitor dependency without being asked. This repo is already on Radix via the tooltip, and shadcn is already wired. Introducing base-ui alongside Radix for a single accordion would mean maintaining two primitive libraries. Radix is the correct call here. If the repo ever migrates primitives wholesale, base-ui is the documented target.
+
+**Two adjustments to shadcn's default output:**
+
+1. **Use a transition, not keyframes.** shadcn ships `accordion-up` / `accordion-down` `@keyframes` driven by `--radix-accordion-content-height`. Keyframes restart from zero and cannot be interrupted, so a rapidly toggled accordion stutters. Replace with `transition: height var(--duration-med) var(--ease-out)` on the content, reading the same Radix variable. Accordions do get toggled repeatedly, so interruptibility is worth having here.
+2. **Retokenize the styling.** shadcn's defaults use raw Tailwind classes. Map them onto the tokens: `border-b border-border`, `text-base` for the trigger, `text-sm text-muted-foreground` for the content, and `text-subtle` for the chevron. The chevron rotation is already a `transform`, so it needs no change.
+
+The FAQ copy itself is unchanged, and `faqLd` structured data stays. Note that the answers are the highest-intent copy on the site (two of the five contain the contact address), so keep `type="single"` `collapsible` rather than defaulting every panel closed with no way to see them, and consider `defaultValue` on the availability question so the most important answer is visible on load.
 
 ### Dead and orphaned components
 
@@ -328,7 +344,9 @@ The static highlight wash **stays** and is worth keeping: it draws the eye to `c
 | `CLAUDE.md` "Useful entry points" | Remove `/motion`, `/design`, `/skills` lines |
 | `docs/superpowers/plans/2026-07-24-motion-polish-and-showcase.md` | Delete. Describes routes that no longer exist |
 
-**Total removed: roughly 6,800 lines.** Breakdown: 2,705 route and component code (Part 5), 3,701 vendored `transitions-dev` skill, 394 decorative and dead components (Part 4).
+**Total removed: roughly 6,750 lines.** Breakdown: 2,705 route and component code (Part 5), 3,701 vendored `transitions-dev` skill, 346 decorative and dead components (Part 4).
+
+The accordion is not counted as a removal. `components/common/Accordion.tsx` (48 lines) is deleted but replaced by a generated `components/ui/accordion.tsx` of comparable size, so it is a swap that buys correctness rather than a line saving.
 
 ---
 
@@ -342,8 +360,9 @@ Install from `emilkowalski/skills` into `.claude/skills/`, replacing the `transi
 - `animate` plus `RECIPES.md`
 - `find-animation-opportunities`
 - `apple-design`
+- `pick-ui-library` (added after the accordion decision below proved a library choice was in scope after all)
 
-Skipped, with reasons: `ask-sonner` (no toasts in this repo), `pick-ui-library` (no library decisions in scope), `prototype` (multi-version switcher, not needed), `animation-vocabulary` (teaches humans to prompt, redundant given the others).
+Skipped, with reasons: `ask-sonner` (no toasts in this repo), `prototype` (multi-version switcher, not needed), `animation-vocabulary` (teaches humans to prompt, redundant given the others).
 
 ---
 
@@ -370,7 +389,9 @@ No test script exists in this repo, so verification is build plus manual sweep.
    - `font-serif` anywhere
    - `transition-all` anywhere (currently zero, must stay zero)
    - `accent` referencing a hue rather than foreground
-   - `Divider`, `Accordion`, `Marquee`, `CurrentState`, `NFT`, `AvatarWithThemeSwitch`, `Reveal`, `BottomFadeMask`, `CurrentTime` as imports anywhere
+   - `Divider`, `Marquee`, `CurrentState`, `NFT`, `AvatarWithThemeSwitch`, `Reveal`, `BottomFadeMask`, `CurrentTime` as imports anywhere
+   - `components/common/Accordion` as an import (the replacement lives at `components/ui/accordion`)
+   - `accordion-up` / `accordion-down` keyframes in `tailwind.config.ts` (replaced by a transition)
    - `whileInView` anywhere (the last one lived in `Reveal.tsx`)
    - `setInterval` outside `components/chat/` (the FAQ clock is gone; only chat polling may remain)
 3. **Route gate:** `/motion`, `/motion/principles`, `/design`, `/skills` all 404. `/markdown` still returns markdown. `curl -H "Accept: text/markdown"` on `/` and one blog post still works.
@@ -390,4 +411,6 @@ No test script exists in this repo, so verification is build plus manual sweep.
 | Deleting `/skills` removes a live URL that may have inbound links | Acceptable. It is three months old and was never promoted. Next.js returns 404, which is correct for a removed page |
 | Removing the serif could make the hero feel flat, which was flagged during design review | Chosen deliberately. If it reads as too flat after the sweep, the fallback is Newsreader for `h1` only, already prototyped in the visual companion |
 | Removing all 11 dividers could make homepage sections run together | Sweep step 4 checks this explicitly. Documented fallback is `border-t border-border` on the `Section` primitive, not a standalone gradient element |
-| The static FAQ is taller than the collapsed accordion, pushing `Socials` further down | Acceptable and arguably correct: the answers are conversion copy and two of them contain the contact address. Length is the point |
+| `npx shadcn@latest add accordion` may overwrite or conflict with existing `components/ui` files, and pulls a new `@radix-ui/react-accordion` version | Run it, then diff before committing. Only `components/ui/accordion.tsx` should be new. Confirm the Radix version resolves alongside the existing `@radix-ui/react-tooltip ^1.2.8` |
+| shadcn's `new-york` defaults assume its own neutral palette, which may not match the Paper tokens exactly | Expected. Retokenizing the generated file is an explicit step in Part 4, not an afterthought |
+| Replacing keyframes with a `height` transition on the Radix variable is slightly off the documented shadcn path, so a future `shadcn add` could revert it | Leave a short comment in `components/ui/accordion.tsx` explaining why, so the deviation survives the next regeneration |
