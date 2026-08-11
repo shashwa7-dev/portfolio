@@ -233,6 +233,26 @@ Audited against the `emil-design-eng`, `review-animations`, and `improve-animati
 | 4 | `fabPopVariants` starts `scale: 0.5, rotate: -12` | **`scale: 0.96`**, no rotate. Nothing appears from nothing |
 | 5 | `collapseHeightVariants` animates `height` (Navbar mobile menu) | Apply the `grid-rows: 0fr -> 1fr` technique inline in `Navbar.tsx`, carried over from the old `Accordion.tsx` before that file is replaced. Note this is still a layout animation, not a transform one. It is the least-bad option for an unknown-height collapse without JS measurement, and the Navbar menu is opened rarely enough to be within budget |
 | 6 | Reduced motion nukes everything to `0.01ms !important` | Keep opacity and color transitions, drop transform-based movement only. Reduced motion means gentler, not zero |
+| 7 | `components/ui/tooltip.tsx` animates with `animate-in fade-in-0 zoom-in-95` and `data-[state=closed]:animate-out`, which are keyframes | Replace with `transition: opacity, transform 125ms var(--ease-out)` plus `data-[state=closed]` target styles. The Clients row has 7+ adjacent triggers, so sweeping across it is the rapid-trigger case that keyframes handle badly |
+| 8 | No `skipDelayDuration` on `TooltipProvider` | `skipDelayDuration={0}`. Emil: once one tooltip is open, adjacent ones open instantly. A row of adjacent logos is the canonical case. Radix has no `data-instant` equivalent, so the delay skips but a 125ms fade remains. Documented as a partial fix; base-ui would do it fully |
+| 9 | Two `TooltipProvider`s: one in `app/layout.tsx`, another in `About.tsx` with `delayDuration={150}` wrapping only the Clients row | Single provider in `layout.tsx` with explicit `delayDuration` and `skipDelayDuration`. Today the stats logos fall through to Radix's 700ms default while the Clients logos use 150ms, so two logo groups on the same page have different hover feel |
+| 10 | `chatWindowVariants` uses `spring.soft` for both enter and exit | Exit gets a fast duration-based transition. Every other variant in the file already exits faster than it enters; this is the outlier |
+| 11 | `stagger.section = 0.2` (200ms), used by the 404 page | `stagger.base` (0.06), or drop the token. Emil's range is 30 to 80ms; 200ms is 2.5x the ceiling |
+| 12 | Hover and color transitions use `ease-[--ease-out]` | `ease`. Emil's easing decision tree routes hover and color changes to `ease`, reserving `ease-out` for enter and exit |
+
+### Already correct, do not change
+
+Verified against the skill, so these need no work and should not be "fixed" during implementation:
+
+- `components/ui/tooltip.tsx` already sets `origin-[--radix-tooltip-content-transform-origin]`, so tooltips are genuinely origin-aware.
+- The `--ease-out` target in finding 2 is Emil's exact published value, `cubic-bezier(0.23, 1, 0.32, 1)`.
+- `stagger.tight` / `base` / `loose` (40, 60, 80ms) all sit inside the 30 to 80ms range.
+- `hoverOnlyWhenSupported` is already enabled in `tailwind.config.ts`.
+- `transition-all` is already at zero occurrences and must stay there.
+
+### Cohesion
+
+Emil: "A professional dashboard should be crisp and fast. Match the motion to the mood." A portfolio built to convert has the same personality, so the 240ms entrance, the single strong ease-out, and the no-accent palette reinforce each other rather than fighting. No component should end up bouncier than the rest; `spring.hoverIn` on the chat FAB is the only spring left and should stay subtle.
 
 ### Token cleanup
 
@@ -297,6 +317,7 @@ Verified by grep. Delete all five, 270 lines:
 | `components/NFT.tsx` | 53 | Only consumer is `CurrentState.tsx`, also dead |
 | `components/AvatarWithThemeSwitch.tsx` | 37 | No consumers |
 | `components/layout/Reveal.tsx` | 28 | Only consumer is `app/design/page.tsx`, which is deleted. Also removes the last `whileInView` scroll reveal |
+| `components/WorkListItem.tsx` | 109 | No consumers. `ExperienceWork.tsx` renders its own inline timeline and never imports it |
 
 ### Ambient chrome
 
@@ -304,6 +325,41 @@ Verified by grep. Delete all five, 270 lines:
 |---|---|
 | `components/BottomFadeMask.tsx` (39 lines, mounted in `layout.tsx`) | **Delete.** A decorative gradient overlay on every route |
 | `components/CurrentTime.tsx` (28 lines, in `Footer.tsx`) | **Delete.** A live clock on `setInterval(1000)` that re-renders forever on every page. Personal-site flourish, and a standing render cost |
+
+### The Experience section timeline
+
+`components/ExperienceWork.tsx` draws a vertical timeline using three coupled magic numbers:
+
+- the rail at `left-[7px]` inside a `pl-8` wrapper,
+- the nodes at `-left-8`,
+- and for the last item only, a mask: `<span className="absolute -left-[25px] top-3 bottom-0 w-px bg-background" />`, a background-colored strip painted over the rail so it does not trail off past the final entry.
+
+**Delete the rail, the nodes, and the mask.** Three reasons:
+
+1. The mask is a latent bug in this specific revamp. It paints `bg-background` over the rail, so it only works while the rail sits directly on the page background. Any card, panel, or background change behind it exposes a rail fragment. Part 1 changes the background.
+2. `-left-[25px]` has no derivable relationship to `left-[7px]` or `pl-8`. It is a hand-tuned pixel value that breaks if any of the other two change.
+3. The right-aligned duration column already conveys sequence. The rail, nodes, and mask are chrome restating what the dates say.
+
+Removing them also drops the `pl-8` wrapper offset, so the section aligns with every other `width="reading"` section on the page instead of being indented by a rail that no longer exists.
+
+**Scope: restyle only, no data changes.** The section keeps its current content exactly: org logo and name, duration, role, employment tag, the "Currently building" badge, org links, the top two highlights, the deep-dive CTA, and the featured project cards. No new fields on `TOrganization`, no new copy.
+
+Retokenizing needed in this file:
+
+| Before | After |
+|---|---|
+| `font-serif text-lg` on the org name | `text-lg font-semibold` (serif is removed in Part 2) |
+| `text-[13.5px]` on highlights | `text-sm` |
+| `tracking-[0.12em]` on the Featured-projects label | `tracking-label` |
+| `text-[10px]` on that label | `text-2xs` |
+| `text-[9px]` on the Currently-building badge | `text-2xs` |
+| `text-accent-hover` on the role | `text-muted-foreground` |
+| `bg-accent/60` on highlight bullets | `bg-subtle` |
+| `group-hover/orglink:text-accent` on the org name | `group-hover/orglink:text-foreground` with the base at `text-foreground/90` |
+| `group-hover/orglink:ring-accent/50` on the logo | `group-hover/orglink:ring-border-strong` |
+| `hover:text-accent` on the View-all link | `hover:text-foreground` |
+
+The `emerald-500` current-role indicators stay. That is a semantic status color, consistent with the availability dot in Part 1.
 
 ### The Marker highlight
 
@@ -344,7 +400,7 @@ The static highlight wash **stays** and is worth keeping: it draws the eye to `c
 | `CLAUDE.md` "Useful entry points" | Remove `/motion`, `/design`, `/skills` lines |
 | `docs/superpowers/plans/2026-07-24-motion-polish-and-showcase.md` | Delete. Describes routes that no longer exist |
 
-**Total removed: roughly 6,750 lines.** Breakdown: 2,705 route and component code (Part 5), 3,701 vendored `transitions-dev` skill, 346 decorative and dead components (Part 4).
+**Total removed: roughly 6,860 lines.** Breakdown: 2,705 route and component code (Part 5), 3,701 vendored `transitions-dev` skill, 455 decorative and dead components (Part 4).
 
 The accordion is not counted as a removal. `components/common/Accordion.tsx` (48 lines) is deleted but replaced by a generated `components/ui/accordion.tsx` of comparable size, so it is a swap that buys correctness rather than a line saving.
 
@@ -389,14 +445,16 @@ No test script exists in this repo, so verification is build plus manual sweep.
    - `font-serif` anywhere
    - `transition-all` anywhere (currently zero, must stay zero)
    - `accent` referencing a hue rather than foreground
-   - `Divider`, `Marquee`, `CurrentState`, `NFT`, `AvatarWithThemeSwitch`, `Reveal`, `BottomFadeMask`, `CurrentTime` as imports anywhere
+   - `Divider`, `Marquee`, `CurrentState`, `NFT`, `AvatarWithThemeSwitch`, `Reveal`, `BottomFadeMask`, `CurrentTime`, `WorkListItem` as imports anywhere
+   - `animate-in`, `animate-out`, `fade-in-0`, `zoom-in-95` anywhere (tooltip moves to transitions)
+   - more than one `TooltipProvider` in the tree
    - `components/common/Accordion` as an import (the replacement lives at `components/ui/accordion`)
    - `accordion-up` / `accordion-down` keyframes in `tailwind.config.ts` (replaced by a transition)
    - `whileInView` anywhere (the last one lived in `Reveal.tsx`)
    - `setInterval` outside `components/chat/` (the FAQ clock is gone; only chat polling may remain)
 3. **Route gate:** `/motion`, `/motion/principles`, `/design`, `/skills` all 404. `/markdown` still returns markdown. `curl -H "Accept: text/markdown"` on `/` and one blog post still works.
 4. **Manual sweep**, both themes, desktop and mobile viewport: homepage (static hero, stats bento, Clients row, section boundaries with no dividers, FAQ as a static list), one org page, one project case study, one blog post (syntax colors), `/books`, 404 page, command palette via Cmd+K, shortcuts overlay via `?`, Navbar mobile menu collapse, chat FAB open and close, Footer with the clock gone.
-5. **Motion gate:** confirm no animation exceeds 300ms except the Marker draw and the 404 sequence. Confirm the palette and shortcuts overlay appear with no transition.
+5. **Motion gate:** confirm no animation exceeds 300ms (the Marker draw is removed, so the 404 sequence is the only remaining exception). Confirm the palette and shortcuts overlay appear with no transition. Sweep the pointer across the Clients logo row and confirm the second and subsequent tooltips appear without re-waiting the delay.
 6. **Reduced motion:** enable it at OS level and confirm opacity transitions survive while movement stops.
 
 ---
