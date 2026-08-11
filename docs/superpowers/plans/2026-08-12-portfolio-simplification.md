@@ -38,7 +38,7 @@
 
 **Deleted (26 route/showcase files, 8 component files, 29 skill files):**
 
-`app/motion/` (2), `components/motion/` (24), `app/design/page.tsx`, `app/skills/` (3), `lib/skillsData.ts`, `components/common/Accordion.tsx`, `components/AnimatedBackground.tsx`, `components/HeroTitle.tsx`, `lib/useHeadingCycle.ts`, `components/layout/Divider.tsx`, `components/layout/Reveal.tsx`, `components/common/Marquee.tsx`, `components/CurrentState.tsx`, `components/NFT.tsx`, `components/AvatarWithThemeSwitch.tsx`, `components/WorkListItem.tsx`, `components/BottomFadeMask.tsx`, `components/CurrentTime.tsx`, `.claude/skills/transitions-dev/` (29), `docs/superpowers/plans/2026-07-24-motion-polish-and-showcase.md`
+`app/motion/` (2), `components/motion/` (24), `app/design/page.tsx`, `app/skills/` (3), `lib/skillsData.ts`, `components/common/Accordion.tsx`, `components/AnimatedBackground.tsx`, `components/HeroTitle.tsx`, `lib/useHeadingCycle.ts`, `components/layout/Divider.tsx`, `components/layout/Reveal.tsx`, `components/common/Marquee.tsx`, `components/CurrentState.tsx`, `components/NFT.tsx`, `components/AvatarWithThemeSwitch.tsx`, `components/WorkListItem.tsx`, `components/BottomFadeMask.tsx`, `components/CurrentTime.tsx`, `components/ui/CardNav/` (3), `.claude/skills/transitions-dev/` (29), `docs/superpowers/plans/2026-07-24-motion-polish-and-showcase.md`
 
 **Modified (core):** `app/globals.css` (palette + motion vars + h1-h6), `tailwind.config.ts` (fonts + scales), `app/layout.tsx` (font loaders + removed mounts), `lib/motionVariants.ts` (177 lines to ~70), `components/ExperienceWork.tsx`, `components/Faq.tsx`, `components/ui/tooltip.tsx`, `components/Navbar.tsx`, `components/CommandPalette.tsx`, `components/KeyboardShortcuts.tsx`, `components/ChatBot.tsx`, `components/About.tsx`, `middleware.ts`, `lib/commandData.ts`, `lib/shortcutsData.ts`, `app/sitemap.ts`, `public/.well-known/llms.txt`, `CLAUDE.md`, `data/agent-memory.md`
 
@@ -129,7 +129,8 @@ absent C11 "/design route gone"          app/design
 absent C11 "/skills route gone"          app/skills
 absent C11 "skillsData gone"             lib/skillsData.ts
 absent C12 "transitions-dev skill gone"  .claude/skills/transitions-dev
-count C13 "no dead component imports"    0 grep -rEoh "components/(Marquee|CurrentState|NFT|AvatarWithThemeSwitch|WorkListItem|BottomFadeMask|CurrentTime|AnimatedBackground|HeroTitle)|layout/(Divider|Reveal)|common/Accordion|common/Marquee" --include=*.tsx --include=*.ts app components lib
+count C13 "no dead component imports"    0 grep -rEoh "components/(Marquee|CurrentState|NFT|AvatarWithThemeSwitch|WorkListItem|BottomFadeMask|CurrentTime|AnimatedBackground|HeroTitle)|layout/(Divider|Reveal)|common/Accordion|common/Marquee|ui/CardNav" --include=*.tsx --include=*.ts app components lib
+absent C13 "CardNav gone"                components/ui/CardNav
 
 echo ""
 echo "Palette"
@@ -294,11 +295,12 @@ Six components were verified to have zero consumers. Six more become dead or are
 
 - [ ] **Step 1: Delete the confirmed-dead components**
 
-All six were verified by grep to have no importers (`Reveal`'s only consumer was `app/design/page.tsx`, deleted in Task 2; `NFT`'s only consumer was `CurrentState`, itself dead).
+All seven were verified by grep to have no importers anywhere in the repo (`Reveal`'s only consumer was `app/design/page.tsx`, deleted in Task 2; `NFT`'s only consumer was `CurrentState`, itself dead; `components/ui/CardNav/` is 186 lines across 3 files with zero importers).
 
 ```bash
 git rm components/common/Marquee.tsx components/CurrentState.tsx components/NFT.tsx \
        components/AvatarWithThemeSwitch.tsx components/WorkListItem.tsx components/layout/Reveal.tsx
+git rm -r components/ui/CardNav
 ```
 
 - [ ] **Step 2: Remove the 7 homepage dividers**
@@ -1245,7 +1247,172 @@ telling visitors to visit 404s in Fraunces."
 
 ---
 
-## Task 14: Final verification sweep
+## Task 14: Add the four motion opportunities that survived the gate
+
+**Files:**
+- Modify: `components/ProjectsIndex.tsx`, `components/chat/CodeBlock.tsx`, `components/ChatBot.tsx`, `components/project/ProjectMedia.tsx`, `app/not-found.tsx`
+
+**Interfaces:**
+- Consumes: Task 8's tokens (`ease.out`, `duration.fast`) and the CSS vars `--ease-out` / `--duration-fast`.
+- Produces: no new exports. No new gate check; these are additive polish that the gate cannot assert, so verification is visual.
+
+Everything here survived Emil's four-question gate (frequency, purpose, speed, function). Six other candidates were rejected and are listed at the end of this task so nobody re-adds them later. All four animate `transform` and `opacity` only, and all are at or under 160ms.
+
+**This task is additive and runs last on purpose.** Every prior task removes motion. Do not let it become a licence to re-animate: if a fifth idea occurs mid-task, it goes through the gate first.
+
+- [ ] **Step 1: Crossfade the projects grid on filter change**
+
+`components/ProjectsIndex.tsx:33-37` swaps the entire grid instantly when `active` changes, so content teleports with no bridge. Purpose: preventing a jarring change. Frequency: occasional.
+
+Container-level crossfade, deliberately **not** a per-card stagger: the user is comparing the grid before and after their own click, and a cascade delays that comparison.
+
+```tsx
+"use client";
+
+import { useMemo, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
+import { duration, ease } from "@/lib/motionVariants";
+// ...existing imports
+
+// inside the component, replacing the grid div:
+<AnimatePresence mode="wait" initial={false}>
+  <motion.div
+    key={active}
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    transition={{ duration: duration.fast, ease: ease.out }}
+    className="grid grid-cols-1 gap-5 md:grid-cols-2"
+  >
+    {shown.map((p) => (
+      <ProjectShowcaseCard key={p.id} project={sideProjectToCard(p)} />
+    ))}
+  </motion.div>
+</AnimatePresence>
+```
+
+`mode="wait"` means the outgoing grid finishes before the incoming one starts, so the two never overlap. `initial={false}` means no fade on first paint, only on subsequent filter changes. Opacity-only, so reduced motion needs no branch here.
+
+- [ ] **Step 2: Crossfade the copy-button icon swap**
+
+`components/chat/CodeBlock.tsx:50-58` hard-cuts `<Copy/> Copy` to `<Check/> Copied`. Purpose: state indication plus feedback. Frequency: occasional.
+
+Stack both states in one grid cell so the button does not reflow, then crossfade. Note `scale(0.8)`, never `scale(0)`:
+
+```tsx
+<button
+  type="button"
+  onClick={onCopy}
+  className={cn(
+    "inline-grid place-items-center rounded px-1.5 py-0.5 font-mono text-2xs uppercase tracking-wide",
+    "transition-[color,transform] duration-[var(--duration-fast)] active:scale-[0.97]",
+    copied ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+  )}
+  aria-label="Copy code"
+>
+  <span
+    aria-hidden={copied}
+    className="col-start-1 row-start-1 inline-flex items-center gap-1 transition-[opacity,transform] duration-[var(--duration-fast)] ease-[--ease-out]"
+    style={{ opacity: copied ? 0 : 1, transform: copied ? "scale(0.8)" : "scale(1)" }}
+  >
+    <Copy className="h-3 w-3" /> Copy
+  </span>
+  <span
+    aria-hidden={!copied}
+    className="col-start-1 row-start-1 inline-flex items-center gap-1 transition-[opacity,transform] duration-[var(--duration-fast)] ease-[--ease-out]"
+    style={{ opacity: copied ? 1 : 0, transform: copied ? "scale(1)" : "scale(0.8)" }}
+  >
+    <Check className="h-3 w-3" /> Copied
+  </span>
+</button>
+```
+
+`aria-hidden` flips with the state so a screen reader announces only the active label. `text-accent` becomes `text-foreground` per Task 7.
+
+- [ ] **Step 3: Apply the same swap to the ChatBot copy button**
+
+`components/ChatBot.tsx:473-482` has the same pattern keyed on `copiedIndex === index`. Apply the identical stacked-span treatment, substituting `copiedIndex === index` for `copied`. Repeated here rather than cross-referenced because the two files may be edited independently.
+
+- [ ] **Step 4: Add press feedback to the filter chips**
+
+`components/ProjectsIndex.tsx:20-30` chips carry `transition-colors` but no `:active`. Purpose: feedback.
+
+```tsx
+className={`rounded-full border px-3 py-1.5 font-mono text-xs uppercase tracking-wide
+  transition-[color,background-color,border-color,transform]
+  duration-[var(--duration-fast)] active:scale-[0.97] ${
+  active === f.tag
+    ? "border-accent bg-accent text-accent-foreground"
+    : "border-border text-muted-foreground hover:text-foreground"
+}`}
+```
+
+Note the enumerated property list rather than `transition-all`, which check `C05` forbids. `text-[11px]` becomes `text-xs` per Task 5.
+
+- [ ] **Step 5: Add press feedback to the remaining stragglers**
+
+The earlier press-feedback pass covered 22 files and missed these two. Add `active:scale-[0.97]` plus `transition-transform duration-[var(--duration-fast)] ease-[--ease-out]` to the pressable elements in:
+
+- `components/project/ProjectMedia.tsx`
+- `app/not-found.tsx`
+
+Check each element is genuinely pressable (has `onClick` or is a link/button) before adding. Do not add it to static containers.
+
+- [ ] **Step 6: Verify**
+
+```bash
+npm run build && npm run lint && ./scripts/verify-simplification.sh
+```
+
+Expected: all clean, `C05` still PASS (no `transition-all` introduced), `C06` still PASS (no keyframes introduced).
+
+Then `npm run dev` and check:
+- `/projects`: click between filters. The grid crossfades rather than hard-cutting, and there is no fade on first load.
+- Chat: copy a code block. The icon and label crossfade rather than snapping, and the button does not reflow or jump width.
+- Filter chips and the 404 buttons visibly depress on click.
+- Enable OS reduced motion: the grid crossfade still works (opacity is safe) while the scale presses stop.
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add -A
+git commit -m "feat(motion): add the four opportunities that passed the gate
+
+Additive polish, run last so it cannot dilute the removals. All four animate
+transform and opacity only, all at or under 160ms, all using existing tokens.
+
+- projects filter swapped the grid instantly; now a 150ms container
+  crossfade. Container-level, not per-card stagger: the user is comparing
+  before and after their own click, so a cascade would delay that
+- copy buttons in CodeBlock and ChatBot hard-cut between Copy and Copied;
+  now a stacked crossfade with scale(0.8), never scale(0). aria-hidden
+  flips so screen readers announce only the active label
+- filter chips had no :active state
+- press feedback for ProjectMedia and not-found, missed by the earlier pass
+
+Six candidates were rejected on the gate and are recorded in the plan so
+they do not get re-added: palette open/close and nav underlines (frequency),
+theme-toggle crossfade (frequency plus it fights every other transition),
+section scroll reveals (seen every visit), stat count-up (functional data
+the user is reading, above the fold), Experience stagger (just simplified)."
+```
+
+- [ ] **Step 8: Record the rejections in CLAUDE.md**
+
+So a future agent does not helpfully re-add them. Append to the motion convention bullet:
+
+> Motion opportunities were audited against `find-animation-opportunities`. These were rejected on the frequency gate and must not be re-added: command palette and shortcuts-overlay open/close, nav link underline slides, theme-toggle colour crossfade, homepage section scroll reveals, stat bento count-up, Experience list stagger.
+
+```bash
+git add CLAUDE.md
+git commit -m "docs: record the rejected motion candidates so they stay rejected"
+```
+
+**Deferred, pending a decision:** `CommandPalette.tsx:53` calls `navigator.clipboard?.writeText()` for the copy-email action and the palette then closes with **no confirmation the copy happened**. That is a real feedback gap on the single thing you most want visitors to copy successfully. The cheap fix is a brief inline `Copied` swap on the row before closing; the correct fix is a toast, which per `pick-ui-library` means adding Sonner as a dependency. Not in this plan because it needs an explicit yes on the dependency.
+
+---
+
+## Task 15: Final verification sweep
 
 **Files:** none modified unless the sweep finds a regression.
 
@@ -1298,7 +1465,9 @@ Every value must be at or under 300ms except `duration.hero` (500ms) in `app/not
 - [ ] Chat FAB: opens from near-full scale, closes faster than it opens
 - [ ] Footer: no clock
 - [ ] Tab through the FAQ with items closed: focus skips collapsed content
-- [ ] OS reduced motion on: colors and opacity still transition, nothing slides
+- [ ] `/projects`: filter chips depress on click, grid crossfades between filters, no fade on first load
+- [ ] Chat: copy a code block, icon crossfades and the button does not change width
+- [ ] OS reduced motion on: colors and opacity still transition, nothing slides. The projects crossfade survives (opacity is safe), the scale presses stop
 
 - [ ] **Step 5: Fresh-eyes pass**
 
@@ -1337,9 +1506,13 @@ If the sweep is clean with nothing to commit, say so explicitly rather than crea
 | 7. Part 5: Routes | 2 |
 | 8. Skills | 12 |
 | 9. agent-memory rule | 13 |
-| 10. Verification | 1 (gate), 14 (sweep) |
+| 10. Verification | 1 (gate), 15 (sweep) |
 
 No gaps.
+
+**Beyond the spec:** Task 14 adds four motion opportunities that were not in the original spec. They come from a `find-animation-opportunities` sweep run after the spec was written, and each survived Emil's four-question gate. This is a deliberate scope addition, approved before it was planned, and it is sequenced last so it cannot dilute the removals that make up the rest of the work. Six rejected candidates are recorded in Task 14 and in `CLAUDE.md` so they stay rejected.
+
+`components/ui/CardNav/` (186 lines, 3 files, zero importers) was also found after the spec was written and is folded into Task 3 as a seventh dead component.
 
 **Placeholder scan:** No TBD, TODO, or "similar to Task N". Every code step carries actual code. The one intentionally open item is Task 7 step 3, which gives categorical rules rather than a file-by-file list; that is correct here because the 159 accent sites are individually trivial but collectively too long to enumerate, and step 1 generates the list at execution time.
 
