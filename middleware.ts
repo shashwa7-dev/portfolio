@@ -11,7 +11,6 @@ import { NextRequest, NextResponse } from "next/server";
 // Pre-compiled patterns to keep the per-request work cheap.
 const blogRoute = /^\/blogs\/([^/]+)\/?$/;
 const orgRoute = /^\/work\/([^/]+)\/?$/;
-const skillRoute = /^\/skills\/([^/]+)\/?$/;
 
 export function middleware(req: NextRequest) {
   const accept = req.headers.get("accept");
@@ -45,15 +44,6 @@ export function middleware(req: NextRequest) {
       res.headers.append("Vary", "Accept");
       return res;
     }
-
-    const skill = skillRoute.exec(pathname);
-    if (skill) {
-      const res = NextResponse.rewrite(
-        new URL(`/skills/${skill[1]}/markdown`, req.url)
-      );
-      res.headers.append("Vary", "Accept");
-      return res;
-    }
   }
 
   // No markdown rendition (or HTML requested) — fall through, but still hint
@@ -67,5 +57,5 @@ export function middleware(req: NextRequest) {
 // patterns below admit anything under those prefixes; the per-request regex
 // inside `middleware()` filters to the exact shape we rewrite.
 export const config = {
-  matcher: ["/", "/blogs/:path*", "/work/:path*", "/skills/:path*"],
+  matcher: ["/", "/blogs/:path*", "/work/:path*"],
 };
