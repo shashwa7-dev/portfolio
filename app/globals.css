@@ -4,72 +4,74 @@
 
 @layer base {
 :root {
-  /* Light (mirrored) */
-  --background: 240 33% 99%;
-  --foreground: 240 8% 9%;
+  /* Paper (light) */
+  --background: 40 33% 98.5%;
+  --foreground: 35 9% 11%;
   --card: 0 0% 100%;
-  --card-foreground: 240 8% 9%;
+  --card-foreground: 35 9% 11%;
   --popover: 0 0% 100%;
-  --popover-foreground: 240 8% 9%;
-  --elevated: 240 16% 96%;
-  --primary: 240 8% 9%;
-  --primary-foreground: 240 33% 99%;
-  --secondary: 240 16% 96%;
-  --secondary-foreground: 240 8% 9%;
-  --muted: 240 16% 96%;
-  --muted-foreground: 240 5% 38%;
-  --subtle: 240 4% 56%;
-  --accent: 242 69% 61%;
-  --accent-foreground: 0 0% 100%;
-  --accent-hover: 242 69% 67%;
-  --destructive: 0 65% 50%;
+  --popover-foreground: 35 9% 11%;
+  --elevated: 38 20% 95.5%;
+  --primary: 35 9% 11%;
+  --primary-foreground: 40 33% 99%;
+  --secondary: 38 20% 95.5%;
+  --secondary-foreground: 35 9% 11%;
+  --muted: 38 20% 95.5%;
+  --muted-foreground: 35 7% 39%;
+  --subtle: 35 6% 54%;
+  --accent: 35 9% 11%;
+  --accent-foreground: 40 33% 99%;
+  --accent-hover: 35 9% 22%;
+  --destructive: 0 65% 48%;
   --destructive-foreground: 0 0% 100%;
-  --border: 240 14% 91%;
-  --border-strong: 240 12% 85%;
-  --input: 240 14% 91%;
-  --ring: 242 69% 61%;
+  --border: 36 16% 89.5%;
+  --border-strong: 36 14% 81%;
+  --input: 36 16% 89.5%;
+  --ring: 35 9% 30%;
+  --marker: 38 75% 55% / 0.16;
   --radius: 0.75rem;
-  --sh-class: 242 50% 50%;
-  --sh-identifier: 240 8% 20%;
-  --sh-sign: 240 5% 45%;
-  --sh-string: 160 40% 38%;
-  --sh-keyword: 242 69% 55%;
-  --sh-comment: 240 5% 55%;
-  --sh-jsxliterals: 242 50% 50%;
+  --sh-class: 35 45% 34%;
+  --sh-identifier: 35 8% 22%;
+  --sh-sign: 35 5% 45%;
+  --sh-string: 150 35% 32%;
+  --sh-keyword: 25 55% 38%;
+  --sh-comment: 35 5% 55%;
+  --sh-jsxliterals: 25 45% 40%;
 }
 
   .dark {
-    /* Graphite + Indigo (default) */
-    --background: 240 15% 5%;
-    --foreground: 240 6% 93%;
-    --card: 240 13% 9%;
-    --card-foreground: 240 6% 93%;
-    --popover: 240 13% 13%;
-    --popover-foreground: 240 6% 93%;
-    --elevated: 240 13% 13%;
-    --primary: 240 6% 93%;
-    --primary-foreground: 240 15% 5%;
-    --secondary: 240 13% 13%;
-    --secondary-foreground: 240 6% 85%;
-    --muted: 240 10% 16%;
-    --muted-foreground: 240 6% 63%;
-    --subtle: 240 4% 45%;
-    --accent: 241 84% 68%;
-    --accent-foreground: 0 0% 100%;
-    --accent-hover: 242 86% 73%;
+    /* Paper (dark) */
+    --background: 30 7% 5%;
+    --foreground: 35 6% 94%;
+    --card: 30 7% 8.5%;
+    --card-foreground: 35 6% 94%;
+    --popover: 30 7% 12%;
+    --popover-foreground: 35 6% 94%;
+    --elevated: 30 7% 12%;
+    --primary: 35 6% 94%;
+    --primary-foreground: 30 7% 6%;
+    --secondary: 30 6% 15%;
+    --secondary-foreground: 35 6% 86%;
+    --muted: 30 6% 15%;
+    --muted-foreground: 35 6% 63%;
+    --subtle: 30 5% 46%;
+    --accent: 35 8% 94%;
+    --accent-foreground: 30 7% 6%;
+    --accent-hover: 35 8% 84%;
     --destructive: 0 60% 55%;
     --destructive-foreground: 0 0% 100%;
-    --border: 240 10% 16%;
-    --border-strong: 240 10% 20%;
-    --input: 240 10% 16%;
-    --ring: 241 84% 68%;
-    --sh-class: 241 70% 75%;
-    --sh-identifier: 240 6% 82%;
-    --sh-sign: 240 5% 55%;
-    --sh-string: 160 35% 65%;
-    --sh-keyword: 241 80% 78%;
-    --sh-comment: 240 5% 50%;
-    --sh-jsxliterals: 241 60% 72%;
+    --border: 30 6% 16%;
+    --border-strong: 30 6% 24%;
+    --input: 30 6% 16%;
+    --ring: 35 6% 70%;
+    --marker: 38 60% 70% / 0.16;
+    --sh-class: 38 55% 70%;
+    --sh-identifier: 35 6% 84%;
+    --sh-sign: 35 5% 55%;
+    --sh-string: 150 32% 62%;
+    --sh-keyword: 30 70% 72%;
+    --sh-comment: 35 5% 50%;
+    --sh-jsxliterals: 30 55% 68%;
   }
 
   * {
@@ -90,14 +92,14 @@
   }
 
   /* ── Themed scrollbar ──
-     Thin, accent-aware, transparent track. Falls back to native on platforms
+     Thin, neutral, transparent track. Falls back to native on platforms
      that ignore these (iOS Safari, etc.). The `pre` rule below intentionally
      keeps code-block scrollbars hidden — higher specificity wins. */
 
   /* Firefox */
   * {
     scrollbar-width: thin;
-    scrollbar-color: hsl(var(--accent) / 0.5) transparent;
+    scrollbar-color: hsl(var(--border-strong)) transparent;
   }
 
   /* WebKit / Chromium / Edge */
@@ -109,17 +111,17 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background-color: hsl(var(--accent) / 0.35);
+    background-color: hsl(var(--border-strong));
     border: 2px solid transparent;
     background-clip: padding-box;
     border-radius: 9999px;
-    transition: background-color var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) ease;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background-color: hsl(var(--accent) / 0.6);
+    background-color: hsl(var(--subtle));
   }
   ::-webkit-scrollbar-thumb:active {
-    background-color: hsl(var(--accent));
+    background-color: hsl(var(--muted-foreground));
   }
   ::-webkit-scrollbar-corner {
     background: transparent;
