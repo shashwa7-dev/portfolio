@@ -552,8 +552,12 @@ Fraunces is gone, so every `font-serif` is a no-op that would fall back to Georg
 
 ```bash
 FILES=$(grep -rEl "font-serif" --include=*.tsx app components)
-perl -i -pe 's/\bfont-serif\s*//g; s/\s+"/"/g;' $FILES
+perl -i -pe 's/\bfont-serif\b\s*//g;' $FILES
 ```
+
+**Do not add a general whitespace-collapse rule to that command.** An earlier draft of this plan appended `s/\s+"/"/g`, intending to tidy the space left behind inside `className` strings. That rule is line-wide and matches whitespace before *any* double quote, so it corrupts import statements, object literals, and ternaries. Worst of all it rewrites JSX space tokens `{" "}` into `{""}`, which silently glues adjacent words together: in `components/About.tsx` it would have rendered the hero as "interfaces thatship and scale". It was caught during Step 4's diff review, which is exactly why that step exists.
+
+`font-serif` is always followed by at least one space and never appears last in a class list in this codebase, so `s/\bfont-serif\b\s*//g` alone leaves no double space. Confirm that in Step 4 rather than pre-emptively collapsing whitespace.
 
 - [ ] **Step 4: Run the gate and read the whole diff**
 
