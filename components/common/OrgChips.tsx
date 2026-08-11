@@ -16,7 +16,7 @@ export function EmploymentTag({
   if (!employment) return null;
   const label = employment === "full-time" ? "Full-time" : "Contract";
   return (
-    <span className="inline-flex items-center rounded-full border border-border-strong px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wide text-muted-foreground">
+    <span className="inline-flex items-center rounded-full border border-border-strong px-1.5 py-0.5 font-mono text-2xs uppercase tracking-wide text-muted-foreground">
       {label}
     </span>
   );
@@ -42,7 +42,7 @@ export function OrgLinkChip({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground transition-colors hover:border-accent/60 hover:text-accent"
+      className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-muted-foreground transition-colors hover:border-accent/60 hover:text-accent"
     >
       {label}
       <Icon className="h-2.5 w-2.5" />

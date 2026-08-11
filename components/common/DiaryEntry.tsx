@@ -22,18 +22,18 @@ export default function DiaryEntry({
   return (
     <article className="space-y-6">
       <header className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-accent-hover">
+        <span className="font-mono text-xs uppercase tracking-label text-accent-hover">
           {num}
         </span>
-        <h3 className="font-serif text-[1.35rem] font-semibold tracking-tight text-foreground">
+        <h3 className="text-[1.35rem] font-semibold tracking-tight text-foreground">
           {entry.title}
         </h3>
-        <span className="ml-auto font-mono text-[10px] uppercase tracking-[0.12em] text-subtle">
+        <span className="ml-auto font-mono text-2xs uppercase tracking-label text-subtle">
           {entry.date}
         </span>
       </header>
 
-      <p className="text-[15px] font-medium leading-relaxed text-foreground/90">
+      <p className="text-base font-medium leading-relaxed text-foreground/90">
         {withMarker(entry.summary, entry.summaryHighlight, "marker", 0.1)}
       </p>
 
@@ -61,7 +61,7 @@ export default function DiaryEntry({
 
       {entry.impact && (
         <div className="rounded-lg border-l-2 border-accent bg-accent/5 px-4 py-3">
-          <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-accent">
+          <div className="font-mono text-xs uppercase tracking-label text-accent">
             Impact
           </div>
           <p className="mt-1 text-sm leading-relaxed text-foreground">

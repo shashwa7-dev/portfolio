@@ -33,14 +33,14 @@ export default function CodeBlock({ code, language }: Props) {
   return (
     <div className="my-2 overflow-hidden rounded-lg border border-border bg-background">
       <div className="flex items-center justify-between border-b border-border bg-elevated px-2.5 py-1">
-        <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-subtle">
+        <span className="font-mono text-2xs uppercase tracking-label text-subtle">
           {language || "code"}
         </span>
         <button
           type="button"
           onClick={onCopy}
           className={cn(
-            "inline-flex items-center gap-1 rounded px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wide transition-colors",
+            "inline-flex items-center gap-1 rounded px-1.5 py-0.5 font-mono text-2xs uppercase tracking-wide transition-colors",
             copied
               ? "text-accent"
               : "text-muted-foreground hover:text-foreground"
@@ -58,7 +58,7 @@ export default function CodeBlock({ code, language }: Props) {
           )}
         </button>
       </div>
-      <pre className="overflow-x-auto px-3 py-2 text-[12.5px] leading-relaxed">
+      <pre className="overflow-x-auto px-3 py-2 text-sm leading-relaxed">
         <code dangerouslySetInnerHTML={{ __html: html }} />
       </pre>
     </div>

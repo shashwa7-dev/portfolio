@@ -41,7 +41,7 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
             </span>
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h1 className="font-serif text-3xl font-medium tracking-tight">{org.name}</h1>
+                <h1 className="text-3xl font-medium tracking-tight">{org.name}</h1>
                 {org.link && (
                   <a href={org.link} target="_blank" rel="noopener noreferrer" className="text-muted-foreground transition-colors hover:text-accent">
                     <ExternalLink className="h-4 w-4" />
@@ -56,7 +56,7 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
               </p>
             </div>
           </div>
-          {org.description && <p className="max-w-[62ch] text-[15px] leading-relaxed text-muted-foreground">{org.description}</p>}
+          {org.description && <p className="max-w-[62ch] text-base leading-relaxed text-muted-foreground">{org.description}</p>}
 
           {/* outbound links — site / app / X (each guard short-circuits internally) */}
           {org.links && (
@@ -86,8 +86,8 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
           <>
             <section className="space-y-4">
               <div className="flex items-baseline justify-between">
-                <h2 className="font-serif text-xl font-medium tracking-tight">Projects</h2>
-                <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-subtle">
+                <h2 className="text-xl font-medium tracking-tight">Projects</h2>
+                <span className="font-mono text-xs uppercase tracking-label text-subtle">
                   {org.projects.length} shipped
                 </span>
               </div>
@@ -105,8 +105,8 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
           <>
             <section id="diary" className="scroll-mt-16 space-y-6">
               <div className="flex items-baseline justify-between">
-                <h2 className="font-serif text-xl font-medium tracking-tight">What I built</h2>
-                <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-subtle">
+                <h2 className="text-xl font-medium tracking-tight">What I built</h2>
+                <span className="font-mono text-xs uppercase tracking-label text-subtle">
                   {diary.featured.length} featured
                 </span>
               </div>

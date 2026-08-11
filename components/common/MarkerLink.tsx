@@ -27,7 +27,7 @@ const markerLinkVariants = cva(
     variants: {
       size: {
         sm: "text-sm",
-        md: "text-[15px] font-medium",
+        md: "text-base font-medium",
       },
       tone: {
         muted: "text-muted-foreground hover:text-foreground",

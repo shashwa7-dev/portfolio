@@ -14,7 +14,7 @@ export default function Page() {
         <div className="space-y-4">
           <div className="space-y-2">
             <Label>Writing</Label>
-            <h1 className="font-serif text-[clamp(2rem,5vw,2.75rem)] font-medium tracking-[-0.02em]">
+            <h1 className="text-[clamp(2rem,5vw,2.75rem)] font-medium tracking-[-0.02em]">
               Blog
             </h1>
             <p className="text-muted-foreground">

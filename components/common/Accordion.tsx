@@ -38,7 +38,7 @@ export default function Accordion({
         style={{ gridTemplateRows: open ? "1fr" : "0fr" }}
       >
         <div className="overflow-hidden">
-          <div className="px-5 pb-4 text-[15px] leading-relaxed text-muted-foreground">
+          <div className="px-5 pb-4 text-base leading-relaxed text-muted-foreground">
             {children}
           </div>
         </div>

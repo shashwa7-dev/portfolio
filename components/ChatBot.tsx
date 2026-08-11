@@ -362,10 +362,10 @@ const S7Bot = () => {
                   <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-500 ring-2 ring-card" />
                 </div>
                 <div>
-                  <h3 className="font-serif text-[15px] leading-tight text-foreground">
+                  <h3 className="text-base leading-tight text-foreground">
                     Truffy
                   </h3>
-                  <p className="font-mono text-[10px] uppercase tracking-wide text-subtle">
+                  <p className="font-mono text-2xs uppercase tracking-wide text-subtle">
                     Gemini 2.5 Flash
                   </p>
                 </div>
@@ -502,7 +502,7 @@ const S7Bot = () => {
                     initial="hidden"
                     animate="visible"
                     exit="exit"
-                    className="absolute bottom-2 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-[11px] text-muted-foreground shadow-md transition-[color,transform] duration-150 ease-[--ease-out] hover:text-foreground active:scale-[0.94]"
+                    className="absolute bottom-2 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-xs text-muted-foreground shadow-md transition-[color,transform] duration-150 ease-[--ease-out] hover:text-foreground active:scale-[0.94]"
                   >
                     <ArrowDown className="h-3 w-3" /> New messages
                   </motion.button>

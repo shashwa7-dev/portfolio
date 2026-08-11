@@ -13,7 +13,7 @@ export default function ProjectPreviewCard({ project }: { project: ProjectCardDa
       <div className="relative h-12 w-[68px] shrink-0 overflow-hidden rounded-md bg-elevated">
         <Image src={project.thumbnail} alt={project.title} fill sizes="68px" className="object-cover" />
         {project.metric && (
-          <span className="absolute inset-x-0 bottom-0 truncate bg-gradient-to-t from-black/75 to-transparent px-1.5 pb-0.5 pt-2 font-mono text-[8px] font-medium text-white">
+          <span className="absolute inset-x-0 bottom-0 truncate bg-gradient-to-t from-black/75 to-transparent px-1.5 pb-0.5 pt-2 font-mono text-2xs font-medium text-white">
             {project.metric}
           </span>
         )}
@@ -22,7 +22,7 @@ export default function ProjectPreviewCard({ project }: { project: ProjectCardDa
         <div className="flex items-center gap-1.5">
           <span className="truncate text-sm font-medium text-foreground">{project.title}</span>
           {project.badge && (
-            <span className="shrink-0 font-mono text-[8px] uppercase tracking-wide text-accent">{project.badge}</span>
+            <span className="shrink-0 font-mono text-2xs uppercase tracking-wide text-accent">{project.badge}</span>
           )}
           <ArrowUpRight className="ml-auto h-3.5 w-3.5 shrink-0 text-subtle transition-colors group-hover:text-accent" />
         </div>

@@ -33,7 +33,7 @@ const Clients = () => {
                 </span>
                 <ArrowUpRight className="w-3 h-3 text-muted-foreground opacity-0 -translate-x-1 transition-[opacity,transform] duration-200 ease-[--ease-out] group-hover:opacity-100 group-hover:translate-x-0 shrink-0" />
               </div>
-              <p className="text-[11px] text-muted-foreground leading-snug truncate">
+              <p className="text-xs text-muted-foreground leading-snug truncate">
                 {client.contribution}
               </p>
             </div>

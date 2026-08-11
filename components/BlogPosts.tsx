@@ -26,11 +26,11 @@ export function BlogPosts() {
             </div>
           )}
           <div className="flex flex-1 flex-col gap-2 p-4">
-            <span className="font-mono text-[10px] uppercase tracking-wide text-subtle">
+            <span className="font-mono text-2xs uppercase tracking-wide text-subtle">
               {formatDate(post.metadata.publishedAt, false)}
             </span>
             <div className="flex items-start justify-between gap-2">
-              <h3 className="font-serif text-lg leading-snug text-foreground">{post.metadata.title}</h3>
+              <h3 className="text-lg leading-snug text-foreground">{post.metadata.title}</h3>
               <ArrowUpRight className="mt-1 h-4 w-4 shrink-0 text-subtle transition-colors group-hover:text-accent" />
             </div>
             <p className="line-clamp-2 text-sm text-muted-foreground">{post.metadata.summary}</p>
@@ -38,7 +38,7 @@ export function BlogPosts() {
               {JSON.parse(post.metadata.tags).map((tag: string, i: number) => (
                 <span
                   key={i}
-                  className="rounded-full border border-border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wide text-muted-foreground"
+                  className="rounded-full border border-border px-2 py-0.5 font-mono text-2xs uppercase tracking-wide text-muted-foreground"
                 >
                   {tag}
                 </span>

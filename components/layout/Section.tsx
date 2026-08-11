@@ -37,7 +37,7 @@ export default function Section({
                 </Label>
               )}
               {title && (
-                <h2 className="font-serif text-2xl md:text-[1.75rem] text-foreground">
+                <h2 className="text-2xl md:text-[1.75rem] text-foreground">
                   {title}
                 </h2>
               )}

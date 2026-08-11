@@ -19,7 +19,7 @@ export default function ProjectsIndex({ projects }: { projects: TSideProject[] }
             <button
               key={f.tag}
               onClick={() => setActive(f.tag)}
-              className={`rounded-full border px-3 py-1.5 font-mono text-[11px] uppercase tracking-wide transition-colors ${
+              className={`rounded-full border px-3 py-1.5 font-mono text-xs uppercase tracking-wide transition-colors ${
                 active === f.tag
                   ? "border-accent bg-accent text-accent-foreground"
                   : "border-border text-muted-foreground hover:text-foreground"

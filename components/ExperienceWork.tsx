@@ -50,7 +50,7 @@ export default function ExperienceWork() {
                   <span className="relative h-7 w-7 shrink-0 overflow-hidden rounded-md bg-elevated ring-1 ring-border transition-[box-shadow] group-hover/orglink:ring-accent/50">
                     <Image src={org.logo} alt={org.name} fill className="object-cover" sizes="28px" />
                   </span>
-                  <h3 className="truncate font-serif text-lg text-foreground transition-colors group-hover/orglink:text-accent">
+                  <h3 className="truncate text-lg text-foreground transition-colors group-hover/orglink:text-accent">
                     {org.name}
                   </h3>
                 </Link>
@@ -64,7 +64,7 @@ export default function ExperienceWork() {
                 <span className="text-sm text-accent-hover">{org.role}</span>
                 <EmploymentTag employment={org.employment} />
                 {isCurrent && (
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/60 px-2 py-0.5 font-mono text-[9px] uppercase tracking-wide text-emerald-500">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/60 px-2 py-0.5 font-mono text-2xs uppercase tracking-wide text-emerald-500">
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Currently building
                   </span>
                 )}
@@ -88,7 +88,7 @@ export default function ExperienceWork() {
               {/* highlights (top 2) */}
               <ul className="mt-3 space-y-1.5">
                 {org.highlights.slice(0, 2).map((h, i) => (
-                  <li key={i} className="flex gap-2.5 text-[13.5px] text-muted-foreground">
+                  <li key={i} className="flex gap-2.5 text-sm text-muted-foreground">
                     <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-accent/60" />
                     {h}
                   </li>
@@ -106,7 +106,7 @@ export default function ExperienceWork() {
               {featured.length > 0 && (
                 <div className="mt-5">
                   <div className="mb-3 flex items-baseline justify-between">
-                    <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-subtle">Featured projects</span>
+                    <span className="font-mono text-2xs uppercase tracking-label text-subtle">Featured projects</span>
                     <Link href={`/work/${org.slug}`} className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-accent">
                       View all {org.projects.length} <ArrowRight className="h-3.5 w-3.5" />
                     </Link>

@@ -58,7 +58,7 @@ export default function About() {
               </span>
             </div>
             <div>
-              <div className="text-[17px] font-semibold leading-tight text-foreground">
+              <div className="text-lg font-semibold leading-tight text-foreground">
                 Shashwat Tripathi
               </div>
               <div className="mt-0.5">
@@ -68,7 +68,7 @@ export default function About() {
           </div>
 
           {/* availability pill */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-border-strong px-3.5 py-1.5 text-[13px] text-muted-foreground">
+          <div className="inline-flex items-center gap-2 rounded-full border border-border-strong px-3.5 py-1.5 text-sm text-muted-foreground">
             <span className="h-2 w-2 rounded-full bg-emerald-500 ring-4 ring-emerald-500/15" />
             Available for frontend / full-stack roles &amp; freelance
           </div>
@@ -158,7 +158,7 @@ export default function About() {
                     ))}
                   </div>
                 )}
-                <div className="font-serif text-2xl text-foreground">{s.n}</div>
+                <div className="text-2xl font-semibold text-foreground">{s.n}</div>
                 <div className="mt-1 text-xs text-muted-foreground">{s.c}</div>
               </div>
             ))}

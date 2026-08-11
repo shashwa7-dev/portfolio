@@ -97,7 +97,7 @@ export default function CommandPalette() {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search projects, sections, actions…"
-              className="w-full border-b border-border bg-transparent px-4 py-4 text-[15px] text-foreground outline-none placeholder:text-subtle"
+              className="w-full border-b border-border bg-transparent px-4 py-4 text-base text-foreground outline-none placeholder:text-subtle"
               aria-label="Search commands"
             />
             <div className="max-h-[50vh] overflow-y-auto p-2">
@@ -109,7 +109,7 @@ export default function CommandPalette() {
                 if (items.length === 0) return null;
                 return (
                   <div key={g} className="mb-1">
-                    <div className="px-3 pb-1 pt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-subtle">{g}</div>
+                    <div className="px-3 pb-1 pt-2 font-mono text-2xs uppercase tracking-label text-subtle">{g}</div>
                     {items.map((c) => {
                       const idx = results.indexOf(c);
                       return (

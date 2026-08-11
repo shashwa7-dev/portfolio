@@ -25,7 +25,7 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/70 backdrop-blur-xl">
       <nav className="mx-auto flex max-w-[1080px] items-center justify-between px-6 py-3.5">
-        <Link href="/" className="font-serif text-lg font-semibold text-foreground">
+        <Link href="/" className="text-lg font-semibold text-foreground">
           offcod8
         </Link>
 
@@ -47,9 +47,9 @@ export default function Navbar() {
             type="button"
             onClick={openCommandPalette}
             aria-label="Open command menu"
-            className="flex items-center gap-1.5 rounded-lg border border-border-strong px-2.5 py-1.5 font-mono text-[11px] text-muted-foreground transition-[color,transform] duration-150 ease-[--ease-out] hover:text-foreground active:scale-[0.94]"
+            className="flex items-center gap-1.5 rounded-lg border border-border-strong px-2.5 py-1.5 font-mono text-xs text-muted-foreground transition-[color,transform] duration-150 ease-[--ease-out] hover:text-foreground active:scale-[0.94]"
           >
-            <span className="text-[13px] leading-none">⌘</span> K
+            <span className="text-sm leading-none">⌘</span> K
           </button>
           <button
             type="button"
