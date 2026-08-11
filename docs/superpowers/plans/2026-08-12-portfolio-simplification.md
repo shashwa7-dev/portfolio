@@ -290,7 +290,9 @@ Keeps /markdown: invisible to visitors, cheap, real agent-discovery value."
 
 **Interfaces:**
 - Consumes: Task 2's deletions.
-- Produces: `C08` and `C13` green. `About.tsx` no longer imports `HeroTitle`; it renders the static `<h1>` inline. The `Divider` component no longer exists, so no file may import it.
+- Produces: `C08` green. `About.tsx` no longer imports `HeroTitle`; it renders the static `<h1>` inline. The `Divider` component no longer exists, so no file may import it.
+- **Not** `C13`: that check's regex includes `common/Accordion`, which Task 10 deletes, so `C13` cannot go green until then. Expect it to report exactly 1 remaining hit (`Faq.tsx`) at the end of this task.
+- `C08` requires removing the scroll reveal in `components/Clients.tsx:27-32` as well as deleting `Reveal.tsx`. An earlier draft of the spec wrongly called `Reveal.tsx` "the last `whileInView`"; `Clients.tsx` has an independent one wrapping its whole section with a staggered card cascade. Remove it for the reason the plan gives in Task 14's rejected list: homepage section scroll reveals fail the frequency gate.
 
 Six components were verified to have zero consumers. Six more become dead or are decorative chrome being stripped.
 

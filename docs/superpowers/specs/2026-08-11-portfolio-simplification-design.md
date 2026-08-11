@@ -316,8 +316,14 @@ Verified by grep. Delete all five, 270 lines:
 | `components/CurrentState.tsx` | 84 | No consumers |
 | `components/NFT.tsx` | 53 | Only consumer is `CurrentState.tsx`, also dead |
 | `components/AvatarWithThemeSwitch.tsx` | 37 | No consumers |
-| `components/layout/Reveal.tsx` | 28 | Only consumer is `app/design/page.tsx`, which is deleted. Also removes the last `whileInView` scroll reveal |
+| `components/layout/Reveal.tsx` | 28 | Only consumer is `app/design/page.tsx`, which is deleted |
 | `components/WorkListItem.tsx` | 109 | No consumers. `ExperienceWork.tsx` renders its own inline timeline and never imports it |
+
+### The Clients section scroll reveal
+
+`components/Clients.tsx:27-32` wraps the entire section in `whileInView` with a staggered card cascade (`listVariants` + `cardVariants`). Remove it, along with the orphaned variants and the `motion` import, converting each `motion.a` back to a plain anchor.
+
+Same reasoning as the rejected-candidates list: the Clients row is homepage content seen on every visit, so a scroll reveal fails the frequency gate. It is also the last `whileInView` in the codebase, which is what gate check `C08` asserts.
 
 ### Ambient chrome
 
