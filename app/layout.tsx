@@ -11,22 +11,6 @@ import Footer from "@/components/Footer";
 import UmamiAnalytics from "@/components/Umami";
 import NoScript from "@/components/NoScript";
 
-const BottomFadeMask = dynamic(
-  () =>
-    import("@/components/BottomFadeMask").then((m) => ({
-      default: m.BottomFadeMask,
-    })),
-  { ssr: false }
-);
-
-const AnimatedBackground = dynamic(
-  () =>
-    import("@/components/AnimatedBackground").then((m) => ({
-      default: m.AnimatedBackground,
-    })),
-  { ssr: false }
-);
-
 const S7Bot = dynamic(() => import("@/components/ChatBot"), { ssr: false });
 const CommandPalette = dynamic(() => import("@/components/CommandPalette"), {
   ssr: false,
@@ -140,7 +124,6 @@ export default function RootLayout({
             <KeyboardShortcuts />
             <S7Bot />
           </TooltipProvider>
-          <BottomFadeMask />
           <Analytics />
           <UmamiAnalytics />
         </div>

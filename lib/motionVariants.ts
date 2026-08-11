@@ -41,7 +41,7 @@ export const stagger = {
 /**
  * Hero accent-phrase word cycle (ported from the ShopOS landing hero):
  * words slide up in one by one, hold, slide up out one by one, repeat.
- * Consumed by lib/useHeadingCycle.ts + components/HeroTitle.tsx.
+ * Unused now that the hero headline is frozen (see components/About.tsx).
  */
 export const wordCycle = {
   /** ms between each word entering */

@@ -3,7 +3,6 @@ import { Check, ArrowRight, Mail } from "lucide-react";
 import Container from "@/components/layout/Container";
 import Label from "@/components/layout/Label";
 import Bento from "@/components/layout/Bento";
-import HeroTitle from "@/components/HeroTitle";
 import Marker from "@/components/common/Marker";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 import { clients } from "@/lib/clients";
@@ -75,7 +74,11 @@ export default function About() {
           </div>
 
           {/* headline */}
-          <HeroTitle />
+          <h1 className="text-[clamp(2.2rem,5.5vw,3.4rem)] font-semibold leading-[1.02] tracking-tighter text-foreground">
+            I build interfaces that{" "}
+            <span className="font-semibold text-foreground">ship and scale</span> to
+            millions.
+          </h1>
 
           {/* lede (no em-dashes, no org names — generic AI-adaptive positioning) */}
           <p className="max-w-[56ch] text-lg text-muted-foreground">

@@ -5,7 +5,6 @@ import { organizations, getOrganization } from "@/lib/workData";
 import { getDiary } from "@/lib/diaryData";
 import Container from "@/components/layout/Container";
 import Label from "@/components/layout/Label";
-import Divider from "@/components/layout/Divider";
 import ProjectShowcaseCard from "@/components/ProjectShowcaseCard";
 import { workProjectToCard } from "@/lib/projectCards";
 import DiaryEntry from "@/components/common/DiaryEntry";
@@ -85,7 +84,6 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
         {/* ── Projects ───────────────────────────────────────────────── */}
         {org.projects.length > 0 && (
           <>
-            <Divider />
             <section className="space-y-4">
               <div className="flex items-baseline justify-between">
                 <h2 className="font-serif text-xl font-medium tracking-tight">Projects</h2>
@@ -105,7 +103,6 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
         {/* ── Diary entries ──────────────────────────────────────────── */}
         {diary && (
           <>
-            <Divider />
             <section id="diary" className="scroll-mt-16 space-y-6">
               <div className="flex items-baseline justify-between">
                 <h2 className="font-serif text-xl font-medium tracking-tight">What I built</h2>

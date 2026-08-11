@@ -1,12 +1,10 @@
 import Container from "@/components/layout/Container";
-import CurrentTime from "./CurrentTime";
 import Brand from "./Brand";
 
 const Footer = () => {
   return (
     <footer className="border-t border-border py-6 mt-12 overflow-hidden relative h-[10rem] md:h-[15rem]">
-      <Container width="wide" className="flex items-center justify-between text-[13px] text-subtle">
-        <CurrentTime />
+      <Container width="wide" className="text-[13px] text-subtle">
         <p>
           &copy; {new Date().getFullYear()}{" / S7.dev / "}
           <a
