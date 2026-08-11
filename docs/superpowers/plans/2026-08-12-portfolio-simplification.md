@@ -399,7 +399,8 @@ HeroTitle's reduced-motion branch."
 
 **Interfaces:**
 - Consumes: Task 3 (so no deleted file needs retokenizing).
-- Produces: `C04` green. Tailwind exposes `text-2xs` through `text-4xl` and `tracking-label`/`tight`/`tighter`. CSS vars are `--font-sans` and `--font-mono`; `--font-inter` and `--font-fraunces` no longer exist. Task 5 depends on these class names existing.
+- Produces: Tailwind exposes `text-2xs` through `text-4xl` and `tracking-label`/`tight`/`tighter`. CSS vars are `--font-sans` and `--font-mono`; `--font-inter` and `--font-fraunces` no longer exist. Task 5 depends on these class names existing.
+- **`C04` drops from 9 to 3, but does not reach green here.** The three survivors are all in `app/og/route.tsx`, which loads Fraunces and Inter TTFs from `public/fonts/` for satori-based OG image generation. That file is owned by Task 7, which rewrites its fonts and its hardcoded colours together. Do not touch it in this task.
 
 - [ ] **Step 1: Swap the font loaders**
 
@@ -671,7 +672,8 @@ hue because code blocks are where color earns its keep."
 
 **Interfaces:**
 - Consumes: Task 6's tokens.
-- Produces: no white-on-white or invisible-text regressions. No new gate check; the gate cannot judge contrast, so this task's verification is visual.
+- Produces: `C04` green (via the OG route rewrite in Step 4), and no white-on-white or invisible-text regressions. Contrast cannot be asserted by the gate, so most of this task's verification is visual.
+- Also deletes four font binaries from `public/fonts/`, so `Fraunces-Medium.ttf`, `Inter-Regular.ttf`, `Inter-SemiBold.ttf`, and the entirely-unreferenced `Somatic-Rounded.otf` are gone.
 
 `--accent` now equals `--foreground`, so any `text-white` paired with `bg-accent` is now white-on-near-white in light mode. Enumerate and read each site.
 
@@ -699,7 +701,25 @@ grep -rn "accent" --include=*.tsx --include=*.ts --include=*.css app components 
 - `ring-accent` / `outline-accent` becomes `ring-border-strong` / `outline-border-strong`.
 - `focus-visible:ring-accent` becomes `focus-visible:ring-ring` (the `--ring` token is already neutral).
 
-- [ ] **Step 4: Verify visually in both themes**
+- [ ] **Step 4: Rewrite the OG image route (fonts and colours)**
+
+`app/og/route.tsx` (121 lines) generates the social share image via satori. It is the highest-visibility surface on the site, because it is what renders when the link is pasted into LinkedIn, Twitter, or Slack. It is also a concentrated pocket of everything this revamp removes, and no earlier task owns it:
+
+- **Fonts:** it reads three TTFs from `public/fonts/` (`Fraunces-Medium.ttf`, `Inter-Regular.ttf`, `Inter-SemiBold.ttf`) and uses `fontFamily: "Fraunces"` for the title, `"Inter"` for body text.
+- **Colours:** four hardcoded hexes, all from the old palette. `#807DF5` is the indigo accent. `#0B0B0F`, `#EDEDEF`, and `#9A9AA6` are the old dark background, foreground, and muted-foreground.
+
+Steps:
+
+1. Download DM Sans TTFs (Regular 400 and SemiBold 600) into `public/fonts/`. Satori needs real font buffers; it cannot use `next/font`. Get them from the Google Fonts repository or the `@fontsource/dm-sans` package files. Verify each downloaded file is a valid TTF (non-trivial byte size, correct magic bytes) before committing, since a corrupt font makes satori fail at request time rather than build time.
+2. Replace the three `readFile` calls with the two DM Sans files, and update the `fonts:` array to `{ name: "DM Sans", data: dmSansRegular, weight: 400, style: "normal" }` and the same at `weight: 600`.
+3. Replace every `fontFamily: "Fraunces"` and `fontFamily: "Inter"` with `fontFamily: "DM Sans"`. The title keeps its larger size and gains `fontWeight: 600` in place of the serif's visual weight.
+4. Replace the four hexes with the **dark** Paper palette values converted to hex, since the OG card is dark: background `#0D0C0C` (from `30 7% 5%`), foreground `#F0EFEE` (from `35 6% 94%`), muted-foreground `#A5A29E` (from `35 6% 63%`). The indigo `#807DF5` has no replacement: that element becomes the foreground colour, matching the no-accent decision.
+5. Delete the now-unused font binaries: `git rm public/fonts/Fraunces-Medium.ttf public/fonts/Inter-Regular.ttf public/fonts/Inter-SemiBold.ttf`. Also delete `public/fonts/Somatic-Rounded.otf`, which was verified to have zero references anywhere in the repo.
+6. **Verify the route actually renders.** Run `npm run dev` and open `http://localhost:3000/og?title=Shashwat%20Tripathi&subtitle=Frontend%20Engineer&type=home`. You must get a 1200x630 PNG, not a 500. A satori font failure only surfaces at request time, so a clean build proves nothing here.
+
+This step turns `C04` green.
+
+- [ ] **Step 5: Verify visually in both themes**
 
 ```bash
 npm run build && npm run lint && npm run dev
@@ -707,7 +727,7 @@ npm run build && npm run lint && npm run dev
 
 Walk the homepage, one org page, one project case study, one blog post, `/books`, and the 404 page in **both** light and dark. Look specifically for invisible text, a button whose label vanished, and focus rings that disappeared. Toggle theme with `t`.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
 git add -A
