@@ -39,12 +39,19 @@ const Footer = () => {
           into the page instead of starting on a hard horizon line, and the
           gradient wash pulls it toward --background so it tracks the theme.
           No rounded corners: a full-bleed band should meet the viewport edges
-          squarely. */}
+          squarely.
+
+          Height and mask are tuned together to show the mountains rather than
+          just the flower field. At 34rem the band is roughly two thirds of the
+          image's natural height at desktop width, so object-center lands on the
+          peaks and the lake instead of cropping to the meadow, and the mask now
+          holds the image solid for 72 percent of the band before fading, rather
+          than 35 percent. */}
       <div
         aria-hidden
         className="pointer-events-none relative z-0 w-full select-none"
       >
-        <div className="relative h-[16rem] overflow-hidden md:h-[24rem]">
+        <div className="relative h-[20rem] overflow-hidden md:h-[34rem]">
           <Image
             src="/images/footer-scenery.jpg"
             alt=""
@@ -54,12 +61,12 @@ const Footer = () => {
             className="object-cover object-center opacity-90 dark:opacity-75"
             style={{
               maskImage:
-                "linear-gradient(to top, black 0%, black 35%, transparent 100%)",
+                "linear-gradient(to top, black 0%, black 72%, transparent 100%)",
               WebkitMaskImage:
-                "linear-gradient(to top, black 0%, black 35%, transparent 100%)",
+                "linear-gradient(to top, black 0%, black 72%, transparent 100%)",
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-transparent via-background/20 to-background" />
+          <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-background" />
         </div>
       </div>
 
