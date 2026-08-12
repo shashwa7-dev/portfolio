@@ -1,8 +1,7 @@
 "use client";
 
 import { Book as BookProps } from "@/lib/books";
-import { cn } from "@/lib/utils";
-import { CheckCircle2 } from "lucide-react";
+import { Check } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -32,7 +31,12 @@ export default function Book({
       className="relative aspect-[2/3] w-full rounded-lg overflow-hidden border bg-card block"
     >
       {isDone && (
-        <CheckCircle2 className="w-8 h-8 absolute top-0 right-0 text-green-500 z-[10]" />
+        /* Same verified-badge idiom as About.tsx and BookListItem. Inset from
+           the corner rather than flush, so it reads as placed on the cover
+           rather than clipped by it. */
+        <span className="absolute right-1.5 top-1.5 z-10 grid h-6 w-6 place-items-center rounded-full bg-foreground text-background ring-2 ring-card">
+          <Check className="h-3.5 w-3.5" strokeWidth={3} />
+        </span>
       )}
       {/* Skeleton */}
       {!loaded && (
@@ -58,13 +62,11 @@ export default function Book({
         aria-valuenow={progress}
         aria-valuemin={0}
         aria-valuemax={100}
-        className={cn("absolute bottom-0 left-0 h-1 w-full bg-muted")}
+        className="absolute bottom-0 left-0 h-1 w-full bg-muted"
       >
+        {/* One fill colour at every value; the width carries completion. */}
         <div
-          className={cn(
-            "h-1 bg-muted-foreground transition-[width]",
-            progress >= 100 && "!bg-green-500"
-          )}
+          className="h-1 bg-foreground transition-[width]"
           style={{ width: `${progress}%` }}
         />
       </div>

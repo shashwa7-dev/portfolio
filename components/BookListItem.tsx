@@ -1,8 +1,7 @@
 "use client";
 
 import { Book as BookProps } from "@/lib/books";
-import { cn } from "@/lib/utils";
-import { CheckCircle2, ArrowRight } from "lucide-react";
+import { Check, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo } from "react";
@@ -36,7 +35,14 @@ export default function BookListItem({
         {/* Cover thumbnail */}
         <div className="relative h-14 w-10 shrink-0 overflow-hidden rounded border bg-muted">
           {isDone && (
-            <CheckCircle2 className="absolute right-0.5 top-0.5 z-10 h-4 w-4 text-green-500" />
+            /* Reuses the verified-badge idiom from About.tsx: a solid
+               foreground disc with inverted glyph and a ring that separates it
+               from whatever cover art sits behind. Previously a bare green
+               CheckCircle2 floating on the artwork, which read as a sticker and
+               introduced a hue the palette does not use anywhere else. */
+            <span className="absolute right-1 top-1 z-10 grid h-4 w-4 place-items-center rounded-full bg-foreground text-background ring-2 ring-card">
+              <Check className="h-2.5 w-2.5" strokeWidth={3} />
+            </span>
           )}
           <Image
             src={cover}
@@ -60,11 +66,11 @@ export default function BookListItem({
             aria-valuemax={100}
             className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-muted"
           >
+            {/* One fill colour at every value. A full-width bar already says
+                complete, so recolouring at 100% was redundant signal carried by
+                a hue the rest of the app does not use. */}
             <div
-              className={cn(
-                "h-1 rounded-full transition-[width]",
-                progress >= 100 ? "bg-green-500" : "bg-muted-foreground"
-              )}
+              className="h-1 rounded-full bg-foreground transition-[width]"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -90,7 +96,14 @@ export default function BookListItem({
         {/* Cover thumbnail */}
         <div className="relative h-14 w-10 shrink-0 overflow-hidden rounded border bg-muted">
           {isDone && (
-            <CheckCircle2 className="absolute right-0.5 top-0.5 z-10 h-4 w-4 text-green-500" />
+            /* Reuses the verified-badge idiom from About.tsx: a solid
+               foreground disc with inverted glyph and a ring that separates it
+               from whatever cover art sits behind. Previously a bare green
+               CheckCircle2 floating on the artwork, which read as a sticker and
+               introduced a hue the palette does not use anywhere else. */
+            <span className="absolute right-1 top-1 z-10 grid h-4 w-4 place-items-center rounded-full bg-foreground text-background ring-2 ring-card">
+              <Check className="h-2.5 w-2.5" strokeWidth={3} />
+            </span>
           )}
           <Image
             src={cover}
@@ -114,11 +127,11 @@ export default function BookListItem({
             aria-valuemax={100}
             className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-muted"
           >
+            {/* One fill colour at every value. A full-width bar already says
+                complete, so recolouring at 100% was redundant signal carried by
+                a hue the rest of the app does not use. */}
             <div
-              className={cn(
-                "h-1 rounded-full transition-[width]",
-                progress >= 100 ? "bg-green-500" : "bg-muted-foreground"
-              )}
+              className="h-1 rounded-full bg-foreground transition-[width]"
               style={{ width: `${progress}%` }}
             />
           </div>
