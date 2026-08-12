@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Check, ArrowRight, Mail } from "lucide-react";
 import Container from "@/components/layout/Container";
 import AvatarHover from "@/components/AvatarHover";
+import LocalTime from "@/components/LocalTime";
 import Label from "@/components/layout/Label";
 import Bento from "@/components/layout/Bento";
 import Marker from "@/components/common/Marker";
@@ -38,23 +39,58 @@ export default function About() {
     <header className="pt-12 pb-10 md:pt-16">
       <Container width="reading">
         <div className="space-y-5 sm:space-y-7">
-          {/* identity block */}
-          <div className="flex items-center gap-3.5">
+          {/* Identity block.
+
+              The avatar stays 64px and the copy is fitted to it, rather than the
+              other way round: growing the image to the copy's height made a
+              supporting portrait the loudest thing in the hero.
+
+              Alignment is by construction, not by arithmetic. The text column is
+              `h-16` (the avatar's exact height) with `justify-between`, so the
+              first row's top and the last row's bottom sit on the avatar's edges
+              whatever the type sizes turn out to be. An earlier version summed
+              the three rows by hand to land near 64px; that held only until any
+              one size changed, and a near-match reads as a mistake in a way a
+              deliberate difference does not.
+
+              `leading-none` on the name is load-bearing. At `leading-tight` its
+              glyphs sit inside a line box about a quarter taller, so the
+              half-leading pushed the letters below the avatar's top edge even
+              when the boxes themselves lined up. Aligning boxes is not the same
+              as aligning what you can see. */}
+          <div className="flex items-start gap-3.5">
             <div className="relative shrink-0">
               <AvatarHover />
-              <span
-                className="absolute -bottom-1 -right-1 grid h-6 w-6 place-items-center rounded-full bg-foreground text-background ring-[3px] ring-background"
-                title="Verified engineer"
-                aria-label="Verified"
-              >
-                <Check className="h-3.5 w-3.5" strokeWidth={3} />
-              </span>
             </div>
-            <div>
-              <div className="text-lg font-semibold leading-tight text-foreground">
-                Shashwat Tripathi
+            <div className="flex h-16 flex-col justify-between">
+              {/* The name is the page's h1.
+
+                  It used to be a 17px div while the tagline below was the h1 at
+                  up to 54px, so the person was the smallest text in their own
+                  hero and the slogan outranked them. That also contradicted the
+                  ProfilePage JSON-LD, which declares this person the page's main
+                  entity. The tagline is still the visually dominant line, and
+                  still does the selling; it is just no longer the heading.
+
+                  The verified mark sits beside the name rather than pinned to the
+                  avatar's corner. As an overhang at `-bottom-1 -right-1` it broke
+                  the alignment above, and it belongs with the name it
+                  qualifies. */}
+              <div className="flex items-center gap-1.5">
+                <h1 className="text-2xl font-semibold leading-none tracking-tight text-foreground">
+                  Shashwat Tripathi
+                </h1>
+                <span
+                  className="grid h-4 w-4 shrink-0 place-items-center rounded-full bg-foreground text-background"
+                  title="Verified engineer"
+                  aria-label="Verified"
+                >
+                  <Check className="h-2.5 w-2.5" strokeWidth={3} />
+                </span>
               </div>
-              <div className="mt-1">
+              {/* No margins on these two: `justify-between` on the column owns
+                  the vertical distribution, and a margin here would fight it. */}
+              <div>
                 <Label>Frontend Engineer · AI · Web3</Label>
               </div>
               {/* Availability. Same treatment as the "Currently building" badge on
@@ -67,18 +103,28 @@ export default function About() {
                   intrusion. The dot alone still carries the live-status meaning,
                   which is the part the colour actually earns; the label sits on
                   neutral tokens like every other pill in the app. */}
-              <div className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-border-strong px-2 py-0.5 font-mono text-2xs font-medium uppercase tracking-label text-muted-foreground">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Open to work
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-border-strong px-2 py-0.5 font-mono text-2xs font-medium uppercase tracking-label text-muted-foreground">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Open to work
+                </span>
+                {/* Paired with availability on purpose: "free to hire" and "here
+                    is my working day" answer the same question for a client in a
+                    different timezone. */}
+                <LocalTime />
               </div>
             </div>
           </div>
 
-          {/* headline */}
-          <h1 className="text-[clamp(2.2rem,5.5vw,3.4rem)] font-semibold leading-[1.02] tracking-tighter text-foreground">
+          {/* The positioning statement. Still the visually dominant line and
+              still the thing doing the selling, but a `p` rather than the h1: a
+              page gets one h1 and it is the person, not the slogan. Sized down
+              slightly from clamp(2.2rem, 5.5vw, 3.4rem) so the name above has
+              room to read as the heading it now is. */}
+          <p className="text-[clamp(2rem,5vw,3rem)] font-semibold leading-[1.02] tracking-tighter text-foreground">
             I build interfaces that{" "}
             <span className="font-semibold text-foreground">ship and scale</span> to
             millions.
-          </h1>
+          </p>
 
           {/* lede (no em-dashes, no org names — generic AI-adaptive positioning) */}
           <p className="max-w-[56ch] text-lg text-muted-foreground">

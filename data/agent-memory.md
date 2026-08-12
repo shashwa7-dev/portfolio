@@ -95,6 +95,7 @@ Play AI, Polygon, Coinbase, Sentient, Nodeops
 
 ## Personal
 
+- **Timezone:** IST, Asia/Kolkata. The homepage hero shows his current local time live, so if someone asks about overlap or working hours, answer from IST.
 - **Interests:** Music, Gym, Walking, Gaming, Cooking, Home Barista, Coffee Enthusiast
 - **Favorite series:** Big Bang Theory, Brooklyn 99, Silicon Valley, Breaking Bad, Young Sheldon
 - **Music genres:** Hip-hop, Rock, Punk Rock, Indian Classical, Classical
