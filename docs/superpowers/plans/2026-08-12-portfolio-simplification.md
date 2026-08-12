@@ -903,9 +903,9 @@ git commit -m "refactor(motion): one curve, sub-300ms entrances, subtler feedbac
 
 **Interfaces:**
 - Consumes: Task 8's token shape.
-- Produces: `C06`, `C07` green. `keyboardSurfaceVariants` and `collapseHeightVariants` are removed from `lib/motionVariants.ts`.
+- Produces: `C06`, `C07` green. `keyboardSurfaceVariants` and `collapseHeightVariants` are removed from `lib/motionVariants.ts`. `MotionConfig reducedMotion="user"` wraps the app in `app/layout.tsx`, so every `motion/react` animation in the tree honours the OS setting. Zero `duration-500` remains, making `duration.hero` genuinely the only over-budget value in the codebase.
 
-Findings 6, 7, 8, 9 and 5 from spec section 5.
+Findings 6, 7, 8, 9 and 5 from spec section 5, plus two items surfaced by Task 8's review (Steps 5 and 6).
 
 - [ ] **Step 1: Move the tooltip from keyframes to transitions**
 
@@ -961,19 +961,55 @@ Then delete `keyboardSurfaceVariants` from `lib/motionVariants.ts`.
 
 Still a layout animation, but it needs no JS measurement and the mobile menu is opened rarely enough to sit inside budget. Delete `collapseHeightVariants` from `lib/motionVariants.ts`.
 
-- [ ] **Step 5: Verify**
+- [ ] **Step 5: Make Framer Motion respect prefers-reduced-motion**
+
+Surfaced during Task 8's review, and it is the largest accessibility gap in the codebase.
+
+Task 8 fixed the CSS reduced-motion block so it preserves opacity and colour while dropping movement. But that governs **CSS transitions only**. Nearly all of this app's actual entrance and exit motion is `motion/react` variants: `slideUpVariants`, `itemVariants`, `containerVariants`, `chatWindowVariants`, `fabPopVariants`, `popoverUpVariants`, `popoverDownVariants`, `dialogPopVariants`, `backdropFadeVariants`. Framer Motion does not read `prefers-reduced-motion` unless the app opts in, and this app never does: there is no `MotionConfig` anywhere, and `useReducedMotion()` appears in exactly one component (`components/Avatar.tsx`) out of the nine that import `motion/react`.
+
+So today a user with reduced motion enabled still gets every slide and scale at full travel. This predates the whole plan (the old `transition-duration: 0.01ms !important` rule had the identical non-effect on Framer Motion), but it means the spec's reduced-motion claim is only half true, and it is a one-line fix.
+
+In `app/layout.tsx`, wrap the app in `MotionConfig` with `reducedMotion="user"`:
+
+```tsx
+import { MotionConfig } from "motion/react";
+
+// wrapping the existing body content, outside TooltipProvider is fine:
+<MotionConfig reducedMotion="user">
+  {/* existing tree */}
+</MotionConfig>
+```
+
+`reducedMotion="user"` makes Framer Motion honour the OS setting automatically for every animation in the tree: it disables transform and layout animations while still allowing opacity and colour, which is exactly the behaviour Emil's standard asks for (fewer and gentler, not zero). This is strictly better than adding `useReducedMotion()` per component, because it cannot be forgotten in a new component later.
+
+`MotionConfig` is a client component boundary concern. If `app/layout.tsx` is a server component and wrapping there causes a build error, create a tiny `"use client"` wrapper component that renders `MotionConfig` with `children`, and use that instead. Do not convert the whole layout to a client component.
+
+- [ ] **Step 6: Bring three stray hover transitions inside budget**
+
+Also surfaced by Task 8's review. These are 500ms hover transitions, well over the 300ms UI budget, and hover sits in Emil's tens-per-day tier where motion should be reduced or removed rather than lingering:
+
+| File | Current | Change to |
+|---|---|---|
+| `components/BlogPosts.tsx:24` | `transition-transform duration-500` on the card image scale | `duration-[var(--duration-base)]` (200ms) |
+| `components/ProjectShowcaseCard.tsx:19` | `transition-transform duration-500` on the card image scale | `duration-[var(--duration-base)]` (200ms) |
+| `components/Avatar.tsx:269` | `transition-colors duration-500` | `duration-[var(--duration-fast)]` (150ms) |
+
+After this, `duration.hero` (500ms, `app/not-found.tsx` only) is genuinely the sole over-budget value in the codebase, which is what Task 15's audit step asserts.
+
+- [ ] **Step 7: Verify**
+
+Automated checks only. Do not start a dev server.
 
 ```bash
 npm run build && npm run lint && ./scripts/verify-simplification.sh
 ```
 
-Expected: `C06`, `C07` PASS. Then `npm run dev`:
-- Sweep the pointer across the Clients logo row. The first tooltip waits 150ms; every subsequent one appears immediately.
-- Hover a stats logo and confirm it now uses the same 150ms, not 700ms.
-- Press Cmd+K and `?`. Both panels must appear with no scale or fade on the panel itself.
-- Open the mobile menu at a narrow viewport and confirm it still expands smoothly.
+Expected: `C06` and `C07` PASS, and every previously-green check stays green. Then confirm by grep:
+- `grep -rn "MotionConfig" app` returns the layout wrapper.
+- `grep -rn "duration-500" app components` returns nothing.
+- `grep -rn "keyboardSurfaceVariants\|collapseHeightVariants" lib components` returns nothing (both deleted in Steps 3 and 4).
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 8: Commit**
 
 ```bash
 git add -A
