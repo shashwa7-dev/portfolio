@@ -216,7 +216,7 @@ a {
 }
 
 .prose a {
-  @apply underline transition-colors underline-offset-4 decoration-accent/50 hover:decoration-accent text-foreground;
+  @apply underline transition-colors underline-offset-4 decoration-subtle hover:decoration-foreground text-foreground;
 }
 
 .prose .anchor:after {

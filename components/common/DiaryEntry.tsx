@@ -8,8 +8,8 @@ import type { TDiaryEntry } from "@/lib/diaryData";
  * inside an <ol>/<ul> that controls between-entry spacing via divide-* or
  * space-y-*.
  *
- * The Impact callout keeps its accent-tinted left-border treatment — that's
- * the punchline of the entry, not card UI.
+ * The Impact callout keeps its foreground-tinted left-border treatment,
+ * since that's the punchline of the entry, not card UI.
  */
 export default function DiaryEntry({
   entry,
@@ -22,7 +22,7 @@ export default function DiaryEntry({
   return (
     <article className="space-y-6">
       <header className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <span className="font-mono text-xs uppercase tracking-label text-accent-hover">
+        <span className="font-mono text-xs uppercase tracking-label text-foreground">
           {num}
         </span>
         <h3 className="text-[1.35rem] font-semibold tracking-tight text-foreground">
@@ -52,7 +52,7 @@ export default function DiaryEntry({
               key={i}
               className="flex gap-2.5 text-sm leading-relaxed text-muted-foreground"
             >
-              <span className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-accent/60" />
+              <span className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-muted-foreground" />
               <span>{c}</span>
             </li>
           ))}
@@ -60,8 +60,8 @@ export default function DiaryEntry({
       </div>
 
       {entry.impact && (
-        <div className="rounded-lg border-l-2 border-accent bg-accent/5 px-4 py-3">
-          <div className="font-mono text-xs uppercase tracking-label text-accent">
+        <div className="rounded-lg border-l-2 border-foreground bg-muted px-4 py-3">
+          <div className="font-mono text-xs uppercase tracking-label text-foreground">
             Impact
           </div>
           <p className="mt-1 text-sm leading-relaxed text-foreground">

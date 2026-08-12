@@ -89,10 +89,10 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
                 <div>
                   <div className="mb-1.5 font-mono text-2xs uppercase tracking-label text-subtle">Links</div>
                   <div className="flex flex-col gap-1 text-sm">
-                    {project.links.web && <a className="hover:text-accent" href={project.links.web} target="_blank" rel="noopener noreferrer">Live ↗</a>}
-                    {project.links.github && <a className="hover:text-accent" href={project.links.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a>}
-                    {project.links.download && <a className="hover:text-accent" href={project.links.download} target="_blank" rel="noopener noreferrer">Download ↗</a>}
-                    {project.links.producthunt && <a className="hover:text-accent" href={project.links.producthunt} target="_blank" rel="noopener noreferrer">Product Hunt ↗</a>}
+                    {project.links.web && <a className="hover:text-foreground" href={project.links.web} target="_blank" rel="noopener noreferrer">Live ↗</a>}
+                    {project.links.github && <a className="hover:text-foreground" href={project.links.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a>}
+                    {project.links.download && <a className="hover:text-foreground" href={project.links.download} target="_blank" rel="noopener noreferrer">Download ↗</a>}
+                    {project.links.producthunt && <a className="hover:text-foreground" href={project.links.producthunt} target="_blank" rel="noopener noreferrer">Product Hunt ↗</a>}
                   </div>
                 </div>
               )}
@@ -102,13 +102,13 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
           <div className="space-y-9">
             {sections.map((s) => (
               <section key={s.key} className="space-y-2">
-                <div className="font-mono text-2xs uppercase tracking-label text-accent">{s.label}</div>
+                <div className="font-mono text-2xs uppercase tracking-label text-foreground">{s.label}</div>
                 <h2 className="text-2xl">{s.heading}</h2>
                 {s.body.length > 1 ? (
                   <ul className="space-y-1.5">
                     {s.body.map((line, i) => (
                       <li key={i} className="flex gap-2.5 text-base text-muted-foreground">
-                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent/60" />
+                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-muted-foreground" />
                         {line}
                       </li>
                     ))}
@@ -121,7 +121,7 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
 
             {cs.results && cs.results.length > 0 && (
               <section className="space-y-3">
-                <div className="font-mono text-2xs uppercase tracking-label text-accent">Results</div>
+                <div className="font-mono text-2xs uppercase tracking-label text-foreground">Results</div>
                 <h2 className="text-2xl">Impact</h2>
                 <div className="flex flex-wrap gap-3">
                   {cs.results.map((r, i) => (

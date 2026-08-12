@@ -85,7 +85,7 @@ export default function BookListItem({
     <motion.li variants={itemVariants}>
       <Link
         href={`/books/${slug}`}
-        className="group flex items-center gap-3 rounded-lg border bg-card p-3 transition-[color,background-color,border-color,transform] duration-150 ease-[--ease-out] hover:border-accent/50 hover:bg-accent/5 active:scale-[0.98]"
+        className="group flex items-center gap-3 rounded-lg border bg-card p-3 transition-[color,background-color,border-color,transform] duration-150 ease-[--ease-out] hover:border-border-strong hover:bg-muted active:scale-[0.98]"
       >
         {/* Cover thumbnail */}
         <div className="relative h-14 w-10 shrink-0 overflow-hidden rounded border bg-muted">

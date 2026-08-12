@@ -38,7 +38,7 @@ const Socials = () => {
               href={link}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 hover:text-accent transition-colors"
+              className="flex items-center gap-1.5 hover:text-foreground transition-colors"
             >
               <Icon className="w-4 h-4" />
               <span>{name}</span>

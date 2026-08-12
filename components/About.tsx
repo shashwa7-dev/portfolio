@@ -50,7 +50,7 @@ export default function About() {
                 />
               </div>
               <span
-                className="absolute -bottom-1 -right-1 grid h-6 w-6 place-items-center rounded-full bg-accent text-white ring-[3px] ring-background"
+                className="absolute -bottom-1 -right-1 grid h-6 w-6 place-items-center rounded-full bg-foreground text-background ring-[3px] ring-background"
                 title="Verified engineer"
                 aria-label="Verified"
               >
@@ -106,7 +106,7 @@ export default function About() {
                   <Tooltip key={c.name}>
                     <TooltipTrigger asChild>
                       <span
-                        className={`group relative h-6 w-6 overflow-hidden rounded-full bg-secondary ring-2 ring-background transition-[transform,box-shadow,outline-color] duration-200 ease-[--ease-out] outline outline-1 outline-border hover:z-10 hover:-translate-y-1 hover:scale-110 hover:outline-accent hover:shadow-md sm:h-7 sm:w-7 ${
+                        className={`group relative h-6 w-6 overflow-hidden rounded-full bg-secondary ring-2 ring-background transition-[transform,box-shadow,outline-color] duration-200 ease-[--ease-out] outline outline-1 outline-border hover:z-10 hover:-translate-y-1 hover:scale-110 hover:outline-border-strong hover:shadow-md sm:h-7 sm:w-7 ${
                           i > 0 ? "-ml-2 sm:-ml-2.5" : ""
                         }`}
                       >

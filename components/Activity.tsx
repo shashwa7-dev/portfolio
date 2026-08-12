@@ -11,7 +11,7 @@ export default function Activity() {
       <Bento className="grid-cols-1 sm:grid-cols-2">
         <div className="bg-card p-5">
           <p className="mb-2.5 font-mono text-2xs uppercase tracking-label text-subtle">Writing</p>
-          <Link href="/blogs" className="group inline-flex items-center gap-2 text-base font-medium transition-colors hover:text-accent">
+          <Link href="/blogs" className="group inline-flex items-center gap-2 text-base font-medium transition-colors hover:text-foreground">
             Read my blog posts <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </Link>
           <p className="mt-2 text-xs text-muted-foreground">Notes on frontend, AI &amp; building products.</p>

@@ -68,7 +68,7 @@ export default function BookPage({ params }: Props) {
                 {book.name}
               </h1>
               <p className="mt-1 text-sm text-muted-foreground">
-                by <span className="font-medium text-accent">{book.author}</span>
+                by <span className="font-medium text-foreground">{book.author}</span>
               </p>
             </div>
 
@@ -88,7 +88,7 @@ export default function BookPage({ params }: Props) {
                   Completed
                 </span>
               ) : (
-                <span className="rounded-md border border-accent/30 bg-accent/10 px-2.5 py-1 text-xs font-medium text-accent">
+                <span className="rounded-md border border-border-strong bg-muted px-2.5 py-1 text-xs font-medium text-foreground">
                   Reading
                 </span>
               )}
@@ -112,7 +112,7 @@ export default function BookPage({ params }: Props) {
                   "flex items-center justify-between gap-3 rounded-lg border border-border px-4 py-3 text-sm transition-colors",
                   chapter.completed
                     ? "bg-secondary/80 text-muted-foreground"
-                    : "bg-card hover:border-accent/50 hover:bg-accent/5"
+                    : "bg-card hover:border-border-strong hover:bg-muted"
                 )}
               >
                 <p

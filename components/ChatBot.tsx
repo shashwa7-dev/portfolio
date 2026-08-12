@@ -420,7 +420,7 @@ const S7Bot = () => {
                         onClick={() => sendMessage(prompt)}
                         className="w-full flex items-center gap-2 text-left rounded-xl border border-border bg-card px-3 py-2.5 text-xs text-muted-foreground hover:border-border-strong hover:text-foreground transition-colors"
                       >
-                        <Icon className="h-3.5 w-3.5 shrink-0 text-accent/70" />
+                        <Icon className="h-3.5 w-3.5 shrink-0 text-subtle" />
                         <span>{prompt}</span>
                       </motion.button>
                     ))}
@@ -456,7 +456,7 @@ const S7Bot = () => {
                         <>
                           <MarkdownMessage content={msg.content} />
                           {isStreamingThis && (
-                            <span className="ml-0.5 inline-block h-3 w-[2px] -mb-0.5 animate-blink bg-accent align-baseline" />
+                            <span className="ml-0.5 inline-block h-3 w-[2px] -mb-0.5 animate-blink bg-foreground align-baseline" />
                           )}
                         </>
                       ) : (
@@ -471,7 +471,7 @@ const S7Bot = () => {
                           className={cn(
                             "absolute -bottom-2 -right-2 inline-flex h-6 w-6 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm transition-opacity hover:text-foreground",
                             copiedIndex === index
-                              ? "opacity-100 text-accent"
+                              ? "opacity-100 text-foreground"
                               : "opacity-0 group-hover/msg:opacity-100"
                           )}
                         >

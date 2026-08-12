@@ -69,17 +69,17 @@ export default function WorkProjectPage({
           {/* Organization badge — links back to /work/[org] */}
           <Link
             href={`/work/${org.slug}`}
-            className="group inline-flex items-center gap-2 self-start rounded-lg border border-border bg-card px-2.5 py-1.5 transition-colors hover:border-accent/60"
+            className="group inline-flex items-center gap-2 self-start rounded-lg border border-border bg-card px-2.5 py-1.5 transition-colors hover:border-border-strong"
           >
             <img
               src={org.logo}
               alt={org.name}
               className="h-5 w-5 rounded-md"
             />
-            <span className="text-sm text-muted-foreground transition-colors group-hover:text-accent">
-              Built at <span className="font-semibold text-foreground group-hover:text-accent">{org.name}</span>
+            <span className="text-sm text-muted-foreground transition-colors group-hover:text-foreground">
+              Built at <span className="font-semibold text-foreground group-hover:text-foreground">{org.name}</span>
             </span>
-            <ArrowUpRight className="h-3.5 w-3.5 text-subtle transition-[color,transform] group-hover:-translate-y-0.5 group-hover:text-accent" />
+            <ArrowUpRight className="h-3.5 w-3.5 text-subtle transition-[color,transform] group-hover:-translate-y-0.5 group-hover:text-foreground" />
           </Link>
         </motion.div>
 
@@ -135,7 +135,7 @@ export default function WorkProjectPage({
                     key={idx}
                     className="flex items-start gap-3 text-sm text-muted-foreground"
                   >
-                    <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
+                    <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-foreground shrink-0" />
                     <span>{highlight}</span>
                   </li>
                 ))}

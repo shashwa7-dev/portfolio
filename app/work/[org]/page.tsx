@@ -43,7 +43,7 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
               <div className="flex items-center gap-2">
                 <h1 className="text-3xl font-medium tracking-tight">{org.name}</h1>
                 {org.link && (
-                  <a href={org.link} target="_blank" rel="noopener noreferrer" className="text-muted-foreground transition-colors hover:text-accent">
+                  <a href={org.link} target="_blank" rel="noopener noreferrer" className="text-muted-foreground transition-colors hover:text-foreground">
                     <ExternalLink className="h-4 w-4" />
                   </a>
                 )}
@@ -74,7 +74,7 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
           <ul className="space-y-2">
             {org.highlights.map((h, i) => (
               <li key={i} className="flex gap-2.5 text-sm text-muted-foreground">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent/60" />
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-muted-foreground" />
                 {h}
               </li>
             ))}

@@ -42,7 +42,7 @@ export function OrgLinkChip({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-muted-foreground transition-colors hover:border-accent/60 hover:text-accent"
+      className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground"
     >
       {label}
       <Icon className="h-2.5 w-2.5" />

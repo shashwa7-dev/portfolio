@@ -49,7 +49,7 @@ export default function NotFound() {
             <span className="bg-gradient-to-br from-foreground via-foreground to-muted-foreground bg-clip-text text-transparent">
               4
             </span>
-            <span className="text-accent">0</span>
+            <span className="text-foreground">0</span>
             <span className="bg-gradient-to-br from-foreground via-foreground to-muted-foreground bg-clip-text text-transparent">
               4
             </span>
@@ -108,9 +108,9 @@ export default function NotFound() {
             className="pt-12 space-y-2"
           >
             <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-              <span className="w-1 h-1 rounded-full bg-accent animate-pulse" />
+              <span className="w-1 h-1 rounded-full bg-foreground animate-pulse" />
               <span>Lost in the void</span>
-              <span className="w-1 h-1 rounded-full bg-accent animate-pulse" />
+              <span className="w-1 h-1 rounded-full bg-foreground animate-pulse" />
             </div>
           </motion.div>
         </div>

@@ -15,9 +15,9 @@ const components: Components = {
   p: ({ children }) => <p className="my-1.5 leading-relaxed">{children}</p>,
   ul: ({ children }) => <ul className="my-2 ml-4 list-disc space-y-1">{children}</ul>,
   ol: ({ children }) => <ol className="my-2 ml-4 list-decimal space-y-1">{children}</ol>,
-  li: ({ children }) => <li className="leading-relaxed marker:text-accent/60">{children}</li>,
+  li: ({ children }) => <li className="leading-relaxed marker:text-muted-foreground">{children}</li>,
   blockquote: ({ children }) => (
-    <blockquote className="my-2 border-l-2 border-accent/60 pl-3 italic text-muted-foreground">
+    <blockquote className="my-2 border-l-2 border-border-strong pl-3 italic text-muted-foreground">
       {children}
     </blockquote>
   ),
@@ -46,7 +46,7 @@ const components: Components = {
       href={href}
       target={href?.startsWith("http") ? "_blank" : undefined}
       rel={href?.startsWith("http") ? "noopener noreferrer" : undefined}
-      className="underline decoration-accent/50 underline-offset-2 transition-colors hover:decoration-accent hover:text-accent"
+      className="underline decoration-subtle underline-offset-2 transition-colors hover:decoration-foreground hover:text-foreground"
     >
       {children}
     </a>

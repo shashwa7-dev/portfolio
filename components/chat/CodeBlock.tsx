@@ -42,7 +42,7 @@ export default function CodeBlock({ code, language }: Props) {
           className={cn(
             "inline-flex items-center gap-1 rounded px-1.5 py-0.5 font-mono text-2xs uppercase tracking-wide transition-colors",
             copied
-              ? "text-accent"
+              ? "text-foreground"
               : "text-muted-foreground hover:text-foreground"
           )}
           aria-label="Copy code"

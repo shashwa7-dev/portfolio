@@ -11,7 +11,7 @@ const Footer = () => {
             href="https://github.com/shashwa7-dev/portfolio/blob/master/LICENSE"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-foreground hover:text-accent transition-colors underline underline-offset-4"
+            className="text-foreground decoration-subtle hover:decoration-foreground transition-colors underline underline-offset-4"
           >
             MIT License
           </a>

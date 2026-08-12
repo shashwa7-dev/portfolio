@@ -2,7 +2,7 @@ import Marker from "@/components/common/Marker";
 
 /**
  * Wrap the first case-insensitive occurrence of `match` inside `text` with the
- * accent-drawn `<Marker>` underline. The rest of `text` renders as plain
+ * foreground-drawn `<Marker>` underline. The rest of `text` renders as plain
  * children. If `match` is missing or not found, `text` is returned untouched.
  *
  * Use for any place where prose has one phrase you want to emphasize on

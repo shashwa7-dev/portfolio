@@ -50,7 +50,7 @@ export default function Marker({
         <motion.path
           d={PATHS[variant]}
           fill="none"
-          stroke="hsl(var(--accent))"
+          stroke="hsl(var(--foreground))"
           strokeWidth={STROKE_WIDTH[variant]}
           strokeLinecap="round"
           initial={{ pathLength: reduce ? 1 : 0, opacity: reduce ? 1 : 0 }}

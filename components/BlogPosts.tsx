@@ -31,7 +31,7 @@ export function BlogPosts() {
             </span>
             <div className="flex items-start justify-between gap-2">
               <h3 className="text-lg leading-snug text-foreground">{post.metadata.title}</h3>
-              <ArrowUpRight className="mt-1 h-4 w-4 shrink-0 text-subtle transition-colors group-hover:text-accent" />
+              <ArrowUpRight className="mt-1 h-4 w-4 shrink-0 text-subtle transition-colors group-hover:text-foreground" />
             </div>
             <p className="line-clamp-2 text-sm text-muted-foreground">{post.metadata.summary}</p>
             <div className="mt-auto flex flex-wrap gap-1.5 pt-2">

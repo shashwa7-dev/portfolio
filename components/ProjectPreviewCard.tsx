@@ -22,9 +22,9 @@ export default function ProjectPreviewCard({ project }: { project: ProjectCardDa
         <div className="flex items-center gap-1.5">
           <span className="truncate text-sm font-medium text-foreground">{project.title}</span>
           {project.badge && (
-            <span className="shrink-0 font-mono text-2xs uppercase tracking-wide text-accent">{project.badge}</span>
+            <span className="shrink-0 font-mono text-2xs uppercase tracking-wide text-foreground">{project.badge}</span>
           )}
-          <ArrowUpRight className="ml-auto h-3.5 w-3.5 shrink-0 text-subtle transition-colors group-hover:text-accent" />
+          <ArrowUpRight className="ml-auto h-3.5 w-3.5 shrink-0 text-subtle transition-colors group-hover:text-foreground" />
         </div>
         <p className="line-clamp-1 text-xs text-muted-foreground">{project.tagline}</p>
         <div className="mt-1.5 flex items-center gap-1.5 text-subtle">

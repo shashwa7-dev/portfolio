@@ -31,13 +31,13 @@ const Separator = React.forwardRef<HTMLDivElement, SeparatorProps>(
             : "bg-gradient-to-b from-transparent via-border to-transparent"
         )}
       />
-      {/* Subtle accent overlay for depth */}
+      {/* Subtle neutral overlay for depth */}
       <div
         className={cn(
           "absolute inset-0 opacity-0 dark:opacity-[0.15]",
           orientation === "horizontal"
-            ? "bg-gradient-to-r from-transparent via-accent/20 to-transparent"
-            : "bg-gradient-to-b from-transparent via-accent/20 to-transparent"
+            ? "bg-gradient-to-r from-transparent via-border-strong to-transparent"
+            : "bg-gradient-to-b from-transparent via-border-strong to-transparent"
         )}
       />
     </div>
