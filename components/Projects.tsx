@@ -14,7 +14,7 @@ export default function Projects() {
       title="Things I build for fun"
       width="reading"
       action={
-        <Link href="/projects" className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-accent">
+        <Link href="/projects" className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground">
           View all <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       }

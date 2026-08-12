@@ -1,4 +1,9 @@
-import { ChevronDown } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import Section from "@/components/layout/Section";
 import { faqLd } from "@/lib/seo";
 
@@ -12,23 +17,24 @@ const faqs = [
 
 export default function Faq() {
   return (
-    <Section id="faq" number="06" label="FAQ" title="Questions, answered" width="reading">
+    <Section id="faq" number="05" label="FAQ" title="Questions, answered" width="reading">
       <script
         type="application/ld+json"
         suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd(faqs)) }}
       />
-      <div className="overflow-hidden rounded-2xl border border-border divide-y divide-border">
-        {faqs.map((f) => (
-          <details key={f.q} className="group [&_summary::-webkit-details-marker]:hidden">
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 font-medium text-foreground transition-colors hover:bg-card">
-              <span>{f.q}</span>
-              <ChevronDown className="h-4 w-4 shrink-0 text-subtle transition-transform duration-200 group-open:rotate-180" />
-            </summary>
-            <p className="px-5 pb-4 text-[15px] leading-relaxed text-muted-foreground">{f.a}</p>
-          </details>
+      <Accordion type="single" collapsible defaultValue="faq-0" className="overflow-hidden rounded-2xl border border-border">
+        {faqs.map((f, i) => (
+          <AccordionItem key={f.q} value={`faq-${i}`} className="border-b border-border px-5 last:border-b-0">
+            <AccordionTrigger className="py-4 text-left text-base font-medium text-foreground">
+              {f.q}
+            </AccordionTrigger>
+            <AccordionContent className="pb-4 text-sm leading-relaxed text-muted-foreground">
+              {f.a}
+            </AccordionContent>
+          </AccordionItem>
         ))}
-      </div>
+      </Accordion>
     </Section>
   );
 }

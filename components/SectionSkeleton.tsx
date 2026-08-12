@@ -9,8 +9,8 @@ interface SectionSkeletonProps {
 const SectionSkeleton = ({ className, bars = 3 }: SectionSkeletonProps) => {
   return (
     <div className={cn("space-y-6", className)}>
-      {/* Title row — matches SectionTitle (accent bar + text) */}
-      <div className="flex items-center gap-2 border-l-2 border-accent pl-2.5 -ml-px">
+      {/* Title row — matches SectionTitle (foreground bar + text) */}
+      <div className="flex items-center gap-2 border-l-2 border-foreground pl-2.5 -ml-px">
         <div className="h-4 w-4 shrink-0 rounded bg-muted animate-pulse" />
         <div className="h-4 w-24 rounded bg-muted animate-pulse" />
       </div>

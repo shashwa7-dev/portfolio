@@ -48,13 +48,16 @@ Concrete triggers that REQUIRE a memory-file update:
 ## Other conventions in this repo
 
 - **No em-dashes** in any user-facing copy. Use periods, colons, parentheses, or rephrase. (This applies to UI strings, blog content, and `data/agent-memory.md` itself.)
-- **All Framer Motion variants and tokens** live in `lib/motionVariants.ts`. Never paste literal easings like `[0.22, 1, 0.36, 1]` or duration numbers like `0.4` into a component — import the named token instead.
+- **All Framer Motion variants and tokens** live in `lib/motionVariants.ts`, mirrored as CSS custom properties in `app/globals.css`. Never paste literal easings like `[0.23, 1, 0.32, 1]` or duration numbers like `0.4` into a component: import the named token instead.
+- Motion opportunities were audited against `find-animation-opportunities`. These were rejected on the frequency gate and must not be re-added: command palette and shortcuts-overlay open/close, nav link underline slides, theme-toggle colour crossfade, homepage section scroll reveals, stat bento count-up, Experience list stagger.
 - **All Marker highlight helpers** go through `lib/markerHighlight.ts` (`withMarker`, `fullMarker`).
 - **All markdown-emitter routes** (`app/*/markdown/route.ts`) use `lib/markdownResponse.ts` for the response factory + frontmatter helpers.
 - **Page padding** is standardized at `py-8 md:py-12` on the `<main>` of every secondary route. Match this when adding a new top-level route.
 - **The global `<Navbar />`** is rendered once in `app/layout.tsx`. Per-page Navbar imports are forbidden.
 - **Markdown-for-agents** is wired in `middleware.ts` — when adding a new route family with a `text/markdown` rendition, add it both to the matcher and to the rewrite branches there.
-- **Design tokens (color, type, spacing)** are documented at `/design` and in `docs/design-system.md`; reusable Claude Code skill at `.claude/skills/design-system/SKILL.md`.
+- **Design tokens (color, type, spacing)** are documented in `docs/design-system.md`; reusable Claude Code skill at `.claude/skills/design-system/SKILL.md`.
+- **Type scale** comes from `tailwind.config.ts`: sizes `text-2xs` through `text-4xl`, tracking from `tracking-label` / `tracking-tight` / `tracking-tighter`. Arbitrary `text-[Npx]` is forbidden: use the scale instead.
+- **`scripts/verify-simplification.sh`** is the mechanical gate for the simplification pass (typography, motion, deleted surfaces, palette). It must exit 0 before any change to `app/`, `components/`, or `lib/` is considered done.
 
 ---
 
@@ -72,9 +75,8 @@ npm run lint     # next lint
 
 ## Useful entry points
 
-- Homepage layout composition: `app/page.tsx` → renders `<About>`, `<ExperienceWork>`, `<Projects>`, `<TechStack>`, `<Clients>`, `<Activity>`, `<Faq>`, `<Socials>` plus `<ChatBot>` + `<CommandPalette>`.
+- Homepage layout composition: `app/page.tsx` → renders `<About>`, `<ExperienceWork>`, `<Projects>`, `<TechStack>`, `<Clients>`, `<Activity>`, `<Faq>`, `<Socials>` back to back, with no divider between sections. `<ChatBot>` and `<CommandPalette>` mount globally from `app/layout.tsx`, not from the homepage itself.
 - Org page: `app/work/[org]/page.tsx` — header + key contributions + projects + inline diary.
 - Project case-study: `app/work/[org]/[project]/page.tsx`.
 - Blog: `app/blogs/*` with MDX posts under `app/blogs/posts/`.
-- Skills index: `app/skills/page.tsx` reads `.claude/skills/<slug>/SKILL.md`.
 - Agent discovery: `app/robots.txt/route.ts`, `public/.well-known/llms.txt`, `app/markdown/route.ts`, `middleware.ts`, `docs/dns-aid.md`.

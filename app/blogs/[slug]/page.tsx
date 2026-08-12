@@ -92,7 +92,7 @@ export default function Blog({ params }: any) {
       </div>
       <div className="flex gap-2 flex-wrap mt-3">
         {JSON.parse(post.metadata.tags).map((tag: string, id: number) => (
-          <Badge key={id} variant="secondary" className="text-accent">
+          <Badge key={id} variant="secondary" className="text-foreground">
             {tag}
           </Badge>
         ))}

@@ -1,4 +1,5 @@
 import { getAllSideProjects } from "@/lib/projectsData";
+import { goToShortcuts } from "@/lib/shortcutsData";
 
 export type Command = {
   id: string;
@@ -6,16 +7,27 @@ export type Command = {
   group: "Navigation" | "Projects" | "Actions";
   href?: string;
   action?: "toggle-theme" | "copy-email" | "open-shortcuts";
+  /** Key hint shown on the right of the row, one chip per entry. */
+  keys?: string[];
 };
 
 export function buildCommands(): Command[] {
-  const nav: Command[] = [
-    { id: "nav-work", label: "Selected work", group: "Navigation", href: "/#projects" },
-    { id: "nav-exp", label: "Experience", group: "Navigation", href: "/#experience" },
-    { id: "nav-writing", label: "Writing", group: "Navigation", href: "/blogs" },
-    { id: "nav-books", label: "Books", group: "Navigation", href: "/books" },
-    { id: "nav-design", label: "Design system", group: "Navigation", href: "/design" },
-  ];
+  // Key hints are derived from `goToShortcuts` by href rather than hardcoded,
+  // so renaming or rebinding a `g` shortcut cannot leave the palette showing a
+  // chord that no longer works.
+  const withGoToKeys = (c: Command): Command => {
+    const dest = goToShortcuts.find((g) => g.href === c.href);
+    return dest ? { ...c, keys: ["g", dest.key] } : c;
+  };
+
+  const nav: Command[] = (
+    [
+      { id: "nav-work", label: "Selected work", group: "Navigation", href: "/#projects" },
+      { id: "nav-exp", label: "Experience", group: "Navigation", href: "/#experience" },
+      { id: "nav-writing", label: "Writing", group: "Navigation", href: "/blogs" },
+      { id: "nav-books", label: "Books", group: "Navigation", href: "/books" },
+    ] satisfies Command[]
+  ).map(withGoToKeys);
   const projects: Command[] = getAllSideProjects().map((p) => ({
     id: `proj-${p.slug}`,
     label: p.title,
@@ -23,9 +35,9 @@ export function buildCommands(): Command[] {
     href: `/project/${p.slug}`,
   }));
   const actions: Command[] = [
-    { id: "act-theme", label: "Toggle theme", group: "Actions", action: "toggle-theme" },
+    { id: "act-theme", label: "Toggle theme", group: "Actions", action: "toggle-theme", keys: ["t"] },
     { id: "act-email", label: "Copy email", group: "Actions", action: "copy-email" },
-    { id: "act-shortcuts", label: "Keyboard shortcuts", group: "Actions", action: "open-shortcuts" },
+    { id: "act-shortcuts", label: "Keyboard shortcuts", group: "Actions", action: "open-shortcuts", keys: ["?"] },
   ];
   return nav.concat(projects, actions);
 }

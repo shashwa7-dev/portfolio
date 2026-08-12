@@ -64,7 +64,7 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
           <Label>
             {["Case Study", cs.year, cs.role].filter(Boolean).join(" · ")}
           </Label>
-          <h1 className="font-serif text-[clamp(2.2rem,5vw,3rem)] font-medium leading-[1.03] tracking-[-0.02em]">
+          <h1 className="text-[clamp(2.2rem,5vw,3rem)] font-medium leading-[1.03] tracking-[-0.02em]">
             {project.title}
           </h1>
           <p className="text-lg text-muted-foreground">{project.tagline}</p>
@@ -78,7 +78,7 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
               {cs.role && <GutterItem k="Role" v={cs.role} />}
               {cs.year && <GutterItem k="Year" v={cs.year} />}
               <div>
-                <div className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-subtle">Stack</div>
+                <div className="mb-1.5 font-mono text-2xs uppercase tracking-label text-subtle">Stack</div>
                 <div className="flex flex-wrap gap-2">
                   {stack.map((t) => (
                     <StackIcon key={t} name={t} size={14} showLabel />
@@ -87,12 +87,12 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
               </div>
               {project.links && (
                 <div>
-                  <div className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-subtle">Links</div>
+                  <div className="mb-1.5 font-mono text-2xs uppercase tracking-label text-subtle">Links</div>
                   <div className="flex flex-col gap-1 text-sm">
-                    {project.links.web && <a className="hover:text-accent" href={project.links.web} target="_blank" rel="noopener noreferrer">Live ↗</a>}
-                    {project.links.github && <a className="hover:text-accent" href={project.links.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a>}
-                    {project.links.download && <a className="hover:text-accent" href={project.links.download} target="_blank" rel="noopener noreferrer">Download ↗</a>}
-                    {project.links.producthunt && <a className="hover:text-accent" href={project.links.producthunt} target="_blank" rel="noopener noreferrer">Product Hunt ↗</a>}
+                    {project.links.web && <a className="hover:text-foreground" href={project.links.web} target="_blank" rel="noopener noreferrer">Live ↗</a>}
+                    {project.links.github && <a className="hover:text-foreground" href={project.links.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a>}
+                    {project.links.download && <a className="hover:text-foreground" href={project.links.download} target="_blank" rel="noopener noreferrer">Download ↗</a>}
+                    {project.links.producthunt && <a className="hover:text-foreground" href={project.links.producthunt} target="_blank" rel="noopener noreferrer">Product Hunt ↗</a>}
                   </div>
                 </div>
               )}
@@ -102,31 +102,31 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
           <div className="space-y-9">
             {sections.map((s) => (
               <section key={s.key} className="space-y-2">
-                <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-accent">{s.label}</div>
-                <h2 className="font-serif text-2xl">{s.heading}</h2>
+                <div className="font-mono text-2xs uppercase tracking-label text-foreground">{s.label}</div>
+                <h2 className="text-2xl">{s.heading}</h2>
                 {s.body.length > 1 ? (
                   <ul className="space-y-1.5">
                     {s.body.map((line, i) => (
-                      <li key={i} className="flex gap-2.5 text-[15px] text-muted-foreground">
-                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent/60" />
+                      <li key={i} className="flex gap-2.5 text-base text-muted-foreground">
+                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-muted-foreground" />
                         {line}
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <p className="max-w-[62ch] text-[15px] text-muted-foreground">{s.body[0]}</p>
+                  <p className="max-w-[62ch] text-base text-muted-foreground">{s.body[0]}</p>
                 )}
               </section>
             ))}
 
             {cs.results && cs.results.length > 0 && (
               <section className="space-y-3">
-                <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-accent">Results</div>
-                <h2 className="font-serif text-2xl">Impact</h2>
+                <div className="font-mono text-2xs uppercase tracking-label text-foreground">Results</div>
+                <h2 className="text-2xl">Impact</h2>
                 <div className="flex flex-wrap gap-3">
                   {cs.results.map((r, i) => (
                     <div key={i} className="rounded-xl border border-border bg-card px-4 py-3">
-                      <div className="font-serif text-2xl text-foreground">{r.value}</div>
+                      <div className="text-2xl font-semibold text-foreground">{r.value}</div>
                       <div className="text-xs text-subtle">{r.caption}</div>
                     </div>
                   ))}
@@ -137,7 +137,7 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
             {sections.length === 0 && !cs.results && project.longDescription && (
               <div className="space-y-4">
                 {project.longDescription.split("\n\n").map((p, i) => (
-                  <p key={i} className="text-[15px] text-muted-foreground">{p}</p>
+                  <p key={i} className="text-base text-muted-foreground">{p}</p>
                 ))}
               </div>
             )}
@@ -151,7 +151,7 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
 function GutterItem({ k, v }: { k: string; v: string }) {
   return (
     <div>
-      <div className="mb-1 font-mono text-[10px] uppercase tracking-[0.12em] text-subtle">{k}</div>
+      <div className="mb-1 font-mono text-2xs uppercase tracking-label text-subtle">{k}</div>
       <div className="text-sm text-foreground">{v}</div>
     </div>
   );

@@ -5,7 +5,7 @@ export default function NoScript() {
     <noscript>
       <div className="max-w-[90dvw] md:max-w-lg mx-auto space-y-10 flex justify-center items-center p-6 fixed bottom-24 inset-x-0  rounded-xl border shadow-lg bg-background/80 z-50 backdrop-blur-sm">
         <div className="space-y-4 text-center">
-          <div className="flex justify-center items-center gap-2 text-accent">
+          <div className="flex justify-center items-center gap-2 text-foreground">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
               <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
                 <path stroke-dasharray="4" d="M12 3v2">

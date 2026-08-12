@@ -27,11 +27,11 @@ const markerLinkVariants = cva(
     variants: {
       size: {
         sm: "text-sm",
-        md: "text-[15px] font-medium",
+        md: "text-base font-medium",
       },
       tone: {
         muted: "text-muted-foreground hover:text-foreground",
-        foreground: "text-foreground hover:text-accent",
+        foreground: "text-foreground",
       },
     },
     defaultVariants: {
@@ -88,7 +88,7 @@ export default function MarkerLink({
       {!hideArrow && (
         <ArrowRight
           className={cn(
-            "self-center transition-transform duration-150 ease-[--ease-out] group-hover:translate-x-0.5",
+            "self-center transition-transform duration-150 ease-out group-hover:translate-x-0.5",
             size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4"
           )}
         />

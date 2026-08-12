@@ -1,68 +1,75 @@
-"use client";
-
-import React from "react";
 import Image from "next/image";
-import { motion, type Variants } from "motion/react";
-import { containerVariants, ease, duration } from "@/lib/motionVariants";
-import Section from "@/components/layout/Section";
-import { ArrowUpRight } from "lucide-react";
 import { clients } from "@/lib/clients";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
-const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 8 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: duration.slow, ease: ease.out, delay: i * 0.06 },
-  }),
-};
-
+/**
+ * The brand row. No longer a section of its own: it renders at the top of the
+ * Experience section as a credential strip that frames the work history below.
+ *
+ * The reason it stopped being standalone is worth recording, because it looks
+ * like a demotion and is the opposite. A row of logos on its own only claims
+ * proximity to these companies. The outcomes that turn proximity into a
+ * credential already live one level down, in `ProjectPreviewCard`, which renders
+ * each project's `metric`: "100K mints, day one" on the Coinbase x Polygon NFT,
+ * "Featured by Polygon" on Polygon Copilot, "2,000+ attendees" on the Web3Conf
+ * quest. So the selling was already happening in Experience, with the project
+ * and stack alongside it. Duplicating the logos in a separate section, minus
+ * those numbers, was strictly the weaker half of the story.
+ *
+ * Sitting at the top of Experience, the logos now set up the specifics that
+ * follow instead of competing with them.
+ *
+ * Logos render in full colour rather than grayscale. The interface is
+ * deliberately hueless, but a third-party brand mark is content, not UI chrome,
+ * and colour is most of what makes Coinbase or Polygon recognisable before the
+ * name is read. The compact 24px strip in About.tsx keeps grayscale on purpose:
+ * that one is a supporting detail, this is a credential.
+ */
 const Clients = () => {
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
-    >
-      <Section id="clients" number="04" label="Trusted by" title="Teams I've worked with" width="reading">
-        <div className="grid grid-cols-2 -sm:grid-cols-1 gap-2.5">
-          {clients.map((client, i) => (
-            <motion.a
-              key={client.name}
-              href={client.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              custom={i}
-              variants={cardVariants}
-              className="group flex items-center gap-3 px-3 py-2.5 rounded-xl border border-border bg-card/60 transition-[border-color,background-color,transform,box-shadow] duration-200 ease-[--ease-out] hover:bg-card hover:border-accent/30 hover:-translate-y-px hover:shadow-sm active:scale-[0.98]"
-            >
-              <div className="relative w-8 h-8 rounded-lg overflow-hidden bg-secondary shrink-0 ring-1 ring-border transition-[box-shadow] duration-200 group-hover:ring-accent/30">
-                <Image
-                  src={client.img}
-                  alt={client.name}
-                  fill
-                  sizes="32px"
-                  className="object-cover opacity-60 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0"
-                />
-              </div>
-
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1">
-                  <span className="font-medium text-sm text-foreground transition-colors duration-150 group-hover:text-accent truncate">
+    <div className="mb-9 border-b border-border pb-8">
+      <ul className="flex flex-wrap items-start gap-x-7 gap-y-6 sm:gap-x-9">
+        {clients.map((client) => (
+          <li key={client.name}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <a
+                  href={client.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex w-16 flex-col items-center gap-2"
+                >
+                  <span className="relative h-16 w-16 overflow-hidden rounded-2xl bg-secondary ring-1 ring-border transition-[transform,box-shadow] duration-base ease-out group-hover:-translate-y-0.5 group-hover:ring-border-strong group-active:scale-[0.97]">
+                    <Image
+                      src={client.img}
+                      alt={client.name}
+                      fill
+                      sizes="64px"
+                      className="object-cover"
+                    />
+                  </span>
+                  <span className="text-center text-xs font-medium leading-tight text-muted-foreground transition-colors duration-base ease-out group-hover:text-foreground">
                     {client.name}
                   </span>
-                  <ArrowUpRight className="w-3 h-3 text-muted-foreground opacity-0 -translate-x-1 transition-[opacity,transform] duration-200 ease-[--ease-out] group-hover:opacity-100 group-hover:translate-x-0 shrink-0" />
-                </div>
-                <p className="text-[11px] text-muted-foreground leading-snug truncate">
-                  {client.contribution}
-                </p>
-              </div>
-            </motion.a>
-          ))}
-        </div>
-      </Section>
-    </motion.div>
+                </a>
+              </TooltipTrigger>
+              <TooltipContent>{client.contribution}</TooltipContent>
+            </Tooltip>
+          </li>
+        ))}
+      </ul>
+
+      {/* Both figures are already claimed in the About stats bento, so this
+          asserts nothing new. It frames the logos as outcomes rather than a
+          client list, and the org rows below carry the per-project specifics. */}
+      <p className="mt-6 font-mono text-2xs uppercase tracking-label text-subtle">
+        Shipped for {clients.length} brands
+        <span className="mx-2 text-border-strong">·</span>
+        100K day-one mints
+        <span className="mx-2 text-border-strong">·</span>
+        1M+ users reached
+      </p>
+    </div>
   );
 };
 

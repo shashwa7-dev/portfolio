@@ -69,7 +69,7 @@ const TechStack = () => {
       <div className="flex flex-col gap-6">
         {categories.map((cat) => (
           <div key={cat.label}>
-            <div className="mb-2.5 font-mono text-[11px] uppercase tracking-[0.12em] text-subtle">{cat.label}</div>
+            <div className="mb-2.5 font-mono text-xs uppercase tracking-label text-subtle">{cat.label}</div>
             <div className="flex flex-wrap gap-2">
               {cat.items.map((t) => (
                 <StackIcon key={t} name={t} showLabel />

@@ -10,7 +10,7 @@ export default function Label({
   return (
     <span
       className={cn(
-        "font-mono text-[11px] uppercase tracking-[0.16em] text-subtle",
+        "font-mono text-xs uppercase tracking-label text-subtle",
         className
       )}
     >

@@ -18,7 +18,7 @@ const alignMap = {
 const variantMap = {
   default: {
     wrapper: "",
-    title: "text-sm font-semibold uppercase tracking-wider",
+    title: "text-sm font-semibold uppercase tracking-label",
   },
   large: {
     wrapper: "",
@@ -40,13 +40,13 @@ const SectionTitle: React.FC<SectionTitleProps> = ({
       className={cn(
         "flex items-center gap-2",
         alignMap[align],
-        showAccentBar && "border-l-2 border-accent pl-2.5 -ml-px",
+        showAccentBar && "border-l-2 border-foreground pl-2.5 -ml-px",
         variantMap[variant].wrapper,
         className
       )}
     >
       {icon && (
-        <span className="shrink-0 text-accent" aria-hidden>
+        <span className="shrink-0 text-foreground" aria-hidden>
           {icon}
         </span>
       )}

@@ -8,7 +8,7 @@ export default function ProjectShowcaseCard({ project }: { project: ProjectCardD
   return (
     <Link
       href={project.href}
-      className="group block overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:-translate-y-0.5 hover:border-border-strong"
+      className="group block overflow-hidden rounded-2xl border border-border bg-card transition-[transform,border-color] duration-300 hover:-translate-y-0.5 hover:border-border-strong active:scale-[0.99]"
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-elevated">
         <Image
@@ -16,15 +16,15 @@ export default function ProjectShowcaseCard({ project }: { project: ProjectCardD
           alt={project.title}
           fill
           sizes="(max-width: 760px) 100vw, 380px"
-          className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          className="object-cover transition-transform duration-base group-hover:scale-[1.03]"
         />
         {project.badge && (
-          <span className="absolute left-3 top-3 rounded-full border border-border-strong bg-background/80 px-2 py-0.5 font-mono text-[9px] uppercase tracking-wide text-accent backdrop-blur">
+          <span className="absolute left-3 top-3 rounded-full border border-border-strong bg-background/80 px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-foreground backdrop-blur">
             {project.badge}
           </span>
         )}
         {project.metric && (
-          <span className="absolute bottom-3 left-3 rounded-full border border-border-strong bg-background/80 px-2 py-0.5 font-mono text-[9px] uppercase tracking-wide text-accent backdrop-blur">
+          <span className="absolute bottom-3 left-3 rounded-full border border-border-strong bg-background/80 px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-foreground backdrop-blur">
             {project.metric}
           </span>
         )}
@@ -36,8 +36,8 @@ export default function ProjectShowcaseCard({ project }: { project: ProjectCardD
       </div>
       <div className="space-y-2.5 p-4">
         <div className="flex items-center justify-between gap-2">
-          <h3 className="font-serif text-lg text-foreground">{project.title}</h3>
-          <ArrowUpRight className="h-4 w-4 shrink-0 text-subtle transition-colors group-hover:text-accent" />
+          <h3 className="text-lg text-foreground">{project.title}</h3>
+          <ArrowUpRight className="h-4 w-4 shrink-0 text-subtle transition-colors group-hover:text-foreground" />
         </div>
         <p className="line-clamp-2 text-sm text-muted-foreground">{project.tagline}</p>
         <div className="flex items-center justify-between gap-3">
@@ -46,7 +46,7 @@ export default function ProjectShowcaseCard({ project }: { project: ProjectCardD
               <StackIcon key={t} name={t as StackName} size={16} showLabel={false} showTooltip />
             ))}
           </div>
-          {project.caseStudy && <span className="inline-flex items-center gap-1 text-[12px] text-accent">Case study <ArrowRight className="h-3.5 w-3.5" /></span>}
+          {project.caseStudy && <span className="inline-flex items-center gap-1 text-sm text-foreground">Case study <ArrowRight className="h-3.5 w-3.5" /></span>}
         </div>
       </div>
     </Link>

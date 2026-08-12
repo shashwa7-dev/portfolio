@@ -5,7 +5,6 @@ import { organizations, getOrganization } from "@/lib/workData";
 import { getDiary } from "@/lib/diaryData";
 import Container from "@/components/layout/Container";
 import Label from "@/components/layout/Label";
-import Divider from "@/components/layout/Divider";
 import ProjectShowcaseCard from "@/components/ProjectShowcaseCard";
 import { workProjectToCard } from "@/lib/projectCards";
 import DiaryEntry from "@/components/common/DiaryEntry";
@@ -42,9 +41,9 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
             </span>
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h1 className="font-serif text-3xl font-medium tracking-tight">{org.name}</h1>
+                <h1 className="text-3xl font-medium tracking-tight">{org.name}</h1>
                 {org.link && (
-                  <a href={org.link} target="_blank" rel="noopener noreferrer" className="text-muted-foreground transition-colors hover:text-accent">
+                  <a href={org.link} target="_blank" rel="noopener noreferrer" className="text-muted-foreground transition-colors hover:text-foreground">
                     <ExternalLink className="h-4 w-4" />
                   </a>
                 )}
@@ -57,7 +56,7 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
               </p>
             </div>
           </div>
-          {org.description && <p className="max-w-[62ch] text-[15px] leading-relaxed text-muted-foreground">{org.description}</p>}
+          {org.description && <p className="max-w-[62ch] text-base leading-relaxed text-muted-foreground">{org.description}</p>}
 
           {/* outbound links — site / app / X (each guard short-circuits internally) */}
           {org.links && (
@@ -75,7 +74,7 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
           <ul className="space-y-2">
             {org.highlights.map((h, i) => (
               <li key={i} className="flex gap-2.5 text-sm text-muted-foreground">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent/60" />
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-muted-foreground" />
                 {h}
               </li>
             ))}
@@ -85,11 +84,10 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
         {/* ── Projects ───────────────────────────────────────────────── */}
         {org.projects.length > 0 && (
           <>
-            <Divider />
             <section className="space-y-4">
               <div className="flex items-baseline justify-between">
-                <h2 className="font-serif text-xl font-medium tracking-tight">Projects</h2>
-                <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-subtle">
+                <h2 className="text-xl font-medium tracking-tight">Projects</h2>
+                <span className="font-mono text-xs uppercase tracking-label text-subtle">
                   {org.projects.length} shipped
                 </span>
               </div>
@@ -105,11 +103,10 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
         {/* ── Diary entries ──────────────────────────────────────────── */}
         {diary && (
           <>
-            <Divider />
             <section id="diary" className="scroll-mt-16 space-y-6">
               <div className="flex items-baseline justify-between">
-                <h2 className="font-serif text-xl font-medium tracking-tight">What I built</h2>
-                <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-subtle">
+                <h2 className="text-xl font-medium tracking-tight">What I built</h2>
+                <span className="font-mono text-xs uppercase tracking-label text-subtle">
                   {diary.featured.length} featured
                 </span>
               </div>

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
-import { backdropFadeVariants, popoverDownVariants } from "@/lib/motionVariants";
+import { backdropFadeVariants } from "@/lib/motionVariants";
 import { useDarkMode } from "@/app/hooks/useDarkMode";
 import { buildCommands, filterCommands, type Command } from "@/lib/commandData";
 
@@ -83,12 +83,8 @@ export default function CommandPalette() {
           aria-modal="true"
           aria-label="Command menu"
         >
-          <motion.div
+          <div
             className="w-full max-w-[540px] overflow-hidden rounded-2xl border border-border-strong bg-elevated shadow-2xl"
-            variants={popoverDownVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
             onClick={(e) => e.stopPropagation()}
             onKeyDown={onListKey}
           >
@@ -97,7 +93,7 @@ export default function CommandPalette() {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search projects, sections, actions…"
-              className="w-full border-b border-border bg-transparent px-4 py-4 text-[15px] text-foreground outline-none placeholder:text-subtle"
+              className="w-full border-b border-border bg-transparent px-4 py-4 text-base text-foreground outline-none placeholder:text-subtle"
               aria-label="Search commands"
             />
             <div className="max-h-[50vh] overflow-y-auto p-2">
@@ -109,7 +105,7 @@ export default function CommandPalette() {
                 if (items.length === 0) return null;
                 return (
                   <div key={g} className="mb-1">
-                    <div className="px-3 pb-1 pt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-subtle">{g}</div>
+                    <div className="px-3 pb-1 pt-2 font-mono text-2xs uppercase tracking-label text-subtle">{g}</div>
                     {items.map((c) => {
                       const idx = results.indexOf(c);
                       return (
@@ -118,11 +114,27 @@ export default function CommandPalette() {
                           ref={idx === active ? activeRef : undefined}
                           onMouseEnter={() => setActive(idx)}
                           onClick={() => run(c)}
-                          className={`flex w-full items-center rounded-[9px] px-3 py-2 text-left text-sm ${
+                          className={`flex w-full items-center gap-3 rounded-[9px] px-3 py-2 text-left text-sm ${
                             idx === active ? "bg-accent text-accent-foreground" : "text-foreground"
                           }`}
                         >
-                          {c.label}
+                          <span className="min-w-0 flex-1 truncate">{c.label}</span>
+                          {c.keys && (
+                            <span className="flex shrink-0 items-center gap-1">
+                              {c.keys.map((k, i) => (
+                                <kbd
+                                  key={`${c.id}-${i}`}
+                                  className={`grid h-[18px] min-w-[18px] place-items-center rounded border px-1 font-mono text-2xs ${
+                                    idx === active
+                                      ? "border-accent-foreground/30 text-accent-foreground/80"
+                                      : "border-border-strong text-subtle"
+                                  }`}
+                                >
+                                  {k}
+                                </kbd>
+                              ))}
+                            </span>
+                          )}
                         </button>
                       );
                     })}
@@ -130,7 +142,7 @@ export default function CommandPalette() {
                 );
               })}
             </div>
-          </motion.div>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>

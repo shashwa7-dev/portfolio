@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "motion/react";
-import { collapseHeightVariants } from "@/lib/motionVariants";
 import { Sun, Moon } from "lucide-react";
 import { useDarkMode } from "@/app/hooks/useDarkMode";
 
@@ -12,7 +10,6 @@ const navLinks = [
   { label: "Projects", href: "/#projects" },
   { label: "Writing", href: "/blogs" },
   { label: "Books", href: "/books" },
-  { label: "Design", href: "/design" },
 ];
 
 export function openCommandPalette() {
@@ -26,7 +23,7 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/70 backdrop-blur-xl">
       <nav className="mx-auto flex max-w-[1080px] items-center justify-between px-6 py-3.5">
-        <Link href="/" className="font-serif text-lg font-semibold text-foreground">
+        <Link href="/" className="text-lg font-semibold text-foreground">
           offcod8
         </Link>
 
@@ -48,15 +45,15 @@ export default function Navbar() {
             type="button"
             onClick={openCommandPalette}
             aria-label="Open command menu"
-            className="flex items-center gap-1.5 rounded-lg border border-border-strong px-2.5 py-1.5 font-mono text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+            className="flex h-8 items-center gap-1.5 rounded-lg border border-border-strong bg-background/80 px-2.5 font-mono text-xs leading-none text-muted-foreground backdrop-blur-sm transition-[color,background-color,transform] duration-150 ease-out hover:bg-background hover:text-foreground active:scale-[0.94]"
           >
-            <span className="text-[13px] leading-none">⌘</span> K
+            <span className="text-sm">⌘</span> K
           </button>
           <button
             type="button"
             onClick={toggleDarkMode}
             aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
-            className="grid h-8 w-8 place-items-center rounded-lg border border-border-strong text-muted-foreground transition-colors hover:text-foreground"
+            className="grid h-8 w-8 place-items-center rounded-lg border border-border-strong bg-background/80 text-muted-foreground backdrop-blur-sm transition-[color,background-color,transform] duration-150 ease-out hover:bg-background hover:text-foreground active:scale-[0.94]"
           >
             {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
@@ -65,22 +62,24 @@ export default function Navbar() {
             onClick={() => setMobileOpen((o) => !o)}
             aria-label="Toggle menu"
             aria-expanded={mobileOpen}
-            className="text-sm text-muted-foreground md:hidden"
+            aria-controls="mobile-nav"
+            className="flex h-8 items-center rounded-lg border border-border-strong bg-background/80 px-2.5 text-sm leading-none text-muted-foreground backdrop-blur-sm transition-[color,background-color,transform] duration-150 ease-out hover:bg-background hover:text-foreground md:hidden active:scale-[0.94]"
           >
             Menu
           </button>
         </div>
       </nav>
 
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.ul
-            variants={collapseHeightVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            className="overflow-hidden border-t border-border px-6 md:hidden"
-          >
+      <div
+        id="mobile-nav"
+        className="grid transition-[grid-template-rows,visibility] duration-base ease-out md:hidden"
+        style={{
+          gridTemplateRows: mobileOpen ? "1fr" : "0fr",
+          visibility: mobileOpen ? "visible" : "hidden",
+        }}
+      >
+        <div className="overflow-hidden">
+          <ul className="border-t border-border px-6">
             {navLinks.map((l) => (
               <li key={l.label}>
                 <Link
@@ -92,9 +91,9 @@ export default function Navbar() {
                 </Link>
               </li>
             ))}
-          </motion.ul>
-        )}
-      </AnimatePresence>
+          </ul>
+        </div>
+      </div>
     </header>
   );
 }

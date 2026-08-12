@@ -31,13 +31,13 @@ export default function Section({
             <div className="space-y-1.5">
               {(label || number) && (
                 <Label>
-                  {number && <span className="text-accent-hover">{number}</span>}
+                  {number && <span className="text-foreground">{number}</span>}
                   {number && label ? "  /  " : ""}
                   {label}
                 </Label>
               )}
               {title && (
-                <h2 className="font-serif text-2xl md:text-[1.75rem] text-foreground">
+                <h2 className="text-2xl md:text-[1.75rem] text-foreground">
                   {title}
                 </h2>
               )}

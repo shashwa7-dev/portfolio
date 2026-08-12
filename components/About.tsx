@@ -1,12 +1,11 @@
 import Image from "next/image";
 import { Check, ArrowRight, Mail } from "lucide-react";
 import Container from "@/components/layout/Container";
+import AvatarHover from "@/components/AvatarHover";
 import Label from "@/components/layout/Label";
 import Bento from "@/components/layout/Bento";
-import HeroTitle from "@/components/HeroTitle";
 import Marker from "@/components/common/Marker";
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
-import { clients } from "@/lib/clients";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
 type Stat = {
   n: string;
@@ -36,22 +35,15 @@ const stats: Stat[] = [
 
 export default function About() {
   return (
-    <header className="pt-14 pb-6 md:pt-20">
+    <header className="pt-10 pb-6 md:pt-14">
       <Container width="reading">
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* identity block */}
           <div className="flex items-center gap-3.5">
             <div className="relative shrink-0">
-              <div className="h-16 w-16 overflow-hidden rounded-2xl ring-1 ring-border">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/apple-touch-icon.png"
-                  alt="Shashwat Tripathi"
-                  className="h-full w-full object-cover"
-                />
-              </div>
+              <AvatarHover />
               <span
-                className="absolute -bottom-1 -right-1 grid h-6 w-6 place-items-center rounded-full bg-accent text-white ring-[3px] ring-background"
+                className="absolute -bottom-1 -right-1 grid h-6 w-6 place-items-center rounded-full bg-foreground text-background ring-[3px] ring-background"
                 title="Verified engineer"
                 aria-label="Verified"
               >
@@ -59,23 +51,28 @@ export default function About() {
               </span>
             </div>
             <div>
-              <div className="text-[17px] font-semibold leading-tight text-foreground">
+              <div className="text-lg font-semibold leading-tight text-foreground">
                 Shashwat Tripathi
               </div>
               <div className="mt-0.5">
                 <Label>Frontend Engineer · AI · Web3</Label>
               </div>
+              {/* Availability. Same treatment as the "Currently building" badge
+                  on the active Experience role, so one signal reads one way
+                  everywhere. emerald-700 / emerald-400 is the pair that clears
+                  AA on both backgrounds; emerald-500 alone is 2.47:1 in light. */}
+              <div className="mt-1 inline-flex items-center gap-1.5 rounded-full border border-emerald-500/60 px-2 py-0.5 font-mono text-2xs font-medium uppercase tracking-label text-emerald-700 dark:text-emerald-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Open to work
+              </div>
             </div>
           </div>
 
-          {/* availability pill */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-border-strong px-3.5 py-1.5 text-[13px] text-muted-foreground">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 ring-4 ring-emerald-500/15" />
-            Available for frontend / full-stack roles &amp; freelance
-          </div>
-
           {/* headline */}
-          <HeroTitle />
+          <h1 className="text-[clamp(2.2rem,5.5vw,3.4rem)] font-semibold leading-[1.02] tracking-tighter text-foreground">
+            I build interfaces that{" "}
+            <span className="font-semibold text-foreground">ship and scale</span> to
+            millions.
+          </h1>
 
           {/* lede (no em-dashes, no org names — generic AI-adaptive positioning) */}
           <p className="max-w-[56ch] text-lg text-muted-foreground">
@@ -88,40 +85,6 @@ export default function About() {
             </a>
             .
           </p>
-
-          {/* worked with — brand logo avatars (aligned row) */}
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-            <span className="text-sm text-muted-foreground">
-              Worked with{" "}
-              <span className="font-semibold text-foreground">
-                {clients.length}+ brands
-              </span>
-            </span>
-            <TooltipProvider delayDuration={150}>
-              <div className="flex items-center">
-                {clients.map((c, i) => (
-                  <Tooltip key={c.name}>
-                    <TooltipTrigger asChild>
-                      <span
-                        className={`group relative h-6 w-6 overflow-hidden rounded-full bg-secondary ring-2 ring-background transition-[transform,box-shadow,outline-color] duration-200 ease-out outline outline-1 outline-border hover:z-10 hover:-translate-y-1 hover:scale-110 hover:outline-accent hover:shadow-md sm:h-7 sm:w-7 ${
-                          i > 0 ? "-ml-2 sm:-ml-2.5" : ""
-                        }`}
-                      >
-                        <Image
-                          src={c.img}
-                          alt={c.name}
-                          fill
-                          sizes="(max-width: 640px) 28px, 32px"
-                          className="object-cover transition-[filter,opacity,transform] duration-300 group-hover:scale-105 group-hover:grayscale-0 group-hover:opacity-100"
-                        />
-                      </span>
-                    </TooltipTrigger>
-                    <TooltipContent>{c.name}</TooltipContent>
-                  </Tooltip>
-                ))}
-              </div>
-            </TooltipProvider>
-          </div>
 
           {/* stats — overlapping brand avatars float top-right (always greyscale),
               smaller on mobile, tooltips name them */}
@@ -155,7 +118,7 @@ export default function About() {
                     ))}
                   </div>
                 )}
-                <div className="font-serif text-2xl text-foreground">{s.n}</div>
+                <div className="text-2xl font-semibold text-foreground">{s.n}</div>
                 <div className="mt-1 text-xs text-muted-foreground">{s.c}</div>
               </div>
             ))}
@@ -165,13 +128,13 @@ export default function About() {
           <div className="flex flex-wrap items-center gap-3">
             <a
               href="/#experience"
-              className="inline-flex items-center gap-2 rounded-[9px] bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-hover"
+              className="inline-flex items-center gap-2 rounded-[9px] bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground transition-[color,background-color,transform] duration-150 ease-out hover:bg-accent-hover active:scale-[0.97]"
             >
               View selected work <ArrowRight className="h-4 w-4" />
             </a>
             <a
               href="mailto:contact@shashwa7.in"
-              className="inline-flex items-center gap-2 rounded-[9px] border border-border-strong px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-elevated"
+              className="inline-flex items-center gap-2 rounded-[9px] border border-border-strong px-5 py-2.5 text-sm font-semibold text-foreground transition-[color,background-color,transform] duration-150 ease-out hover:bg-elevated active:scale-[0.97]"
             >
               <Mail className="h-4 w-4" /> Get in touch
             </a>

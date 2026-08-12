@@ -23,7 +23,7 @@ const socials = [
 
 const Socials = () => {
   return (
-    <Section number="07" label="Contact" title="Let's build something good" width="reading">
+    <Section number="06" label="Contact" title="Let's build something good" width="reading">
       <div className="space-y-4">
         <a
           href="mailto:contact@shashwa7.in"
@@ -38,7 +38,7 @@ const Socials = () => {
               href={link}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 hover:text-accent transition-colors"
+              className="flex items-center gap-1.5 hover:text-foreground transition-colors"
             >
               <Icon className="w-4 h-4" />
               <span>{name}</span>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
+import { DM_Sans, IBM_Plex_Mono } from "next/font/google";
 import dynamic from "next/dynamic";
+import { MotionConfig } from "motion/react";
 import "./globals.css";
 import { baseUrl } from "./sitemap";
 import { ogUrl, personLd, websiteLd } from "@/lib/seo";
@@ -11,22 +12,6 @@ import Footer from "@/components/Footer";
 import UmamiAnalytics from "@/components/Umami";
 import NoScript from "@/components/NoScript";
 
-const BottomFadeMask = dynamic(
-  () =>
-    import("@/components/BottomFadeMask").then((m) => ({
-      default: m.BottomFadeMask,
-    })),
-  { ssr: false }
-);
-
-const AnimatedBackground = dynamic(
-  () =>
-    import("@/components/AnimatedBackground").then((m) => ({
-      default: m.AnimatedBackground,
-    })),
-  { ssr: false }
-);
-
 const S7Bot = dynamic(() => import("@/components/ChatBot"), { ssr: false });
 const CommandPalette = dynamic(() => import("@/components/CommandPalette"), {
   ssr: false,
@@ -36,22 +21,13 @@ const KeyboardShortcuts = dynamic(
   { ssr: false }
 );
 
-const fraunces = Fraunces({
+const dmSans = DM_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  style: ["normal", "italic"],
   display: "swap",
-  variable: "--font-fraunces",
+  variable: "--font-sans",
 });
 
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-  variable: "--font-inter",
-});
-
-const jetbrainsMono = JetBrains_Mono({
+const plexMono = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
   display: "swap",
@@ -129,22 +105,23 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`bg-background text-foreground border-border ${fraunces.variable} ${inter.variable} ${jetbrainsMono.variable} font-sans`}
+        className={`bg-background text-foreground border-border ${dmSans.variable} ${plexMono.variable} font-sans`}
       >
         <NoScript />
-        <div className="relative z-10">
-          <TooltipProvider>
-            <Navbar />
-            {children}
-            <CommandPalette />
-            <KeyboardShortcuts />
-            <S7Bot />
-          </TooltipProvider>
-          <BottomFadeMask />
-          <Analytics />
-          <UmamiAnalytics />
-        </div>
-        <Footer />
+        <MotionConfig reducedMotion="user">
+          <div className="relative z-10">
+            <TooltipProvider delayDuration={150} skipDelayDuration={0}>
+              <Navbar />
+              {children}
+              <CommandPalette />
+              <KeyboardShortcuts />
+              <S7Bot />
+            </TooltipProvider>
+            <Analytics />
+            <UmamiAnalytics />
+          </div>
+          <Footer />
+        </MotionConfig>
       </body>
     </html>
   );

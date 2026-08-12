@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { X } from "lucide-react";
-import { backdropFadeVariants, dialogPopVariants } from "@/lib/motionVariants";
+import { backdropFadeVariants } from "@/lib/motionVariants";
 import { useDarkMode } from "@/app/hooks/useDarkMode";
 import { goToShortcuts, shortcutGroups } from "@/lib/shortcutsData";
 
@@ -90,23 +90,19 @@ export default function KeyboardShortcuts() {
           aria-modal="true"
           aria-label="Keyboard shortcuts"
         >
-          <motion.div
+          <div
             className="w-full max-w-[420px] overflow-hidden rounded-2xl border border-border-strong bg-elevated shadow-2xl"
-            variants={dialogPopVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b border-border px-4 py-3">
-              <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-subtle">
+              <span className="font-mono text-xs uppercase tracking-label text-subtle">
                 Keyboard shortcuts
               </span>
               <button
                 type="button"
                 onClick={() => setHelpOpen(false)}
                 aria-label="Close"
-                className="text-subtle transition-colors hover:text-foreground"
+                className="text-subtle transition-[color,transform] duration-150 ease-out hover:text-foreground active:scale-[0.94]"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -114,7 +110,7 @@ export default function KeyboardShortcuts() {
             <div className="space-y-4 p-4">
               {shortcutGroups.map((group) => (
                 <div key={group.title}>
-                  <div className="px-1 pb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-subtle">
+                  <div className="px-1 pb-2 font-mono text-2xs uppercase tracking-label text-subtle">
                     {group.title}
                   </div>
                   <ul className="space-y-1.5">
@@ -128,7 +124,7 @@ export default function KeyboardShortcuts() {
                           {s.keys.map((k, i) => (
                             <kbd
                               key={i}
-                              className="grid h-6 min-w-[24px] place-items-center rounded-md border border-border-strong bg-card px-1.5 font-mono text-[11px] text-muted-foreground"
+                              className="grid h-6 min-w-[24px] place-items-center rounded-md border border-border-strong bg-card px-1.5 font-mono text-xs text-muted-foreground"
                             >
                               {k}
                             </kbd>
@@ -140,7 +136,7 @@ export default function KeyboardShortcuts() {
                 </div>
               ))}
             </div>
-          </motion.div>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>

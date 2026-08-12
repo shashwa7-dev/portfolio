@@ -62,7 +62,7 @@ export default function Book({
       >
         <div
           className={cn(
-            "h-1 bg-muted-foreground transition-all",
+            "h-1 bg-muted-foreground transition-[width]",
             progress >= 100 && "!bg-green-500"
           )}
           style={{ width: `${progress}%` }}

@@ -15,6 +15,7 @@ import {
 import { motion, AnimatePresence } from "motion/react";
 import MarkdownMessage from "./chat/MarkdownMessage";
 import { cn } from "@/lib/utils";
+import IconSwap from "@/components/common/IconSwap";
 import {
   popoverUpVariants,
   fabPopVariants,
@@ -22,9 +23,8 @@ import {
   slideUpVariants,
   pillUpVariants,
   hoverLiftRotate,
-  hoverZoom,
   tapPress,
-  spring,
+  stagger,
 } from "@/lib/motionVariants";
 
 const TIMEOUT_DURATION = 10000;
@@ -327,12 +327,26 @@ const S7Bot = () => {
             onClick={() => setIsOpen(true)}
             className="fixed bottom-4 right-4 -md:right-2.5 h-12 w-12 rounded-2xl overflow-hidden ring-1 ring-border-strong shadow-lg bg-card"
           >
-            <motion.img
-              src={"./truffycc.png"}
-              alt="truffy assistant"
+            {/* Single image, no layered fallback. Now a static JPEG rather than
+                an animated GIF, which also retires the reduced-motion caveat the
+                GIF carried: a GIF's loop cannot be paused by CSS, so there was no
+                way to honour prefers-reduced-motion without leaving an empty
+                button. A still image has nothing to pause.
+
+                No `scale` either. The previous asset had the subject sitting
+                inside a wide white margin and needed scaling to crop it; this one
+                is 736x736 with the artwork bleeding to all four edges, so plain
+                object-cover already fills the button.
+
+                The path is absolute. It used to be `./truffycc.png`, resolved
+                against the document URL, so it 404'd on every nested route: on
+                /work/shopos the browser asked for /work/truffycc.png, and this
+                FAB mounts globally from the layout. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/agent.jpg"
+              alt="Truffy assistant"
               className="w-full h-full object-cover object-center"
-              whileHover={hoverZoom}
-              transition={spring.hoverIn}
             />
           </motion.button>
         )}
@@ -353,25 +367,26 @@ const S7Bot = () => {
             <div className="flex items-center justify-between border-b border-border bg-card px-4 py-3">
               <div className="flex items-center gap-2">
                 <div className="relative h-9 w-9 overflow-hidden rounded-xl flex-shrink-0">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={"./truffycc.png"}
+                    src="/images/agent.jpg"
                     className="w-full h-full object-cover object-center"
-                    alt="portfolio assistant"
+                    alt="Truffy assistant"
                   />
                   <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-500 ring-2 ring-card" />
                 </div>
                 <div>
-                  <h3 className="font-serif text-[15px] leading-tight text-foreground">
+                  <h3 className="text-base leading-tight text-foreground">
                     Truffy
                   </h3>
-                  <p className="font-mono text-[10px] uppercase tracking-wide text-subtle">
+                  <p className="font-mono text-2xs uppercase tracking-label text-subtle">
                     Gemini 2.5 Flash
                   </p>
                 </div>
               </div>
               <button
                 onClick={handleClose}
-                className="rounded-lg p-1.5 hover:bg-elevated text-muted-foreground transition-colors"
+                className="rounded-lg p-1.5 hover:bg-elevated text-muted-foreground transition-[color,background-color,transform] duration-150 ease-out active:scale-[0.94]"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -414,11 +429,12 @@ const S7Bot = () => {
                         variants={slideUpVariants}
                         initial="hidden"
                         animate="visible"
-                        transition={{ delay: 0.1 + idx * 0.05 }}
+                        transition={{ delay: stagger.loose + idx * stagger.tight }}
+                        whileTap={tapPress}
                         onClick={() => sendMessage(prompt)}
-                        className="w-full flex items-center gap-2 text-left rounded-xl border border-border bg-card px-3 py-2.5 text-xs text-muted-foreground hover:border-border-strong hover:text-foreground transition-all"
+                        className="w-full flex items-center gap-2 text-left rounded-xl border border-border bg-card px-3 py-2.5 text-xs text-muted-foreground hover:border-border-strong hover:text-foreground transition-colors"
                       >
-                        <Icon className="h-3.5 w-3.5 shrink-0 text-accent/70" />
+                        <Icon className="h-3.5 w-3.5 shrink-0 text-subtle" />
                         <span>{prompt}</span>
                       </motion.button>
                     ))}
@@ -454,7 +470,7 @@ const S7Bot = () => {
                         <>
                           <MarkdownMessage content={msg.content} />
                           {isStreamingThis && (
-                            <span className="ml-0.5 inline-block h-3 w-[2px] -mb-0.5 animate-blink bg-accent align-baseline" />
+                            <span className="ml-0.5 inline-block h-3 w-[2px] -mb-0.5 animate-blink bg-foreground align-baseline" />
                           )}
                         </>
                       ) : (
@@ -469,15 +485,15 @@ const S7Bot = () => {
                           className={cn(
                             "absolute -bottom-2 -right-2 inline-flex h-6 w-6 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm transition-opacity hover:text-foreground",
                             copiedIndex === index
-                              ? "opacity-100 text-accent"
+                              ? "opacity-100 text-foreground"
                               : "opacity-0 group-hover/msg:opacity-100"
                           )}
                         >
-                          {copiedIndex === index ? (
-                            <Check className="h-3 w-3" />
-                          ) : (
-                            <Copy className="h-3 w-3" />
-                          )}
+                          <IconSwap
+                            swapped={copiedIndex === index}
+                            from={<Copy className="h-3 w-3" />}
+                            to={<Check className="h-3 w-3" />}
+                          />
                         </button>
                       )}
                     </div>
@@ -500,7 +516,7 @@ const S7Bot = () => {
                     initial="hidden"
                     animate="visible"
                     exit="exit"
-                    className="absolute bottom-2 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-[11px] text-muted-foreground shadow-md hover:text-foreground"
+                    className="absolute bottom-2 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-xs text-muted-foreground shadow-md transition-[color,transform] duration-150 ease-out hover:text-foreground active:scale-[0.94]"
                   >
                     <ArrowDown className="h-3 w-3" /> New messages
                   </motion.button>
@@ -524,7 +540,7 @@ const S7Bot = () => {
                 <button
                   type="submit"
                   disabled={isStreaming || !message.trim()}
-                  className="flex items-center justify-center h-9 w-9 rounded-xl bg-accent text-accent-foreground hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
+                  className="flex items-center justify-center h-9 w-9 rounded-xl bg-accent text-accent-foreground hover:opacity-90 transition-[opacity,transform] duration-150 ease-out disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0 active:scale-[0.94]"
                 >
                   <Send className="h-4 w-4" />
                 </button>
@@ -551,6 +567,7 @@ function TypingDots() {
           }}
         />
       ))}
+      {/* decorative loop, intentionally local */}
       <style jsx>{`
         @keyframes chatDotPulse {
           0%, 80%, 100% { opacity: 0.25; transform: translateY(0); }

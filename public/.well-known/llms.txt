@@ -27,7 +27,6 @@ Pages with markdown source return `text/markdown` when requested with
 - Homepage:    `/` (site summary)
 - Blog posts:  `/blogs/<slug>` (e.g. https://www.shashwa7.in/blogs/truffy-agent)
 - Org pages:   `/work/<org>` (includes long-form contributions log)
-- Skills:      `/skills/<slug>` (e.g. https://www.shashwa7.in/skills/design-system)
 
 Other pages return their default HTML representation regardless of Accept.
 
@@ -40,9 +39,6 @@ Other pages return their default HTML representation regardless of Accept.
 - `/blogs/<slug>` — individual post.
 - `/projects` — independent / side projects.
 - `/books` — reading list with notes.
-- `/skills` — Claude Code skills I author and share publicly.
-- `/skills/<slug>` — an individual skill's full text (also negotiable as text/markdown).
-- `/design` — design-system reference page.
 
 ## Content usage preferences
 

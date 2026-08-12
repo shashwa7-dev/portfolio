@@ -11,7 +11,7 @@ import VideoModal from "@/components/common/VideoModal";
 import Container from "@/components/layout/Container";
 import { motion } from "motion/react";
 import { useState } from "react";
-import { slideUpVariants } from "@/lib/motionVariants";
+import { slideUpVariants, stagger } from "@/lib/motionVariants";
 
 export default function WorkProjectPage({
   params,
@@ -35,7 +35,7 @@ export default function WorkProjectPage({
         {/* Back link */}
         <Link
           href={`/work/${org.slug}`}
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-[color,transform] duration-150 ease-out active:scale-[0.97]"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to {org.name}
@@ -69,17 +69,17 @@ export default function WorkProjectPage({
           {/* Organization badge — links back to /work/[org] */}
           <Link
             href={`/work/${org.slug}`}
-            className="group inline-flex items-center gap-2 self-start rounded-lg border border-border bg-card px-2.5 py-1.5 transition-colors hover:border-accent/60"
+            className="group inline-flex items-center gap-2 self-start rounded-lg border border-border bg-card px-2.5 py-1.5 transition-colors hover:border-border-strong"
           >
             <img
               src={org.logo}
               alt={org.name}
               className="h-5 w-5 rounded-md"
             />
-            <span className="text-sm text-muted-foreground transition-colors group-hover:text-accent">
-              Built at <span className="font-semibold text-foreground group-hover:text-accent">{org.name}</span>
+            <span className="text-sm text-muted-foreground transition-colors group-hover:text-foreground">
+              Built at <span className="font-semibold text-foreground">{org.name}</span>
             </span>
-            <ArrowUpRight className="h-3.5 w-3.5 text-subtle transition-[color,transform] group-hover:-translate-y-0.5 group-hover:text-accent" />
+            <ArrowUpRight className="h-3.5 w-3.5 text-subtle transition-[color,transform] group-hover:-translate-y-0.5 group-hover:text-foreground" />
           </Link>
         </motion.div>
 
@@ -88,7 +88,7 @@ export default function WorkProjectPage({
           variants={slideUpVariants}
           initial="hidden"
           animate="visible"
-          transition={{ delay: 0.1 }}
+          transition={{ delay: stagger.loose }}
           className="relative aspect-video rounded-xl overflow-hidden bg-secondary group"
         >
           <Image
@@ -116,7 +116,7 @@ export default function WorkProjectPage({
           variants={slideUpVariants}
           initial="hidden"
           animate="visible"
-          transition={{ delay: 0.2 }}
+          transition={{ delay: stagger.loose * 2 }}
           className="space-y-6"
         >
           <p className="text-muted-foreground leading-relaxed">
@@ -126,7 +126,7 @@ export default function WorkProjectPage({
           {/* Highlights */}
           {project.highlights && project.highlights.length > 0 && (
             <div className="space-y-3">
-              <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-label">
                 Key Features
               </h2>
               <ul className="space-y-2">
@@ -135,7 +135,7 @@ export default function WorkProjectPage({
                     key={idx}
                     className="flex items-start gap-3 text-sm text-muted-foreground"
                   >
-                    <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
+                    <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-foreground shrink-0" />
                     <span>{highlight}</span>
                   </li>
                 ))}
@@ -145,7 +145,7 @@ export default function WorkProjectPage({
 
           {/* Tech Stack */}
           <div className="space-y-3">
-            <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-label">
               Tech Stack
             </h2>
             <div className="flex flex-wrap gap-2">
@@ -158,7 +158,7 @@ export default function WorkProjectPage({
           {/* Links */}
           {project.links && Object.keys(project.links).length > 0 && (
             <div className="space-y-3">
-              <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-label">
                 Links
               </h2>
               <div className="flex flex-wrap gap-3">
@@ -167,7 +167,7 @@ export default function WorkProjectPage({
                     href={project.links.web}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors text-sm"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-[color,background-color,transform] duration-150 ease-out text-sm active:scale-[0.97]"
                   >
                     <ExternalLink className="w-4 h-4" />
                     Visit Website
@@ -178,7 +178,7 @@ export default function WorkProjectPage({
                     href={project.links.github}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors text-sm"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-[color,background-color,transform] duration-150 ease-out text-sm active:scale-[0.97]"
                   >
                     <ExternalLink className="w-4 h-4" />
                     GitHub
@@ -189,7 +189,7 @@ export default function WorkProjectPage({
                     href={project.links.twitter}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors text-sm"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-[color,background-color,transform] duration-150 ease-out text-sm active:scale-[0.97]"
                   >
                     <ExternalLink className="w-4 h-4" />
                     Twitter
@@ -200,7 +200,7 @@ export default function WorkProjectPage({
                     href={project.links.opensea}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors text-sm"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-[color,background-color,transform] duration-150 ease-out text-sm active:scale-[0.97]"
                   >
                     <ExternalLink className="w-4 h-4" />
                     OpenSea
