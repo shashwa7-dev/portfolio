@@ -22,7 +22,7 @@ export default function ExperienceWork() {
           const isCurrent = org.duration.includes("Present");
           const featured = org.projects.filter((p) => p.featured);
           return (
-            <div key={org.id} className="relative pb-12 last:pb-0">
+            <div key={org.id} className="pb-12 last:pb-0">
               {/* Row 1: identity (logo + name as one Link) | duration */}
               <div className="flex items-center justify-between gap-3">
                 <Link
@@ -46,7 +46,7 @@ export default function ExperienceWork() {
                 <span className="text-sm text-muted-foreground">{org.role}</span>
                 <EmploymentTag employment={org.employment} />
                 {isCurrent && (
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/60 px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-emerald-500">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/60 px-2 py-0.5 font-mono text-2xs font-medium uppercase tracking-label text-emerald-700 dark:text-emerald-400">
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Currently building
                   </span>
                 )}

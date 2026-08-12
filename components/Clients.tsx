@@ -28,7 +28,7 @@ const Clients = () => {
 
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1">
-                <span className="font-medium text-sm text-foreground transition-colors duration-150 group-hover:text-foreground truncate">
+                <span className="font-medium text-sm text-foreground truncate">
                   {client.name}
                 </span>
                 <ArrowUpRight className="w-3 h-3 text-muted-foreground opacity-0 -translate-x-1 transition-[opacity,transform] duration-200 ease-out group-hover:opacity-100 group-hover:translate-x-0 shrink-0" />

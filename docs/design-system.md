@@ -275,7 +275,6 @@ All animation is powered by **Motion** (Framer Motion, imported as `motion/react
 | Variable | Value | Use |
 |---|---|---|
 | `--ease-out` | `cubic-bezier(0.23, 1, 0.32, 1)` | The single UI curve: entrances, exits, hovers, reveals |
-| `--ease-in-out` | `cubic-bezier(0.77, 0, 0.175, 1)` | Defined for state transitions, currently unused by components |
 
 There is no spring easing curve. The one Motion `spring` transition left in the app (`spring.hoverIn` in `lib/motionVariants.ts`) is for the chat FAB hover only.
 
@@ -293,7 +292,7 @@ Durations live in `lib/motionVariants.ts` as the `duration` export and are mirro
 
 - **Hover lift**: `whileHover={{ y: -2 }}` on cards.
 - **Scale tap**: `whileTap={{ scale: 0.97 }}` on buttons.
-- **Mobile menu**: `AnimatePresence` + height + opacity.
+- **Mobile menu**: CSS grid-template-rows collapse (`0fr` → `1fr`) plus `visibility`, so the closed panel is removed from tab order and the accessibility tree instead of relying on `overflow: hidden` alone.
 
 Rules: exits animate faster than enters; keyboard surfaces (command palette, shortcuts overlay) are near-instant.
 

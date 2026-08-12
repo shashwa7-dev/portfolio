@@ -31,7 +31,7 @@ const markerLinkVariants = cva(
       },
       tone: {
         muted: "text-muted-foreground hover:text-foreground",
-        foreground: "text-foreground hover:text-foreground",
+        foreground: "text-foreground",
       },
     },
     defaultVariants: {

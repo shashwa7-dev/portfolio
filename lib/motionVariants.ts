@@ -41,15 +41,6 @@ export const spring = {
 // Variants — use with `variants={...}` + `initial="hidden" animate="visible"`
 // ──────────────────────────────────────────────────────────────────────
 
-/** Pure stagger container — children fade in sequence, parent stays put. */
-export const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.06, delayChildren: 0.05 },
-  },
-};
-
 /** Default child item for stagger containers. */
 export const itemVariants: Variants = {
   hidden: { opacity: 0, y: 12 },
@@ -62,24 +53,11 @@ export const fadeInVariants: Variants = {
   visible: { opacity: 1, transition: { duration: duration.slow, ease: ease.out } },
 };
 
-/** Reveal-on-scroll, used by the <Reveal> primitive. */
-export const revealUp: Variants = {
-  hidden: { opacity: 0, y: 12 },
-  visible: { opacity: 1, y: 0, transition: { duration: duration.slow, ease: ease.out } },
-};
-
 /** Generic "fade up from 10px below" — the most reused inline pattern in the app. */
 export const slideUpVariants: Variants = {
   hidden: { opacity: 0, y: 10 },
   visible: { opacity: 1, y: 0, transition: { duration: duration.slow, ease: ease.out } },
   exit: { opacity: 0, y: 10, transition: { duration: duration.fast, ease: ease.out } },
-};
-
-/** Popover that drops down from above (`y:-8`) with a touch of scale. */
-export const popoverDownVariants: Variants = {
-  hidden: { opacity: 0, y: -8, scale: 0.98 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: duration.base, ease: ease.out } },
-  exit: { opacity: 0, y: -8, scale: 0.98, transition: { duration: duration.fast, ease: ease.out } },
 };
 
 /** Popover that floats up from below — small toasts, notification bubbles. */
@@ -131,5 +109,4 @@ export const pillUpVariants: Variants = {
 // a transition prop on the consumer if a non-default feel is needed.
 
 export const hoverLiftRotate = { scale: 1.02 } as const;
-export const hoverZoom = { scale: 1.02 } as const;
 export const tapPress = { scale: 0.97 } as const;

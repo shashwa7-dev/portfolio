@@ -28,7 +28,6 @@
   --border-strong: 36 14% 81%;
   --input: 36 16% 89.5%;
   --ring: 35 9% 30%;
-  --marker: 38 75% 55% / 0.16;
   --radius: 0.75rem;
   /* sugar-high consumes these DIRECTLY as `color: var(--sh-keyword)`, so unlike
      every other token here they must be complete colour values, not bare HSL
@@ -40,7 +39,7 @@
   --sh-sign: hsl(35 5% 45%);
   --sh-string: hsl(150 35% 32%);
   --sh-keyword: hsl(25 55% 38%);
-  --sh-comment: hsl(35 5% 55%);
+  --sh-comment: hsl(35 5% 45%);
   --sh-jsxliterals: hsl(25 45% 40%);
   --sh-property: hsl(25 50% 36%);
   --sh-entity: hsl(180 40% 30%);
@@ -71,7 +70,6 @@
     --border-strong: 30 6% 24%;
     --input: 30 6% 16%;
     --ring: 35 6% 70%;
-    --marker: 38 60% 70% / 0.16;
     /* Complete colour values, not triplets. See the note in :root above. */
     --sh-class: hsl(38 55% 70%);
     --sh-identifier: hsl(35 6% 84%);
@@ -125,7 +123,7 @@
     border: 2px solid transparent;
     background-clip: padding-box;
     border-radius: 9999px;
-    transition: background-color var(--duration-fast) ease;
+    transition: background-color var(--duration-fast) var(--ease-out);
   }
   ::-webkit-scrollbar-thumb:hover {
     background-color: hsl(var(--subtle));
@@ -173,15 +171,11 @@
 }
 
 /* Motion tokens — the CSS side of lib/motionVariants.ts. Keep both in sync.
-   Easings are punchier than browser defaults; durations follow the same
-   fast/base/med/slow/hero scale as the TS `duration` export, plus
-   stagger/micro steps for per-item offsets. */
+   Easing is punchier than the browser default; durations follow the same
+   fast/base/med/slow/hero scale as the TS `duration` export. */
 :root {
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 
-  --duration-stagger: 40ms;
-  --duration-micro: 80ms;
   --duration-fast: 150ms;
   --duration-base: 200ms;
   --duration-med: 300ms;
@@ -191,7 +185,7 @@
 
 /* Link hover effect */
 a {
-  transition: opacity var(--duration-fast) ease;
+  transition: opacity var(--duration-fast) var(--ease-out);
 }
 @media (hover: hover) and (pointer: fine) {
   a:hover {
@@ -206,7 +200,7 @@ a {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-    transition-property: opacity, color, background-color, border-color !important;
+    transition-property: opacity, color, background-color, border-color, fill, stroke !important;
     scroll-behavior: auto !important;
   }
 }

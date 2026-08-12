@@ -155,13 +155,6 @@ const config: Config = {
         subtle: "hsl(var(--subtle))",
         "border-strong": "hsl(var(--border-strong))",
         "accent-hover": "hsl(var(--accent-hover))",
-        chart: {
-          "1": "hsl(var(--chart-1))",
-          "2": "hsl(var(--chart-2))",
-          "3": "hsl(var(--chart-3))",
-          "4": "hsl(var(--chart-4))",
-          "5": "hsl(var(--chart-5))",
-        },
       },
     },
   },

@@ -26,7 +26,7 @@ Screenshots referenced below live in `.superpowers/sdd/2026-08-12-portfolio-simp
 ## Blog post (`/blogs/truffy-agent`)
 
 - [x] `h2` sizing after the 1.75rem → 1.5rem move. Correct: measured `getComputedStyle(h2).fontSize` = `24px` (1.5rem), and visually it still reads as a clear section break, not undersized. See `10-blog-post-dark.png`.
-- [ ] **Syntax highlighting is NOT color-differentiated.** This is a real, currently-broken feature — see "Regression / pre-existing bug" note in the Task 15 report before checking this box. Every token (keywords, strings, identifiers, punctuation) renders in the same flat foreground color in both themes. See `11-blog-code-zoom-dark.png` and `12-blog-code-zoom-light.png`. Root cause: `--sh-*` custom properties in `app/globals.css` are defined as bare HSL triplets (e.g. `25 55% 38%`) but `sugar-high` (the highlighter) consumes them directly as `color:var(--sh-keyword)`, which expects a literal color (hex or `hsl(...)`), not an HSL triplet. Confirmed via `git log -p -- app/globals.css` that this format predates the simplification branch entirely — it is not something Tasks 1–14 introduced. Left unchecked pending an explicit decision on whether to fix it (out of scope for this branch per the task brief).
+- [x] **Syntax highlighting is color-differentiated.** Previously broken (see the git history on this line for the original note); fixed after this checklist was first committed, in commit `86d4955`. Root cause was `--sh-*` custom properties in `app/globals.css` defined as bare HSL triplets (e.g. `25 55% 38%`), but `sugar-high` (the highlighter) consumes them directly as `color:var(--sh-keyword)`, which expects a literal color, not a triplet. Fixed by wrapping all `--sh-*` tokens in `hsl(...)`, plus adding `--sh-property` and `--sh-entity`, two token types sugar-high emits that were never defined at all. Predates the simplification branch; not something Tasks 1–14 introduced.
 
 ## `/books` and a book detail page (`/books/cant-hurt-me`)
 
@@ -37,7 +37,7 @@ Screenshots referenced below live in `.superpowers/sdd/2026-08-12-portfolio-simp
 
 - [x] Stagger sequence still plays and completes quickly. Correct: avatar, "404", heading, copy, and both buttons ("Go Home" / "Go Back") are all rendered and settled well under a second after navigation; only a small decorative "Lost in the void" line at the very bottom uses the sanctioned `duration.hero` exception (500ms) and is deliberately the slowest thing on the page. See `15-404-light.png`.
 - [x] `duration.hero` (500ms) exists only in `app/not-found.tsx`, confirmed via repo-wide grep (see Task 15 report, Motion Budget Audit section).
-- [ ] Note: in `app/not-found.tsx` line 107 the decorative "Lost in the void" fade actually runs at `duration.hero * 2` (1000ms), not 500ms. It's a low-priority, purely decorative opacity fade at the very bottom of an already-idle page, not a slide or anything jarring, so it likely doesn't need a fix — but the exact value is worth a conscious decision rather than an accident, since the plan's framing implied 500ms was the only value above 300ms anywhere.
+- [x] Fixed: the decorative "Lost in the void" fade in `app/not-found.tsx` previously ran at `duration.hero * 2` (1000ms) instead of the token's own 500ms, a literal duration wearing a token's clothes. Now uses `duration.hero` directly, so it is genuinely the sole value above the 300ms UI budget, as the plan's framing intended.
 
 ## Cmd+K palette
 

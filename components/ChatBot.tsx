@@ -23,7 +23,6 @@ import {
   slideUpVariants,
   pillUpVariants,
   hoverLiftRotate,
-  hoverZoom,
   tapPress,
   spring,
   stagger,
@@ -333,7 +332,7 @@ const S7Bot = () => {
               src={"./truffycc.png"}
               alt="truffy assistant"
               className="w-full h-full object-cover object-center"
-              whileHover={hoverZoom}
+              whileHover={hoverLiftRotate}
               transition={spring.hoverIn}
             />
           </motion.button>

@@ -104,7 +104,7 @@ export default function NotFound() {
             variants={fadeInVariants}
             initial="hidden"
             animate="visible"
-            transition={{ delay: stagger.loose * 3, duration: duration.hero * 2 /* slow decorative glow */ }}
+            transition={{ delay: stagger.loose * 3, duration: duration.hero /* slow decorative glow */ }}
             className="pt-12 space-y-2"
           >
             <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
