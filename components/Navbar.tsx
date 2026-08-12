@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Sun, Moon, Command } from "lucide-react";
+import { Sun, Moon } from "lucide-react";
 import { useDarkMode } from "@/app/hooks/useDarkMode";
 
 /**
@@ -18,10 +18,6 @@ const navLinks = [
   { label: "Writing", href: "/blogs", match: "/blogs" },
   { label: "Books", href: "/books", match: "/books" },
 ];
-
-export function openCommandPalette() {
-  window.dispatchEvent(new CustomEvent("open-command-palette"));
-}
 
 /**
  * The header controls: a filled surface, no border.
@@ -42,21 +38,6 @@ export default function Navbar() {
   const { isDarkMode, toggleDarkMode } = useDarkMode();
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
-
-  /**
-   * The palette listens for `metaKey || ctrlKey`, but this hint used to be a
-   * hardcoded `⌘`, so it told every Windows and Linux visitor the wrong key for a
-   * shortcut that worked fine for them.
-   *
-   * Detected after mount rather than during render, because `navigator` does not
-   * exist on the server and branching on it in render would be a hydration
-   * mismatch. The button carries a `min-w` sized for the longer "Ctrl K" so the
-   * swap cannot resize it, the same reservation the hero clock uses.
-   */
-  const [isApple, setIsApple] = useState(true);
-  useEffect(() => {
-    setIsApple(/Mac|iPhone|iPad|iPod/.test(navigator.userAgent));
-  }, []);
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/70 backdrop-blur-xl">
@@ -91,21 +72,6 @@ export default function Navbar() {
         </ul>
 
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={openCommandPalette}
-            aria-label="Open command menu"
-            className={`${control} min-w-[3.75rem] justify-center gap-1.5 px-2.5 font-mono text-xs leading-none`}
-          >
-            {/* The command key is lucide's `Command`, not the ⌘ character. As
-                text it was a font glyph, so it rendered at whatever weight and
-                size the first font with that codepoint happened to give it,
-                which is why it sat oddly beside the Sun and Moon icons in the
-                next button. An SVG shares their stroke weight and scales with
-                them. There is no equivalent glyph for Ctrl, so that stays text. */}
-            {isApple ? <Command className="h-3.5 w-3.5" strokeWidth={2} /> : "Ctrl"} K
-          </button>
-
           <button
             type="button"
             onClick={toggleDarkMode}
