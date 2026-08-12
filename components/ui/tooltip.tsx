@@ -22,9 +22,9 @@ const TooltipContent = React.forwardRef<
       className={cn(
         "z-50 overflow-hidden rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground",
         "origin-[--radix-tooltip-content-transform-origin]",
-        "transition-[opacity,transform] duration-[var(--duration-fast)] ease-[--ease-out]",
-        "data-[state=delayed-open]:opacity-100 data-[state=delayed-open]:scale-100",
-        "data-[state=closed]:opacity-0 data-[state=closed]:scale-95",
+        "data-[state=delayed-open]:animate-tooltip-in",
+        "data-[state=instant-open]:animate-tooltip-in",
+        "data-[state=closed]:animate-tooltip-out",
         className
       )}
       {...props}

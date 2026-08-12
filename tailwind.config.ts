@@ -18,6 +18,8 @@ const config: Config = {
         "marquee-left": "marquee-left var(--duration, 40s) linear infinite",
         "marquee-up": "marquee-up var(--duration, 40s) linear infinite",
         "loading-bar": "loading-bar 1.2s ease-in-out infinite",
+        "tooltip-in": "tooltip-in var(--duration-fast) var(--ease-out)",
+        "tooltip-out": "tooltip-out var(--duration-fast) var(--ease-out)",
       },
       keyframes: {
         "loading-bar": {
@@ -35,6 +37,14 @@ const config: Config = {
         blink: {
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: "0" },
+        },
+        "tooltip-in": {
+          from: { opacity: "0", transform: "scale(0.96)" },
+          to: { opacity: "1", transform: "scale(1)" },
+        },
+        "tooltip-out": {
+          from: { opacity: "1", transform: "scale(1)" },
+          to: { opacity: "0", transform: "scale(0.96)" },
         },
       },
       container: {
