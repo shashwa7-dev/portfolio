@@ -1085,24 +1085,32 @@ git diff package.json
 
 Only `components/ui/accordion.tsx` should be new, plus a `@radix-ui/react-accordion` entry in `package.json`. If the generator touched `tailwind.config.ts`, `globals.css`, or `lib/utils.ts`, review each change and revert anything unrelated to the accordion. Confirm the new Radix version resolves alongside the existing `@radix-ui/react-tooltip ^1.2.8`.
 
-- [ ] **Step 3: Swap keyframes for an interruptible transition**
+- [ ] **Step 3: Keep the keyframes, retokenize their timing**
 
-shadcn ships `accordion-up` / `accordion-down` `@keyframes` driven by `--radix-accordion-content-height`. Keyframes restart from zero, so a rapidly toggled accordion stutters. In `components/ui/accordion.tsx`, replace the `AccordionContent` animation classes:
+**An earlier draft of this plan said to replace shadcn's keyframes with a CSS `transition` here. That is wrong, and Task 9 already paid for the lesson. Do not do it.**
 
-```tsx
-// Deviation from shadcn's generated output, deliberate:
-// keyframes restart from zero and cannot be interrupted, so a rapidly
-// toggled accordion stutters. A transition on the Radix height variable
-// retargets from the current position instead. Keep this on regeneration.
-<AccordionPrimitive.Content
-  ref={ref}
-  className="overflow-hidden text-sm transition-[height] duration-[var(--duration-med)] ease-[--ease-out]"
-  style={{ height: "var(--radix-accordion-content-height)" }}
-  {...props}
->
+Radix Accordion's `Content` mounts and unmounts through the same `@radix-ui/react-presence` component the tooltip uses. `usePresence` detects exit completion **only** via `getComputedStyle(node).animationName` plus `animationstart` / `animationend` / `animationcancel` listeners. There is no `transitionend` handling anywhere in it. Convert to a transition and `animationName` becomes `"none"`, so `Presence` unmounts the panel in a layout effect the moment it closes, before the collapse can run: the panel snaps shut with no animation, and the open direction cannot animate either because a freshly-inserted node has no prior painted frame to interpolate from. shadcn ships keyframes because the primitive requires them, not as an oversight.
+
+So **leave `components/ui/accordion.tsx`'s animation classes exactly as generated** (`data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down` or whatever the current generator emits), and change only the timing values so they read from our tokens instead of shadcn's hardcoded `0.2s ease-out`.
+
+In `tailwind.config.ts`, the `animation` entries should read:
+
+```ts
+animation: {
+  // Timing retokenized from shadcn's hardcoded "0.2s ease-out" so the
+  // accordion matches the rest of the motion system. Keep the KEYFRAMES
+  // as generated: Radix Presence needs a real animationName to time the
+  // unmount, so this cannot become a CSS transition.
+  "accordion-down": "accordion-down var(--duration-med) var(--ease-out)",
+  "accordion-up":   "accordion-up var(--duration-med) var(--ease-out)",
+},
 ```
 
-Then remove the `accordion-up` / `accordion-down` entries from `keyframes` and `animation` in `tailwind.config.ts` if the generator added them.
+Leave the `keyframes` definitions themselves as generated. They animate `height` between `0` and `var(--radix-accordion-content-height)`, which is the documented Radix contract. That is a layout-property animation, which the pre-flight ruling already adjudicated as acceptable here, since collapsing content-derived height has no transform-only equivalent without JS measurement.
+
+If the generator did not add these entries (newer shadcn versions sometimes emit CSS-first output instead), add them by hand in the shape above, matching how `tooltip-in` / `tooltip-out` are already defined in that file.
+
+Gate check `C06` is unaffected either way: it forbids the `tailwindcss-animate` utility names (`animate-in`, `animate-out`, `fade-in-0`, `zoom-in-95`), not keyframes as a technique.
 
 - [ ] **Step 4: Retokenize the generated styles**
 
