@@ -21,7 +21,7 @@ function composeHomepageMarkdown(): string {
   const lines: string[] = [];
 
   // Header + bio
-  lines.push("# Shashwat Tripathi — Frontend Engineer");
+  lines.push("# Shashwat Tripathi, Frontend Engineer");
   lines.push("");
   lines.push(
     "> Frontend engineer building AI-first product surfaces. Currently consultant at ShopOS, an AI-native commerce platform, where I ship merchant-facing agent UIs, workflow authoring (Canvas Builder), and content-rich chat. Across 9+ production products with top AI and Web3 teams."
