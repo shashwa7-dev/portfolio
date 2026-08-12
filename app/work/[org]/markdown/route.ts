@@ -1,6 +1,7 @@
 import { organizations, getOrganization } from "@/lib/workData";
 import { getDiary, type TDiaryEntry, type TOrgDiary } from "@/lib/diaryData";
 import { markdownResponse } from "@/lib/markdownResponse";
+import { formatPeriod } from "@/lib/tenure";
 
 /**
  * Serves the org overview + diary as `text/markdown`. Reached either by
@@ -21,7 +22,7 @@ export async function GET(
   if (!org) {
     return new Response("Not found", { status: 404 });
   }
-  return markdownResponse(serializeOrg(org.name, org.role, org.duration, org.description, org.highlights, getDiary(params.org)));
+  return markdownResponse(serializeOrg(org.name, org.role, formatPeriod(org.period), org.description, org.highlights, getDiary(params.org)));
 }
 
 function serializeOrg(
