@@ -30,13 +30,20 @@
   --ring: 35 9% 30%;
   --marker: 38 75% 55% / 0.16;
   --radius: 0.75rem;
-  --sh-class: 35 45% 34%;
-  --sh-identifier: 35 8% 22%;
-  --sh-sign: 35 5% 45%;
-  --sh-string: 150 35% 32%;
-  --sh-keyword: 25 55% 38%;
-  --sh-comment: 35 5% 55%;
-  --sh-jsxliterals: 25 45% 40%;
+  /* sugar-high consumes these DIRECTLY as `color: var(--sh-keyword)`, so unlike
+     every other token here they must be complete colour values, not bare HSL
+     triplets waiting for an hsl() wrapper. Left unwrapped they resolve to an
+     invalid colour and every token falls back to the inherited text colour,
+     which is why code blocks rendered with no highlighting at all. */
+  --sh-class: hsl(35 45% 34%);
+  --sh-identifier: hsl(35 8% 22%);
+  --sh-sign: hsl(35 5% 45%);
+  --sh-string: hsl(150 35% 32%);
+  --sh-keyword: hsl(25 55% 38%);
+  --sh-comment: hsl(35 5% 55%);
+  --sh-jsxliterals: hsl(25 45% 40%);
+  --sh-property: hsl(25 50% 36%);
+  --sh-entity: hsl(180 40% 30%);
 }
 
   .dark {
@@ -65,13 +72,16 @@
     --input: 30 6% 16%;
     --ring: 35 6% 70%;
     --marker: 38 60% 70% / 0.16;
-    --sh-class: 38 55% 70%;
-    --sh-identifier: 35 6% 84%;
-    --sh-sign: 35 5% 55%;
-    --sh-string: 150 32% 62%;
-    --sh-keyword: 30 70% 72%;
-    --sh-comment: 35 5% 50%;
-    --sh-jsxliterals: 30 55% 68%;
+    /* Complete colour values, not triplets. See the note in :root above. */
+    --sh-class: hsl(38 55% 70%);
+    --sh-identifier: hsl(35 6% 84%);
+    --sh-sign: hsl(35 5% 55%);
+    --sh-string: hsl(150 32% 62%);
+    --sh-keyword: hsl(30 70% 72%);
+    --sh-comment: hsl(35 5% 50%);
+    --sh-jsxliterals: hsl(30 55% 68%);
+    --sh-property: hsl(28 60% 70%);
+    --sh-entity: hsl(180 45% 62%);
   }
 
   * {
