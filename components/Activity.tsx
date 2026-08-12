@@ -7,7 +7,7 @@ import Bento from "@/components/layout/Bento";
 
 export default function Activity() {
   return (
-    <Section id="activity" number="05" label="Now" title="What I'm up to" width="reading">
+    <Section id="activity" number="04" label="Now" title="What I'm up to" width="reading">
       <Bento className="grid-cols-1 sm:grid-cols-2">
         <div className="bg-card p-5">
           <p className="mb-2.5 font-mono text-2xs uppercase tracking-label text-subtle">Writing</p>

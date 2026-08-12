@@ -4,6 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { organizations } from "@/lib/workData";
 import Section from "@/components/layout/Section";
 import ProjectPreviewCard from "@/components/ProjectPreviewCard";
+import Clients from "@/components/Clients";
 import { workProjectToCard } from "@/lib/projectCards";
 import MarkerLink from "@/components/common/MarkerLink";
 import { EmploymentTag, OrgLinkChip } from "@/components/common/OrgChips";
@@ -17,6 +18,12 @@ export default function ExperienceWork() {
       title="Where I've worked, and what I shipped"
       width="reading"
     >
+      {/* Credential strip. The logos frame the work history rather than sitting
+          in a section of their own, because the outcomes that make them a
+          credential (each project's `metric`) are rendered by the org rows
+          below. See the note in Clients.tsx. */}
+      <Clients />
+
       <div>
         {organizations.map((org) => {
           const isCurrent = org.duration.includes("Present");

@@ -1,42 +1,33 @@
 import Image from "next/image";
-import Section from "@/components/layout/Section";
 import { clients } from "@/lib/clients";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
 /**
- * The brand row. Previously a two-column grid of bordered cards with 32px
- * logos, which made the recognisable names the smallest thing in the section.
+ * The brand row. No longer a section of its own: it renders at the top of the
+ * Experience section as a credential strip that frames the work history below.
  *
- * Two deliberate choices here:
+ * The reason it stopped being standalone is worth recording, because it looks
+ * like a demotion and is the opposite. A row of logos on its own only claims
+ * proximity to these companies. The outcomes that turn proximity into a
+ * credential already live one level down, in `ProjectPreviewCard`, which renders
+ * each project's `metric`: "100K mints, day one" on the Coinbase x Polygon NFT,
+ * "Featured by Polygon" on Polygon Copilot, "2,000+ attendees" on the Web3Conf
+ * quest. So the selling was already happening in Experience, with the project
+ * and stack alongside it. Duplicating the logos in a separate section, minus
+ * those numbers, was strictly the weaker half of the story.
  *
- * 1. No card chrome. Borders and backgrounds around each brand made five items
- *    read as a list of small chips. The logos carry the section on their own at
- *    64px, so the containers are gone.
- * 2. Logos render in full colour at rest, not grayscale. The rest of the
- *    interface is deliberately hueless, but a third-party brand mark is content
- *    rather than UI chrome, and colour is most of what makes Coinbase or Polygon
- *    recognisable before the name is read. The compact strip in About.tsx keeps
- *    its grayscale treatment on purpose: that one is a supporting detail at
- *    24px, this one is the feature.
+ * Sitting at the top of Experience, the logos now set up the specifics that
+ * follow instead of competing with them.
+ *
+ * Logos render in full colour rather than grayscale. The interface is
+ * deliberately hueless, but a third-party brand mark is content, not UI chrome,
+ * and colour is most of what makes Coinbase or Polygon recognisable before the
+ * name is read. The compact 24px strip in About.tsx keeps grayscale on purpose:
+ * that one is a supporting detail, this is a credential.
  */
 const Clients = () => {
   return (
-    <Section
-      id="clients"
-      number="02"
-      label="Trusted by"
-      title="Teams I've worked with"
-      width="reading"
-    >
-      {/* Proof line. Both figures are already claimed in the About stats bento,
-          so this introduces no new assertion. It answers the "so what" that a
-          row of logos on its own leaves open. */}
-      <p className="mb-7 font-mono text-2xs uppercase tracking-label text-subtle">
-        9+ products shipped
-        <span className="mx-2 text-border-strong">·</span>
-        1M+ users reached
-      </p>
-
+    <div className="mb-9 border-b border-border pb-8">
       <ul className="flex flex-wrap items-start gap-x-7 gap-y-6 sm:gap-x-9">
         {clients.map((client) => (
           <li key={client.name}>
@@ -67,7 +58,18 @@ const Clients = () => {
           </li>
         ))}
       </ul>
-    </Section>
+
+      {/* Both figures are already claimed in the About stats bento, so this
+          asserts nothing new. It frames the logos as outcomes rather than a
+          client list, and the org rows below carry the per-project specifics. */}
+      <p className="mt-6 font-mono text-2xs uppercase tracking-label text-subtle">
+        Shipped for {clients.length} brands
+        <span className="mx-2 text-border-strong">·</span>
+        100K day-one mints
+        <span className="mx-2 text-border-strong">·</span>
+        1M+ users reached
+      </p>
+    </div>
   );
 };
 
