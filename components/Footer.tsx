@@ -51,7 +51,7 @@ const Footer = () => {
             fill
             sizes="100vw"
             quality={85}
-            className="object-cover object-center opacity-55 dark:opacity-40"
+            className="object-cover object-center opacity-90 dark:opacity-75"
             style={{
               maskImage:
                 "linear-gradient(to top, black 0%, black 35%, transparent 100%)",
