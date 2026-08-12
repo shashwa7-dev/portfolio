@@ -41,8 +41,8 @@ export default function CodeBlock({ code, language }: Props) {
           type="button"
           onClick={onCopy}
           className={cn(
-            "rounded px-1.5 py-0.5 font-mono text-2xs uppercase tracking-label",
-            "transition-[color,transform] duration-fast active:scale-[0.97]",
+            "rounded-md px-1.5 py-0.5 font-mono text-2xs uppercase tracking-label",
+            "transition-[color,transform] duration-fast ease-out active:scale-[0.97]",
             copied ? "text-foreground" : "text-muted-foreground hover:text-foreground"
           )}
           aria-label="Copy code"

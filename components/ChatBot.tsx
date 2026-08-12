@@ -1,17 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import {
-  X,
-  MessageCircle,
-  Send,
-  Copy,
-  Check,
-  ArrowDown,
-  Cpu,
-  Briefcase,
-  Sparkles,
-} from "lucide-react";
+import { X, Send, Copy, Check, ArrowDown } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import MarkdownMessage from "./chat/MarkdownMessage";
 import { cn } from "@/lib/utils";
@@ -68,7 +58,15 @@ const S7Bot = () => {
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
-  const cleanup = () => {
+  /**
+   * Both of these are `useCallback` with empty deps so their identity is stable.
+   * `handleClose` is used inside the click-outside effect below, and with an
+   * unstable identity it had to be left out of that effect's dependency array,
+   * which meant the listener closed over the first render's copy. Only refs and
+   * setters are touched here, so an empty dep list is correct rather than a
+   * shortcut. The same fix was applied to the theme toggle for the same reason.
+   */
+  const cleanup = useCallback(() => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
       abortControllerRef.current = null;
@@ -78,13 +76,13 @@ const S7Bot = () => {
       timeoutRef.current = null;
     }
     setIsStreaming(false);
-  };
+  }, []);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     cleanup();
     setIsOpen(false);
     setEmailState(null);
-  };
+  }, [cleanup]);
 
   const scrollToBottom = useCallback((behavior: ScrollBehavior = "smooth") => {
     messagesEndRef.current?.scrollIntoView({ behavior });
@@ -129,13 +127,13 @@ const S7Bot = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isOpen]);
+  }, [isOpen, handleClose]);
 
   useEffect(() => {
     return () => {
       cleanup();
     };
-  }, []);
+  }, [cleanup]);
 
   const sendMessage = async (msg: string) => {
     if (!msg.trim() || isStreaming) return;
@@ -304,7 +302,7 @@ const S7Bot = () => {
             exit="exit"
             className="fixed bottom-[60px] right-4 -md:right-2.5 -md:hidden"
           >
-            <div className="rounded-xl border border-border-strong bg-card shadow-md px-3 py-2 max-w-[200px]">
+            <div className="rounded-lg border border-border-strong bg-card shadow-md px-3 py-2 max-w-[200px]">
               <p className="text-xs text-card-foreground">
                 {notificationText}
                 <span className="ml-0.5 animate-blink">|</span>
@@ -325,7 +323,7 @@ const S7Bot = () => {
             whileHover={hoverLiftRotate}
             whileTap={tapPress}
             onClick={() => setIsOpen(true)}
-            className="fixed bottom-4 right-4 -md:right-2.5 h-12 w-12 rounded-2xl overflow-hidden ring-1 ring-border-strong shadow-lg bg-card"
+            className="group fixed bottom-4 right-4 -md:right-2.5 h-12 w-12 rounded-2xl overflow-hidden ring-1 ring-border-strong shadow-lg bg-card"
           >
             {/* Single image, no layered fallback. Now a static JPEG rather than
                 an animated GIF, which also retires the reduced-motion caveat the
@@ -346,7 +344,7 @@ const S7Bot = () => {
             <img
               src="/images/agent.jpg"
               alt="Truffy assistant"
-              className="w-full h-full object-cover object-center"
+              className="w-full h-full object-cover object-center grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
             />
           </motion.button>
         )}
@@ -366,11 +364,11 @@ const S7Bot = () => {
             {/* Header */}
             <div className="flex items-center justify-between border-b border-border bg-card px-4 py-3">
               <div className="flex items-center gap-2">
-                <div className="relative h-9 w-9 overflow-hidden rounded-xl flex-shrink-0">
+                <div className="group relative h-9 w-9 overflow-hidden rounded-lg flex-shrink-0">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src="/images/agent.jpg"
-                    className="w-full h-full object-cover object-center"
+                    className="w-full h-full object-cover object-center grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
                     alt="Truffy assistant"
                   />
                   <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-500 ring-2 ring-card" />
@@ -400,30 +398,28 @@ const S7Bot = () => {
                 className="h-full overflow-y-auto p-3 space-y-3 min-h-[280px] max-h-[340px]"
               >
               {messages.length === 0 && (
-                <div className="flex flex-col items-center justify-center h-full text-center py-4">
-                  <div className="w-10 h-10 rounded-full bg-elevated flex items-center justify-center mb-2">
-                    <MessageCircle className="w-5 h-5 text-muted-foreground" />
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Ask me anything about Shashwat!
+                /* Empty state. Text only.
+
+                   The decorative MessageCircle in a 40px circle is gone: it sat
+                   directly above a line of text that said the same thing, inside
+                   a panel whose header already shows Truffy's avatar and name, so
+                   it was the third "this is a chat" signal in 60 pixels.
+
+                   The per-prompt Cpu / Briefcase / Sparkles icons are gone too.
+                   They were decoration standing in for meaning, and a magic wand
+                   next to "What projects has he built?" tells a reader nothing the
+                   sentence does not already say. */
+                <div className="flex h-full flex-col justify-center py-4">
+                  <p className="mb-3 text-sm text-muted-foreground">
+                    Ask about Shashwat&apos;s work, stack, or availability.
                   </p>
 
-                  {/* Sample prompts */}
-                  <div className="w-full space-y-2">
+                  <div className="w-full space-y-1.5">
                     {[
-                      {
-                        prompt: "What tech stack does Shashwat use?",
-                        Icon: Cpu,
-                      },
-                      {
-                        prompt: "Tell me about his work experience",
-                        Icon: Briefcase,
-                      },
-                      {
-                        prompt: "What projects has he built?",
-                        Icon: Sparkles,
-                      },
-                    ].map(({ prompt, Icon }, idx) => (
+                      "What tech stack does Shashwat use?",
+                      "Tell me about his work experience",
+                      "What projects has he built?",
+                    ].map((prompt, idx) => (
                       <motion.button
                         key={idx}
                         variants={slideUpVariants}
@@ -432,10 +428,9 @@ const S7Bot = () => {
                         transition={{ delay: stagger.loose + idx * stagger.tight }}
                         whileTap={tapPress}
                         onClick={() => sendMessage(prompt)}
-                        className="w-full flex items-center gap-2 text-left rounded-xl border border-border bg-card px-3 py-2.5 text-xs text-muted-foreground hover:border-border-strong hover:text-foreground transition-colors"
+                        className="w-full rounded-lg border border-border bg-card px-3 py-2 text-left text-xs text-muted-foreground transition-colors duration-base ease-out hover:border-border-strong hover:text-foreground"
                       >
-                        <Icon className="h-3.5 w-3.5 shrink-0 text-subtle" />
-                        <span>{prompt}</span>
+                        {prompt}
                       </motion.button>
                     ))}
                   </div>
@@ -482,10 +477,14 @@ const S7Bot = () => {
                           type="button"
                           onClick={() => handleCopy(msg.content, index)}
                           aria-label="Copy message"
+                          /* Quieter than it was: no ring, no shadow, no circle,
+                             and smaller. It was a bordered floating pill hanging
+                             off the bubble's corner, which is a lot of chrome for
+                             a secondary action that only appears on hover. */
                           className={cn(
-                            "absolute -bottom-2 -right-2 inline-flex h-6 w-6 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm transition-opacity hover:text-foreground",
+                            "absolute -bottom-1.5 -right-1.5 inline-flex h-5 w-5 items-center justify-center rounded-md bg-card text-subtle transition-[opacity,color] duration-base ease-out hover:text-foreground",
                             copiedIndex === index
-                              ? "opacity-100 text-foreground"
+                              ? "text-foreground opacity-100"
                               : "opacity-0 group-hover/msg:opacity-100"
                           )}
                         >
@@ -516,7 +515,7 @@ const S7Bot = () => {
                     initial="hidden"
                     animate="visible"
                     exit="exit"
-                    className="absolute bottom-2 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-xs text-muted-foreground shadow-md transition-[color,transform] duration-150 ease-out hover:text-foreground active:scale-[0.94]"
+                    className="absolute bottom-2 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 rounded-md border border-border bg-card px-2.5 py-1 text-xs text-muted-foreground shadow-md transition-[color,transform] duration-150 ease-out hover:text-foreground active:scale-[0.94]"
                   >
                     <ArrowDown className="h-3 w-3" /> New messages
                   </motion.button>
@@ -535,12 +534,12 @@ const S7Bot = () => {
                     emailState ? "Type your response..." : "Ask a question..."
                   }
                   disabled={isStreaming}
-                  className="flex-1 px-3 py-2 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
+                  className="flex-1 px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
                 />
                 <button
                   type="submit"
                   disabled={isStreaming || !message.trim()}
-                  className="flex items-center justify-center h-9 w-9 rounded-xl bg-accent text-accent-foreground hover:opacity-90 transition-[opacity,transform] duration-150 ease-out disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0 active:scale-[0.94]"
+                  className="flex items-center justify-center h-9 w-9 rounded-lg bg-accent text-accent-foreground hover:opacity-90 transition-[opacity,transform] duration-150 ease-out disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0 active:scale-[0.94]"
                 >
                   <Send className="h-4 w-4" />
                 </button>

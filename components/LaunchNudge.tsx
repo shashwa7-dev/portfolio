@@ -93,7 +93,7 @@ export default function LaunchNudge() {
       target="_blank"
       rel="noopener noreferrer"
       onClick={dismiss}
-      className={`group fixed bottom-4 left-4 z-40 block max-w-[16.5rem] overflow-hidden rounded-xl border border-border-strong bg-card/95 px-3.5 py-3 shadow-lg backdrop-blur transition-[opacity,transform,border-color] ease-out active:scale-[0.98] motion-reduce:translate-y-0 ${
+      className={`group fixed bottom-4 left-4 z-40 block max-w-[16.5rem] overflow-hidden rounded-lg border border-border-strong bg-card/95 px-3.5 py-3 shadow-lg backdrop-blur transition-[opacity,transform,border-color] ease-out active:scale-[0.98] motion-reduce:translate-y-0 ${
         shown
           ? "translate-y-0 opacity-100 duration-med"
           : "translate-y-2 opacity-0 duration-fast"
@@ -102,7 +102,7 @@ export default function LaunchNudge() {
       {/* Thumbnail, anchored top right and faded out toward the copy. */}
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 overflow-hidden rounded-xl"
+        className="pointer-events-none absolute inset-0 overflow-hidden rounded-lg"
       >
         <Image
           src="/projects/project_mehfil.jpg"
@@ -110,7 +110,7 @@ export default function LaunchNudge() {
           fill
           sizes="264px"
           quality={70}
-          className="object-cover object-right-top opacity-[0.22] dark:opacity-[0.28]"
+          className="object-cover object-right-top opacity-[0.22] grayscale dark:opacity-[0.28]"
           style={{
             maskImage: "linear-gradient(to bottom left, black 0%, transparent 62%)",
             WebkitMaskImage:

@@ -3,12 +3,13 @@ import Image from "next/image";
 import { ArrowRight, ArrowUpRight, Play } from "lucide-react";
 import type { ProjectCardData } from "@/lib/projectCards";
 import StackIcon, { type StackName } from "@/components/common/StackIcon";
+import Shimmer from "@/components/common/Shimmer";
 
 export default function ProjectShowcaseCard({ project }: { project: ProjectCardData }) {
   return (
     <Link
       href={project.href}
-      className="group block overflow-hidden rounded-2xl border border-border bg-card transition-[transform,border-color] duration-300 hover:-translate-y-0.5 hover:border-border-strong active:scale-[0.99]"
+      className="group block overflow-hidden rounded-2xl border border-border bg-card transition-[transform,border-color] duration-base ease-out hover:-translate-y-0.5 hover:border-border-strong active:scale-[0.99]"
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-elevated">
         <Image
@@ -16,15 +17,23 @@ export default function ProjectShowcaseCard({ project }: { project: ProjectCardD
           alt={project.title}
           fill
           sizes="(max-width: 760px) 100vw, 380px"
-          className="object-cover transition-transform duration-base group-hover:scale-[1.03]"
+          className="object-cover grayscale transition-[transform,filter] duration-base ease-out group-hover:scale-[1.03] group-hover:grayscale-0"
         />
+        {/* `tone="surface"`, not `media`, despite sitting over the thumbnail: the
+            chip has its own `bg-background/80` fill, so the sheen crosses a
+            palette surface that inverts with the theme, not the image. */}
         {project.badge && (
-          <span className="absolute left-3 top-3 rounded-full border border-border-strong bg-background/80 px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-foreground backdrop-blur">
-            {project.badge}
-          </span>
+          <Shimmer
+            tone="surface"
+            className="absolute left-3 top-3 inline-block rounded-sm border border-border-strong bg-background/80 backdrop-blur"
+          >
+            <span className="block px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-foreground">
+              {project.badge}
+            </span>
+          </Shimmer>
         )}
         {project.metric && (
-          <span className="absolute bottom-3 left-3 rounded-full border border-border-strong bg-background/80 px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-foreground backdrop-blur">
+          <span className="absolute bottom-3 left-3 rounded-sm border border-border-strong bg-background/80 px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-foreground backdrop-blur">
             {project.metric}
           </span>
         )}

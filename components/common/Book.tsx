@@ -6,6 +6,29 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
+/**
+ * A shelf card: the cover, with the title and author on an overlay across the
+ * bottom and a progress bar under that.
+ *
+ * This is the original treatment, restored. A flatter version was tried, with the
+ * text below the cover and progress as a "8/24" count, and it lost more than it
+ * gained: the overlay is what makes a wall of these read as a shelf rather than a
+ * list with pictures.
+ *
+ * Four things differ from the original, all of them separate decisions rather
+ * than part of that experiment:
+ *
+ * 1. `rounded-md` rather than `rounded-lg`, matching the radius scale's step for
+ *    elements this size.
+ * 2. Greyscale until hover, like every other image surface in the app.
+ * 3. The progress bar's `transition-[width]` now carries duration and easing
+ *    tokens. An arbitrary-value transition utility emits only
+ *    `transition-property`, so with no duration the bar was snapping rather than
+ *    animating and the class did nothing at all.
+ * 4. `sizes` describes the real grid. It claimed `33vw` from when this was a
+ *    fixed three-column layout; the grid is now two up, three at sm and four at
+ *    md, so that was over-fetching on wide screens.
+ */
 export default function Book({
   slug,
   name,
@@ -25,10 +48,11 @@ export default function Book({
 
     return Math.round((completed / chapters.length) * 100);
   }, [chapters]);
+
   return (
     <Link
       href={`/books/${slug}`}
-      className="relative aspect-[2/3] w-full rounded-lg overflow-hidden border bg-card block"
+      className="group relative block aspect-[2/3] w-full overflow-hidden rounded-md border border-border bg-card"
     >
       {isDone && (
         /* Same verified-badge idiom as About.tsx and BookListItem. Inset from
@@ -38,10 +62,11 @@ export default function Book({
           <Check className="h-3.5 w-3.5" strokeWidth={3} />
         </span>
       )}
+
       {/* Skeleton */}
       {!loaded && (
-        <div className="absolute inset-0 z-0 flex items-center justify-center bg-muted animate-pulse">
-          <span className="text-sm opacity-50 italic">offcod8</span>
+        <div className="absolute inset-0 z-0 flex animate-pulse items-center justify-center bg-muted">
+          <span className="text-sm italic opacity-50">offcod8</span>
         </div>
       )}
 
@@ -50,8 +75,8 @@ export default function Book({
         src={cover}
         alt={`Cover of ${name}`}
         fill
-        className="object-cover opacity-90"
-        sizes="(max-width: 768px) 100vw, 33vw"
+        className="object-cover opacity-90 grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
+        sizes="(max-width: 640px) 45vw, (max-width: 768px) 30vw, 180px"
         priority={false}
         onLoadingComplete={() => setLoaded(true)}
       />
@@ -66,13 +91,13 @@ export default function Book({
       >
         {/* One fill colour at every value; the width carries completion. */}
         <div
-          className="h-1 bg-foreground transition-[width]"
+          className="h-1 bg-foreground transition-[width] duration-base ease-out"
           style={{ width: `${progress}%` }}
         />
       </div>
 
       {/* Info overlay */}
-      <div className="absolute bottom-1 left-0 w-full backdrop-blur px-2 py-1 text-xs bg-secondary">
+      <div className="absolute bottom-1 left-0 w-full bg-secondary px-2 py-1 text-xs backdrop-blur">
         <p className="truncate font-medium">{name}</p>
         <p className="truncate italic text-muted-foreground">{author}</p>
       </div>

@@ -1,4 +1,5 @@
 import { StackName } from "@/components/common/StackIcon";
+import type { TPeriod } from "@/lib/tenure";
 
 export type TProject = {
   id: string;
@@ -29,7 +30,22 @@ export type TOrganization = {
   name: string;
   logo: string;
   role: string;
-  duration: string;
+  /**
+   * Structured employment period, "MM.YYYY". Omit `end` to mean present.
+   *
+   * This replaced a hand-typed `duration` display string. Two things fall out
+   * of it: tenure can be computed rather than left for the reader to work out,
+   * and the current-role test stops being `duration.includes("Present")`, which
+   * was a string search standing in for a boolean.
+   */
+  period: TPeriod;
+  /**
+   * Technologies used in this engagement, shown as tags on the Experience row.
+   * Keep to six or fewer: a tag row that wraps past one line stops being
+   * scannable. Every entry should be supported by the org's own projects or by
+   * `data/agent-memory.md`, not inferred from the role title.
+   */
+  skills?: string[];
   /** Engagement type — surfaced as a small pill next to the role. */
   employment?: "full-time" | "contract";
   description: string;
@@ -53,7 +69,10 @@ export const organizations: TOrganization[] = [
     logo: "/images/shopos.jpeg",
     role: "Frontend Engineer",
     employment: "full-time",
-    duration: "Jan 2026 - Present",
+    period: { start: "01.2026" },
+    // Each of these is documented in data/agent-memory.md's ShopOS ships table
+    // (the Next.js app, the Tiptap chat input, the React Query hooks).
+    skills: ["React", "TypeScript", "Next.js", "React Query", "Tiptap"],
     description:
       "Frontend engineer at ShopOS, an AI-native commerce platform. Shipping merchant-facing surfaces across AI agents, workflow authoring, and chat for create, manage, market, and sell flows.",
     links: {
@@ -74,7 +93,11 @@ export const organizations: TOrganization[] = [
     logo: "/images/dehidden_logo.jpeg",
     role: "Frontend Developer (Web3)",
     employment: "contract",
-    duration: "Jan 2022 - Dec 2025",
+    period: { start: "01.2022", end: "12.2025" },
+    // The six most-declared entries across this org's own project `stack`
+    // arrays, so every tag is backed by a shipped project rather than inferred
+    // from the role title.
+    skills: ["React", "TypeScript", "wagmi", "React Query", "Tailwind CSS", "Framer Motion"],
     description:
       "Building AI × Web3 products including DeFi platforms, NFT minting solutions, and blockchain integrations.",
     link: "https://x.com/playAInetwork",
@@ -181,7 +204,6 @@ export const organizations: TOrganization[] = [
         title: "Polygon Copilot",
         shortTitle: "Polygon Copilot",
         featured: true,
-        metric: "Featured by Polygon",
         description:
           "AI chatbot for Web3 developers using OpenAI GPT models, delivering blockchain insights within the zkEVM ecosystem.",
         highlights: [
@@ -338,7 +360,11 @@ export const organizations: TOrganization[] = [
     name: "Cope.Studio",
     logo: "/images/copestudio.jpeg",
     role: "Frontend Dev (internship)",
-    duration: "Jan 2022 - Mar 2022",
+    period: { start: "01.2022", end: "03.2022" },
+    // One tag on purpose. The only technology this org's own highlights name is
+    // React ("Learning and applying React and modern web tooling"), and padding
+    // the list would be inventing a claim.
+    skills: ["React"],
     description: "Frontend development for Cope.Studio.",
     highlights: [
       "Contributing to client-facing frontend features and bug fixes",

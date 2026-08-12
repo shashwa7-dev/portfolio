@@ -52,7 +52,7 @@ export default function WorkProjectPage({
             <div>
               <div className="flex items-center gap-3 mb-2">
                 {project.isActive && (
-                  <ActiveBadge variant="pill" label="Active Project" />
+                  <ActiveBadge label="Active Project" />
                 )}
                 {project.date && (
                   <span className="text-sm text-muted-foreground">
@@ -71,15 +71,21 @@ export default function WorkProjectPage({
             href={`/work/${org.slug}`}
             className="group inline-flex items-center gap-2 self-start rounded-lg border border-border bg-card px-2.5 py-1.5 transition-colors hover:border-border-strong"
           >
-            <img
-              src={org.logo}
-              alt={org.name}
-              className="h-5 w-5 rounded-md"
-            />
+            {/* Was a raw <img>, which is also why this logo escaped the
+                greyscale sweep: that pass walked `next/image` call sites. */}
+            <span className="relative h-5 w-5 shrink-0 overflow-hidden rounded-md bg-elevated">
+              <Image
+                src={org.logo}
+                alt={org.name}
+                fill
+                sizes="20px"
+                className="object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
+              />
+            </span>
             <span className="text-sm text-muted-foreground transition-colors group-hover:text-foreground">
               Built at <span className="font-semibold text-foreground">{org.name}</span>
             </span>
-            <ArrowUpRight className="h-3.5 w-3.5 text-subtle transition-[color,transform] group-hover:-translate-y-0.5 group-hover:text-foreground" />
+            <ArrowUpRight className="h-3.5 w-3.5 text-subtle transition-[color,transform] duration-base ease-out group-hover:-translate-y-0.5 group-hover:text-foreground" />
           </Link>
         </motion.div>
 
@@ -89,13 +95,13 @@ export default function WorkProjectPage({
           initial="hidden"
           animate="visible"
           transition={{ delay: stagger.loose }}
-          className="relative aspect-video rounded-xl overflow-hidden bg-secondary group"
+          className="relative aspect-video rounded-lg overflow-hidden bg-secondary group"
         >
           <Image
             src={project.thumbnail}
             alt={project.title}
             fill
-            className="object-cover"
+            className="object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
             priority
           />
           {project.preview && (
@@ -103,7 +109,7 @@ export default function WorkProjectPage({
               onClick={() => setVideoOpen(true)}
               className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity"
             >
-              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white text-black font-medium">
+              <div className="flex items-center gap-2 rounded-md bg-white px-4 py-2 text-black font-medium">
                 <Play className="w-5 h-5 fill-current" />
                 Watch Preview
               </div>
@@ -167,7 +173,7 @@ export default function WorkProjectPage({
                     href={project.links.web}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-[color,background-color,transform] duration-150 ease-out text-sm active:scale-[0.97]"
+                    className="inline-flex items-center gap-2 rounded-md bg-secondary px-4 py-2 text-sm transition-[color,background-color,transform] duration-fast ease-out hover:bg-secondary/80 active:scale-[0.97]"
                   >
                     <ExternalLink className="w-4 h-4" />
                     Visit Website
@@ -178,7 +184,7 @@ export default function WorkProjectPage({
                     href={project.links.github}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-[color,background-color,transform] duration-150 ease-out text-sm active:scale-[0.97]"
+                    className="inline-flex items-center gap-2 rounded-md bg-secondary px-4 py-2 text-sm transition-[color,background-color,transform] duration-fast ease-out hover:bg-secondary/80 active:scale-[0.97]"
                   >
                     <ExternalLink className="w-4 h-4" />
                     GitHub
@@ -189,7 +195,7 @@ export default function WorkProjectPage({
                     href={project.links.twitter}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-[color,background-color,transform] duration-150 ease-out text-sm active:scale-[0.97]"
+                    className="inline-flex items-center gap-2 rounded-md bg-secondary px-4 py-2 text-sm transition-[color,background-color,transform] duration-fast ease-out hover:bg-secondary/80 active:scale-[0.97]"
                   >
                     <ExternalLink className="w-4 h-4" />
                     Twitter
@@ -200,7 +206,7 @@ export default function WorkProjectPage({
                     href={project.links.opensea}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-[color,background-color,transform] duration-150 ease-out text-sm active:scale-[0.97]"
+                    className="inline-flex items-center gap-2 rounded-md bg-secondary px-4 py-2 text-sm transition-[color,background-color,transform] duration-fast ease-out hover:bg-secondary/80 active:scale-[0.97]"
                   >
                     <ExternalLink className="w-4 h-4" />
                     OpenSea

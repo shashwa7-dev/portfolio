@@ -15,11 +15,22 @@ export const goToShortcuts: GoTo[] = [
 
 export type Shortcut = { keys: string[]; label: string };
 
+/**
+ * `MOD_KEY` is a placeholder, resolved to ⌘ or Ctrl when rendered.
+ *
+ * It cannot be resolved here: this module is imported by a server-rendered tree
+ * and `navigator` does not exist there, so the platform is only knowable in the
+ * component. It used to be a hardcoded "⌘", which meant the cheatsheet told every
+ * Windows and Linux visitor the wrong key for a shortcut that works on both, since
+ * CommandPalette listens for `metaKey || ctrlKey`.
+ */
+export const MOD_KEY = "mod";
+
 export const shortcutGroups: { title: string; items: Shortcut[] }[] = [
   {
     title: "General",
     items: [
-      { keys: ["⌘", "K"], label: "Open command menu" },
+      { keys: [MOD_KEY, "K"], label: "Open command menu" },
       { keys: ["t"], label: "Toggle theme" },
       { keys: ["?"], label: "Show this help" },
     ],

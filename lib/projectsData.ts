@@ -6,6 +6,11 @@ export type TSideProject = {
   title: string;
   icon?: string;
   tagline: string;
+  /**
+   * Flags the newest shipped project, surfaced as a "Recent" badge. Exactly one
+   * project should carry it: three did, which made it a category rather than a
+   * claim about what is new.
+   */
   isRecent?: boolean;
   description: string;
   longDescription?: string;
@@ -110,7 +115,6 @@ export const sideProjects: TSideProject[] = [
     id: "paper-noise",
     slug: "paper-noise",
     title: "PaperNoise",
-    isRecent: true,
     tagline: "Where pixels pretend to be paper.",
     description:
       "A small experimental tool to create vintage-style cards with real textures, classic ink palettes, and old-school typography, entirely in the browser.",
@@ -167,7 +171,6 @@ Built with React + Vite, this tool explores browser rendering and export edge ca
     slug: "kiryoku",
     title: "Kiryouku",
     tagline: "Productivity tool that blocks distracting sites",
-    isRecent: true,
     description:
       "Desktop productivity tool built with ElectronJS that blocks distracting websites using an HTTP proxy.",
     longDescription: `Kiryouku is a tiny productive tool that blocks distracting sites when you need to focus. Under the hood, it uses a simple HTTP proxy that intercepts requests and blocks blacklisted domains.

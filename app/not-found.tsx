@@ -44,7 +44,7 @@ export default function NotFound() {
             initial="hidden"
             animate="visible"
             transition={{ delay: stagger.loose }}
-            className="text-9xl md:text-[12rem] font-bold tracking-tight flex items-center justify-center gap-2"
+            className="flex items-center justify-center gap-2 text-9xl font-bold tracking-tight"
           >
             <span className="bg-gradient-to-br from-foreground via-foreground to-muted-foreground bg-clip-text text-transparent">
               4

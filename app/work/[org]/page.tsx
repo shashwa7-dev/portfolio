@@ -9,6 +9,8 @@ import ProjectShowcaseCard from "@/components/ProjectShowcaseCard";
 import { workProjectToCard } from "@/lib/projectCards";
 import DiaryEntry from "@/components/common/DiaryEntry";
 import { EmploymentTag, OrgLinkChip } from "@/components/common/OrgChips";
+import { formatPeriod, formatTenure } from "@/lib/tenure";
+import { breadcrumbLd } from "@/lib/seo";
 
 export async function generateStaticParams() {
   return organizations.map((org) => ({ org: org.slug }));
@@ -32,12 +34,30 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
 
   return (
     <main className="py-8 md:py-12">
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            breadcrumbLd([
+              { name: "Home", path: "" },
+              { name: org.name, path: `work/${org.slug}` },
+            ])
+          ),
+        }}
+      />
       <Container width="reading" className="space-y-10">
         {/* ── Header ─────────────────────────────────────────────────── */}
         <header className="space-y-5">
           <div className="flex items-center gap-3">
-            <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-elevated ring-1 ring-border">
-              <Image src={org.logo} alt={org.name} fill className="object-cover" sizes="48px" />
+            <span className="group relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-elevated ring-1 ring-border">
+              <Image
+                src={org.logo}
+                alt={org.name}
+                fill
+                sizes="48px"
+                className="object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
+              />
             </span>
             <div className="min-w-0">
               <div className="flex items-center gap-2">
@@ -52,7 +72,13 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
                 <span>{org.role}</span>
                 <EmploymentTag employment={org.employment} />
                 <span className="text-border-strong">·</span>
-                <span className="font-mono text-xs tabular-nums text-subtle">{org.duration}</span>
+                <span className="font-mono text-xs tabular-nums text-subtle">{formatPeriod(org.period)}</span>
+                {formatTenure(org.period) && (
+                  <>
+                    <span aria-hidden className="text-border-strong">·</span>
+                    <span className="font-mono text-xs tabular-nums text-subtle">{formatTenure(org.period)}</span>
+                  </>
+                )}
               </p>
             </div>
           </div>

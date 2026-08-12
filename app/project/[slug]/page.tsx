@@ -8,7 +8,7 @@ import Label from "@/components/layout/Label";
 import ProseGutter from "@/components/layout/ProseGutter";
 import StackIcon from "@/components/common/StackIcon";
 import ProjectMedia from "@/components/project/ProjectMedia";
-import { softwareAppLd, ogUrl } from "@/lib/seo";
+import { softwareAppLd, ogUrl, breadcrumbLd } from "@/lib/seo";
 
 export function generateStaticParams() {
   return getAllSideProjects().map((p) => ({ slug: p.slug }));
@@ -54,6 +54,19 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
         type="application/ld+json"
         suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareAppLd(project)) }}
+      />
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            breadcrumbLd([
+              { name: "Home", path: "" },
+              { name: "Projects", path: "projects" },
+              { name: project.title, path: `project/${project.slug}` },
+            ])
+          ),
+        }}
       />
       <Container width="reading" className="space-y-8">
         <Link href="/projects" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
@@ -125,7 +138,7 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
                 <h2 className="text-2xl">Impact</h2>
                 <div className="flex flex-wrap gap-3">
                   {cs.results.map((r, i) => (
-                    <div key={i} className="rounded-xl border border-border bg-card px-4 py-3">
+                    <div key={i} className="rounded-lg border border-border bg-card px-4 py-3">
                       <div className="text-2xl font-semibold text-foreground">{r.value}</div>
                       <div className="text-xs text-subtle">{r.caption}</div>
                     </div>

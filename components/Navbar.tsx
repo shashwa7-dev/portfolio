@@ -2,23 +2,42 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Sun, Moon } from "lucide-react";
 import { useDarkMode } from "@/app/hooks/useDarkMode";
 
+/**
+ * `match` is the route this link owns, for the current-page state. The two
+ * homepage anchors deliberately have none: knowing whether "Work" or "Projects"
+ * is current would take scroll tracking, and marking both active on `/` would be
+ * worse than marking neither.
+ */
 const navLinks = [
   { label: "Work", href: "/#experience" },
   { label: "Projects", href: "/#projects" },
-  { label: "Writing", href: "/blogs" },
-  { label: "Books", href: "/books" },
+  { label: "Writing", href: "/blogs", match: "/blogs" },
+  { label: "Books", href: "/books", match: "/books" },
 ];
 
-export function openCommandPalette() {
-  window.dispatchEvent(new CustomEvent("open-command-palette"));
-}
+/**
+ * The header controls: a filled surface, no border.
+ *
+ * The hover fill is `border-strong/30` rather than another surface token, because
+ * in light mode `--elevated`, `--secondary` and `--muted` are all the same value
+ * (38 20% 95.5%), so a token-to-token hover would be invisible there. An opacity
+ * wash off `--border-strong` lands about four points darker in light and three
+ * lighter in dark, so one value reads in both themes.
+ *
+ * `backdrop-blur-sm` went with the border: it existed to let the header's blur
+ * show through a translucent control, and an opaque fill has nothing to show.
+ */
+const control =
+  "flex h-8 items-center rounded-md bg-elevated text-muted-foreground transition-[color,background-color,transform] duration-fast ease-out hover:bg-border-strong/30 hover:text-foreground active:scale-[0.94]";
 
 export default function Navbar() {
   const { isDarkMode, toggleDarkMode } = useDarkMode();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/70 backdrop-blur-xl">
@@ -28,42 +47,47 @@ export default function Navbar() {
         </Link>
 
         <ul className="hidden items-center gap-6 md:flex">
-          {navLinks.map((l) => (
-            <li key={l.label}>
-              <Link
-                href={l.href}
-                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-              >
-                {l.label}
-              </Link>
-            </li>
-          ))}
+          {navLinks.map((l) => {
+            const current = l.match ? pathname.startsWith(l.match) : false;
+            return (
+              <li key={l.label}>
+                <Link
+                  href={l.href}
+                  aria-current={current ? "page" : undefined}
+                  /* The active mark is an absolutely positioned `after`, so it
+                     adds no height and cannot shift the row. Colour alone would
+                     not do: hover already goes to `text-foreground`, so an active
+                     link would be indistinguishable from a hovered one. */
+                  className={`relative text-sm transition-colors duration-fast ease-out ${
+                    current
+                      ? "text-foreground after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:bg-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {l.label}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
 
         <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={openCommandPalette}
-            aria-label="Open command menu"
-            className="flex h-8 items-center gap-1.5 rounded-lg border border-border-strong bg-background/80 px-2.5 font-mono text-xs leading-none text-muted-foreground backdrop-blur-sm transition-[color,background-color,transform] duration-150 ease-out hover:bg-background hover:text-foreground active:scale-[0.94]"
-          >
-            <span className="text-sm">⌘</span> K
-          </button>
-          <button
-            type="button"
             onClick={toggleDarkMode}
             aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
-            className="grid h-8 w-8 place-items-center rounded-lg border border-border-strong bg-background/80 text-muted-foreground backdrop-blur-sm transition-[color,background-color,transform] duration-150 ease-out hover:bg-background hover:text-foreground active:scale-[0.94]"
+            className={`${control} w-8 justify-center`}
           >
             {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
+
           <button
             type="button"
             onClick={() => setMobileOpen((o) => !o)}
             aria-label="Toggle menu"
             aria-expanded={mobileOpen}
             aria-controls="mobile-nav"
-            className="flex h-8 items-center rounded-lg border border-border-strong bg-background/80 px-2.5 text-sm leading-none text-muted-foreground backdrop-blur-sm transition-[color,background-color,transform] duration-150 ease-out hover:bg-background hover:text-foreground md:hidden active:scale-[0.94]"
+            className={`${control} px-2.5 text-sm leading-none md:hidden`}
           >
             Menu
           </button>
@@ -84,8 +108,11 @@ export default function Navbar() {
               <li key={l.label}>
                 <Link
                   href={l.href}
+                  aria-current={
+                    l.match && pathname.startsWith(l.match) ? "page" : undefined
+                  }
                   onClick={() => setMobileOpen(false)}
-                  className="block py-3 text-sm text-muted-foreground hover:text-foreground"
+                  className="block py-3 text-sm text-muted-foreground transition-colors duration-fast ease-out hover:text-foreground aria-[current=page]:text-foreground"
                 >
                   {l.label}
                 </Link>

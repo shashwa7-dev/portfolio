@@ -1,5 +1,6 @@
 import { organizations } from "@/lib/workData";
 import { clients } from "@/lib/clients";
+import { formatPeriod, formatTenure, isCurrent } from "@/lib/tenure";
 import { baseUrl } from "@/app/sitemap";
 import { markdownResponse } from "@/lib/markdownResponse";
 
@@ -20,7 +21,7 @@ function composeHomepageMarkdown(): string {
   const lines: string[] = [];
 
   // Header + bio
-  lines.push("# Shashwat Tripathi — Frontend Engineer");
+  lines.push("# Shashwat Tripathi, Frontend Engineer");
   lines.push("");
   lines.push(
     "> Frontend engineer building AI-first product surfaces. Currently consultant at ShopOS, an AI-native commerce platform, where I ship merchant-facing agent UIs, workflow authoring (Canvas Builder), and content-rich chat. Across 9+ production products with top AI and Web3 teams."
@@ -37,11 +38,13 @@ function composeHomepageMarkdown(): string {
   lines.push("");
 
   // Currently building
-  const current = organizations.find((o) => o.duration.includes("Present"));
+  const current = organizations.find((o) => isCurrent(o.period));
   if (current) {
     lines.push("## Currently building");
     lines.push("");
-    lines.push(`**${current.name}** — ${current.role} (${current.duration})`);
+    lines.push(
+      `**${current.name}**: ${current.role} (${formatPeriod(current.period)})`
+    );
     lines.push("");
     lines.push(current.description);
     lines.push("");
@@ -58,7 +61,9 @@ function composeHomepageMarkdown(): string {
   lines.push("");
   for (const org of organizations) {
     lines.push(`### ${org.name}`);
-    lines.push(`*${org.role}* · ${org.duration}`);
+    lines.push(
+      `*${org.role}* · ${formatPeriod(org.period)} · ${formatTenure(org.period)}`
+    );
     lines.push("");
     lines.push(org.description);
     lines.push("");
@@ -76,7 +81,7 @@ function composeHomepageMarkdown(): string {
   lines.push("## Worked with");
   lines.push("");
   for (const c of clients) {
-    lines.push(`- **${c.name}** — ${c.contribution}`);
+    lines.push(`- **${c.name}**: ${c.contribution}`);
   }
   lines.push("");
 

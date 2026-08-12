@@ -18,14 +18,20 @@ export default function ProjectMedia({
   return (
     <>
       <div className="group relative aspect-[16/8] overflow-hidden rounded-2xl bg-elevated">
-        <Image src={thumbnail} alt={title} fill priority className="object-cover" />
+        <Image
+          src={thumbnail}
+          alt={title}
+          fill
+          priority
+          className="object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
+        />
         {preview && (
           <button
             onClick={() => setOpen(true)}
             className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-[opacity,transform] duration-fast ease-out group-hover:opacity-100 active:scale-[0.97]"
             aria-label="Watch demo"
           >
-            <span className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-black">
+            <span className="flex items-center gap-2 rounded-md bg-white px-4 py-2 text-sm font-medium text-black">
               <Play className="h-4 w-4 fill-current" /> Watch demo
             </span>
           </button>

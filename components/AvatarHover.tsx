@@ -23,13 +23,33 @@ import { useState } from "react";
  * The static image stays in the DOM underneath rather than being replaced, so
  * there is no flash of empty space while the GIF decodes, and the crossfade has
  * something to fade from.
+ *
+ * The size is fixed at 64px and deliberately not driven by the copy beside it.
+ * Stretching it to the identity block's height was tried and abandoned twice
+ * over: it drew far more attention than a supporting portrait should, and
+ * `aspect-square` with `self-stretch` does not even do what it looks like, since
+ * flex resolves an item's main size before its stretched cross size, so the
+ * width came from content rather than from the height. The identity block is
+ * tuned to 64px instead.
+ *
+ * Both layers are greyscale at rest and return to colour together on hover, so
+ * this matches every other image surface in the app. The GIF layer needs it too,
+ * not just the static one: at rest it is transparent, but it becomes visible in
+ * the same moment the hover fires, and if only the static layer desaturated the
+ * reveal would flash from grey to colour mid-crossfade.
  */
 export default function AvatarHover() {
   const [armed, setArmed] = useState(false);
 
   return (
     <div
-      className="group relative h-16 w-16 overflow-hidden rounded-2xl ring-1 ring-border"
+      /* No ring here. The visible edge is a `border` on the wrapper in About.tsx,
+         which owns both this and the availability band and so traces the whole
+         object. Two earlier attempts put it here and both were wrong: a plain
+         `ring` is a box-shadow, so the wrapper's `overflow-hidden` clipped it away
+         entirely, and `ring-inset` then drew a pixel inside the artwork rather
+         than around it. */
+      className="group relative h-16 w-16 overflow-hidden rounded-2xl"
       onPointerEnter={(e) => {
         if (e.pointerType === "mouse") setArmed(true);
       }}
@@ -38,7 +58,7 @@ export default function AvatarHover() {
       <img
         src="/apple-touch-icon.png"
         alt="Shashwat Tripathi"
-        className="h-full w-full object-cover"
+        className="h-full w-full object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
       />
       {armed && (
         // eslint-disable-next-line @next/next/no-img-element
@@ -46,7 +66,7 @@ export default function AvatarHover() {
           src="/images/avatar-hover.gif"
           alt=""
           aria-hidden
-          className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-base ease-out group-hover:opacity-100 motion-reduce:hidden"
+          className="absolute inset-0 h-full w-full object-cover grayscale opacity-0 transition-[opacity,filter] duration-base ease-out group-hover:grayscale-0 group-hover:opacity-100 motion-reduce:hidden"
         />
       )}
     </div>

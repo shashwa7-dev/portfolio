@@ -3,10 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
-import { X } from "lucide-react";
+import { X, Command } from "lucide-react";
 import { backdropFadeVariants } from "@/lib/motionVariants";
 import { useDarkMode } from "@/app/hooks/useDarkMode";
-import { goToShortcuts, shortcutGroups } from "@/lib/shortcutsData";
+import { goToShortcuts, shortcutGroups, MOD_KEY } from "@/lib/shortcutsData";
 
 function isTypingTarget(el: EventTarget | null): boolean {
   if (!(el instanceof HTMLElement)) return false;
@@ -18,6 +18,17 @@ export default function KeyboardShortcuts() {
   const router = useRouter();
   const { toggleDarkMode } = useDarkMode();
   const [helpOpen, setHelpOpen] = useState(false);
+
+  /**
+   * Resolves MOD_KEY for display. Detected after mount, because `navigator` does
+   * not exist during server render. The default matches what the palette's own
+   * listener already accepts on either platform, so a visitor never sees a key
+   * that does not work, only the less familiar name for a moment.
+   */
+  const [isApple, setIsApple] = useState(true);
+  useEffect(() => {
+    setIsApple(/Mac|iPhone|iPad|iPod/.test(navigator.userAgent));
+  }, []);
 
   // `g`-prefix state lives in refs so the listener stays stable.
   const gPending = useRef(false);
@@ -126,7 +137,16 @@ export default function KeyboardShortcuts() {
                               key={i}
                               className="grid h-6 min-w-[24px] place-items-center rounded-md border border-border-strong bg-card px-1.5 font-mono text-xs text-muted-foreground"
                             >
-                              {k}
+                              {/* The command key is lucide's icon rather than the
+                                  ⌘ character, so it shares a stroke weight with
+                                  the rest of the UI instead of rendering at
+                                  whatever the first font with that codepoint
+                                  gives it. Ctrl has no glyph, so it stays text. */}
+                              {k === MOD_KEY ? (
+                                isApple ? <Command className="h-3 w-3" /> : "Ctrl"
+                              ) : (
+                                k
+                              )}
                             </kbd>
                           ))}
                         </span>

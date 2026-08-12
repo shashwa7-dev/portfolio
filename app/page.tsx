@@ -6,10 +6,19 @@ import Activity from "@/components/Activity";
 import Faq from "@/components/Faq";
 import Socials from "@/components/Socials";
 import LaunchNudge from "@/components/LaunchNudge";
+import { profilePageLd } from "@/lib/seo";
 
 export default function Home() {
   return (
     <main>
+      {/* The homepage is the entity page for this portfolio. `mainEntity`
+          references the Person node emitted from the root layout by @id, so both
+          resolve to one entity rather than two. */}
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(profilePageLd()) }}
+      />
       <About />
       <ExperienceWork />
       <Projects />

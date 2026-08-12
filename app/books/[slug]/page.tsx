@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
 import { Link as LinkCTA } from "@/components/common/Link";
 import { baseUrl } from "@/app/sitemap";
-import { ogUrl } from "@/lib/seo";
+import { ogUrl, breadcrumbLd } from "@/lib/seo";
 import Container from "@/components/layout/Container";
 
 type Props = {
@@ -49,15 +49,31 @@ export default function BookPage({ params }: Props) {
 
   return (
     <main className="min-h-screen py-8 md:py-12">
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            breadcrumbLd([
+              { name: "Home", path: "" },
+              { name: "Books", path: "books" },
+              { name: book.name, path: `books/${book.slug}` },
+            ])
+          ),
+        }}
+      />
       <Container width="reading" className="space-y-10">
         {/* Header */}
         <header className="flex flex-col gap-6 md:flex-row md:items-start">
-          <div className="relative w-36 shrink-0 overflow-hidden rounded-xl border border-border bg-secondary aspect-[2/3] md:w-40">
+          {/* `group` exists only so the cover can return to colour on hover.
+              This is a detail page with no card to hover, and a permanently
+              desaturated cover would hide the one thing the page is about. */}
+          <div className="group relative w-36 shrink-0 overflow-hidden rounded-lg border border-border bg-secondary aspect-[2/3] md:w-40">
             <Image
               src={book.cover}
               alt={book.name}
               fill
-              className="object-cover"
+              className="object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
               priority
               sizes="(max-width: 768px) 144px, 160px"
             />
