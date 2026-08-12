@@ -35,9 +35,9 @@ const stats: Stat[] = [
 
 export default function About() {
   return (
-    <header className="pt-10 pb-6 md:pt-14">
+    <header className="pt-12 pb-10 md:pt-16">
       <Container width="reading">
-        <div className="space-y-4">
+        <div className="space-y-5 sm:space-y-7">
           {/* identity block */}
           <div className="flex items-center gap-3.5">
             <div className="relative shrink-0">
@@ -54,7 +54,7 @@ export default function About() {
               <div className="text-lg font-semibold leading-tight text-foreground">
                 Shashwat Tripathi
               </div>
-              <div className="mt-0.5">
+              <div className="mt-1">
                 <Label>Frontend Engineer · AI · Web3</Label>
               </div>
               {/* Availability. Same treatment as the "Currently building" badge on
@@ -67,7 +67,7 @@ export default function About() {
                   intrusion. The dot alone still carries the live-status meaning,
                   which is the part the colour actually earns; the label sits on
                   neutral tokens like every other pill in the app. */}
-              <div className="mt-1 inline-flex items-center gap-1.5 rounded-full border border-border-strong px-2 py-0.5 font-mono text-2xs font-medium uppercase tracking-label text-muted-foreground">
+              <div className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-border-strong px-2 py-0.5 font-mono text-2xs font-medium uppercase tracking-label text-muted-foreground">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Open to work
               </div>
             </div>
