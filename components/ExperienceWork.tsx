@@ -57,9 +57,21 @@ export default function ExperienceWork() {
                 </Link>
               </div>
 
-              {/* The rail. A pseudo-element rather than a border, because it has
-                  to span whatever height the content turns out to be. */}
-              <div className="relative pl-9 pt-2 before:absolute before:left-3 before:top-0 before:h-full before:w-px before:bg-border">
+              {/* The rail, stopping exactly 16px short of the bottom so the
+                  elbow below can continue it. `before:bottom-4` matches the
+                  elbow's `h-4`, and both sit at `left-3`, so the vertical line
+                  and the elbow's left border are colinear and contiguous with no
+                  overlap.
+
+                  An earlier version ran the rail `h-full` and masked its tail
+                  with a `bg-background` box, following the reference
+                  implementation. That was wrong twice over: the curve was
+                  translated a pixel left of the rail, and the mask began below
+                  the curve's top, so the two strokes were briefly visible side
+                  by side. Shortening the rail needs no mask, so it also cannot
+                  drift out of alignment or depend on a box matching the page
+                  background in both themes. */}
+              <div className="relative pl-9 pt-2 before:absolute before:left-3 before:top-0 before:bottom-4 before:w-px before:bg-border">
                 {/* Role metadata as a real description list, so each value says
                     what it is to a screen reader and to the markdown
                     renditions. */}
@@ -188,18 +200,15 @@ export default function ExperienceWork() {
                   </div>
                 )}
 
-                {/* The rail's bottom terminator. You cannot shorten a
-                    full-height pseudo-element, so the straight tail is masked
-                    by a box painted in the page background and the curve is
-                    drawn inside it. This depends on the mask matching the page
-                    background exactly, which is why it is `bg-background` and
-                    not a card or elevated token. */}
+                {/* The rail's bottom terminator. Its left border picks up
+                    exactly where the rail stops, so the two read as one stroke
+                    turning a corner. Nothing is masked and nothing is
+                    translated: `left-3` and `h-4` are the only numbers, and they
+                    are the same two the rail above uses. */}
                 <span
                   aria-hidden
-                  className="pointer-events-none absolute bottom-0 left-3 flex h-4 w-4 bg-background"
-                >
-                  <span className="h-full w-full -translate-x-px -translate-y-2 rounded-bl-md border-b border-l border-border" />
-                </span>
+                  className="pointer-events-none absolute bottom-0 left-3 h-4 w-4 rounded-bl-md border-b border-l border-border"
+                />
               </div>
             </div>
           );
