@@ -325,7 +325,7 @@ const S7Bot = () => {
             whileHover={hoverLiftRotate}
             whileTap={tapPress}
             onClick={() => setIsOpen(true)}
-            className="fixed bottom-4 right-4 -md:right-2.5 h-12 w-12 rounded-2xl overflow-hidden ring-1 ring-border-strong shadow-lg bg-card"
+            className="group fixed bottom-4 right-4 -md:right-2.5 h-12 w-12 rounded-2xl overflow-hidden ring-1 ring-border-strong shadow-lg bg-card"
           >
             {/* Single image, no layered fallback. Now a static JPEG rather than
                 an animated GIF, which also retires the reduced-motion caveat the
@@ -346,7 +346,7 @@ const S7Bot = () => {
             <img
               src="/images/agent.jpg"
               alt="Truffy assistant"
-              className="w-full h-full object-cover object-center"
+              className="w-full h-full object-cover object-center grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
             />
           </motion.button>
         )}
@@ -366,11 +366,11 @@ const S7Bot = () => {
             {/* Header */}
             <div className="flex items-center justify-between border-b border-border bg-card px-4 py-3">
               <div className="flex items-center gap-2">
-                <div className="relative h-9 w-9 overflow-hidden rounded-xl flex-shrink-0">
+                <div className="group relative h-9 w-9 overflow-hidden rounded-xl flex-shrink-0">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src="/images/agent.jpg"
-                    className="w-full h-full object-cover object-center"
+                    className="w-full h-full object-cover object-center grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
                     alt="Truffy assistant"
                   />
                   <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-500 ring-2 ring-card" />

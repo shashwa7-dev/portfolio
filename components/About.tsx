@@ -115,7 +115,7 @@ export default function About() {
                               alt={org.name}
                               fill
                               sizes="(max-width: 640px) 16px, 20px"
-                              className="object-cover grayscale opacity-80"
+                              className="object-cover grayscale opacity-80 transition-[filter] duration-base ease-out hover:grayscale-0"
                             />
                           </span>
                         </TooltipTrigger>

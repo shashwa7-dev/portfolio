@@ -23,6 +23,12 @@ import { useState } from "react";
  * The static image stays in the DOM underneath rather than being replaced, so
  * there is no flash of empty space while the GIF decodes, and the crossfade has
  * something to fade from.
+ *
+ * Both layers are greyscale at rest and return to colour together on hover, so
+ * this matches every other image surface in the app. The GIF layer needs it too,
+ * not just the static one: at rest it is transparent, but it becomes visible in
+ * the same moment the hover fires, and if only the static layer desaturated the
+ * reveal would flash from grey to colour mid-crossfade.
  */
 export default function AvatarHover() {
   const [armed, setArmed] = useState(false);
@@ -38,7 +44,7 @@ export default function AvatarHover() {
       <img
         src="/apple-touch-icon.png"
         alt="Shashwat Tripathi"
-        className="h-full w-full object-cover"
+        className="h-full w-full object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
       />
       {armed && (
         // eslint-disable-next-line @next/next/no-img-element
@@ -46,7 +52,7 @@ export default function AvatarHover() {
           src="/images/avatar-hover.gif"
           alt=""
           aria-hidden
-          className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-base ease-out group-hover:opacity-100 motion-reduce:hidden"
+          className="absolute inset-0 h-full w-full object-cover grayscale opacity-0 transition-[opacity,filter] duration-base ease-out group-hover:grayscale-0 group-hover:opacity-100 motion-reduce:hidden"
         />
       )}
     </div>

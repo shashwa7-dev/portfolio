@@ -55,8 +55,22 @@ function CustomLink(props: CustomLinkProps) {
 
 type RoundedImageProps = ImageProps;
 
+/**
+ * Images inside a post. Greyscale at rest and colour on hover, matching every
+ * other image surface in the app.
+ *
+ * `alt` is spread from the MDX author's own attributes rather than defaulted
+ * here, which is why the eslint rule flags this line: an image in a post is
+ * content, and inventing alt text for it would be worse than leaving the
+ * author responsible for it.
+ */
 function RoundedImage(props: RoundedImageProps) {
-  return <Image className="rounded-lg" {...props} />;
+  return (
+    <Image
+      className="rounded-lg grayscale transition-[filter] duration-base ease-out hover:grayscale-0"
+      {...props}
+    />
+  );
 }
 
 interface CodeProps extends React.HTMLAttributes<HTMLElement> {
