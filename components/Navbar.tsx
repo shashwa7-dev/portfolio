@@ -120,9 +120,9 @@ export default function Navbar() {
             type="button"
             onClick={openCommandPalette}
             aria-label="Open command menu"
-            className="flex items-center gap-1.5 rounded-lg border border-border-strong bg-background/80 px-2.5 py-1.5 font-mono text-xs text-muted-foreground backdrop-blur-sm transition-[color,background-color,transform] duration-150 ease-out hover:bg-background hover:text-foreground active:scale-[0.94]"
+            className="flex h-8 items-center gap-1.5 rounded-lg border border-border-strong bg-background/80 px-2.5 font-mono text-xs leading-none text-muted-foreground backdrop-blur-sm transition-[color,background-color,transform] duration-150 ease-out hover:bg-background hover:text-foreground active:scale-[0.94]"
           >
-            <span className="text-sm leading-none">⌘</span> K
+            <span className="text-sm">⌘</span> K
           </button>
           <button
             type="button"
@@ -138,7 +138,7 @@ export default function Navbar() {
             aria-label="Toggle menu"
             aria-expanded={mobileOpen}
             aria-controls="mobile-nav"
-            className="rounded-lg border border-border-strong bg-background/80 px-2.5 py-1.5 text-sm text-muted-foreground backdrop-blur-sm transition-[color,background-color,transform] duration-150 ease-out hover:bg-background hover:text-foreground md:hidden active:scale-[0.94]"
+            className="flex h-8 items-center rounded-lg border border-border-strong bg-background/80 px-2.5 text-sm leading-none text-muted-foreground backdrop-blur-sm transition-[color,background-color,transform] duration-150 ease-out hover:bg-background hover:text-foreground md:hidden active:scale-[0.94]"
           >
             Menu
           </button>
