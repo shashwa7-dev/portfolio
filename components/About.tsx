@@ -35,9 +35,9 @@ const stats: Stat[] = [
 
 export default function About() {
   return (
-    <header className="pt-14 pb-6 md:pt-20">
+    <header className="pt-10 pb-6 md:pt-14">
       <Container width="reading">
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* identity block */}
           <div className="flex items-center gap-3.5">
             <div className="relative shrink-0">
@@ -68,7 +68,7 @@ export default function About() {
                   on the active Experience role, so one signal reads one way
                   everywhere. emerald-700 / emerald-400 is the pair that clears
                   AA on both backgrounds; emerald-500 alone is 2.47:1 in light. */}
-              <div className="mt-1.5 inline-flex items-center gap-1.5 rounded-full border border-emerald-500/60 px-2 py-0.5 font-mono text-2xs font-medium uppercase tracking-label text-emerald-700 dark:text-emerald-400">
+              <div className="mt-1 inline-flex items-center gap-1.5 rounded-full border border-emerald-500/60 px-2 py-0.5 font-mono text-2xs font-medium uppercase tracking-label text-emerald-700 dark:text-emerald-400">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Open to work
               </div>
             </div>
