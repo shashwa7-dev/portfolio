@@ -105,7 +105,7 @@ export default function About() {
                 <Tooltip key={c.name}>
                   <TooltipTrigger asChild>
                     <span
-                      className={`group relative h-6 w-6 overflow-hidden rounded-full bg-secondary ring-2 ring-background transition-[transform,box-shadow,outline-color] duration-200 ease-[--ease-out] outline outline-1 outline-border hover:z-10 hover:-translate-y-1 hover:scale-110 hover:outline-border-strong hover:shadow-md sm:h-7 sm:w-7 ${
+                      className={`group relative h-6 w-6 overflow-hidden rounded-full bg-secondary ring-2 ring-background transition-[transform,box-shadow,outline-color] duration-200 ease-out outline outline-1 outline-border hover:z-10 hover:-translate-y-1 hover:scale-110 hover:outline-border-strong hover:shadow-md sm:h-7 sm:w-7 ${
                         i > 0 ? "-ml-2 sm:-ml-2.5" : ""
                       }`}
                     >
@@ -166,13 +166,13 @@ export default function About() {
           <div className="flex flex-wrap items-center gap-3">
             <a
               href="/#experience"
-              className="inline-flex items-center gap-2 rounded-[9px] bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground transition-[color,background-color,transform] duration-150 ease-[--ease-out] hover:bg-accent-hover active:scale-[0.97]"
+              className="inline-flex items-center gap-2 rounded-[9px] bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground transition-[color,background-color,transform] duration-150 ease-out hover:bg-accent-hover active:scale-[0.97]"
             >
               View selected work <ArrowRight className="h-4 w-4" />
             </a>
             <a
               href="mailto:contact@shashwa7.in"
-              className="inline-flex items-center gap-2 rounded-[9px] border border-border-strong px-5 py-2.5 text-sm font-semibold text-foreground transition-[color,background-color,transform] duration-150 ease-[--ease-out] hover:bg-elevated active:scale-[0.97]"
+              className="inline-flex items-center gap-2 rounded-[9px] border border-border-strong px-5 py-2.5 text-sm font-semibold text-foreground transition-[color,background-color,transform] duration-150 ease-out hover:bg-elevated active:scale-[0.97]"
             >
               <Mail className="h-4 w-4" /> Get in touch
             </a>

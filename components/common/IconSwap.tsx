@@ -21,7 +21,7 @@ export default function IconSwap({
 }) {
   const base =
     "col-start-1 row-start-1 inline-flex items-center gap-1 " +
-    "transition-[opacity,transform] duration-[var(--duration-fast)] ease-[--ease-out]";
+    "transition-[opacity,transform] duration-fast ease-out";
 
   return (
     <span className={`inline-grid place-items-center ${className}`}>

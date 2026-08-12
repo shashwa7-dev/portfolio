@@ -45,7 +45,7 @@ export default function Navbar() {
             type="button"
             onClick={openCommandPalette}
             aria-label="Open command menu"
-            className="flex items-center gap-1.5 rounded-lg border border-border-strong px-2.5 py-1.5 font-mono text-xs text-muted-foreground transition-[color,transform] duration-150 ease-[--ease-out] hover:text-foreground active:scale-[0.94]"
+            className="flex items-center gap-1.5 rounded-lg border border-border-strong px-2.5 py-1.5 font-mono text-xs text-muted-foreground transition-[color,transform] duration-150 ease-out hover:text-foreground active:scale-[0.94]"
           >
             <span className="text-sm leading-none">⌘</span> K
           </button>
@@ -53,7 +53,7 @@ export default function Navbar() {
             type="button"
             onClick={toggleDarkMode}
             aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
-            className="grid h-8 w-8 place-items-center rounded-lg border border-border-strong text-muted-foreground transition-[color,transform] duration-150 ease-[--ease-out] hover:text-foreground active:scale-[0.94]"
+            className="grid h-8 w-8 place-items-center rounded-lg border border-border-strong text-muted-foreground transition-[color,transform] duration-150 ease-out hover:text-foreground active:scale-[0.94]"
           >
             {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
@@ -62,7 +62,7 @@ export default function Navbar() {
             onClick={() => setMobileOpen((o) => !o)}
             aria-label="Toggle menu"
             aria-expanded={mobileOpen}
-            className="text-sm text-muted-foreground transition-transform duration-150 ease-[--ease-out] md:hidden active:scale-[0.94]"
+            className="text-sm text-muted-foreground transition-transform duration-150 ease-out md:hidden active:scale-[0.94]"
           >
             Menu
           </button>
@@ -70,7 +70,7 @@ export default function Navbar() {
       </nav>
 
       <div
-        className="grid transition-[grid-template-rows] duration-[var(--duration-base)] ease-[--ease-out] md:hidden"
+        className="grid transition-[grid-template-rows] duration-base ease-out md:hidden"
         style={{ gridTemplateRows: mobileOpen ? "1fr" : "0fr" }}
       >
         <div className="overflow-hidden">

@@ -373,7 +373,7 @@ const S7Bot = () => {
               </div>
               <button
                 onClick={handleClose}
-                className="rounded-lg p-1.5 hover:bg-elevated text-muted-foreground transition-[color,background-color,transform] duration-150 ease-[--ease-out] active:scale-[0.94]"
+                className="rounded-lg p-1.5 hover:bg-elevated text-muted-foreground transition-[color,background-color,transform] duration-150 ease-out active:scale-[0.94]"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -503,7 +503,7 @@ const S7Bot = () => {
                     initial="hidden"
                     animate="visible"
                     exit="exit"
-                    className="absolute bottom-2 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-xs text-muted-foreground shadow-md transition-[color,transform] duration-150 ease-[--ease-out] hover:text-foreground active:scale-[0.94]"
+                    className="absolute bottom-2 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-xs text-muted-foreground shadow-md transition-[color,transform] duration-150 ease-out hover:text-foreground active:scale-[0.94]"
                   >
                     <ArrowDown className="h-3 w-3" /> New messages
                   </motion.button>
@@ -527,7 +527,7 @@ const S7Bot = () => {
                 <button
                   type="submit"
                   disabled={isStreaming || !message.trim()}
-                  className="flex items-center justify-center h-9 w-9 rounded-xl bg-accent text-accent-foreground hover:opacity-90 transition-[opacity,transform] duration-150 ease-[--ease-out] disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0 active:scale-[0.94]"
+                  className="flex items-center justify-center h-9 w-9 rounded-xl bg-accent text-accent-foreground hover:opacity-90 transition-[opacity,transform] duration-150 ease-out disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0 active:scale-[0.94]"
                 >
                   <Send className="h-4 w-4" />
                 </button>

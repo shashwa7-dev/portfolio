@@ -95,6 +95,18 @@ const config: Config = {
         tight:   '-0.02em',
         tighter: '-0.03em',
       },
+      transitionTimingFunction: {
+        // Overrides Tailwind's stock `ease-out` on purpose: this curve is
+        // the single sanctioned UI easing (lib/motionVariants.ts `ease.out`),
+        // so `ease-out` should mean OUR curve everywhere, not the browser default.
+        out: "var(--ease-out)",
+      },
+      transitionDuration: {
+        fast: "var(--duration-fast)",
+        base: "var(--duration-base)",
+        med:  "var(--duration-med)",
+        slow: "var(--duration-slow)",
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
@@ -153,7 +165,15 @@ const config: Config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  // tailwindcss-animate re-registers the `duration` and `ease` utilities via
+  // matchUtilities, mapping them to animationDuration/animationTimingFunction
+  // instead of Tailwind's core transitionDuration/transitionTimingFunction.
+  // That silently zeroed out every `ease-[--ease-out]` and
+  // `duration-[var(--duration-*)]` class in the app (see final-fix-report.md,
+  // Tier 1). None of its animate-in/out utilities are used here: the four
+  // `animate-*` classes in play (blink, loading-bar, tooltip-in/out,
+  // accordion-down/up) all come from this file's own theme.extend.animation.
+  plugins: [],
 };
 
 export default config;
