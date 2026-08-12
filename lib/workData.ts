@@ -204,7 +204,6 @@ export const organizations: TOrganization[] = [
         title: "Polygon Copilot",
         shortTitle: "Polygon Copilot",
         featured: true,
-        metric: "Featured by Polygon",
         description:
           "AI chatbot for Web3 developers using OpenAI GPT models, delivering blockchain insights within the zkEVM ecosystem.",
         highlights: [
