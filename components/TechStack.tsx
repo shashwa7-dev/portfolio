@@ -8,13 +8,19 @@ type Category = {
 };
 
 /**
- * Four categories, down from seven. Every tool is still here; only the taxonomy
- * changed.
+ * Four categories and forty-one tools, down from seven categories and
+ * forty-four.
  *
  * Seven headings over forty-four tools read as an inventory rather than a claim,
  * and three of them were thin enough to be rounding errors: "AI Stack" held three
  * items, "Protocols / APIs" four, "Tools" four. A heading that labels three things
  * costs a row to say almost nothing.
+ *
+ * Three entries were also dropped, and for a reason that is about positioning
+ * rather than space: `html` and `css` are table stakes for a senior frontend
+ * engineer, so listing them beside `typescript` and `wagmi` invites the reader to
+ * calibrate downwards. `notion` is not a technical tool. Everything remaining is
+ * something a reader could reasonably ask a follow-up question about.
  *
  * The merges are meant rather than convenient. Protocols moved in with backend
  * because they are how you talk to one. Testing, analytics and editors joined
@@ -33,8 +39,6 @@ const categories: Category[] = [
   {
     label: "Frontend",
     items: [
-      "html",
-      "css",
       "javascript",
       "typescript",
       "react",
@@ -84,7 +88,6 @@ const categories: Category[] = [
       "vscode",
       "figma",
       "postman",
-      "notion",
     ],
   },
 ];

@@ -72,14 +72,17 @@ and blockchain integrations.
 
 ## Tech stack
 
-- **Frontend:** React, Next.js, TypeScript, Tailwind, shadcn, Chakra UI, Framer Motion, GSAP, React Query, Zustand, tiptap, wagmi
-- **Backend & data:** Node.js, Bun, PostgreSQL, MongoDB, Firebase, Supabase
-- **Web3:** Solana, wagmi, Web3.js
-- **Testing & tracking:** Playwright, Vitest, PostHog, Sentry, Google Analytics, Vercel Analytics
+Grouped the same four ways the site's Toolkit section groups them, so an answer
+here matches what a visitor is looking at.
+
+- **Frontend:** JavaScript, TypeScript, React, Next.js, Tailwind, shadcn, Chakra UI, GSAP, Framer Motion, React Query, Zustand, tiptap, wagmi, Solana, Web3.js
 - **AI:** OpenAI, Google Gemini, Claude (Anthropic)
-- **Protocols / APIs:** REST, GraphQL, WebSocket, WebRTC
-- **DevOps:** Git, GitHub, Docker, AWS, Cloudflare, Vercel
-- **Tools:** VS Code, Figma, Notion, Postman
+- **Backend & data:** Node.js, Bun, PostgreSQL, MongoDB, Firebase, Supabase, REST, GraphQL, WebSocket, WebRTC
+- **Infra & tooling:** Git, GitHub, Docker, AWS, Cloudflare, Vercel, Playwright, Vitest, Sentry, PostHog, Google Analytics, Vercel Analytics, VS Code, Figma, Postman
+
+HTML and CSS are assumed rather than listed: they are table stakes at this level,
+and naming them alongside TypeScript invites a reader to calibrate downwards. Say
+so plainly if someone asks directly.
 
 ## Worked with (brands he's shipped for)
 
