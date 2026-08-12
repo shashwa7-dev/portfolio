@@ -114,11 +114,27 @@ export default function CommandPalette() {
                           ref={idx === active ? activeRef : undefined}
                           onMouseEnter={() => setActive(idx)}
                           onClick={() => run(c)}
-                          className={`flex w-full items-center rounded-[9px] px-3 py-2 text-left text-sm ${
+                          className={`flex w-full items-center gap-3 rounded-[9px] px-3 py-2 text-left text-sm ${
                             idx === active ? "bg-accent text-accent-foreground" : "text-foreground"
                           }`}
                         >
-                          {c.label}
+                          <span className="min-w-0 flex-1 truncate">{c.label}</span>
+                          {c.keys && (
+                            <span className="flex shrink-0 items-center gap-1">
+                              {c.keys.map((k, i) => (
+                                <kbd
+                                  key={`${c.id}-${i}`}
+                                  className={`grid h-[18px] min-w-[18px] place-items-center rounded border px-1 font-mono text-2xs ${
+                                    idx === active
+                                      ? "border-accent-foreground/30 text-accent-foreground/80"
+                                      : "border-border-strong text-subtle"
+                                  }`}
+                                >
+                                  {k}
+                                </kbd>
+                              ))}
+                            </span>
+                          )}
                         </button>
                       );
                     })}
