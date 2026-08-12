@@ -907,20 +907,46 @@ git commit -m "refactor(motion): one curve, sub-300ms entrances, subtler feedbac
 
 Findings 6, 7, 8, 9 and 5 from spec section 5, plus two items surfaced by Task 8's review (Steps 5 and 6).
 
-- [ ] **Step 1: Move the tooltip from keyframes to transitions**
+- [ ] **Step 1: Retokenize the tooltip animation, keeping it animation-driven**
 
-In `components/ui/tooltip.tsx`, replace the `animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out ...` class soup. Keyframes restart from zero, and the Clients row has 7+ adjacent triggers, so sweeping across it is the rapid-trigger case transitions handle better. Keep the existing origin-aware class, which is already correct.
+**Read this whole step before editing. An earlier draft of this plan got it wrong.**
+
+The goal is to replace `tailwindcss-animate`'s opaque `animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out` soup with something driven by this repo's own motion tokens, while keeping the existing origin-aware class, which is already correct.
+
+**Do NOT convert it to a CSS `transition`.** An earlier draft prescribed exactly that, reasoning that keyframes restart from zero and the Clients row's 7+ adjacent triggers are a rapid-trigger case. That reasoning was wrong on both counts:
+
+1. **Radix `Presence` cannot see CSS transitions.** Its `usePresence` detects exit completion only via `getComputedStyle(node).animationName` plus `animationstart` / `animationend` / `animationcancel` listeners. There is no `transitionend` handling. With no `animation` property on the element, `animationName` is `"none"`, so `Presence` unmounts the node in a layout effect the instant `open` flips false, before the closed-state styles can paint. The tooltip vanishes with no fade. The enter direction fails too: a freshly-inserted node has no prior painted frame for a transition to interpolate from, so it pops in.
+2. **The interruptibility argument does not apply here.** Emil's "transitions, not keyframes" rule targets elements that get *re-targeted* mid-animation, like toasts stacking. Radix mounts and unmounts a separate tooltip per trigger; it never re-targets one element. Restart-from-zero is not a real failure mode for this component.
+
+The correct fix keeps it animation-driven, so `Presence` can time the unmount, but binds the keyframes to our tokens. Add to `tailwind.config.ts` under `theme.extend`, keeping the existing entries:
+
+```ts
+keyframes: {
+  "tooltip-in":  { from: { opacity: "0", transform: "scale(0.96)" }, to: { opacity: "1", transform: "scale(1)" } },
+  "tooltip-out": { from: { opacity: "1", transform: "scale(1)" },    to: { opacity: "0", transform: "scale(0.96)" } },
+},
+animation: {
+  "tooltip-in":  "tooltip-in var(--duration-fast) var(--ease-out)",
+  "tooltip-out": "tooltip-out var(--duration-fast) var(--ease-out)",
+},
+```
+
+Then in `components/ui/tooltip.tsx`:
 
 ```tsx
 className={cn(
   "z-50 overflow-hidden rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground",
   "origin-[--radix-tooltip-content-transform-origin]",
-  "transition-[opacity,transform] duration-[var(--duration-fast)] ease-[--ease-out]",
-  "data-[state=delayed-open]:opacity-100 data-[state=delayed-open]:scale-100",
-  "data-[state=closed]:opacity-0 data-[state=closed]:scale-95",
+  "data-[state=delayed-open]:animate-tooltip-in",
+  "data-[state=instant-open]:animate-tooltip-in",
+  "data-[state=closed]:animate-tooltip-out",
   className
 )}
 ```
+
+Three things this gets right that the transition version did not: `Presence` sees a real `animationName`, so exit timing works; the duration and easing come from tokens rather than being baked into a plugin's utilities; and `data-[state=instant-open]` is handled explicitly, which matters because `skipDelayDuration={0}` in Step 2 makes that state reachable whenever the pointer moves between adjacent triggers.
+
+Gate check `C06` stays green: it forbids the `tailwindcss-animate` utility names (`animate-in`, `animate-out`, `fade-in-0`, `zoom-in-95`), not keyframes as a technique. `scale(0.96)` respects the never-`scale(0)` rule.
 
 - [ ] **Step 2: Consolidate to one TooltipProvider with a delay skip**
 
