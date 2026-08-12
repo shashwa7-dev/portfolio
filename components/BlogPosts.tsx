@@ -22,7 +22,11 @@ export function BlogPosts() {
   );
 
   return (
-    <ul className="divide-y divide-border border-y border-border">
+    // `divide-y` only, no `border-y`. Rules framing the list top and bottom are
+    // pure decoration at one post, since there is nothing between to separate.
+    // `divide-y` draws between children, so it renders nothing today and starts
+    // grouping on its own once there is a second post.
+    <ul className="divide-y divide-border">
       {posts.map((post) => (
         <li key={post.slug}>
           <Link
