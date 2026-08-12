@@ -49,6 +49,7 @@ Concrete triggers that REQUIRE a memory-file update:
 
 - **No em-dashes** in any user-facing copy. Use periods, colons, parentheses, or rephrase. (This applies to UI strings, blog content, and `data/agent-memory.md` itself.)
 - **All Framer Motion variants and tokens** live in `lib/motionVariants.ts`, mirrored as CSS custom properties in `app/globals.css`. Never paste literal easings like `[0.23, 1, 0.32, 1]` or duration numbers like `0.4` into a component: import the named token instead.
+- Motion opportunities were audited against `find-animation-opportunities`. These were rejected on the frequency gate and must not be re-added: command palette and shortcuts-overlay open/close, nav link underline slides, theme-toggle colour crossfade, homepage section scroll reveals, stat bento count-up, Experience list stagger.
 - **All Marker highlight helpers** go through `lib/markerHighlight.ts` (`withMarker`, `fullMarker`).
 - **All markdown-emitter routes** (`app/*/markdown/route.ts`) use `lib/markdownResponse.ts` for the response factory + frontmatter helpers.
 - **Page padding** is standardized at `py-8 md:py-12` on the `<main>` of every secondary route. Match this when adding a new top-level route.
