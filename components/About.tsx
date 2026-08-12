@@ -6,7 +6,6 @@ import Label from "@/components/layout/Label";
 import Bento from "@/components/layout/Bento";
 import Marker from "@/components/common/Marker";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
-import { clients } from "@/lib/clients";
 
 type Stat = {
   n: string;
@@ -86,38 +85,6 @@ export default function About() {
             </a>
             .
           </p>
-
-          {/* worked with — brand logo avatars (aligned row) */}
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-            <span className="text-sm text-muted-foreground">
-              Worked with{" "}
-              <span className="font-semibold text-foreground">
-                {clients.length}+ brands
-              </span>
-            </span>
-            <div className="flex items-center">
-              {clients.map((c, i) => (
-                <Tooltip key={c.name}>
-                  <TooltipTrigger asChild>
-                    <span
-                      className={`group relative h-6 w-6 overflow-hidden rounded-full bg-secondary ring-2 ring-background transition-[transform,box-shadow,outline-color] duration-200 ease-out outline outline-1 outline-border hover:z-10 hover:-translate-y-1 hover:scale-110 hover:outline-border-strong hover:shadow-md sm:h-7 sm:w-7 ${
-                        i > 0 ? "-ml-2 sm:-ml-2.5" : ""
-                      }`}
-                    >
-                      <Image
-                        src={c.img}
-                        alt={c.name}
-                        fill
-                        sizes="(max-width: 640px) 28px, 32px"
-                        className="object-cover transition-[filter,opacity,transform] duration-300 group-hover:scale-105 group-hover:grayscale-0 group-hover:opacity-100"
-                      />
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent>{c.name}</TooltipContent>
-                </Tooltip>
-              ))}
-            </div>
-          </div>
 
           {/* stats — overlapping brand avatars float top-right (always greyscale),
               smaller on mobile, tooltips name them */}
