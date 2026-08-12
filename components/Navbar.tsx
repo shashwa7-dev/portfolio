@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, Command } from "lucide-react";
 import { useDarkMode } from "@/app/hooks/useDarkMode";
 
 /**
@@ -97,7 +97,13 @@ export default function Navbar() {
             aria-label="Open command menu"
             className={`${control} min-w-[3.75rem] justify-center gap-1.5 px-2.5 font-mono text-xs leading-none`}
           >
-            {isApple ? <span className="text-sm">⌘</span> : "Ctrl"} K
+            {/* The command key is lucide's `Command`, not the ⌘ character. As
+                text it was a font glyph, so it rendered at whatever weight and
+                size the first font with that codepoint happened to give it,
+                which is why it sat oddly beside the Sun and Moon icons in the
+                next button. An SVG shares their stroke weight and scales with
+                them. There is no equivalent glyph for Ctrl, so that stays text. */}
+            {isApple ? <Command className="h-3.5 w-3.5" strokeWidth={2} /> : "Ctrl"} K
           </button>
 
           <button
