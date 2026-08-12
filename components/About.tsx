@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Check, ArrowRight, Mail } from "lucide-react";
 import Container from "@/components/layout/Container";
+import AvatarHover from "@/components/AvatarHover";
 import Label from "@/components/layout/Label";
 import Bento from "@/components/layout/Bento";
 import Marker from "@/components/common/Marker";
@@ -41,14 +42,7 @@ export default function About() {
           {/* identity block */}
           <div className="flex items-center gap-3.5">
             <div className="relative shrink-0">
-              <div className="h-16 w-16 overflow-hidden rounded-2xl ring-1 ring-border">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/apple-touch-icon.png"
-                  alt="Shashwat Tripathi"
-                  className="h-full w-full object-cover"
-                />
-              </div>
+              <AvatarHover />
               <span
                 className="absolute -bottom-1 -right-1 grid h-6 w-6 place-items-center rounded-full bg-foreground text-background ring-[3px] ring-background"
                 title="Verified engineer"
