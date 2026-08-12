@@ -27,7 +27,7 @@ export default function Activity() {
         </div>
         {books.slice(0, 3).map((book) => (
           <div key={book.slug} className="col-span-full bg-card">
-            <BookListItem {...book} variant="row" />
+            <BookListItem {...book} />
           </div>
         ))}
       </Bento>

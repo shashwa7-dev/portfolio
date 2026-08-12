@@ -26,8 +26,14 @@ export default function BooksPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
-          {books
+        {/* Two columns on a phone, not three. At 375px a three-up grid of 2:3
+            covers leaves each one about 100px wide, which is smaller than the
+            thumbnails in the Activity list. */}
+        <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 md:grid-cols-4">
+          {/* Copy before sorting. `Array.prototype.sort` is in place, so sorting
+              the imported array directly reorders the module's own `books` export
+              for every other consumer. */}
+          {[...books]
             .sort((a, b) => Number(a.isDone) - Number(b.isDone))
             .map((book) => (
               <Book key={book.slug} {...book} />
