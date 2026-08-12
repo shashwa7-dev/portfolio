@@ -65,7 +65,7 @@ const categories: Category[] = [
 
 const TechStack = () => {
   return (
-    <Section id="tech_stack" number="03" label="Toolkit" title="Tools I reach for" width="reading">
+    <Section id="tech_stack" number="04" label="Toolkit" title="Tools I reach for" width="reading">
       <div className="flex flex-col gap-6">
         {categories.map((cat) => (
           <div key={cat.label}>

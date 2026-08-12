@@ -6,7 +6,7 @@ import { clients } from "@/lib/clients";
 
 const Clients = () => {
   return (
-    <Section id="clients" number="04" label="Trusted by" title="Teams I've worked with" width="reading">
+    <Section id="clients" number="02" label="Trusted by" title="Teams I've worked with" width="reading">
       <div className="grid grid-cols-2 -sm:grid-cols-1 gap-2.5">
         {clients.map((client) => (
           <a

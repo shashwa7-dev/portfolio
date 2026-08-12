@@ -9,7 +9,7 @@ export default function Projects() {
   return (
     <Section
       id="projects"
-      number="02"
+      number="03"
       label="Side Projects"
       title="Things I build for fun"
       width="reading"
