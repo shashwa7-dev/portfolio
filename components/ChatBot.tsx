@@ -338,11 +338,16 @@ const S7Bot = () => {
                 against the document URL, so it 404'd on every nested route: on
                 /work/shopos the browser asked for /work/truffycc.png, and this
                 FAB mounts globally from the layout. */}
+            {/* `scale-[1.45]` fills the button. The GIF is 457x457 with the dog
+                sitting inside a wide white margin, so at plain object-cover the
+                subject reads small and floats in the middle. Scaling up crops
+                that margin against the button's overflow-hidden. Adjust this one
+                value if the ears or the popcorn get clipped. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images/agent.gif"
               alt="Truffy assistant"
-              className="w-full h-full object-cover object-center"
+              className="w-full h-full scale-[1.45] object-cover object-center"
             />
           </motion.button>
         )}
@@ -366,7 +371,7 @@ const S7Bot = () => {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src="/images/agent.gif"
-                    className="w-full h-full object-cover object-center"
+                    className="w-full h-full scale-[1.45] object-cover object-center"
                     alt="Truffy assistant"
                   />
                   <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-500 ring-2 ring-card" />
