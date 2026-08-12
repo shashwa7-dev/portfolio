@@ -1,17 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import {
-  X,
-  MessageCircle,
-  Send,
-  Copy,
-  Check,
-  ArrowDown,
-  Cpu,
-  Briefcase,
-  Sparkles,
-} from "lucide-react";
+import { X, Send, Copy, Check, ArrowDown } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import MarkdownMessage from "./chat/MarkdownMessage";
 import { cn } from "@/lib/utils";
@@ -400,30 +390,28 @@ const S7Bot = () => {
                 className="h-full overflow-y-auto p-3 space-y-3 min-h-[280px] max-h-[340px]"
               >
               {messages.length === 0 && (
-                <div className="flex flex-col items-center justify-center h-full text-center py-4">
-                  <div className="w-10 h-10 rounded-full bg-elevated flex items-center justify-center mb-2">
-                    <MessageCircle className="w-5 h-5 text-muted-foreground" />
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Ask me anything about Shashwat!
+                /* Empty state. Text only.
+
+                   The decorative MessageCircle in a 40px circle is gone: it sat
+                   directly above a line of text that said the same thing, inside
+                   a panel whose header already shows Truffy's avatar and name, so
+                   it was the third "this is a chat" signal in 60 pixels.
+
+                   The per-prompt Cpu / Briefcase / Sparkles icons are gone too.
+                   They were decoration standing in for meaning, and a magic wand
+                   next to "What projects has he built?" tells a reader nothing the
+                   sentence does not already say. */
+                <div className="flex h-full flex-col justify-center py-4">
+                  <p className="mb-3 text-sm text-muted-foreground">
+                    Ask about Shashwat&apos;s work, stack, or availability.
                   </p>
 
-                  {/* Sample prompts */}
-                  <div className="w-full space-y-2">
+                  <div className="w-full space-y-1.5">
                     {[
-                      {
-                        prompt: "What tech stack does Shashwat use?",
-                        Icon: Cpu,
-                      },
-                      {
-                        prompt: "Tell me about his work experience",
-                        Icon: Briefcase,
-                      },
-                      {
-                        prompt: "What projects has he built?",
-                        Icon: Sparkles,
-                      },
-                    ].map(({ prompt, Icon }, idx) => (
+                      "What tech stack does Shashwat use?",
+                      "Tell me about his work experience",
+                      "What projects has he built?",
+                    ].map((prompt, idx) => (
                       <motion.button
                         key={idx}
                         variants={slideUpVariants}
@@ -432,10 +420,9 @@ const S7Bot = () => {
                         transition={{ delay: stagger.loose + idx * stagger.tight }}
                         whileTap={tapPress}
                         onClick={() => sendMessage(prompt)}
-                        className="w-full flex items-center gap-2 text-left rounded-xl border border-border bg-card px-3 py-2.5 text-xs text-muted-foreground hover:border-border-strong hover:text-foreground transition-colors"
+                        className="w-full rounded-xl border border-border bg-card px-3 py-2 text-left text-xs text-muted-foreground transition-colors duration-base ease-out hover:border-border-strong hover:text-foreground"
                       >
-                        <Icon className="h-3.5 w-3.5 shrink-0 text-subtle" />
-                        <span>{prompt}</span>
+                        {prompt}
                       </motion.button>
                     ))}
                   </div>
@@ -482,10 +469,14 @@ const S7Bot = () => {
                           type="button"
                           onClick={() => handleCopy(msg.content, index)}
                           aria-label="Copy message"
+                          /* Quieter than it was: no ring, no shadow, no circle,
+                             and smaller. It was a bordered floating pill hanging
+                             off the bubble's corner, which is a lot of chrome for
+                             a secondary action that only appears on hover. */
                           className={cn(
-                            "absolute -bottom-2 -right-2 inline-flex h-6 w-6 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm transition-opacity hover:text-foreground",
+                            "absolute -bottom-1.5 -right-1.5 inline-flex h-5 w-5 items-center justify-center rounded-md bg-card text-subtle transition-[opacity,color] duration-base ease-out hover:text-foreground",
                             copiedIndex === index
-                              ? "opacity-100 text-foreground"
+                              ? "text-foreground opacity-100"
                               : "opacity-0 group-hover/msg:opacity-100"
                           )}
                         >
