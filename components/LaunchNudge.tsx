@@ -110,7 +110,7 @@ export default function LaunchNudge() {
           fill
           sizes="264px"
           quality={70}
-          className="object-cover object-right-top opacity-[0.22] dark:opacity-[0.28]"
+          className="object-cover object-right-top opacity-[0.22] grayscale dark:opacity-[0.28]"
           style={{
             maskImage: "linear-gradient(to bottom left, black 0%, transparent 62%)",
             WebkitMaskImage:

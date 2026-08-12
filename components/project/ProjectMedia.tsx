@@ -18,7 +18,13 @@ export default function ProjectMedia({
   return (
     <>
       <div className="group relative aspect-[16/8] overflow-hidden rounded-2xl bg-elevated">
-        <Image src={thumbnail} alt={title} fill priority className="object-cover" />
+        <Image
+          src={thumbnail}
+          alt={title}
+          fill
+          priority
+          className="object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
+        />
         {preview && (
           <button
             onClick={() => setOpen(true)}

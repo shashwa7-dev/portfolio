@@ -50,8 +50,14 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
         {/* ── Header ─────────────────────────────────────────────────── */}
         <header className="space-y-5">
           <div className="flex items-center gap-3">
-            <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-elevated ring-1 ring-border">
-              <Image src={org.logo} alt={org.name} fill className="object-cover" sizes="48px" />
+            <span className="group relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-elevated ring-1 ring-border">
+              <Image
+                src={org.logo}
+                alt={org.name}
+                fill
+                sizes="48px"
+                className="object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
+              />
             </span>
             <div className="min-w-0">
               <div className="flex items-center gap-2">

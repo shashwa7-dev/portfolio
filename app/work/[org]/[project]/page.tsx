@@ -95,7 +95,7 @@ export default function WorkProjectPage({
             src={project.thumbnail}
             alt={project.title}
             fill
-            className="object-cover"
+            className="object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
             priority
           />
           {project.preview && (

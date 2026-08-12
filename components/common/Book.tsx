@@ -28,7 +28,7 @@ export default function Book({
   return (
     <Link
       href={`/books/${slug}`}
-      className="relative aspect-[2/3] w-full rounded-lg overflow-hidden border bg-card block"
+      className="group relative aspect-[2/3] w-full rounded-lg overflow-hidden border bg-card block"
     >
       {isDone && (
         /* Same verified-badge idiom as About.tsx and BookListItem. Inset from
@@ -50,7 +50,7 @@ export default function Book({
         src={cover}
         alt={`Cover of ${name}`}
         fill
-        className="object-cover opacity-90"
+        className="object-cover opacity-90 grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
         sizes="(max-width: 768px) 100vw, 33vw"
         priority={false}
         onLoadingComplete={() => setLoaded(true)}

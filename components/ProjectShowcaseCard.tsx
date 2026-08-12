@@ -16,7 +16,7 @@ export default function ProjectShowcaseCard({ project }: { project: ProjectCardD
           alt={project.title}
           fill
           sizes="(max-width: 760px) 100vw, 380px"
-          className="object-cover transition-transform duration-base group-hover:scale-[1.03]"
+          className="object-cover grayscale transition-[transform,filter] duration-base ease-out group-hover:scale-[1.03] group-hover:grayscale-0"
         />
         {project.badge && (
           <span className="absolute left-3 top-3 rounded-full border border-border-strong bg-background/80 px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-foreground backdrop-blur">

@@ -55,7 +55,7 @@ export default function FooterScenery() {
           fill
           unoptimized
           sizes="100vw"
-          className="object-cover object-center opacity-90 motion-reduce:hidden dark:opacity-75"
+          className="object-cover object-center opacity-90 grayscale motion-reduce:hidden dark:opacity-75"
           style={{
             maskImage:
               "linear-gradient(to top, black 0%, black 72%, transparent 100%)",

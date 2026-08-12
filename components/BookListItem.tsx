@@ -48,7 +48,7 @@ export default function BookListItem({
             src={cover}
             alt={`Cover of ${name}`}
             fill
-            className="object-cover"
+            className="object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
             sizes="40px"
           />
         </div>
@@ -109,7 +109,7 @@ export default function BookListItem({
             src={cover}
             alt={`Cover of ${name}`}
             fill
-            className="object-cover"
+            className="object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
             sizes="40px"
           />
         </div>

@@ -65,12 +65,15 @@ export default function BookPage({ params }: Props) {
       <Container width="reading" className="space-y-10">
         {/* Header */}
         <header className="flex flex-col gap-6 md:flex-row md:items-start">
-          <div className="relative w-36 shrink-0 overflow-hidden rounded-xl border border-border bg-secondary aspect-[2/3] md:w-40">
+          {/* `group` exists only so the cover can return to colour on hover.
+              This is a detail page with no card to hover, and a permanently
+              desaturated cover would hide the one thing the page is about. */}
+          <div className="group relative w-36 shrink-0 overflow-hidden rounded-xl border border-border bg-secondary aspect-[2/3] md:w-40">
             <Image
               src={book.cover}
               alt={book.name}
               fill
-              className="object-cover"
+              className="object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
               priority
               sizes="(max-width: 768px) 144px, 160px"
             />
