@@ -266,7 +266,7 @@ const Avatar = ({ isDarkMode }: { isDarkMode: boolean }) => {
     >
       <svg
         ref={svgRef}
-        className="w-full h-full cursor-pointer transition-colors duration-500"
+        className="w-full h-full cursor-pointer transition-colors duration-[var(--duration-fast)]"
         xmlns="http://www.w3.org/2000/svg"
         xmlnsXlink="http://www.w3.org/1999/xlink"
         viewBox="0 0 200 200"

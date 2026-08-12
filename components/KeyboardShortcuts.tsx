@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { X } from "lucide-react";
-import { backdropFadeVariants, keyboardSurfaceVariants } from "@/lib/motionVariants";
+import { backdropFadeVariants } from "@/lib/motionVariants";
 import { useDarkMode } from "@/app/hooks/useDarkMode";
 import { goToShortcuts, shortcutGroups } from "@/lib/shortcutsData";
 
@@ -90,12 +90,8 @@ export default function KeyboardShortcuts() {
           aria-modal="true"
           aria-label="Keyboard shortcuts"
         >
-          <motion.div
+          <div
             className="w-full max-w-[420px] overflow-hidden rounded-2xl border border-border-strong bg-elevated shadow-2xl"
-            variants={keyboardSurfaceVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b border-border px-4 py-3">
@@ -140,7 +136,7 @@ export default function KeyboardShortcuts() {
                 </div>
               ))}
             </div>
-          </motion.div>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>

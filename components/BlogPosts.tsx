@@ -21,7 +21,7 @@ export function BlogPosts() {
               <img
                 src={post.metadata.image}
                 alt={post.metadata.title}
-                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                className="h-full w-full object-cover transition-transform duration-[var(--duration-base)] group-hover:scale-[1.03]"
               />
             </div>
           )}

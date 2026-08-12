@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
-import { backdropFadeVariants, keyboardSurfaceVariants } from "@/lib/motionVariants";
+import { backdropFadeVariants } from "@/lib/motionVariants";
 import { useDarkMode } from "@/app/hooks/useDarkMode";
 import { buildCommands, filterCommands, type Command } from "@/lib/commandData";
 
@@ -83,12 +83,8 @@ export default function CommandPalette() {
           aria-modal="true"
           aria-label="Command menu"
         >
-          <motion.div
+          <div
             className="w-full max-w-[540px] overflow-hidden rounded-2xl border border-border-strong bg-elevated shadow-2xl"
-            variants={keyboardSurfaceVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
             onClick={(e) => e.stopPropagation()}
             onKeyDown={onListKey}
           >
@@ -130,7 +126,7 @@ export default function CommandPalette() {
                 );
               })}
             </div>
-          </motion.div>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>

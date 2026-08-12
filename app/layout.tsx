@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans, IBM_Plex_Mono } from "next/font/google";
 import dynamic from "next/dynamic";
+import { MotionConfig } from "motion/react";
 import "./globals.css";
 import { baseUrl } from "./sitemap";
 import { ogUrl, personLd, websiteLd } from "@/lib/seo";
@@ -107,18 +108,20 @@ export default function RootLayout({
         className={`bg-background text-foreground border-border ${dmSans.variable} ${plexMono.variable} font-sans`}
       >
         <NoScript />
-        <div className="relative z-10">
-          <TooltipProvider>
-            <Navbar />
-            {children}
-            <CommandPalette />
-            <KeyboardShortcuts />
-            <S7Bot />
-          </TooltipProvider>
-          <Analytics />
-          <UmamiAnalytics />
-        </div>
-        <Footer />
+        <MotionConfig reducedMotion="user">
+          <div className="relative z-10">
+            <TooltipProvider delayDuration={150} skipDelayDuration={0}>
+              <Navbar />
+              {children}
+              <CommandPalette />
+              <KeyboardShortcuts />
+              <S7Bot />
+            </TooltipProvider>
+            <Analytics />
+            <UmamiAnalytics />
+          </div>
+          <Footer />
+        </MotionConfig>
       </body>
     </html>
   );

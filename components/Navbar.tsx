@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "motion/react";
-import { collapseHeightVariants } from "@/lib/motionVariants";
 import { Sun, Moon } from "lucide-react";
 import { useDarkMode } from "@/app/hooks/useDarkMode";
 
@@ -71,15 +69,12 @@ export default function Navbar() {
         </div>
       </nav>
 
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.ul
-            variants={collapseHeightVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            className="overflow-hidden border-t border-border px-6 md:hidden"
-          >
+      <div
+        className="grid transition-[grid-template-rows] duration-[var(--duration-base)] ease-[--ease-out] md:hidden"
+        style={{ gridTemplateRows: mobileOpen ? "1fr" : "0fr" }}
+      >
+        <div className="overflow-hidden">
+          <ul className="border-t border-border px-6">
             {navLinks.map((l) => (
               <li key={l.label}>
                 <Link
@@ -91,9 +86,9 @@ export default function Navbar() {
                 </Link>
               </li>
             ))}
-          </motion.ul>
-        )}
-      </AnimatePresence>
+          </ul>
+        </div>
+      </div>
     </header>
   );
 }
