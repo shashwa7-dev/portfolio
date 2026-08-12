@@ -294,7 +294,7 @@ const S7Bot = () => {
             exit="exit"
             className="fixed bottom-[60px] right-4 -md:right-2.5 -md:hidden"
           >
-            <div className="rounded-xl border border-border-strong bg-card shadow-md px-3 py-2 max-w-[200px]">
+            <div className="rounded-lg border border-border-strong bg-card shadow-md px-3 py-2 max-w-[200px]">
               <p className="text-xs text-card-foreground">
                 {notificationText}
                 <span className="ml-0.5 animate-blink">|</span>
@@ -356,7 +356,7 @@ const S7Bot = () => {
             {/* Header */}
             <div className="flex items-center justify-between border-b border-border bg-card px-4 py-3">
               <div className="flex items-center gap-2">
-                <div className="group relative h-9 w-9 overflow-hidden rounded-xl flex-shrink-0">
+                <div className="group relative h-9 w-9 overflow-hidden rounded-lg flex-shrink-0">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src="/images/agent.jpg"
@@ -420,7 +420,7 @@ const S7Bot = () => {
                         transition={{ delay: stagger.loose + idx * stagger.tight }}
                         whileTap={tapPress}
                         onClick={() => sendMessage(prompt)}
-                        className="w-full rounded-xl border border-border bg-card px-3 py-2 text-left text-xs text-muted-foreground transition-colors duration-base ease-out hover:border-border-strong hover:text-foreground"
+                        className="w-full rounded-lg border border-border bg-card px-3 py-2 text-left text-xs text-muted-foreground transition-colors duration-base ease-out hover:border-border-strong hover:text-foreground"
                       >
                         {prompt}
                       </motion.button>
@@ -526,12 +526,12 @@ const S7Bot = () => {
                     emailState ? "Type your response..." : "Ask a question..."
                   }
                   disabled={isStreaming}
-                  className="flex-1 px-3 py-2 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
+                  className="flex-1 px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
                 />
                 <button
                   type="submit"
                   disabled={isStreaming || !message.trim()}
-                  className="flex items-center justify-center h-9 w-9 rounded-xl bg-accent text-accent-foreground hover:opacity-90 transition-[opacity,transform] duration-150 ease-out disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0 active:scale-[0.94]"
+                  className="flex items-center justify-center h-9 w-9 rounded-lg bg-accent text-accent-foreground hover:opacity-90 transition-[opacity,transform] duration-150 ease-out disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0 active:scale-[0.94]"
                 >
                   <Send className="h-4 w-4" />
                 </button>

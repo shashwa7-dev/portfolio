@@ -106,14 +106,28 @@ Sections use `py-10 md:py-14` (~40px / 56px). This is baked into the `Section` c
 
 ### Border radius
 
+Four steps. Nothing else, and no arbitrary values.
+
 | Class | Value | Use |
 |---|---|---|
-| `rounded` | 4px | Tiny UI elements |
-| `rounded-md` | `calc(0.75rem - 2px)` | Small cards, inputs |
-| `rounded-lg` | `0.75rem` (CSS `--radius`) | Standard cards |
-| `rounded-xl` | 12px | Larger panels |
-| `rounded-2xl` | 16px | Bento cells, feature cards |
-| `rounded-full` | 9999px | Buttons (pill), badges |
+| `rounded-full` | 9999px | Anything capsule-shaped: buttons, pills, badges, tags, dots, `StackIcon` labels |
+| `rounded-2xl` | 16px | Outermost surfaces: modals, the chat window, the command palette, bento cells |
+| `rounded-lg` | `0.75rem` = 12px (CSS `--radius`) | The default box: cards, panels, thumbnails, inputs |
+| `rounded-md` | `calc(0.75rem - 2px)` = 10px | Elements under roughly 40px, where 12px would read as a circle |
+
+Nesting goes larger outside, smaller inside: a `rounded-2xl` container holds
+`rounded-lg` children, which hold `rounded-md` ones.
+
+**Retired, do not reintroduce:**
+
+- **`rounded-xl`.** It is Tailwind's default 12px, which is *the same value* as the
+  tokenised `rounded-lg`. Having both meant 38 call sites split across two names
+  for one result, and only half of them would have moved if `--radius` ever
+  changed. An earlier version of this table listed them as separate steps, which
+  is how the drift got sanctioned in the first place.
+- **Bare `rounded`.** Tailwind's 4px default, off the token scale entirely.
+- **`rounded-sm`** and any `rounded-[Npx]`. Four `rounded-[9px]` call sites existed,
+  sitting one pixel off `rounded-md` for no reason.
 
 ---
 

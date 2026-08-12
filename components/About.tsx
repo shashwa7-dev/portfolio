@@ -47,7 +47,7 @@ export default function About() {
               supporting portrait the loudest thing in the hero.
 
               Alignment is by construction, not by arithmetic. The text column is
-              `h-16` (the avatar's exact height) with `justify-between`, so the
+              pinned to the avatar's exact height with `justify-between`, so the
               first row's top and the last row's bottom sit on the avatar's edges
               whatever the type sizes turn out to be. An earlier version summed
               the three rows by hand to land near 64px; that held only until any
@@ -235,13 +235,13 @@ export default function About() {
           <div className="flex flex-wrap items-center gap-3">
             <a
               href="/#experience"
-              className="inline-flex items-center gap-2 rounded-[9px] bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground transition-[color,background-color,transform] duration-150 ease-out hover:bg-accent-hover active:scale-[0.97]"
+              className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground transition-[color,background-color,transform] duration-150 ease-out hover:bg-accent-hover active:scale-[0.97]"
             >
               View selected work <ArrowRight className="h-4 w-4" />
             </a>
             <a
               href="mailto:contact@shashwa7.in"
-              className="inline-flex items-center gap-2 rounded-[9px] border border-border-strong px-5 py-2.5 text-sm font-semibold text-foreground transition-[color,background-color,transform] duration-150 ease-out hover:bg-elevated active:scale-[0.97]"
+              className="inline-flex items-center gap-2 rounded-full border border-border-strong px-5 py-2.5 text-sm font-semibold text-foreground transition-[color,background-color,transform] duration-150 ease-out hover:bg-elevated active:scale-[0.97]"
             >
               <Mail className="h-4 w-4" /> Get in touch
             </a>

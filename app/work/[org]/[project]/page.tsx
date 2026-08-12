@@ -89,7 +89,7 @@ export default function WorkProjectPage({
           initial="hidden"
           animate="visible"
           transition={{ delay: stagger.loose }}
-          className="relative aspect-video rounded-xl overflow-hidden bg-secondary group"
+          className="relative aspect-video rounded-lg overflow-hidden bg-secondary group"
         >
           <Image
             src={project.thumbnail}

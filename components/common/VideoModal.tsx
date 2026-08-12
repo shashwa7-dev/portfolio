@@ -71,7 +71,7 @@ export default function VideoModal({
               </div>
 
               {/* Video container */}
-              <div className="flex-1 relative rounded-xl overflow-hidden bg-black">
+              <div className="flex-1 relative rounded-lg overflow-hidden bg-black">
                 <video
                   src={videoUrl}
                   autoPlay

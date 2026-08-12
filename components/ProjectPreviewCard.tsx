@@ -37,7 +37,7 @@ export default function ProjectPreviewCard({ project }: { project: ProjectCardDa
   return (
     <Link
       href={project.href}
-      className="group flex overflow-hidden rounded-xl border border-border bg-card transition-colors duration-base ease-out hover:border-border-strong"
+      className="group flex overflow-hidden rounded-lg border border-border bg-card transition-colors duration-base ease-out hover:border-border-strong"
     >
       {/* `self-stretch` is what makes this full height: the column takes its
           height from the content beside it, which `fill` then needs to resolve

@@ -68,7 +68,7 @@ export default function BookPage({ params }: Props) {
           {/* `group` exists only so the cover can return to colour on hover.
               This is a detail page with no card to hover, and a permanently
               desaturated cover would hide the one thing the page is about. */}
-          <div className="group relative w-36 shrink-0 overflow-hidden rounded-xl border border-border bg-secondary aspect-[2/3] md:w-40">
+          <div className="group relative w-36 shrink-0 overflow-hidden rounded-lg border border-border bg-secondary aspect-[2/3] md:w-40">
             <Image
               src={book.cover}
               alt={book.name}

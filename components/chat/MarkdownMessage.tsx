@@ -62,7 +62,7 @@ const components: Components = {
     }
     return (
       <code
-        className="rounded bg-elevated px-1 py-0.5 font-mono text-sm text-foreground"
+        className="rounded-md bg-elevated px-1 py-0.5 font-mono text-sm text-foreground"
         {...props}
       >
         {children}

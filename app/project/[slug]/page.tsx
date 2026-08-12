@@ -138,7 +138,7 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
                 <h2 className="text-2xl">Impact</h2>
                 <div className="flex flex-wrap gap-3">
                   {cs.results.map((r, i) => (
-                    <div key={i} className="rounded-xl border border-border bg-card px-4 py-3">
+                    <div key={i} className="rounded-lg border border-border bg-card px-4 py-3">
                       <div className="text-2xl font-semibold text-foreground">{r.value}</div>
                       <div className="text-xs text-subtle">{r.caption}</div>
                     </div>

@@ -27,7 +27,7 @@ const Socials = () => {
       <div className="space-y-4">
         <a
           href="mailto:contact@shashwa7.in"
-          className="inline-block rounded-[9px] bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground hover:opacity-90 transition-opacity"
+          className="inline-block rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground hover:opacity-90 transition-opacity"
         >
           contact@shashwa7.in
         </a>

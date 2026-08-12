@@ -108,7 +108,7 @@ const TechStack = () => {
                     name={t}
                     showLabel
                     size={14}
-                    className="rounded-full px-2 py-0.5 text-2xs"
+                    className="px-2 py-0.5 text-2xs"
                   />
                 </li>
               ))}
