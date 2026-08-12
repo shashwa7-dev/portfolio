@@ -43,27 +43,30 @@ export function BlogPosts() {
               </span>
             )}
 
-            <span className="min-w-0 flex-1">
-              <span className="flex items-start justify-between gap-2">
+            {/* Divs, not spans: a span holds phrasing content only, so the h3 and
+                the p below could not legally sit inside one. The enclosing <a> has
+                a transparent content model, so flow content is fine here. */}
+            <div className="min-w-0 flex-1">
+              <div className="flex items-start justify-between gap-2">
                 <h3 className="text-lg leading-snug text-foreground">
                   {post.metadata.title}
                 </h3>
                 <ArrowUpRight className="mt-1 h-4 w-4 shrink-0 text-subtle transition-colors duration-base ease-out group-hover:text-foreground" />
-              </span>
+              </div>
 
-              <span className="mt-1 flex items-center gap-2 font-mono text-2xs uppercase tracking-label text-subtle">
+              <div className="mt-1 flex items-center gap-2 font-mono text-2xs uppercase tracking-label text-subtle">
                 {formatDate(post.metadata.publishedAt, false)}
                 <span aria-hidden className="text-border-strong">
                   ·
                 </span>
                 {readingTime(post.content)} min read
-              </span>
+              </div>
 
               <p className="mt-1.5 line-clamp-2 text-sm text-muted-foreground">
                 {post.metadata.summary}
               </p>
 
-              <span className="mt-2 flex flex-wrap gap-1.5">
+              <div className="mt-2 flex flex-wrap gap-1.5">
                 {JSON.parse(post.metadata.tags).map((tag: string, i: number) => (
                   <span
                     key={i}
@@ -72,8 +75,8 @@ export function BlogPosts() {
                     {tag}
                   </span>
                 ))}
-              </span>
-            </span>
+              </div>
+            </div>
           </Link>
         </li>
       ))}

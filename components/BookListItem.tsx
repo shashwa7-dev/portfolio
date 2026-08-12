@@ -70,7 +70,7 @@ export default function BookListItem({
                 complete, so recolouring at 100% was redundant signal carried by
                 a hue the rest of the app does not use. */}
             <div
-              className="h-1 rounded-full bg-foreground transition-[width]"
+              className="h-1 rounded-full bg-foreground transition-[width] duration-base ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -131,7 +131,7 @@ export default function BookListItem({
                 complete, so recolouring at 100% was redundant signal carried by
                 a hue the rest of the app does not use. */}
             <div
-              className="h-1 rounded-full bg-foreground transition-[width]"
+              className="h-1 rounded-full bg-foreground transition-[width] duration-base ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>

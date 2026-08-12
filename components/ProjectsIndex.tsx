@@ -23,7 +23,7 @@ export default function ProjectsIndex({ projects }: { projects: TSideProject[] }
               onClick={() => setActive(f.tag)}
               className={`rounded-full border px-3 py-1.5 font-mono text-xs uppercase tracking-label
                 transition-[color,background-color,border-color,transform]
-                duration-fast active:scale-[0.97] ${
+                duration-fast ease-out active:scale-[0.97] ${
                 active === f.tag
                   ? "border-accent bg-accent text-accent-foreground"
                   : "border-border text-muted-foreground hover:text-foreground"

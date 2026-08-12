@@ -66,7 +66,7 @@ export default function Book({
       >
         {/* One fill colour at every value; the width carries completion. */}
         <div
-          className="h-1 bg-foreground transition-[width]"
+          className="h-1 bg-foreground transition-[width] duration-base ease-out"
           style={{ width: `${progress}%` }}
         />
       </div>

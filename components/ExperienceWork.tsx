@@ -94,13 +94,17 @@ export default function ExperienceWork() {
                       span, so both the separator and the value are conditional.
                       Rendering the separator unconditionally would leave a
                       dangling middot on bad data. */}
+                  {/* The separator lives inside the duration's own `dd` rather
+                      than in a `dd` of its own. As a standalone `dd` it came
+                      before its `dt`, so it read as a second value of
+                      "Employment period" instead of punctuation. */}
                   {tenure && (
                     <>
-                      <dd aria-hidden className="text-border-strong">
-                        ·
-                      </dd>
                       <dt className="sr-only">Duration</dt>
                       <dd className="font-mono text-xs tabular-nums text-subtle">
+                        <span aria-hidden className="mr-2 text-border-strong">
+                          ·
+                        </span>
                         {tenure}
                       </dd>
                     </>
@@ -111,12 +115,18 @@ export default function ExperienceWork() {
                       permanent ambient loop is what this repo's motion audit
                       rejected. */}
                   {current && (
-                    <dd>
-                      <span className="inline-flex items-center gap-1.5 rounded-full border border-border-strong px-2 py-0.5 font-mono text-2xs font-medium uppercase tracking-label text-muted-foreground">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                        Currently building
-                      </span>
-                    </dd>
+                    <>
+                      {/* Paired with a `dt` so it is a term and a value like every
+                          other entry here. As a bare `dd` it was a value with no
+                          term, which is what a `dl` exists to rule out. */}
+                      <dt className="sr-only">Status</dt>
+                      <dd>
+                        <span className="inline-flex items-center gap-1.5 rounded-full border border-border-strong px-2 py-0.5 font-mono text-2xs font-medium uppercase tracking-label text-muted-foreground">
+                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                          Currently building
+                        </span>
+                      </dd>
+                    </>
                   )}
                 </dl>
 

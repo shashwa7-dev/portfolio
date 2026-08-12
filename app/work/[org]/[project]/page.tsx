@@ -79,7 +79,7 @@ export default function WorkProjectPage({
             <span className="text-sm text-muted-foreground transition-colors group-hover:text-foreground">
               Built at <span className="font-semibold text-foreground">{org.name}</span>
             </span>
-            <ArrowUpRight className="h-3.5 w-3.5 text-subtle transition-[color,transform] group-hover:-translate-y-0.5 group-hover:text-foreground" />
+            <ArrowUpRight className="h-3.5 w-3.5 text-subtle transition-[color,transform] duration-base ease-out group-hover:-translate-y-0.5 group-hover:text-foreground" />
           </Link>
         </motion.div>
 

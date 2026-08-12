@@ -51,8 +51,11 @@ export default function ProjectPreviewCard({ project }: { project: ProjectCardDa
         />
       </span>
 
-      <span className="min-w-0 flex-1 p-3">
-        <span className="flex items-center gap-1.5">
+      {/* These containers are divs, not spans. A span's content model is phrasing
+          content, so the <p> below could not legally sit inside one; the enclosing
+          <a> has a transparent content model, so flow content is fine here. */}
+      <div className="min-w-0 flex-1 p-3">
+        <div className="flex items-center gap-1.5">
           <span className="truncate text-sm font-medium text-foreground">
             {project.title}
           </span>
@@ -62,13 +65,13 @@ export default function ProjectPreviewCard({ project }: { project: ProjectCardDa
             </span>
           )}
           <ArrowUpRight className="ml-auto h-3.5 w-3.5 shrink-0 text-subtle transition-colors duration-base ease-out group-hover:text-foreground" />
-        </span>
+        </div>
 
         <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">
           {project.tagline}
         </p>
 
-        <span className="mt-2 flex items-center gap-2">
+        <div className="mt-2 flex items-center gap-2">
           {project.metric && (
             <span className="truncate font-mono text-2xs font-medium text-foreground">
               {project.metric}
@@ -79,8 +82,8 @@ export default function ProjectPreviewCard({ project }: { project: ProjectCardDa
               <StackIcon key={t} name={t as StackName} size={13} showLabel={false} />
             ))}
           </span>
-        </span>
-      </span>
+        </div>
+      </div>
     </Link>
   );
 }

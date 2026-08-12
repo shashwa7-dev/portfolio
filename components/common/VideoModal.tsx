@@ -63,7 +63,7 @@ export default function VideoModal({
                 )}
                 <button
                   onClick={onClose}
-                  className="ml-auto p-2 rounded-lg hover:bg-secondary transition-[background-color,transform] duration-150 active:scale-[0.92]"
+                  className="ml-auto p-2 rounded-lg hover:bg-secondary transition-[background-color,transform] duration-fast ease-out active:scale-[0.92]"
                   aria-label="Close video"
                 >
                   <X className="w-5 h-5" />
