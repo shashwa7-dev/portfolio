@@ -9,7 +9,6 @@ import { Analytics } from "@vercel/analytics/next";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ViewportScenery from "@/components/ViewportScenery";
 import UmamiAnalytics from "@/components/Umami";
 import NoScript from "@/components/NoScript";
 
@@ -109,7 +108,6 @@ export default function RootLayout({
         className={`bg-background text-foreground border-border ${dmSans.variable} ${plexMono.variable} font-sans`}
       >
         <NoScript />
-        <ViewportScenery />
         <MotionConfig reducedMotion="user">
           <div className="relative z-10">
             <TooltipProvider delayDuration={150} skipDelayDuration={0}>
