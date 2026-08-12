@@ -2,65 +2,91 @@ import React from "react";
 import StackIcon, { StackName } from "./common/StackIcon";
 import Section from "@/components/layout/Section";
 
-const frontendStacks: StackName[] = [
-  "html",
-  "css",
-  "javascript",
-  "typescript",
-  "react",
-  "next",
-  "tailwind",
-  "shadcn",
-  "chakraui",
-  "gsap",
-  "motion",
-  "reactQuery",
-  "zustand",
-  "wagmi",
-  "solana",
-];
-
-const aiStacks: StackName[] = ["openai", "googleGemini", "claude"];
-const protocolStacks: StackName[] = ["restAPI", "graphql", "websocket", "webrtc"];
-const backendStacks: StackName[] = [
-  "node",
-  "bun",
-  "postgres",
-  "mongodb",
-  "firebase",
-  "supabase",
-];
-const devopsStacks: StackName[] = [
-  "git",
-  "github",
-  "docker",
-  "aws",
-  "cloudflare",
-  "vercel",
-];
-const toolStacks: StackName[] = ["vscode", "figma", "notion", "postman"];
-const testingTrackingStacks: StackName[] = [
-  "playwright",
-  "vitest",
-  "posthog",
-  "sentry",
-  "googleAnalytics",
-  "vercelAnalytics",
-];
-
 type Category = {
   label: string;
   items: StackName[];
 };
 
+/**
+ * Four categories, down from seven. Every tool is still here; only the taxonomy
+ * changed.
+ *
+ * Seven headings over forty-four tools read as an inventory rather than a claim,
+ * and three of them were thin enough to be rounding errors: "AI Stack" held three
+ * items, "Protocols / APIs" four, "Tools" four. A heading that labels three things
+ * costs a row to say almost nothing.
+ *
+ * The merges are meant rather than convenient. Protocols moved in with backend
+ * because they are how you talk to one. Testing, analytics and editors joined
+ * devops because they are all things that surround shipping rather than things
+ * the product is built from.
+ *
+ * AI stayed separate at three items, alone among the small groups, because it is
+ * the positioning in the hero ("AI-adaptive frontend engineer") and folding it
+ * into Frontend would bury the one line that differentiates him.
+ *
+ * Order is deliberate: the craft, then the differentiator, then the range, then
+ * the breadth. It degrades gracefully, since a reader who stops after two rows
+ * has still seen the part that matters.
+ */
 const categories: Category[] = [
-  { label: "Frontend", items: frontendStacks },
-  { label: "Backend & DB", items: backendStacks },
-  { label: "DevOps & Infra", items: devopsStacks },
-  { label: "Protocols / APIs", items: protocolStacks },
-  { label: "AI Stack", items: aiStacks },
-  { label: "Testing & Tracking", items: testingTrackingStacks },
-  { label: "Tools", items: toolStacks },
+  {
+    label: "Frontend",
+    items: [
+      "html",
+      "css",
+      "javascript",
+      "typescript",
+      "react",
+      "next",
+      "tailwind",
+      "shadcn",
+      "chakraui",
+      "gsap",
+      "motion",
+      "reactQuery",
+      "zustand",
+      "wagmi",
+      "solana",
+    ],
+  },
+  { label: "AI", items: ["openai", "googleGemini", "claude"] },
+  {
+    label: "Backend & data",
+    items: [
+      "node",
+      "bun",
+      "postgres",
+      "mongodb",
+      "firebase",
+      "supabase",
+      "restAPI",
+      "graphql",
+      "websocket",
+      "webrtc",
+    ],
+  },
+  {
+    label: "Infra & tooling",
+    items: [
+      "git",
+      "github",
+      "docker",
+      "aws",
+      "cloudflare",
+      "vercel",
+      "playwright",
+      "vitest",
+      "sentry",
+      "posthog",
+      "googleAnalytics",
+      "vercelAnalytics",
+      "vscode",
+      "figma",
+      "postman",
+      "notion",
+    ],
+  },
 ];
 
 /**
@@ -70,7 +96,7 @@ const categories: Category[] = [
  * then a wrapped row of pills, with 24px between categories. Seven categories
  * meant seven labels and six gaps costing roughly 250px of height before a single
  * pill was drawn, on a section that is a scan-and-move-on list rather than
- * something anyone reads.
+ * something anyone reads. Merging to four categories removed most of the rest.
  *
  * Putting the label in its own column takes that height to zero: the label now
  * sits beside the pills it names instead of above them, and a hairline between
