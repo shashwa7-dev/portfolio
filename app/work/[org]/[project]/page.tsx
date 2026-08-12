@@ -116,7 +116,7 @@ export default function WorkProjectPage({
           variants={slideUpVariants}
           initial="hidden"
           animate="visible"
-          transition={{ delay: stagger.section }}
+          transition={{ delay: stagger.loose * 2 }}
           className="space-y-6"
         >
           <p className="text-muted-foreground leading-relaxed">

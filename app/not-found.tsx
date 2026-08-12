@@ -43,7 +43,7 @@ export default function NotFound() {
             variants={slideUpVariants}
             initial="hidden"
             animate="visible"
-            transition={{ delay: stagger.section }}
+            transition={{ delay: stagger.loose }}
             className="text-9xl md:text-[12rem] font-bold tracking-tight flex items-center justify-center gap-2"
           >
             <span className="bg-gradient-to-br from-foreground via-foreground to-muted-foreground bg-clip-text text-transparent">
@@ -60,7 +60,7 @@ export default function NotFound() {
             variants={slideUpVariants}
             initial="hidden"
             animate="visible"
-            transition={{ delay: stagger.section }}
+            transition={{ delay: stagger.loose }}
             className="space-y-4"
           >
             <h2 className="text-2xl md:text-3xl font-semibold">
@@ -77,7 +77,7 @@ export default function NotFound() {
             variants={slideUpVariants}
             initial="hidden"
             animate="visible"
-            transition={{ delay: stagger.section * 2 }}
+            transition={{ delay: stagger.loose * 2 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4"
           >
             <Button
@@ -104,7 +104,7 @@ export default function NotFound() {
             variants={fadeInVariants}
             initial="hidden"
             animate="visible"
-            transition={{ delay: stagger.section * 3, duration: duration.hero * 2 /* slow decorative glow */ }}
+            transition={{ delay: stagger.loose * 3, duration: duration.hero * 2 /* slow decorative glow */ }}
             className="pt-12 space-y-2"
           >
             <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">

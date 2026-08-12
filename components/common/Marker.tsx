@@ -1,15 +1,10 @@
-"use client";
-
-import { useRef } from "react";
-import { motion, useInView, useReducedMotion } from "motion/react";
-import { ease, duration } from "@/lib/motionVariants";
 import { cn } from "@/lib/utils";
 
 type Props = {
   children: React.ReactNode;
   /** "marker" = rough brush stroke, "line" = thin clean line */
   variant?: "marker" | "line";
-  /** seconds to wait after entering view before drawing */
+  /** No-op. Kept for caller compatibility (lib/markerHighlight.tsx, MarkerLink.tsx) now that the draw-on animation is gone. */
   delay?: number;
   className?: string;
 };
@@ -22,44 +17,27 @@ const PATHS = {
 
 const STROKE_WIDTH = { marker: 5, line: 2 } as const;
 
-/**
- * Inline text with an underline that draws itself in when scrolled into view.
- * Auto-animates (no hover) and respects prefers-reduced-motion.
- */
+/** Inline text with a static underline wash. Points at the contact address in the hero lede. */
 export default function Marker({
   children,
   variant = "marker",
-  delay = 0,
   className,
 }: Props) {
-  const ref = useRef<SVGSVGElement>(null);
-  const inView = useInView(ref, { once: true, margin: "0px 0px -12% 0px" });
-  const reduce = useReducedMotion();
-  const drawn = reduce || inView;
-
   return (
     <span className={cn("relative inline-block", className)}>
       {children}
       <svg
-        ref={ref}
         aria-hidden
         viewBox="0 0 400 10"
         preserveAspectRatio="none"
         className="pointer-events-none absolute -bottom-[0.06em] left-0 h-[0.42em] w-full overflow-visible"
       >
-        <motion.path
+        <path
           d={PATHS[variant]}
           fill="none"
           stroke="hsl(var(--foreground))"
           strokeWidth={STROKE_WIDTH[variant]}
           strokeLinecap="round"
-          initial={{ pathLength: reduce ? 1 : 0, opacity: reduce ? 1 : 0 }}
-          animate={{ pathLength: drawn ? 1 : 0, opacity: drawn ? 1 : 0 }}
-          transition={{
-            pathLength: { duration: reduce ? 0 : duration.draw, delay: reduce ? 0 : delay, ease: ease.out },
-            // snap visible exactly when the draw starts so no stray cap-dots show at rest
-            opacity: { duration: 0.01 /* snap, not a transition */, delay: reduce ? 0 : delay },
-          }}
         />
       </svg>
     </span>

@@ -8,22 +8,18 @@ import type { Variants, Transition } from "motion/react";
 // CSS transitions feel consistent.
 
 export const ease = {
-  out: [0.22, 1, 0.36, 1] as const,
-  modal: [0.23, 1, 0.32, 1] as const,
-  /** Expo-style settle used by the hero word cycle (same curve as the ShopOS landing hero). */
-  expo: [0.16, 1, 0.3, 1] as const,
+  /** Emil Kowalski's published strong ease-out. The single UI curve. */
+  out: [0.23, 1, 0.32, 1] as const,
 } as const;
 
 export const duration = {
   fast: 0.15,
   base: 0.2,
   med: 0.3,
-  slow: 0.4,
+  /** Entrances. Was 0.4, which broke the sub-300ms UI budget. */
+  slow: 0.24,
+  /** 404 page sequence only. The one sanctioned exception. */
   hero: 0.5,
-  /** Long draw-on strokes (Marker underline). */
-  draw: 0.7,
-  /** Ambient background fades. */
-  ambient: 2,
 } as const;
 
 /** Per-item stagger offsets (seconds). Use instead of literal `i * 0.05`. */
@@ -34,34 +30,10 @@ export const stagger = {
   base: 0.06,
   /** Card grids, nav cards. */
   loose: 0.08,
-  /** Sequenced page sections (404 page blocks). */
-  section: 0.2,
-} as const;
-
-/**
- * Hero accent-phrase word cycle (ported from the ShopOS landing hero):
- * words slide up in one by one, hold, slide up out one by one, repeat.
- * Unused now that the hero headline is frozen (see components/About.tsx).
- */
-export const wordCycle = {
-  /** ms between each word entering */
-  enterStaggerMs: 120,
-  /** ms between each word exiting */
-  exitStaggerMs: 80,
-  /** ms the full phrase holds before exiting */
-  holdMs: 2000,
-  /** ms pause after the last word exits before the next phrase enters */
-  settleMs: 200,
-  /** CSS transition for each word span */
-  transition: `transform ${duration.slow}s cubic-bezier(${ease.expo.join(", ")}), opacity ${duration.med}s ease`,
 } as const;
 
 export const spring = {
-  /** Calm pop. Chat windows, popovers. */
-  soft: { type: "spring", stiffness: 300, damping: 30 } satisfies Transition,
-  /** Confident pop with weight. FABs, attention buttons. */
-  pop: { type: "spring", stiffness: 380, damping: 24, mass: 0.85 } satisfies Transition,
-  /** Slightly bouncier inner hover, e.g. the FAB's image inside its shell. */
+  /** Chat FAB inner hover. The only spring left; keep it subtle. */
   hoverIn: { type: "spring", stiffness: 300, damping: 22 } satisfies Transition,
 } as const;
 
@@ -127,29 +99,29 @@ export const popoverUpVariants: Variants = {
 /** Modal/dialog panel — gentle scale with a custom curve. */
 export const dialogPopVariants: Variants = {
   hidden: { opacity: 0, scale: 0.96 },
-  visible: { opacity: 1, scale: 1, transition: { duration: duration.base, ease: ease.modal } },
-  exit: { opacity: 0, scale: 0.98, transition: { duration: duration.fast, ease: ease.modal } },
+  visible: { opacity: 1, scale: 1, transition: { duration: duration.base, ease: ease.out } },
+  exit: { opacity: 0, scale: 0.98, transition: { duration: duration.fast, ease: ease.out } },
 };
 
 /** Pure fade for backdrops / overlays. */
 export const backdropFadeVariants: Variants = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: duration.base, ease: ease.modal } },
-  exit: { opacity: 0, transition: { duration: duration.fast, ease: ease.modal } },
+  visible: { opacity: 1, transition: { duration: duration.base, ease: ease.out } },
+  exit: { opacity: 0, transition: { duration: duration.fast, ease: ease.out } },
 };
 
-/** FAB pop-in: starts small + rotated, lands upright. Exits fast. */
+/** FAB pop-in: starts near full scale, lands upright. Exits fast. Nothing appears from nothing. */
 export const fabPopVariants: Variants = {
-  hidden: { scale: 0.5, opacity: 0, rotate: -12 },
-  visible: { scale: 1, opacity: 1, rotate: 0, transition: spring.pop },
-  exit: { scale: 0.7, opacity: 0, transition: { duration: duration.fast, ease: ease.out } },
+  hidden: { scale: 0.96, opacity: 0 },
+  visible: { scale: 1, opacity: 1, transition: { duration: duration.base, ease: ease.out } },
+  exit: { scale: 0.96, opacity: 0, transition: { duration: duration.fast, ease: ease.out } },
 };
 
-/** Chat window / large floating panel — slides up + scales, soft spring. */
+/** Chat window / large floating panel — slides up + scales. Exit is faster than enter. */
 export const chatWindowVariants: Variants = {
-  hidden: { opacity: 0, scale: 0.95, y: 20 },
-  visible: { opacity: 1, scale: 1, y: 0, transition: spring.soft },
-  exit: { opacity: 0, scale: 0.95, y: 20, transition: spring.soft },
+  hidden: { opacity: 0, scale: 0.96, y: 12 },
+  visible: { opacity: 1, scale: 1, y: 0, transition: { duration: duration.base, ease: ease.out } },
+  exit: { opacity: 0, scale: 0.98, transition: { duration: duration.fast, ease: ease.out } },
 };
 
 /** Accordion-style height collapse. Pair with overflow-hidden on the consumer. */
@@ -172,6 +144,6 @@ export const pillUpVariants: Variants = {
 // These are animation targets, not full variants. Compose them with
 // a transition prop on the consumer if a non-default feel is needed.
 
-export const hoverLiftRotate = { scale: 1.06, rotate: -3 } as const;
-export const hoverZoom = { scale: 1.08 } as const;
-export const tapPress = { scale: 0.94 } as const;
+export const hoverLiftRotate = { scale: 1.02 } as const;
+export const hoverZoom = { scale: 1.02 } as const;
+export const tapPress = { scale: 0.97 } as const;
