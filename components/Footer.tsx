@@ -28,25 +28,28 @@ const Footer = () => {
         </p>
       </Container>
 
-      {/* Scenery: a contained block at the base of the footer, deliberately not
-          a page background and not full-bleed. It is in normal flow, so it
-          drives the footer's height and only comes into view once the visitor
-          reaches the bottom of the page. Constrained to the same 1080px as
-          Container width="wide" so it lines up with the copy above it.
+      {/* Scenery: a full-bleed band at the base of the footer. It spans the
+          whole viewport width while the copy above stays inside Container, so
+          the image is edge to edge and the text is not. It is in normal flow,
+          so it drives the footer's height and only comes into view once the
+          visitor reaches the bottom of the page, rather than sitting behind
+          the whole page as a background.
 
           The mask fades the top edge to transparent so the image dissolves
           into the page instead of starting on a hard horizon line, and the
-          gradient wash pulls it toward --background so it tracks the theme. */}
+          gradient wash pulls it toward --background so it tracks the theme.
+          No rounded corners: a full-bleed band should meet the viewport edges
+          squarely. */}
       <div
         aria-hidden
-        className="pointer-events-none relative z-0 mx-auto w-full max-w-[1080px] select-none px-6"
+        className="pointer-events-none relative z-0 w-full select-none"
       >
-        <div className="relative h-[16rem] overflow-hidden rounded-t-2xl md:h-[24rem]">
+        <div className="relative h-[16rem] overflow-hidden md:h-[24rem]">
           <Image
             src="/images/footer-scenery.jpg"
             alt=""
             fill
-            sizes="(max-width: 1080px) 100vw, 1080px"
+            sizes="100vw"
             quality={85}
             className="object-cover object-center opacity-55 dark:opacity-40"
             style={{
