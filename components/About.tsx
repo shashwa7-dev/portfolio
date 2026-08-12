@@ -67,12 +67,6 @@ export default function About() {
             </div>
           </div>
 
-          {/* availability pill */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-border-strong px-3.5 py-1.5 text-sm text-muted-foreground">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 ring-4 ring-emerald-500/15" />
-            Available for frontend / full-stack roles &amp; freelance
-          </div>
-
           {/* headline */}
           <h1 className="text-[clamp(2.2rem,5.5vw,3.4rem)] font-semibold leading-[1.02] tracking-tighter text-foreground">
             I build interfaces that{" "}
