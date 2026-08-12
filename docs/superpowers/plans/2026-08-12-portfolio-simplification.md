@@ -1557,69 +1557,75 @@ git commit -m "docs: record the rejected motion candidates so they stay rejected
 
 **Interfaces:**
 - Consumes: everything.
-- Produces: a green gate and a completed manual checklist.
+- Produces: a green automated gate, plus a written manual-QA checklist handed to the repo owner.
+
+**Scope change from the original plan.** The owner verifies visual results himself and does not want dev-server or browser inspection built into the work. So this task runs every automated, non-interactive check, and then *writes out* the manual checklist rather than executing it. Do not start a dev server for visual inspection.
 
 - [ ] **Step 1: Run all three automated gates**
 
 ```bash
+rm -rf .next
 npm run build && npm run lint && ./scripts/verify-simplification.sh
 ```
 
-Expected: build clean, lint clean, all of `C01`-`C14` PASS.
+Expected: build clean, lint clean apart from pre-existing warnings, and all 18 gate assertions green with exit 0. The `rm -rf .next` matters: a stale cache has produced a spurious `/api/chat` page-not-found failure in this repo before, which is not a real regression.
 
-- [ ] **Step 2: Confirm the deleted routes 404 and /markdown survives**
+- [ ] **Step 2: Confirm the deleted routes 404 and /markdown still negotiates**
+
+This is the one place a short-lived server is warranted, because it verifies HTTP behaviour rather than appearance. Use `curl`, not a browser.
 
 ```bash
-npm run build && npm run start &
-sleep 5
+npm run build && (npm run start &) && sleep 6
 for p in motion motion/principles design skills; do
-  printf '%-20s %s\n' "/$p" "$(curl -s -o /dev/null -w '%{http_code}' localhost:3000/$p)"
+  printf '%-22s %s\n' "/$p" "$(curl -s -o /dev/null -w '%{http_code}' localhost:3000/$p)"
 done
-printf 'markdown negotiation: %s\n' "$(curl -s -H 'Accept: text/markdown' localhost:3000/ | head -c 40)"
+printf 'home markdown : %s\n' "$(curl -s -H 'Accept: text/markdown' localhost:3000/ | head -c 60 | tr '\n' ' ')"
+printf 'og image      : %s\n' "$(curl -s -o /dev/null -w '%{http_code} %{content_type}' 'localhost:3000/og?title=Test&type=home')"
+pkill -f "next start" || true
 ```
 
-Expected: all four routes return `404`. The markdown request returns frontmatter, not HTML.
+Expected: all four routes return `404`. The markdown request returns frontmatter, not HTML. The OG route returns `200 image/png`, which matters because satori font failures surface at request time rather than build time.
 
 - [ ] **Step 3: Motion budget audit**
 
 ```bash
-grep -rEn "duration-\[[0-9]+ms\]|duration: [0-9.]+" --include=*.tsx --include=*.ts components app lib
+grep -rEn "duration-\[[0-9]+ms\]|duration-[0-9]+|duration: [0-9.]+" --include=*.tsx --include=*.ts components app lib
 ```
 
-Every value must be at or under 300ms except `duration.hero` (500ms) in `app/not-found.tsx`. Anything else over 300ms is a regression.
+Every value must be at or under 300ms except `duration.hero` (500ms) in `app/not-found.tsx`. Report any survivor with its file and line. Also confirm zero `transition-all`, zero `ease-in` on UI, and zero `scale(0)` entries.
 
-- [ ] **Step 4: Manual sweep, both themes, desktop and mobile viewport**
+- [ ] **Step 4: Write the manual QA checklist**
 
-- [ ] Homepage: static hero (no cycling), stats bento, Clients row, no dividers between sections, FAQ with the first item open
-- [ ] One org page (`/work/shopos`): Experience-style content, no rail
-- [ ] One project case study
-- [ ] One blog post: syntax colors readable, `h2` sizing correct after the 1.75rem to 1.5rem change
-- [ ] `/books` and one book detail page
-- [ ] 404 page: sequence still plays, stagger no longer sluggish
-- [ ] Cmd+K palette: appears instantly, no panel animation
-- [ ] `?` shortcuts overlay: same, and `d`/`m` shortcuts are gone
-- [ ] Navbar: no Design link, mobile menu collapses smoothly
-- [ ] Clients logo row: first tooltip waits, subsequent ones instant
-- [ ] Stats logos: same 150ms delay as the Clients row
-- [ ] Chat FAB: opens from near-full scale, closes faster than it opens
-- [ ] Footer: no clock
-- [ ] Tab through the FAQ with items closed: focus skips collapsed content
-- [ ] `/projects`: filter chips depress on click, grid crossfades between filters, no fade on first load
-- [ ] Chat: copy a code block, icon crossfades and the button does not change width
-- [ ] OS reduced motion on: colors and opacity still transition, nothing slides. The projects crossfade survives (opacity is safe), the scale presses stop
+Produce a markdown checklist at `docs/superpowers/MANUAL-QA.md` for the repo owner to work through in a browser. Write it as unchecked task-list items, grouped by page, and for each item state what "correct" looks like so it can be judged without reading the plan. Cover:
 
-- [ ] **Step 5: Fresh-eyes pass**
+- Homepage: static hero reading "I build interfaces that ship and scale to millions." with no cycling; stats bento; Clients logo row; sections separated by whitespace with no divider rules; FAQ with the first item ("Are you available for new work?") open on load.
+- One org page (`/work/shopos`): Experience content with no timeline rail or dots, left edge aligned with the sections above and below.
+- One project case study.
+- One blog post: syntax highlighting readable, and `h2` sizing sane after the move from 1.75rem to 1.5rem.
+- `/books` and one book detail page.
+- 404 page: the stagger sequence still plays and no longer feels sluggish.
+- Cmd+K palette: appears instantly with no scale or fade on the panel, backdrop still fades.
+- `?` shortcuts overlay: same, and confirm the `d` and `m` shortcuts are gone.
+- Navbar: no Design link; mobile menu expands and collapses smoothly at a narrow viewport.
+- Clients logo row: first tooltip waits about 150ms, subsequent adjacent ones appear immediately.
+- Stats logos: same delay as the Clients row, not the old 700ms.
+- Chat FAB: opens from near-full scale rather than shrinking from nothing, and closes faster than it opens.
+- Footer: no live clock.
+- FAQ keyboard test: with items closed, Tab must skip the collapsed content entirely.
+- `/projects`: filter chips depress on click, grid crossfades between filters, no fade on first load.
+- Copy a code block in the chat: icon crossfades and the button does not change width.
+- Both themes, and a mobile viewport pass.
+- OS reduced motion enabled: colours and opacity still transition, nothing slides. Note this now covers Framer Motion too, via `MotionConfig reducedMotion="user"`.
+- Type scale spot-check: the new scale shifts Tailwind's default `xs`/`sm`/`base`/`lg` down about 1px each, so scan for anything that reads too small.
 
-Emil: "Review animations with fresh eyes. You notice imperfections the next day that you missed during development." If practical, stop here and re-run step 4 later. At minimum, re-check the hero, the FAQ open/close, and the chat FAB at 4x slowed duration via DevTools before signing off.
+- [ ] **Step 5: Report and commit**
 
-- [ ] **Step 6: Commit any fixes and report**
+Commit the checklist. If Steps 1 to 3 surfaced a real regression, fix it, note it, and re-run. If they are clean, say so explicitly rather than creating an empty commit.
 
 ```bash
-git add -A
-git commit -m "fix: regressions found in the final verification sweep"
+git add docs/superpowers/MANUAL-QA.md
+git commit -m "docs: manual QA checklist for the simplification pass"
 ```
-
-If the sweep is clean with nothing to commit, say so explicitly rather than creating an empty commit.
 
 ---
 
