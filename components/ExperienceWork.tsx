@@ -52,8 +52,10 @@ export default function ExperienceWork() {
               <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1.5">
                 <span className="text-sm text-muted-foreground">{org.role}</span>
                 <EmploymentTag employment={org.employment} />
+                {/* Green is the dot only, matching the availability badge in
+                    About.tsx. See the note there for why. */}
                 {isCurrent && (
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/60 px-2 py-0.5 font-mono text-2xs font-medium uppercase tracking-label text-emerald-700 dark:text-emerald-400">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-border-strong px-2 py-0.5 font-mono text-2xs font-medium uppercase tracking-label text-muted-foreground">
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Currently building
                   </span>
                 )}

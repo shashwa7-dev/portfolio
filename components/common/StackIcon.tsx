@@ -39,6 +39,8 @@ import {
   siFigma,
   siSpotify,
   siYoutube,
+  siPython,
+  siSqlite,
   siDocker,
   siApollographql,
   siSocketdotio,
@@ -57,6 +59,8 @@ import {
 } from "simple-icons";
 
 export type StackName =
+  | "python"
+  | "sqlite"
   | "html"
   | "css"
   | "typescript"
@@ -149,6 +153,8 @@ const iconMap: Partial<Record<StackName, SI>> = {
   figma: siFigma,
   spotify: siSpotify,
   youtube: siYoutube,
+  python: siPython,
+  sqlite: siSqlite,
   docker: siDocker,
   apollo: siApollographql,
   websocket: siSocketdotio,
@@ -183,6 +189,8 @@ const labelMap: Record<StackName, string> = {
   github: "GitHub",
   spotify: "Spotify",
   youtube: "YouTube",
+  python: "Python",
+  sqlite: "SQLite",
   git: "Git",
   css: "CSS3",
   bun: "Bun",
