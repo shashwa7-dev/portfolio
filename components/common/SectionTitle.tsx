@@ -18,7 +18,7 @@ const alignMap = {
 const variantMap = {
   default: {
     wrapper: "",
-    title: "text-sm font-semibold uppercase tracking-wider",
+    title: "text-sm font-semibold uppercase tracking-label",
   },
   large: {
     wrapper: "",

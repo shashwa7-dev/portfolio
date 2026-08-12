@@ -16,7 +16,7 @@ export function EmploymentTag({
   if (!employment) return null;
   const label = employment === "full-time" ? "Full-time" : "Contract";
   return (
-    <span className="inline-flex items-center rounded-full border border-border-strong px-1.5 py-0.5 font-mono text-2xs uppercase tracking-wide text-muted-foreground">
+    <span className="inline-flex items-center rounded-full border border-border-strong px-1.5 py-0.5 font-mono text-2xs uppercase tracking-label text-muted-foreground">
       {label}
     </span>
   );

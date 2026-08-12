@@ -101,7 +101,7 @@ export default function BookPage({ params }: Props) {
 
         {/* Chapters */}
         <section className="space-y-4">
-          <h2 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+          <h2 className="text-xs font-medium uppercase tracking-label text-muted-foreground">
             Chapters
           </h2>
           <ul className="space-y-2.5">

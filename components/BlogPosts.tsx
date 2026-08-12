@@ -26,7 +26,7 @@ export function BlogPosts() {
             </div>
           )}
           <div className="flex flex-1 flex-col gap-2 p-4">
-            <span className="font-mono text-2xs uppercase tracking-wide text-subtle">
+            <span className="font-mono text-2xs uppercase tracking-label text-subtle">
               {formatDate(post.metadata.publishedAt, false)}
             </span>
             <div className="flex items-start justify-between gap-2">
@@ -38,7 +38,7 @@ export function BlogPosts() {
               {JSON.parse(post.metadata.tags).map((tag: string, i: number) => (
                 <span
                   key={i}
-                  className="rounded-full border border-border px-2 py-0.5 font-mono text-2xs uppercase tracking-wide text-muted-foreground"
+                  className="rounded-full border border-border px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-muted-foreground"
                 >
                   {tag}
                 </span>

@@ -366,7 +366,7 @@ const S7Bot = () => {
                   <h3 className="text-base leading-tight text-foreground">
                     Truffy
                   </h3>
-                  <p className="font-mono text-2xs uppercase tracking-wide text-subtle">
+                  <p className="font-mono text-2xs uppercase tracking-label text-subtle">
                     Gemini 2.5 Flash
                   </p>
                 </div>

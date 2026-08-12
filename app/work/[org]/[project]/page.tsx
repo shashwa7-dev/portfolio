@@ -126,7 +126,7 @@ export default function WorkProjectPage({
           {/* Highlights */}
           {project.highlights && project.highlights.length > 0 && (
             <div className="space-y-3">
-              <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-label">
                 Key Features
               </h2>
               <ul className="space-y-2">
@@ -145,7 +145,7 @@ export default function WorkProjectPage({
 
           {/* Tech Stack */}
           <div className="space-y-3">
-            <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-label">
               Tech Stack
             </h2>
             <div className="flex flex-wrap gap-2">
@@ -158,7 +158,7 @@ export default function WorkProjectPage({
           {/* Links */}
           {project.links && Object.keys(project.links).length > 0 && (
             <div className="space-y-3">
-              <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-label">
                 Links
               </h2>
               <div className="flex flex-wrap gap-3">

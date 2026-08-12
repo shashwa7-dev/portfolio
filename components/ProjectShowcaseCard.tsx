@@ -19,12 +19,12 @@ export default function ProjectShowcaseCard({ project }: { project: ProjectCardD
           className="object-cover transition-transform duration-base group-hover:scale-[1.03]"
         />
         {project.badge && (
-          <span className="absolute left-3 top-3 rounded-full border border-border-strong bg-background/80 px-2 py-0.5 font-mono text-2xs uppercase tracking-wide text-foreground backdrop-blur">
+          <span className="absolute left-3 top-3 rounded-full border border-border-strong bg-background/80 px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-foreground backdrop-blur">
             {project.badge}
           </span>
         )}
         {project.metric && (
-          <span className="absolute bottom-3 left-3 rounded-full border border-border-strong bg-background/80 px-2 py-0.5 font-mono text-2xs uppercase tracking-wide text-foreground backdrop-blur">
+          <span className="absolute bottom-3 left-3 rounded-full border border-border-strong bg-background/80 px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-foreground backdrop-blur">
             {project.metric}
           </span>
         )}

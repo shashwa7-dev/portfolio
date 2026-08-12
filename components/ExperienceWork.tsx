@@ -46,7 +46,7 @@ export default function ExperienceWork() {
                 <span className="text-sm text-muted-foreground">{org.role}</span>
                 <EmploymentTag employment={org.employment} />
                 {isCurrent && (
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/60 px-2 py-0.5 font-mono text-2xs uppercase tracking-wide text-emerald-500">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/60 px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-emerald-500">
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Currently building
                   </span>
                 )}

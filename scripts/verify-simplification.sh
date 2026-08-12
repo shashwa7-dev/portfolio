@@ -49,7 +49,7 @@ SRC=(app components lib)
 echo ""
 echo "Typography"
 count C01 "no arbitrary text-[Npx]"      0 grep -rEoh "text-\[[0-9.]+px\]" --include=*.tsx app components
-count C02 "no arbitrary tracking-[Nem]"  0 grep -rEoh "tracking-\[[0-9.]+em\]" --include=*.tsx app components
+count C02 "no arbitrary tracking-[Nem]"  0 grep -rEoh "tracking-\[[0-9.]+em\]|tracking-(wide|wider|widest)\b" --include=*.tsx app components
 count C03 "no font-serif"                0 grep -rEoh "font-serif" --include=*.tsx --include=*.ts app components lib
 count C04 "no Inter/Fraunces/JetBrains"  0 grep -rEoh "Fraunces|font-inter|JetBrains_Mono" --include=*.ts --include=*.tsx app lib tailwind.config.ts
 

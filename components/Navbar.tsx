@@ -62,6 +62,7 @@ export default function Navbar() {
             onClick={() => setMobileOpen((o) => !o)}
             aria-label="Toggle menu"
             aria-expanded={mobileOpen}
+            aria-controls="mobile-nav"
             className="text-sm text-muted-foreground transition-transform duration-150 ease-out md:hidden active:scale-[0.94]"
           >
             Menu
@@ -70,8 +71,12 @@ export default function Navbar() {
       </nav>
 
       <div
-        className="grid transition-[grid-template-rows] duration-base ease-out md:hidden"
-        style={{ gridTemplateRows: mobileOpen ? "1fr" : "0fr" }}
+        id="mobile-nav"
+        className="grid transition-[grid-template-rows,visibility] duration-base ease-out md:hidden"
+        style={{
+          gridTemplateRows: mobileOpen ? "1fr" : "0fr",
+          visibility: mobileOpen ? "visible" : "hidden",
+        }}
       >
         <div className="overflow-hidden">
           <ul className="border-t border-border px-6">
