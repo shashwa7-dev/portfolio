@@ -20,6 +20,12 @@ const config: Config = {
         "loading-bar": "loading-bar 1.2s ease-in-out infinite",
         "tooltip-in": "tooltip-in var(--duration-fast) var(--ease-out)",
         "tooltip-out": "tooltip-out var(--duration-fast) var(--ease-out)",
+        // Timing retokenized from shadcn's hardcoded "0.2s ease-out" so the
+        // accordion matches the rest of the motion system. Keep the KEYFRAMES
+        // as generated: Radix Presence needs a real animationName to time the
+        // unmount, so this cannot become a CSS transition.
+        "accordion-down": "accordion-down var(--duration-med) var(--ease-out)",
+        "accordion-up": "accordion-up var(--duration-med) var(--ease-out)",
       },
       keyframes: {
         "loading-bar": {
@@ -45,6 +51,14 @@ const config: Config = {
         "tooltip-out": {
           from: { opacity: "1", transform: "scale(1)" },
           to: { opacity: "0", transform: "scale(0.96)" },
+        },
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
         },
       },
       container: {

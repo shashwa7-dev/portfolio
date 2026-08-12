@@ -1,4 +1,9 @@
-import Accordion from "@/components/common/Accordion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import Section from "@/components/layout/Section";
 import { faqLd } from "@/lib/seo";
 
@@ -18,13 +23,18 @@ export default function Faq() {
         suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd(faqs)) }}
       />
-      <div className="overflow-hidden rounded-2xl border border-border">
-        {faqs.map((f) => (
-          <Accordion key={f.q} summary={f.q}>
-            {f.a}
-          </Accordion>
+      <Accordion type="single" collapsible defaultValue="faq-0" className="overflow-hidden rounded-2xl border border-border">
+        {faqs.map((f, i) => (
+          <AccordionItem key={f.q} value={`faq-${i}`} className="border-b border-border px-5 last:border-b-0">
+            <AccordionTrigger className="py-4 text-left text-base font-medium text-foreground">
+              {f.q}
+            </AccordionTrigger>
+            <AccordionContent className="pb-4 text-sm leading-relaxed text-muted-foreground">
+              {f.a}
+            </AccordionContent>
+          </AccordionItem>
         ))}
-      </div>
+      </Accordion>
     </Section>
   );
 }
