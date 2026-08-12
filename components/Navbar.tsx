@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Sun, Moon, Mail } from "lucide-react";
+import { Sun, Moon } from "lucide-react";
 import { useDarkMode } from "@/app/hooks/useDarkMode";
 
 /**
@@ -19,14 +19,24 @@ const navLinks = [
   { label: "Books", href: "/books", match: "/books" },
 ];
 
-const EMAIL = "mailto:contact@shashwa7.in";
-
 export function openCommandPalette() {
   window.dispatchEvent(new CustomEvent("open-command-palette"));
 }
 
+/**
+ * The header controls: a filled surface, no border.
+ *
+ * The hover fill is `border-strong/30` rather than another surface token, because
+ * in light mode `--elevated`, `--secondary` and `--muted` are all the same value
+ * (38 20% 95.5%), so a token-to-token hover would be invisible there. An opacity
+ * wash off `--border-strong` lands about four points darker in light and three
+ * lighter in dark, so one value reads in both themes.
+ *
+ * `backdrop-blur-sm` went with the border: it existed to let the header's blur
+ * show through a translucent control, and an opaque fill has nothing to show.
+ */
 const control =
-  "flex h-8 items-center rounded-md border border-border-strong bg-background/80 text-muted-foreground backdrop-blur-sm transition-[color,background-color,transform] duration-fast ease-out hover:bg-background hover:text-foreground active:scale-[0.94]";
+  "flex h-8 items-center rounded-md bg-elevated text-muted-foreground transition-[color,background-color,transform] duration-fast ease-out hover:bg-border-strong/30 hover:text-foreground active:scale-[0.94]";
 
 export default function Navbar() {
   const { isDarkMode, toggleDarkMode } = useDarkMode();
@@ -81,18 +91,6 @@ export default function Navbar() {
         </ul>
 
         <div className="flex items-center gap-2">
-          {/* The only contact affordance between the hero and the page footer.
-              On a sticky header for a site whose job is getting a reply, that is
-              worth one control. Hidden below md, where the Menu button needs the
-              room and the collapsed nav carries it instead. */}
-          <a
-            href={EMAIL}
-            className="hidden h-8 items-center gap-1.5 rounded-md bg-accent px-3 text-xs font-semibold text-accent-foreground transition-[color,background-color,transform] duration-fast ease-out hover:bg-accent-hover active:scale-[0.94] md:flex"
-          >
-            <Mail className="h-3.5 w-3.5" />
-            Get in touch
-          </a>
-
           <button
             type="button"
             onClick={openCommandPalette}
@@ -148,16 +146,6 @@ export default function Navbar() {
                 </Link>
               </li>
             ))}
-            <li>
-              <a
-                href={EMAIL}
-                onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-1.5 border-t border-border py-3 text-sm font-medium text-foreground"
-              >
-                <Mail className="h-3.5 w-3.5" />
-                Get in touch
-              </a>
-            </li>
           </ul>
         </div>
       </div>
