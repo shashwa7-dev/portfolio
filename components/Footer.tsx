@@ -30,35 +30,42 @@ const Footer = () => {
 
       {/* Scenery: a full-bleed band at the base of the footer. It spans the
           whole viewport width while the copy above stays inside Container, so
-          the image is edge to edge and the text is not. It is in normal flow,
+          the artwork is edge to edge and the text is not. It is in normal flow,
           so it drives the footer's height and only comes into view once the
           visitor reaches the bottom of the page, rather than sitting behind
           the whole page as a background.
 
-          The mask fades the top edge to transparent so the image dissolves
-          into the page instead of starting on a hard horizon line, and the
-          gradient wash pulls it toward --background so it tracks the theme.
-          No rounded corners: a full-bleed band should meet the viewport edges
-          squarely.
+          The mask fades the top edge to transparent so it dissolves into the
+          page instead of starting on a hard edge, and the gradient wash pulls it
+          toward --background so it tracks the theme. No rounded corners: a
+          full-bleed band should meet the viewport edges squarely.
 
-          Height and mask are tuned together to show the mountains rather than
-          just the flower field. At 34rem the band is roughly two thirds of the
-          image's natural height at desktop width, so object-center lands on the
-          peaks and the lake instead of cropping to the meadow, and the mask now
-          holds the image solid for 72 percent of the band before fading, rather
-          than 35 percent. */}
+          Three things about serving an animated GIF here:
+
+          1. `unoptimized` is required. Next's image optimizer re-encodes to
+             webp/avif, which drops GIF animation entirely, so without this the
+             band renders as a single frozen frame.
+          2. Because the optimizer is bypassed, the full ~500KB ships as-is and
+             the 480px-wide source is upscaled roughly 3x to reach full viewport
+             width. The softness that results is tolerable for lo-fi anime
+             artwork in a decorative band; it would not be for a photograph.
+          3. `motion-reduce:hidden` is the accessibility escape hatch. A GIF's
+             loop cannot be paused by CSS, so `prefers-reduced-motion` has no
+             effect on it, and this is the only way to honour that setting for a
+             looping image. It is purely decorative, so hiding it costs nothing
+             for those users. */}
       <div
         aria-hidden
         className="pointer-events-none relative z-0 w-full select-none"
       >
-        <div className="relative h-[20rem] overflow-hidden md:h-[34rem]">
+        <div className="relative h-[16rem] overflow-hidden md:h-[26rem]">
           <Image
-            src="/images/footer-scenery.jpg"
+            src="/images/footer-scenery.gif"
             alt=""
             fill
+            unoptimized
             sizes="100vw"
-            quality={85}
-            className="object-cover object-center opacity-90 dark:opacity-75"
+            className="object-cover object-center opacity-90 motion-reduce:hidden dark:opacity-75"
             style={{
               maskImage:
                 "linear-gradient(to top, black 0%, black 72%, transparent 100%)",
