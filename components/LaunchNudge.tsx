@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 
 const STORAGE_KEY = "nudge:mehfil:v1";
@@ -37,6 +38,14 @@ const HREF = "https://mehfil.shashwa7.in/";
  *
  * Enter is slower than exit on purpose: arriving is a moment worth noticing,
  * leaving should get out of the way.
+ *
+ * The card carries the project's own thumbnail as a background, anchored to the
+ * top right and masked so it dissolves toward the bottom left where the copy
+ * sits. Two notes on that: the mask runs `to bottom left`, so the corner the
+ * image is anchored to is the opaque end and the text end is the transparent one,
+ * which is what keeps the copy legible without a scrim. And the source is a
+ * 2940px screenshot, so `sizes` is pinned to the card's real width; without it
+ * Next would serve a far larger file than a 264px card can use.
  */
 export default function LaunchNudge() {
   const [mounted, setMounted] = useState(false);
@@ -84,20 +93,40 @@ export default function LaunchNudge() {
       target="_blank"
       rel="noopener noreferrer"
       onClick={dismiss}
-      className={`group fixed bottom-4 left-4 z-40 block max-w-[16.5rem] rounded-xl border border-border-strong bg-card/95 px-3.5 py-3 shadow-lg backdrop-blur transition-[opacity,transform,border-color] ease-out active:scale-[0.98] motion-reduce:translate-y-0 ${
+      className={`group fixed bottom-4 left-4 z-40 block max-w-[16.5rem] overflow-hidden rounded-xl border border-border-strong bg-card/95 px-3.5 py-3 shadow-lg backdrop-blur transition-[opacity,transform,border-color] ease-out active:scale-[0.98] motion-reduce:translate-y-0 ${
         shown
           ? "translate-y-0 opacity-100 duration-med"
           : "translate-y-2 opacity-0 duration-fast"
       } hover:border-foreground/25`}
     >
-      <p className="font-mono text-2xs uppercase tracking-label text-subtle">
+      {/* Thumbnail, anchored top right and faded out toward the copy. */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 overflow-hidden rounded-xl"
+      >
+        <Image
+          src="/projects/project_mehfil.jpg"
+          alt=""
+          fill
+          sizes="264px"
+          quality={70}
+          className="object-cover object-right-top opacity-[0.22] dark:opacity-[0.28]"
+          style={{
+            maskImage: "linear-gradient(to bottom left, black 0%, transparent 62%)",
+            WebkitMaskImage:
+              "linear-gradient(to bottom left, black 0%, transparent 62%)",
+          }}
+        />
+      </span>
+
+      <p className="relative font-mono text-2xs uppercase tracking-label text-subtle">
         Just shipped
       </p>
-      <p className="mt-1.5 flex items-center gap-1.5 text-sm font-semibold text-foreground">
+      <p className="relative mt-1.5 flex items-center gap-1.5 text-sm font-semibold text-foreground">
         Mehfil
         <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-subtle transition-[transform,color] duration-base ease-out group-hover:translate-x-0.5 group-hover:text-foreground motion-reduce:group-hover:translate-x-0" />
       </p>
-      <p className="mt-1 text-2xs leading-relaxed text-muted-foreground">
+      <p className="relative mt-1 text-2xs leading-relaxed text-muted-foreground">
         Golden-era Hindi film music, 3,916 songs across 66 stations.
       </p>
     </a>
