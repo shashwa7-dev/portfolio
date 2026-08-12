@@ -2,6 +2,7 @@ import { books } from "@/lib/books";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { Check } from "lucide-react";
 import { Link as LinkCTA } from "@/components/common/Link";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl } from "@/lib/seo";
@@ -83,8 +84,12 @@ export default function BookPage({ params }: Props) {
               <span className="rounded-md border border-border bg-secondary px-2.5 py-1 text-xs font-medium tabular-nums text-muted-foreground">
                 {completedCount}/{book.chapters.length} chapters
               </span>
+              {/* Filled versus outline carries the state, not colour. Completed is
+                  the solid pill and Reading stays an outline, so the two are
+                  distinguishable at a glance without introducing a hue the palette
+                  does not use anywhere else. */}
               {isComplete ? (
-                <span className="rounded-md border border-transparent bg-green-500/10 px-2.5 py-1 text-xs font-medium text-green-600 dark:text-green-400">
+                <span className="rounded-md bg-foreground px-2.5 py-1 text-xs font-medium text-background">
                   Completed
                 </span>
               ) : (
@@ -126,10 +131,15 @@ export default function BookPage({ params }: Props) {
                   </span>
                   <span className="truncate">{chapter.title}</span>
                 </p>
+                {/* The row already strikes through when complete, so a "Done"
+                    pill beside it said the same thing twice, in a colour used
+                    nowhere else. A quiet check marks it without competing. */}
                 {chapter.completed && (
-                  <span className="shrink-0 rounded-md bg-green-500/10 px-2 py-0.5 text-xs font-medium text-green-600 dark:text-green-400">
-                    Done
-                  </span>
+                  <Check
+                    className="h-3.5 w-3.5 shrink-0 text-muted-foreground"
+                    strokeWidth={2.5}
+                    aria-label="Completed"
+                  />
                 )}
               </li>
             ))}
