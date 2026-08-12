@@ -1167,10 +1167,12 @@ tab order and a11y tree (grid-template-rows 0fr hides it visually only),
 the panel lacked role=region and aria-labelledby, the trigger was not
 wrapped in a heading, and there was no arrow-key navigation.
 
-Two deliberate deviations from shadcn's output, both commented in the file:
-drive the collapse with a transition on --radix-accordion-content-height
-rather than the shipped keyframes (which restart from zero), and retokenize
-onto the Paper palette. First item opens by default since that answer
+Two deliberate deviations from shadcn's output, both commented in place:
+retokenize the accordion animation timing from a hardcoded 0.2s ease-out to
+var(--duration-med) var(--ease-out), and retokenize the generated styles onto
+the Paper palette. The KEYFRAMES stay as generated: Radix Presence detects
+exit only via animationName, so a CSS transition would make the panel snap
+shut with no animation. First item opens by default since that answer
 carries the contact address."
 ```
 
