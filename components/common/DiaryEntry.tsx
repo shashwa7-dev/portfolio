@@ -25,7 +25,7 @@ export default function DiaryEntry({
         <span className="font-mono text-xs uppercase tracking-label text-foreground">
           {num}
         </span>
-        <h3 className="text-[1.35rem] font-semibold tracking-tight text-foreground">
+        <h3 className="text-xl font-semibold tracking-tight text-foreground">
           {entry.title}
         </h3>
         <span className="ml-auto font-mono text-2xs uppercase tracking-label text-subtle">

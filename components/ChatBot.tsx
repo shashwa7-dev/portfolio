@@ -58,7 +58,15 @@ const S7Bot = () => {
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
-  const cleanup = () => {
+  /**
+   * Both of these are `useCallback` with empty deps so their identity is stable.
+   * `handleClose` is used inside the click-outside effect below, and with an
+   * unstable identity it had to be left out of that effect's dependency array,
+   * which meant the listener closed over the first render's copy. Only refs and
+   * setters are touched here, so an empty dep list is correct rather than a
+   * shortcut. The same fix was applied to the theme toggle for the same reason.
+   */
+  const cleanup = useCallback(() => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
       abortControllerRef.current = null;
@@ -68,13 +76,13 @@ const S7Bot = () => {
       timeoutRef.current = null;
     }
     setIsStreaming(false);
-  };
+  }, []);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     cleanup();
     setIsOpen(false);
     setEmailState(null);
-  };
+  }, [cleanup]);
 
   const scrollToBottom = useCallback((behavior: ScrollBehavior = "smooth") => {
     messagesEndRef.current?.scrollIntoView({ behavior });
@@ -119,13 +127,13 @@ const S7Bot = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isOpen]);
+  }, [isOpen, handleClose]);
 
   useEffect(() => {
     return () => {
       cleanup();
     };
-  }, []);
+  }, [cleanup]);
 
   const sendMessage = async (msg: string) => {
     if (!msg.trim() || isStreaming) return;

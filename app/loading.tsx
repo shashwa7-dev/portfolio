@@ -8,6 +8,10 @@ export default function Loading() {
             className="absolute inset-0 animate-pulse rounded-2xl bg-muted blur-xl"
             aria-hidden
           />
+          {/* eslint-disable-next-line @next/next/no-img-element -- A plain <img>
+              is correct here. next/image does not optimise SVG, and this renders
+              during a route transition, so a raw tag avoids pulling the image
+              component into the loading boundary to move zero bytes. */}
           <img
             src="/favicon.svg"
             alt=""

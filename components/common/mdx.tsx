@@ -66,6 +66,11 @@ type RoundedImageProps = ImageProps;
  */
 function RoundedImage(props: RoundedImageProps) {
   return (
+    // `alt` arrives through the spread below, from the MDX author's own image
+    // attributes, which the rule cannot see. Defaulting it here would invent alt
+    // text for someone else's content. The directive has to sit on the line
+    // directly above the element it suppresses, so it goes last.
+    // eslint-disable-next-line jsx-a11y/alt-text
     <Image
       className="rounded-lg grayscale transition-[filter] duration-base ease-out hover:grayscale-0"
       {...props}
