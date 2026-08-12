@@ -15,6 +15,7 @@ import {
 import { motion, AnimatePresence } from "motion/react";
 import MarkdownMessage from "./chat/MarkdownMessage";
 import { cn } from "@/lib/utils";
+import IconSwap from "@/components/common/IconSwap";
 import {
   popoverUpVariants,
   fabPopVariants,
@@ -475,11 +476,11 @@ const S7Bot = () => {
                               : "opacity-0 group-hover/msg:opacity-100"
                           )}
                         >
-                          {copiedIndex === index ? (
-                            <Check className="h-3 w-3" />
-                          ) : (
-                            <Copy className="h-3 w-3" />
-                          )}
+                          <IconSwap
+                            swapped={copiedIndex === index}
+                            from={<Copy className="h-3 w-3" />}
+                            to={<Check className="h-3 w-3" />}
+                          />
                         </button>
                       )}
                     </div>

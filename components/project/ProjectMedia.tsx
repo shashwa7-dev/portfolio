@@ -22,7 +22,7 @@ export default function ProjectMedia({
         {preview && (
           <button
             onClick={() => setOpen(true)}
-            className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100"
+            className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-[opacity,transform] duration-[var(--duration-fast)] ease-[--ease-out] group-hover:opacity-100 active:scale-[0.97]"
             aria-label="Watch demo"
           >
             <span className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-black">

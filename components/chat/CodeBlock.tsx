@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Check, Copy } from "lucide-react";
 import { highlight } from "sugar-high";
 import { cn } from "@/lib/utils";
+import IconSwap from "@/components/common/IconSwap";
 
 type Props = {
   /** Raw source code (no surrounding fences). */
@@ -40,22 +41,17 @@ export default function CodeBlock({ code, language }: Props) {
           type="button"
           onClick={onCopy}
           className={cn(
-            "inline-flex items-center gap-1 rounded px-1.5 py-0.5 font-mono text-2xs uppercase tracking-wide transition-colors",
-            copied
-              ? "text-foreground"
-              : "text-muted-foreground hover:text-foreground"
+            "rounded px-1.5 py-0.5 font-mono text-2xs uppercase tracking-wide",
+            "transition-[color,transform] duration-[var(--duration-fast)] active:scale-[0.97]",
+            copied ? "text-foreground" : "text-muted-foreground hover:text-foreground"
           )}
           aria-label="Copy code"
         >
-          {copied ? (
-            <>
-              <Check className="h-3 w-3" /> Copied
-            </>
-          ) : (
-            <>
-              <Copy className="h-3 w-3" /> Copy
-            </>
-          )}
+          <IconSwap
+            swapped={copied}
+            from={<><Copy className="h-3 w-3" /> Copy</>}
+            to={<><Check className="h-3 w-3" /> Copied</>}
+          />
         </button>
       </div>
       <pre className="overflow-x-auto px-3 py-2 text-sm leading-relaxed">
