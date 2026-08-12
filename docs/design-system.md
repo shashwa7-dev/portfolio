@@ -1,37 +1,39 @@
 # Design System Reference
 
-A standalone reference for the graphite + indigo design system powering [shashwa7.in](https://www.shashwa7.in/).
+A standalone reference for the Paper design system powering [shashwa7.in](https://www.shashwa7.in/).
 
 ---
 
 ## Color Tokens
 
-All colors are CSS custom properties (defined in `app/globals.css`) mapped to Tailwind utility classes via `tailwind.config.ts`. Dark mode (graphite) is the **default**; the site sets the `dark` class on `<html>` at load. Light mode uses the `:root` values.
+All colors are CSS custom properties (defined in `app/globals.css`, HSL triples consumed via `hsl(var(--token))`) mapped to Tailwind utility classes via `tailwind.config.ts`. The `:root` block holds Paper light values; the `.dark` class swaps in Paper dark. Values below are read directly from `app/globals.css`; treat that file as the source of truth if it and this table ever disagree.
 
 ### Semantic tokens
 
-| Token | Tailwind class | Dark hex (approx) | Light hex (approx) | Use for |
+| Token | Tailwind class | Light (HSL) | Dark (HSL) | Use for |
 |---|---|---|---|---|
-| `--background` | `bg-background` / `text-background` | `#0B0B0F` | `#FAFAFF` | Page background |
-| `--foreground` | `text-foreground` / `bg-foreground` | `#EDEDEF` | `#17171A` | Primary text, headings |
-| `--card` | `bg-card` / `text-card-foreground` | `#15151B` | `#FFFFFF` | Card / panel surfaces |
-| `--elevated` | `bg-elevated` | `#1C1C24` | `#F3F3F9` | Elevated overlays, popovers |
-| `--muted` | `bg-muted` | `#232330` | `#F3F3F9` | Low-emphasis backgrounds |
-| `--muted-foreground` | `text-muted-foreground` | `#9A99A8` | `#5C5C6E` | Secondary / helper text |
-| `--subtle` | `text-subtle` | `#6D6C7A` | `#8A8A9A` | Tertiary text, placeholders |
-| `--border` | `border-border` / `bg-border` | `#232330` | `#E5E5F0` | Default hairline borders |
-| `--border-strong` | `border-border-strong` / `bg-border-strong` | `#2E2E3C` | `#D0D0E0` | Emphasized borders |
-| `--accent` | `bg-accent` / `text-accent` | `#6E6BF2` | `#5B58DD` | Brand CTAs, highlights, links |
-| `--accent-hover` | `bg-accent-hover` / `text-accent-hover` | `#807DF5` | `#6E6BF2` | Accent on hover |
-| `--accent-foreground` | `text-accent-foreground` | `#FFFFFF` | `#FFFFFF` | Text on accent backgrounds |
-| `--secondary` | `bg-secondary` / `text-secondary-foreground` | `#1C1C24` | `#F3F3F9` | Chip backgrounds, secondary buttons |
-| `--ring` | `ring-ring` | matches accent | matches accent | Focus rings |
-| `--destructive` | `bg-destructive` / `text-destructive` | `#E05555` | `#CC4444` | Error, danger states |
+| `--background` | `bg-background` / `text-background` | `40 33% 98.5%` | `30 7% 5%` | Page background |
+| `--foreground` | `text-foreground` / `bg-foreground` | `35 9% 11%` | `35 6% 94%` | Primary text, headings |
+| `--card` | `bg-card` / `text-card-foreground` | `0 0% 100%` | `30 7% 8.5%` | Card / panel surfaces |
+| `--elevated` | `bg-elevated` | `38 20% 95.5%` | `30 7% 12%` | Elevated overlays, popovers |
+| `--muted` | `bg-muted` | `38 20% 95.5%` | `30 6% 15%` | Low-emphasis backgrounds |
+| `--muted-foreground` | `text-muted-foreground` | `35 7% 39%` | `35 6% 63%` | Secondary / helper text |
+| `--subtle` | `text-subtle` | `35 6% 44%` | `30 5% 50%` | Tertiary text, placeholders (raised to pass WCAG AA contrast) |
+| `--border` | `border-border` / `bg-border` | `36 16% 89.5%` | `30 6% 16%` | Default hairline borders |
+| `--border-strong` | `border-border-strong` / `bg-border-strong` | `36 14% 81%` | `30 6% 24%` | Emphasized borders |
+| `--accent` | `bg-accent` / `text-accent` | `35 9% 11%` | `35 8% 94%` | CTAs, highlights, links (no separate accent hue: matches foreground) |
+| `--accent-hover` | `bg-accent-hover` / `text-accent-hover` | `35 9% 22%` | `35 8% 84%` | Accent on hover |
+| `--accent-foreground` | `text-accent-foreground` | `40 33% 99%` | `30 7% 6%` | Text on accent backgrounds |
+| `--secondary` | `bg-secondary` / `text-secondary-foreground` | `38 20% 95.5%` | `30 6% 15%` | Chip backgrounds, secondary buttons |
+| `--ring` | `ring-ring` | `35 9% 30%` | `35 6% 70%` | Focus rings |
+| `--destructive` | `bg-destructive` / `text-destructive` | `0 65% 48%` | `0 60% 55%` | Error, danger states |
+
+The palette is a warm, near-neutral ramp (low saturation, warm hue around 30-40 degrees). There is no separate brand hue: `--accent` sits at (or very near) `--foreground`, so emphasis comes from weight and contrast, not color.
 
 ### Rules
 
-- Always use semantic tokens, never raw hex values in components.
-- Dark mode is the default theme; the `dark` class is managed by `useDarkMode` hook in `app/hooks/useDarkMode.ts`.
+- Always use semantic tokens, never raw hex or HSL literals in components.
+- Theme follows the `dark` class on `<html>`, toggled by the inline theme script in `app/layout.tsx` and by the `useDarkMode` hook in `app/hooks/useDarkMode.tsx`. The `:root` block is Paper light; `.dark` is Paper dark.
 - For opacity variants use Tailwind's slash notation: `bg-accent/15`, `decoration-accent/50`.
 
 ---
@@ -42,33 +44,42 @@ All colors are CSS custom properties (defined in `app/globals.css`) mapped to Ta
 
 | Family | CSS var | Tailwind class | Use |
 |---|---|---|---|
-| Fraunces (variable serif) | `--font-fraunces` | `font-serif` | Headings, display, section titles |
-| Inter | `--font-inter` | `font-sans` | Body copy, UI labels, navigation |
-| JetBrains Mono | `--font-mono` | `font-mono` | Code blocks, eyebrow labels, monospace UI |
+| DM Sans | `--font-sans` | `font-sans` | Headings, body copy, UI labels, navigation |
+| IBM Plex Mono | `--font-mono` | `font-mono` | Code blocks, eyebrow labels, monospace UI |
 
-Fonts are loaded via Next.js font optimization in `app/layout.tsx`. `font-display: swap` is implicit.
+Fonts are loaded via Next.js font optimization (`next/font/google`) in `app/layout.tsx`. `font-display: swap` is implicit. There is no serif family and no `font-serif` Tailwind key: headings use `font-sans` like everything else, distinguished by weight and size, not typeface.
 
-All heading elements (`h1`-`h6`) default to `font-serif` via the global base styles in `globals.css`.
+All heading elements (`h1`-`h6`) default to the sans stack via the global base styles in `globals.css` (`font-weight: 600`, `line-height: 1.1`, `letter-spacing: -0.02em`).
 
 ### Type scale
 
-| Role | Tailwind classes | Notes |
+Sizes and tracking come from `tailwind.config.ts` (`fontSize`, `letterSpacing`). Arbitrary `text-[Npx]` and `tracking-[Nem]` are forbidden: use the scale.
+
+| Tailwind class | Size | Line height | Typical use |
+|---|---|---|---|
+| `text-2xs` | 10px | 1.4 | Mono labels |
+| `text-xs` | 11px | 1.45 | Eyebrows, fine print |
+| `text-sm` | 13px | 1.55 | Captions, helper text, timestamps |
+| `text-base` | 15px | 1.65 | Body copy (default) |
+| `text-lg` | 17px | 1.5 | Lede / intro paragraphs |
+| `text-xl` | 20px | 1.4 | Sub-section headers (H3) |
+| `text-2xl` | 24px | 1.25 | Section titles (H2) |
+| `text-3xl` | 30px | 1.15 | Large headings |
+| `text-4xl` | 36px | 1.08 | Display / H1 |
+
+| Tracking class | Value | Typical use |
 |---|---|---|
-| Display / H1 | `font-serif text-[clamp(2rem,5vw,2.75rem)] font-medium tracking-[-0.02em]` | Page titles, hero headings |
-| H2 / Section title | `font-serif text-2xl md:text-[1.75rem]` | Section headers (used inside `Section` component) |
-| H3 | `font-serif text-xl` | Sub-section headers |
-| Body lede | `text-lg text-muted-foreground leading-relaxed` | Intro paragraphs |
-| Body | `text-base text-muted-foreground` | Regular prose, 16px, line-height 1.65 |
-| Small | `text-sm text-muted-foreground` | Captions, helper text, timestamps |
-| Mono label / eyebrow | `font-mono text-[11px] uppercase tracking-[0.16em] text-subtle` | Section eyebrows (the `Label` component) |
+| `tracking-label` | `0.1em` | Uppercase eyebrow labels |
+| `tracking-normal` | `0` | Default |
+| `tracking-tight` | `-0.02em` | Headings |
+| `tracking-tighter` | `-0.03em` | Display / large headings |
 
 ### Global typography settings
 
 - `line-height: 1.65` on `body`
 - `-webkit-font-smoothing: antialiased`
-- `font-feature-settings: "cv11", "ss01"` for Inter optical features
 - `text-rendering: optimizeLegibility`
-- Headings: `line-height: 1.1`, `letter-spacing: -0.015em`, `font-weight: 500`
+- Headings (`h1`-`h6`): `font-weight: 600`, `line-height: 1.1`, `letter-spacing: -0.02em`
 
 ---
 
@@ -131,7 +142,7 @@ import Section from "@/components/layout/Section";
 <Section
   number="01"
   label="Color"
-  title="Graphite + Indigo"
+  title="Paper"
   width="reading"
   action={<SomeButton />}
 >
@@ -140,8 +151,8 @@ import Section from "@/components/layout/Section";
 ```
 
 - Renders a `<section>` with `py-10 md:py-14` rhythm.
-- The numbered eyebrow is rendered via the `Label` component. Number shows in `text-accent-hover`, separator ` / `, then label text.
-- Title is a `font-serif text-2xl md:text-[1.75rem]` h2.
+- The numbered eyebrow is rendered via the `Label` component. Number shows in `text-foreground`, separator ` / `, then label text.
+- Title is a `text-2xl md:text-[1.75rem] text-foreground` h2.
 - `width` is passed to the inner `Container`.
 
 ### Bento
@@ -179,7 +190,7 @@ import Label from "@/components/layout/Label";
 <Label className="mb-3 block">With extra class</Label>
 ```
 
-Renders a `<span>` with `font-mono text-[11px] uppercase tracking-[0.16em] text-subtle`.
+Renders a `<span>` with `font-mono text-xs uppercase tracking-label text-subtle`.
 
 ### Reveal
 
@@ -224,7 +235,7 @@ A client component wrapping Motion's `motion.div` with a fade-up animation trigg
 ### Badge / pill
 
 ```tsx
-<span className="rounded-full bg-accent/15 px-3 py-1 font-mono text-[11px] uppercase tracking-[0.12em] text-accent">
+<span className="rounded-full bg-accent/15 px-3 py-1 font-mono text-xs uppercase tracking-label text-accent">
   Badge
 </span>
 ```
@@ -279,36 +290,32 @@ All animation is powered by **Motion** (Framer Motion, imported as `motion/react
 
 | Variable | Value | Use |
 |---|---|---|
-| `--ease-out` | `cubic-bezier(0.22, 1, 0.36, 1)` | Entrances, reveals |
-| `--ease-in-out` | `cubic-bezier(0.77, 0, 0.175, 1)` | State transitions |
-| `--ease-spring` | `cubic-bezier(0.34, 1.56, 0.64, 1)` | Playful micro-interactions |
+| `--ease-out` | `cubic-bezier(0.23, 1, 0.32, 1)` | The single UI curve: entrances, exits, hovers, reveals |
+| `--ease-in-out` | `cubic-bezier(0.77, 0, 0.175, 1)` | Defined for state transitions, currently unused by components |
+
+There is no spring easing curve. The one Motion `spring` transition left in the app (`spring.hoverIn` in `lib/motionVariants.ts`) is for the chat FAB hover only.
 
 ### Duration guidelines
 
-- Hover / micro: `200ms`
-- Layout / reveal: `300-400ms`
-- Stagger per item: `~60ms`
+Durations live in `lib/motionVariants.ts` as the `duration` export and are mirrored as CSS custom properties in `globals.css`. No literal durations or easing curves outside that file.
+
+- `duration.fast` (`150ms`): hovers, exits, tooltips
+- `duration.base` (`200ms`): popovers, dropdowns, modals
+- `duration.med` (`300ms`): crossfades, opacity beats
+- `duration.slow` (`240ms`): reveals, page-level entrances
+- `duration.hero` (`500ms`): the 404 page sequence, the one sanctioned exception
 
 ### Common animation patterns
 
-- **Fade-up on enter**: `opacity: 0 -> 1`, `translateY(12px) -> 0`, triggered by `whileInView`. Use the `Reveal` primitive.
 - **Hover lift**: `whileHover={{ y: -2 }}` on cards.
 - **Scale tap**: `whileTap={{ scale: 0.97 }}` on buttons.
 - **Mobile menu**: `AnimatePresence` + height + opacity.
 
+Rules: exits animate faster than enters; keyboard surfaces (command palette, shortcuts overlay) are near-instant.
+
 ### Reduced motion
 
-All CSS animations and transitions are collapsed to `0.01ms` when `prefers-reduced-motion: reduce` is set (handled globally in `globals.css`). Motion (Framer Motion) respects this automatically via `useReducedMotion` in the `Reveal` component.
-
-### Motion tokens (live at /motion)
-
-`/motion` renders every token below as a replayable demo. The scale:
-
-- **Durations**: `duration.fast 150ms` (hovers, exits, tooltips) / `duration.base 200ms` (popovers, dropdowns, modals) / `duration.med 300ms` (crossfades, opacity beats) / `duration.slow 400ms` (reveals, page-level entrances) / `duration.hero 500ms` (hero emphasis moments)
-- **Easings**: `ease.out`, `ease.modal`, `ease.expo`
-- **Stagger**: fixed per-item steps, see `lib/motionVariants.ts`
-
-Rules: exits animate faster than enters; keyboard surfaces (command palette, shortcuts overlay) are near-instant; no literal durations or easing curves outside `lib/motionVariants.ts` (CSS mirrors them as custom properties in `globals.css`).
+`app/layout.tsx` wraps the app in `<MotionConfig reducedMotion="user">`, so every Motion animation respects the visitor's OS-level `prefers-reduced-motion` setting automatically. CSS animations and transitions are separately collapsed under `@media (prefers-reduced-motion: reduce)` in `globals.css`: movement (transforms) is dropped, opacity and color transitions are kept because they aid comprehension without triggering motion sickness.
 
 ---
 
@@ -327,7 +334,7 @@ Rules: exits animate faster than enters; keyboard surfaces (command palette, sho
 |---|---|
 | `app/globals.css` | CSS custom properties (color tokens, easing, animations) |
 | `tailwind.config.ts` | Token mapping to Tailwind classes, font families, custom screens |
-| `app/layout.tsx` | Font loading (Fraunces, Inter, JetBrains Mono) |
+| `app/layout.tsx` | Font loading (DM Sans, IBM Plex Mono), `MotionConfig reducedMotion="user"` |
 | `components/layout/Container.tsx` | Width-constrained wrapper |
 | `components/layout/Section.tsx` | Numbered section with eyebrow + title |
 | `components/layout/Bento.tsx` | Hairline-grid card layout |
