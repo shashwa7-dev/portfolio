@@ -39,3 +39,6 @@ yarn-error.log*
 next-env.d.ts
 token-cache.json
 pnpm-lock.yaml
+
+# transient screenshots from verification runs
+/.tmp-screens/
