@@ -85,8 +85,8 @@ export default function About() {
                 a soft one, dark mode a deeper one that reads as depth rather than
                 as a smudge.
 
-                The edge itself comes from `ring-1 ring-inset ring-border` inside
-                `AvatarHover`. It has to be inset: this wrapper's
+                The edge itself comes from `ring-1 ring-inset ring-border-strong`
+                inside `AvatarHover`. It has to be inset: this wrapper's
                 `overflow-hidden` (needed so the band's corners follow the avatar's
                 radius) would otherwise clip the ring, since Tailwind paints rings
                 as box-shadows outside the element.

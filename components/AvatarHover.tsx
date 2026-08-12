@@ -50,11 +50,12 @@ export default function AvatarHover() {
          avatar's radius), so a non-inset ring was clipped away completely and the
          avatar had no visible edge in either theme.
 
-         `ring-border` rather than `ring-border-strong`: at 89.5% lightness against
-         a 98.5% background it defines the edge in light mode, where the avatar art
-         is light enough to otherwise dissolve into the page, without reading as a
-         drawn frame. */
-      className="group relative h-16 w-16 overflow-hidden rounded-2xl ring-1 ring-inset ring-border"
+         `ring-border-strong`, not `ring-border`. At 89.5% lightness against a
+         98.5% page, `--border` is a nine-point delta across a single pixel, which
+         is faint enough to read as no border at all. `--border-strong` at 81% is
+         the token this app already uses wherever a hairline needs to be seen, so
+         it is the subtle end of the scale rather than a step beyond it. */
+      className="group relative h-16 w-16 overflow-hidden rounded-2xl ring-1 ring-inset ring-border-strong"
       onPointerEnter={(e) => {
         if (e.pointerType === "mouse") setArmed(true);
       }}

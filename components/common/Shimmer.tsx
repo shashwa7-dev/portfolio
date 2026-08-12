@@ -16,14 +16,19 @@ import { cn } from "@/lib/utils";
  * whole component that owns the sheen be the hover target, which is usually
  * larger and easier to hit than the strip being decorated.
  *
- * The sheen is white and fixed, not a palette token. A shimmer is a specular
- * highlight, so it wants to be lighter than what it crosses, and using a token
- * that inverts between themes would make it a *darker* smear in one of them.
- * That means this belongs on surfaces darker than the sheen, which in practice
- * means scrims over media rather than page-surface chips. An earlier version
- * tinted it with `--background` to pair with a `bg-foreground` band, and both
- * halves of that pairing were wrong for the same reason: a strip sitting on a
- * photograph cannot borrow colours that assume a known background.
+ * `tone` picks the sheen's tint, and the choice follows from whether the surface
+ * beneath it changes with the theme.
+ *
+ * - `media` (default) is a fixed white. Use it on scrims over images, where the
+ *   surface is a constant regardless of theme. A palette token would be wrong
+ *   here: `--foreground` inverts, so it would be a *darker* smear in one theme.
+ * - `surface` is tinted with `--foreground`. Use it on palette surfaces like
+ *   `bg-card`, which invert with the theme, so the sheen must invert alongside
+ *   them. A fixed white sheen on a light card is simply invisible.
+ *
+ * The distinction is the whole reason this prop exists rather than one hardcoded
+ * tint, and getting it backwards produces a shimmer that appears to work in
+ * whichever theme you happened to develop in.
  *
  * `motion-reduce:hidden` removes it outright. It is decoration with no state to
  * convey, so there is nothing to degrade gracefully to.
@@ -31,16 +36,22 @@ import { cn } from "@/lib/utils";
 export default function Shimmer({
   children,
   className,
+  tone = "media",
 }: {
   children: React.ReactNode;
+  /** Must include a display utility: this component sets none of its own. */
   className?: string;
+  tone?: "media" | "surface";
 }) {
   return (
     <span className={cn("relative overflow-hidden", className)}>
       {children}
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent group-hover:animate-shimmer motion-reduce:hidden"
+        className={cn(
+          "pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent to-transparent group-hover:animate-shimmer motion-reduce:hidden",
+          tone === "media" ? "via-white/30" : "via-foreground/20"
+        )}
       />
     </span>
   );

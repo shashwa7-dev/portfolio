@@ -3,6 +3,7 @@ import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import type { ProjectCardData } from "@/lib/projectCards";
 import StackIcon, { type StackName } from "@/components/common/StackIcon";
+import Shimmer from "@/components/common/Shimmer";
 
 /**
  * Compact project card. Shared by the Featured-projects rows on the Experience
@@ -59,10 +60,20 @@ export default function ProjectPreviewCard({ project }: { project: ProjectCardDa
           <span className="truncate text-sm font-medium text-foreground">
             {project.title}
           </span>
+          {/* Status flag ("Recent" on the newest side project, "Live" on a work
+              project). It was bare mono text, which read as a stray word beside
+              the title; a hairline pill makes it a label. `tone="surface"` because
+              it sits on `bg-card`, which inverts with the theme, so the sheen has
+              to invert with it. */}
           {project.badge && (
-            <span className="shrink-0 font-mono text-2xs uppercase tracking-label text-foreground">
-              {project.badge}
-            </span>
+            <Shimmer
+              tone="surface"
+              className="inline-block shrink-0 rounded-full border border-border-strong"
+            >
+              <span className="block px-1.5 font-mono text-2xs uppercase tracking-label text-foreground">
+                {project.badge}
+              </span>
+            </Shimmer>
           )}
           <ArrowUpRight className="ml-auto h-3.5 w-3.5 shrink-0 text-subtle transition-colors duration-base ease-out group-hover:text-foreground" />
         </div>
