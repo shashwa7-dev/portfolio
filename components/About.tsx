@@ -59,10 +59,34 @@ export default function About() {
               when the boxes themselves lined up. Aligning boxes is not the same
               as aligning what you can see. */}
           <div className="flex items-start gap-3.5">
-            <div className="relative shrink-0">
+            {/* Availability rides the avatar, LinkedIn style, instead of taking a
+                row of its own as a pill.
+
+                The visible word is just "Open": at `text-2xs` in mono, "Open to
+                work" measures about 84px and the avatar is 64px, so the full
+                phrase cannot fit without either an off-scale type size or an
+                overhang wider than the avatar. The full phrase is carried by
+                `sr-only` text and the `title`, so nothing is lost to assistive
+                tech or to a hover.
+
+                `emerald-700` rather than the `emerald-500` used for the status
+                dots: white on 500 lands around 3.6:1, which fails AA for text
+                this size, while 700 clears 5:1. A dot needs no contrast ratio; a
+                word does. */}
+            <div className="relative shrink-0 overflow-hidden rounded-2xl">
               <AvatarHover />
+              <span
+                className="pointer-events-none absolute inset-x-0 bottom-0 grid place-items-center bg-emerald-700 py-px font-mono text-2xs font-medium uppercase text-white"
+                title="Open to work"
+              >
+                <span aria-hidden>Open</span>
+                <span className="sr-only">Open to work</span>
+              </span>
             </div>
-            <div className="flex h-16 flex-col justify-between">
+            {/* `min-h-[4rem]`, not `h-16`. It is the avatar's exact height so the
+                edges still line up, but a fixed height would overflow instead of
+                growing if the availability row ever wrapped on a narrow screen. */}
+            <div className="flex min-h-[4rem] flex-col justify-between">
               {/* The name is the page's h1.
 
                   It used to be a 17px div while the tagline below was the h1 at
@@ -103,15 +127,10 @@ export default function About() {
                   intrusion. The dot alone still carries the live-status meaning,
                   which is the part the colour actually earns; the label sits on
                   neutral tokens like every other pill in the app. */}
-              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-border-strong px-2 py-0.5 font-mono text-2xs font-medium uppercase tracking-label text-muted-foreground">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Open to work
-                </span>
-                {/* Paired with availability on purpose: "free to hire" and "here
-                    is my working day" answer the same question for a client in a
-                    different timezone. */}
-                <LocalTime />
-              </div>
+              {/* The availability pill that used to sit here has moved onto the
+                  avatar. What remains is the working day, which answers the other
+                  half of the same question for a client in another timezone. */}
+              <LocalTime />
             </div>
           </div>
 
