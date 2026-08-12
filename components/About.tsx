@@ -64,6 +64,13 @@ export default function About() {
               <div className="mt-0.5">
                 <Label>Frontend Engineer · AI · Web3</Label>
               </div>
+              {/* Availability. Same treatment as the "Currently building" badge
+                  on the active Experience role, so one signal reads one way
+                  everywhere. emerald-700 / emerald-400 is the pair that clears
+                  AA on both backgrounds; emerald-500 alone is 2.47:1 in light. */}
+              <div className="mt-1.5 inline-flex items-center gap-1.5 rounded-full border border-emerald-500/60 px-2 py-0.5 font-mono text-2xs font-medium uppercase tracking-label text-emerald-700 dark:text-emerald-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Open to work
+              </div>
             </div>
           </div>
 
