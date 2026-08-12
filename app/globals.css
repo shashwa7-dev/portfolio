@@ -181,6 +181,12 @@
   --duration-med: 300ms;
   --duration-slow: 240ms;
   --duration-hero: 500ms;
+
+  /* Decorative sweeps only, never a state change. Deliberately outside the
+     sub-300ms UI budget: that budget exists so an interface feels responsive to
+     input, and a sheen travelling across a surface is not responding to
+     anything. At 300ms the same sweep reads as a flicker. */
+  --duration-sweep: 700ms;
 }
 
 /* Link hover effect */

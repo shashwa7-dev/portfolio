@@ -3,6 +3,7 @@ import { Check, ArrowRight, Mail } from "lucide-react";
 import Container from "@/components/layout/Container";
 import AvatarHover from "@/components/AvatarHover";
 import LocalTime from "@/components/LocalTime";
+import Shimmer from "@/components/common/Shimmer";
 import Label from "@/components/layout/Label";
 import Bento from "@/components/layout/Bento";
 import Marker from "@/components/common/Marker";
@@ -62,27 +63,39 @@ export default function About() {
             {/* Availability rides the avatar, LinkedIn style, instead of taking a
                 row of its own as a pill.
 
-                The visible word is just "Open": at `text-2xs` in mono, "Open to
-                work" measures about 84px and the avatar is 64px, so the full
-                phrase cannot fit without either an off-scale type size or an
-                overhang wider than the avatar. The full phrase is carried by
-                `sr-only` text and the `title`, so nothing is lost to assistive
-                tech or to a hover.
+                The band is `bg-foreground text-background`, the same inverted
+                pair as the verified mark and the books ticks. A solid emerald
+                band was tried and dropped: it contradicted a decision already
+                recorded in this file, that green is the dot and nothing else,
+                because a filled hue on a deliberately hueless page reads as an
+                intrusion. The dot survives, since a live-status colour is the one
+                thing the hue genuinely earns.
 
-                `emerald-700` rather than the `emerald-500` used for the status
-                dots: white on 500 lands around 3.6:1, which fails AA for text
-                this size, while 700 clears 5:1. A dot needs no contrast ratio; a
-                word does. */}
-            <div className="relative shrink-0 overflow-hidden rounded-2xl">
-              <AvatarHover />
-              <span
-                className="pointer-events-none absolute inset-x-0 bottom-0 grid place-items-center bg-emerald-700 py-px font-mono text-2xs font-medium uppercase text-white"
-                title="Open to work"
-              >
-                <span aria-hidden>Open</span>
-                <span className="sr-only">Open to work</span>
-              </span>
-            </div>
+                The visible word is just "Open". At `text-2xs` in mono, "Open to
+                work" measures about 84px against a 64px avatar, so the full
+                phrase needs either an off-scale type size or a band wider than
+                the image it sits on, and an overhang is what made this edge look
+                wrong to begin with. The tooltip and the `sr-only` text carry the
+                full phrase, so nothing is lost to a pointer or to assistive tech.
+
+                The whole avatar is the hover target, not just the band. It is a
+                far larger area to hit, and it keeps the band `pointer-events-none`
+                so it cannot swallow the hover that arms the avatar's own GIF. */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="group relative shrink-0 overflow-hidden rounded-2xl">
+                  <AvatarHover />
+                  <Shimmer className="absolute inset-x-0 bottom-0 block">
+                    <span className="pointer-events-none flex items-center justify-center gap-1 bg-foreground py-px font-mono text-2xs font-medium uppercase tracking-label text-background">
+                      <span className="h-1 w-1 rounded-full bg-emerald-500" />
+                      <span aria-hidden>Open</span>
+                      <span className="sr-only">Open to work</span>
+                    </span>
+                  </Shimmer>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>Open to work</TooltipContent>
+            </Tooltip>
             {/* `min-h-[4rem]`, not `h-16`. It is the avatar's exact height so the
                 edges still line up, but a fixed height would overflow instead of
                 growing if the availability row ever wrapped on a narrow screen. */}

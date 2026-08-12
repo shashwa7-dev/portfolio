@@ -26,6 +26,9 @@ const config: Config = {
         // unmount, so this cannot become a CSS transition.
         "accordion-down": "accordion-down var(--duration-med) var(--ease-out)",
         "accordion-up": "accordion-up var(--duration-med) var(--ease-out)",
+        // Runs once per hover, not on a loop. See components/common/Shimmer.tsx
+        // for why this is not ambient.
+        shimmer: "shimmer var(--duration-sweep) var(--ease-out)",
       },
       keyframes: {
         "loading-bar": {
@@ -59,6 +62,12 @@ const config: Config = {
         "accordion-up": {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
+        },
+        // Travels a full width past each edge so the sheen enters and leaves
+        // completely, rather than appearing and vanishing inside the surface.
+        shimmer: {
+          from: { transform: "translateX(-100%)" },
+          to: { transform: "translateX(100%)" },
         },
       },
       container: {
