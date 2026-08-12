@@ -1,4 +1,4 @@
-import type { Variants, Transition } from "motion/react";
+import type { Variants } from "motion/react";
 
 // ──────────────────────────────────────────────────────────────────────
 // Tokens
@@ -32,10 +32,6 @@ export const stagger = {
   loose: 0.08,
 } as const;
 
-export const spring = {
-  /** Chat FAB inner hover. The only spring left; keep it subtle. */
-  hoverIn: { type: "spring", stiffness: 300, damping: 22 } satisfies Transition,
-} as const;
 
 // ──────────────────────────────────────────────────────────────────────
 // Variants — use with `variants={...}` + `initial="hidden" animate="visible"`

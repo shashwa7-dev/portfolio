@@ -24,7 +24,6 @@ import {
   pillUpVariants,
   hoverLiftRotate,
   tapPress,
-  spring,
   stagger,
 } from "@/lib/motionVariants";
 
@@ -328,12 +327,25 @@ const S7Bot = () => {
             onClick={() => setIsOpen(true)}
             className="fixed bottom-4 right-4 -md:right-2.5 h-12 w-12 rounded-2xl overflow-hidden ring-1 ring-border-strong shadow-lg bg-card"
           >
-            <motion.img
-              src={"./truffycc.png"}
-              alt="truffy assistant"
+            {/* Static frame underneath, animated GIF on top. A GIF's loop
+                cannot be paused by CSS, so `motion-reduce:hidden` on the GIF is
+                the only way to honour prefers-reduced-motion here, and the PNG
+                below means those users still get an avatar rather than an empty
+                button. Paths are absolute: `./truffycc.png` resolved against the
+                document URL, so it 404'd on every nested route (on /work/shopos
+                it asked for /work/truffycc.png) and this FAB mounts globally. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/truffycc.png"
+              alt="Truffy assistant"
               className="w-full h-full object-cover object-center"
-              whileHover={hoverLiftRotate}
-              transition={spring.hoverIn}
+            />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/agent.gif"
+              alt=""
+              aria-hidden
+              className="absolute inset-0 w-full h-full object-cover object-center motion-reduce:hidden"
             />
           </motion.button>
         )}
@@ -354,10 +366,18 @@ const S7Bot = () => {
             <div className="flex items-center justify-between border-b border-border bg-card px-4 py-3">
               <div className="flex items-center gap-2">
                 <div className="relative h-9 w-9 overflow-hidden rounded-xl flex-shrink-0">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={"./truffycc.png"}
+                    src="/truffycc.png"
                     className="w-full h-full object-cover object-center"
-                    alt="portfolio assistant"
+                    alt="Truffy assistant"
+                  />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/images/agent.gif"
+                    alt=""
+                    aria-hidden
+                    className="absolute inset-0 w-full h-full object-cover object-center motion-reduce:hidden"
                   />
                   <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-500 ring-2 ring-card" />
                 </div>
