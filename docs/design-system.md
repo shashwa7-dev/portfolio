@@ -110,7 +110,7 @@ Five steps. Nothing else, and no arbitrary values.
 
 | Class | Value | Use |
 |---|---|---|
-| `rounded-full` | 9999px | Circles (dots, avatars) and **interactive** pills: CTAs, filter buttons, the play button |
+| `rounded-full` | 9999px | **Circles only**: status dots, circular avatars, and the capsule ends of thin progress bars |
 | `rounded-2xl` | 16px | Outermost surfaces: modals, the chat window, the command palette, bento cells |
 | `rounded-lg` | `0.75rem` = 12px (CSS `--radius`) | The default box: cards, panels, thumbnails, inputs |
 | `rounded-md` | `calc(0.75rem - 2px)` = 10px | Elements roughly 24–40px tall |
@@ -119,11 +119,18 @@ Five steps. Nothing else, and no arbitrary values.
 Nesting goes larger outside, smaller inside: a `rounded-2xl` container holds
 `rounded-lg` children, which hold `rounded-md` or `rounded-sm` ones.
 
-**Tags are not pills.** Non-interactive text badges (`StackIcon` labels,
-`EmploymentTag`, `Tag`, `OrgLinkChip`, `ActiveBadge`, post tags, project
-`Recent`/`Live` flags) use `rounded-sm`. Buttons stay `rounded-full`. The
-distinction is worth holding onto: a capsule reads as pressable, and a badge is
-not.
+**Nothing rectangular is a capsule.** If it has straight edges, it takes a step
+from the box scale; `rounded-full` is for shapes that are actually round.
+
+- **Buttons and CTAs use `rounded-md`.** Every one of them: the hero's two CTAs,
+  the Socials CTA, the project filter chips, the video play button, the
+  case-study link buttons. An earlier version of this document prescribed
+  `rounded-full` here, which is why they drifted into pills twice.
+- **Text badges use `rounded-sm`** (`StackIcon` labels, `EmploymentTag`, `Tag`,
+  `OrgLinkChip`, `ActiveBadge`, post tags, project `Recent`/`Live` flags).
+- **Card-shaped clickable surfaces keep `rounded-lg`**, like any other card: the
+  launch nudge, the chat's full-width prompt rows. The test is whether it reads
+  as a surface or as a control.
 
 `rounded-sm` exists because of arithmetic, not taste. A tag is about 20px tall, so
 a 10px `rounded-md` corner is half its height and renders as a capsule, meaning
@@ -221,7 +228,7 @@ Renders a `<span>` with `font-mono text-xs uppercase tracking-label text-subtle`
 ### Primary button
 
 ```tsx
-<button className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2 text-sm font-medium text-accent-foreground transition-colors hover:bg-accent-hover">
+<button className="inline-flex items-center gap-2 rounded-md bg-accent px-5 py-2 text-sm font-medium text-accent-foreground transition-colors duration-fast ease-out hover:bg-accent-hover">
   Label
 </button>
 ```
@@ -229,7 +236,7 @@ Renders a `<span>` with `font-mono text-xs uppercase tracking-label text-subtle`
 ### Ghost button
 
 ```tsx
-<button className="inline-flex items-center gap-2 rounded-full border border-border-strong bg-transparent px-5 py-2 text-sm text-foreground transition-colors hover:bg-muted">
+<button className="inline-flex items-center gap-2 rounded-md border border-border-strong bg-transparent px-5 py-2 text-sm text-foreground transition-colors duration-fast ease-out hover:bg-muted">
   Label
 </button>
 ```

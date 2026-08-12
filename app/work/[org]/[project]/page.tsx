@@ -109,7 +109,7 @@ export default function WorkProjectPage({
               onClick={() => setVideoOpen(true)}
               className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity"
             >
-              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white text-black font-medium">
+              <div className="flex items-center gap-2 rounded-md bg-white px-4 py-2 text-black font-medium">
                 <Play className="w-5 h-5 fill-current" />
                 Watch Preview
               </div>
@@ -173,7 +173,7 @@ export default function WorkProjectPage({
                     href={project.links.web}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-[color,background-color,transform] duration-150 ease-out text-sm active:scale-[0.97]"
+                    className="inline-flex items-center gap-2 rounded-md bg-secondary px-4 py-2 text-sm transition-[color,background-color,transform] duration-fast ease-out hover:bg-secondary/80 active:scale-[0.97]"
                   >
                     <ExternalLink className="w-4 h-4" />
                     Visit Website
@@ -184,7 +184,7 @@ export default function WorkProjectPage({
                     href={project.links.github}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-[color,background-color,transform] duration-150 ease-out text-sm active:scale-[0.97]"
+                    className="inline-flex items-center gap-2 rounded-md bg-secondary px-4 py-2 text-sm transition-[color,background-color,transform] duration-fast ease-out hover:bg-secondary/80 active:scale-[0.97]"
                   >
                     <ExternalLink className="w-4 h-4" />
                     GitHub
@@ -195,7 +195,7 @@ export default function WorkProjectPage({
                     href={project.links.twitter}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-[color,background-color,transform] duration-150 ease-out text-sm active:scale-[0.97]"
+                    className="inline-flex items-center gap-2 rounded-md bg-secondary px-4 py-2 text-sm transition-[color,background-color,transform] duration-fast ease-out hover:bg-secondary/80 active:scale-[0.97]"
                   >
                     <ExternalLink className="w-4 h-4" />
                     Twitter
@@ -206,7 +206,7 @@ export default function WorkProjectPage({
                     href={project.links.opensea}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-[color,background-color,transform] duration-150 ease-out text-sm active:scale-[0.97]"
+                    className="inline-flex items-center gap-2 rounded-md bg-secondary px-4 py-2 text-sm transition-[color,background-color,transform] duration-fast ease-out hover:bg-secondary/80 active:scale-[0.97]"
                   >
                     <ExternalLink className="w-4 h-4" />
                     OpenSea
