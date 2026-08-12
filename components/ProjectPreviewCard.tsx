@@ -22,28 +22,36 @@ export default function ProjectPreviewCard({ project }: { project: ProjectCardDa
       className="group relative flex min-h-[4.75rem] items-center overflow-hidden rounded-xl border border-border bg-card p-2.5 transition-colors duration-base ease-out hover:border-border-strong"
     >
       {/* Thumbnail: anchored to the left edge, full card height, masked so it
-          dissolves rightward into the card instead of ending on a hard edge. */}
+          dissolves rightward into the card instead of ending on a hard edge.
+
+          The three numbers here are one system and only make sense together.
+          The image occupies the left 38 percent. Its mask holds solid for the
+          first 40 percent of that (so to 15 percent of the card) and reaches
+          fully transparent at 38 percent. The copy then starts at 40 percent,
+          which is past the point where the image has already faded out
+          completely, so text never sits on top of visible image. Change one and
+          the other two need rechecking. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-y-0 left-0 w-[52%] select-none"
+        className="pointer-events-none absolute inset-y-0 left-0 w-[38%] select-none"
       >
         <Image
           src={project.thumbnail}
           alt=""
           fill
-          sizes="(max-width: 640px) 50vw, 220px"
+          sizes="(max-width: 640px) 40vw, 160px"
           className="object-cover object-left-top opacity-70 transition-transform duration-base ease-out group-hover:scale-[1.04]"
           style={{
             maskImage:
-              "linear-gradient(to right, black 0%, black 30%, transparent 100%)",
+              "linear-gradient(to right, black 0%, black 40%, transparent 100%)",
             WebkitMaskImage:
-              "linear-gradient(to right, black 0%, black 30%, transparent 100%)",
+              "linear-gradient(to right, black 0%, black 40%, transparent 100%)",
           }}
         />
       </div>
 
-      {/* Copy, above the thumbnail and clear of its solid region. */}
-      <div className="relative z-[1] min-w-0 flex-1 pl-[34%]">
+      {/* Copy, above the thumbnail and clear of it entirely. */}
+      <div className="relative z-[1] min-w-0 flex-1 pl-[40%]">
         <div className="flex items-center gap-1.5">
           <span className="truncate text-sm font-medium text-foreground">{project.title}</span>
           {project.badge && (
@@ -62,7 +70,7 @@ export default function ProjectPreviewCard({ project }: { project: ProjectCardDa
       {/* Metric moves out of the old thumbnail box and pins to the card's
           bottom-left, over the solid part of the image. */}
       {project.metric && (
-        <span className="absolute bottom-1.5 left-2.5 z-[1] max-w-[30%] truncate rounded-full border border-border-strong bg-background/80 px-1.5 font-mono text-2xs font-medium text-foreground backdrop-blur">
+        <span className="absolute bottom-1.5 left-2.5 z-[1] max-w-[34%] truncate rounded-full border border-border-strong bg-background/80 px-1.5 font-mono text-2xs font-medium text-foreground backdrop-blur">
           {project.metric}
         </span>
       )}
