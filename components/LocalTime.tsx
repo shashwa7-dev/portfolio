@@ -39,10 +39,35 @@ export default function LocalTime() {
     return () => clearInterval(id);
   }, []);
 
-  if (!time) return null;
+  // Before mount, reserve the box instead of rendering nothing.
+  //
+  // Returning null meant this row went from zero height to a line of text once
+  // the effect ran, and because the identity block distributes its rows with
+  // `justify-between`, that reflowed everything above it. The delay is usually a
+  // single frame, but it is however long hydration takes, so on a slow connection
+  // it was a visible jump.
+  //
+  // The placeholder is the longest string this can ever produce, rendered
+  // invisible. In a monospace face every glyph is the same width, so twelve
+  // characters ("12:00 AM IST") is the widest case and the reserved box is exact
+  // rather than estimated. It is not a pulsing skeleton on purpose: an ambient
+  // loop for a one-frame gap would draw more attention than the gap does.
+  //
+  // Server and first client render agree on this branch, so there is no hydration
+  // mismatch to suppress.
+  if (!time) {
+    return (
+      <span
+        aria-hidden
+        className="invisible font-mono text-2xs uppercase tracking-label text-subtle"
+      >
+        12:00 AM IST
+      </span>
+    );
+  }
 
   return (
-    <span className="font-mono text-2xs uppercase tracking-label text-subtle">
+    <span className="font-mono text-2xs uppercase tracking-label tabular-nums text-subtle">
       {time} IST
     </span>
   );
