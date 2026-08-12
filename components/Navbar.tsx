@@ -20,12 +20,12 @@ export function openCommandPalette() {
 /** Scroll distance over which the cloud backdrop reaches full strength. */
 const FADE_OVER_PX = 220;
 /**
- * Ceiling opacity. Deliberately low: the artwork is high-contrast line work, and
- * at 0.55 it competed with the nav labels badly enough that they were hard to
- * read. This is meant to register as texture behind the header, not as a picture,
- * so the header's own `bg-background/70` stays the dominant layer.
+ * Ceiling opacity. The previous asset was high-contrast black-and-cream line work
+ * and had to sit at 0.14 to keep the nav labels readable. This one is soft
+ * gradient sky, with no hard edges for text to fight, so it tolerates more while
+ * still reading as texture rather than as a picture.
  */
-const MAX_OPACITY = 0.14;
+const MAX_OPACITY = 0.3;
 
 export default function Navbar() {
   const { isDarkMode, toggleDarkMode } = useDarkMode();
@@ -61,23 +61,25 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 isolate overflow-hidden border-b border-border bg-background/70 backdrop-blur-xl">
-      {/* Cloud backdrop. Layered at z-0 with the nav at z-10, never a negative
+      {/* Header backdrop. Layered at z-0 with the nav at z-10, never a negative
           z-index: a negative value would paint behind the header's own
           bg-background/70 and be muted by it. `isolate` on the header keeps
-          these three layers sorting against each other.
+          these layers sorting against each other.
 
-          Full-bleed across the viewport while the nav content
-          below stays clamped to 1080px, so the art is edge to edge but the logo
-          still lines up with the page.
+          Full-bleed across the viewport while the nav content below stays
+          clamped to 1080px, so the art is edge to edge but the logo still lines
+          up with the page.
 
           Starts fully transparent, so at the top of the page the header looks
           exactly as it did before, and fades in as you scroll.
 
-          `invert dark:invert-0` is the trick that makes one asset work in both
-          themes. The source is dark navy with cream clouds, which suits dark
-          mode as-is; inverting it for light mode yields a near-white ground with
-          navy clouds instead of pasting a dark band across a warm near-white
-          page. */}
+          No `invert` here, unlike the previous asset. That one was dark navy
+          with cream clouds, so inverting gave it a usable light-mode form. This
+          one is a bright blue sky, and inverting blue yields orange. Instead the
+          image carries `dark:opacity-60`, which multiplies with the
+          scroll-driven opacity on the wrapper: a bright blue band needs damping
+          against a near-black page, but reads fine at full strength on the warm
+          light one. */}
       <div
         ref={cloudsRef}
         aria-hidden
@@ -85,13 +87,13 @@ export default function Navbar() {
         className="pointer-events-none absolute inset-0 z-0 select-none"
       >
         <Image
-          src="/images/header-clouds.jpg"
+          src="/images/header-bg.jpg"
           alt=""
           fill
           sizes="100vw"
           quality={85}
           priority
-          className="object-cover object-center invert dark:invert-0"
+          className="object-cover object-center dark:opacity-60"
         />
       </div>
 
@@ -118,7 +120,7 @@ export default function Navbar() {
             type="button"
             onClick={openCommandPalette}
             aria-label="Open command menu"
-            className="flex items-center gap-1.5 rounded-lg border border-border-strong px-2.5 py-1.5 font-mono text-xs text-muted-foreground transition-[color,transform] duration-150 ease-out hover:text-foreground active:scale-[0.94]"
+            className="flex items-center gap-1.5 rounded-lg border border-border-strong bg-background/80 px-2.5 py-1.5 font-mono text-xs text-muted-foreground backdrop-blur-sm transition-[color,background-color,transform] duration-150 ease-out hover:bg-background hover:text-foreground active:scale-[0.94]"
           >
             <span className="text-sm leading-none">⌘</span> K
           </button>
@@ -126,7 +128,7 @@ export default function Navbar() {
             type="button"
             onClick={toggleDarkMode}
             aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
-            className="grid h-8 w-8 place-items-center rounded-lg border border-border-strong text-muted-foreground transition-[color,transform] duration-150 ease-out hover:text-foreground active:scale-[0.94]"
+            className="grid h-8 w-8 place-items-center rounded-lg border border-border-strong bg-background/80 text-muted-foreground backdrop-blur-sm transition-[color,background-color,transform] duration-150 ease-out hover:bg-background hover:text-foreground active:scale-[0.94]"
           >
             {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
@@ -136,7 +138,7 @@ export default function Navbar() {
             aria-label="Toggle menu"
             aria-expanded={mobileOpen}
             aria-controls="mobile-nav"
-            className="text-sm text-muted-foreground transition-transform duration-150 ease-out md:hidden active:scale-[0.94]"
+            className="rounded-lg border border-border-strong bg-background/80 px-2.5 py-1.5 text-sm text-muted-foreground backdrop-blur-sm transition-[color,background-color,transform] duration-150 ease-out hover:bg-background hover:text-foreground md:hidden active:scale-[0.94]"
           >
             Menu
           </button>
