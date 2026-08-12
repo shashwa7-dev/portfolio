@@ -16,11 +16,14 @@ import { cn } from "@/lib/utils";
  * whole component that owns the sheen be the hover target, which is usually
  * larger and easier to hit than the strip being decorated.
  *
- * The sheen is tinted with `--background`, not white. These surfaces are painted
- * in `--foreground`, which inverts between themes, so a white sheen would be
- * invisible in dark mode where the surface is already near-white. Tinting with
- * the background token means the highlight always contrasts with whatever it
- * sweeps across.
+ * The sheen is white and fixed, not a palette token. A shimmer is a specular
+ * highlight, so it wants to be lighter than what it crosses, and using a token
+ * that inverts between themes would make it a *darker* smear in one of them.
+ * That means this belongs on surfaces darker than the sheen, which in practice
+ * means scrims over media rather than page-surface chips. An earlier version
+ * tinted it with `--background` to pair with a `bg-foreground` band, and both
+ * halves of that pairing were wrong for the same reason: a strip sitting on a
+ * photograph cannot borrow colours that assume a known background.
  *
  * `motion-reduce:hidden` removes it outright. It is decoration with no state to
  * convey, so there is nothing to degrade gracefully to.
@@ -37,7 +40,7 @@ export default function Shimmer({
       {children}
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-background/40 to-transparent group-hover:animate-shimmer motion-reduce:hidden"
+        className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent group-hover:animate-shimmer motion-reduce:hidden"
       />
     </span>
   );

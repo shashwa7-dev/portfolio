@@ -63,13 +63,33 @@ export default function About() {
             {/* Availability rides the avatar, LinkedIn style, instead of taking a
                 row of its own as a pill.
 
-                The band is `bg-foreground text-background`, the same inverted
-                pair as the verified mark and the books ticks. A solid emerald
-                band was tried and dropped: it contradicted a decision already
-                recorded in this file, that green is the dot and nothing else,
-                because a filled hue on a deliberately hueless page reads as an
-                intrusion. The dot survives, since a live-status colour is the one
-                thing the hue genuinely earns.
+                The band is a fixed dark scrim, not a palette token, and that is
+                the point: it sits on photographic content, so it has to stay
+                legible against pixels nobody controls. Page-surface tokens all
+                assume a known background. `bg-foreground` was tried and failed
+                exactly there, inverting to near-white in dark mode against avatar
+                art that is already light, so the band lost its edge. A scrim
+                works in both themes with one value, and the codebase already does
+                this over media: see the `bg-black/40` play overlay on the work
+                case-study page.
+
+                A solid emerald band was tried before that and dropped for a
+                different reason: it contradicted a decision recorded in this
+                file, that green is the dot and nothing else, because a filled hue
+                on a deliberately hueless page reads as an intrusion. The dot
+                survives, since a live-status colour is the one thing the hue
+                genuinely earns.
+
+                The shadow is the avatar's "pop", split by theme because a black
+                shadow does very little against a near-black page: light mode gets
+                a soft one, dark mode a deeper one that reads as depth rather than
+                as a smudge.
+
+                The edge itself comes from `ring-1 ring-inset ring-border` inside
+                `AvatarHover`. It has to be inset: this wrapper's
+                `overflow-hidden` (needed so the band's corners follow the avatar's
+                radius) would otherwise clip the ring, since Tailwind paints rings
+                as box-shadows outside the element.
 
                 The visible word is just "Open". At `text-2xs` in mono, "Open to
                 work" measures about 84px against a 64px avatar, so the full
@@ -83,11 +103,11 @@ export default function About() {
                 so it cannot swallow the hover that arms the avatar's own GIF. */}
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="group relative shrink-0 overflow-hidden rounded-2xl">
+                <div className="group relative shrink-0 overflow-hidden rounded-2xl shadow-md shadow-black/10 dark:shadow-lg dark:shadow-black/40">
                   <AvatarHover />
                   <Shimmer className="absolute inset-x-0 bottom-0 block">
-                    <span className="pointer-events-none flex items-center justify-center gap-1 bg-foreground py-px font-mono text-2xs font-medium uppercase tracking-label text-background">
-                      <span className="h-1 w-1 rounded-full bg-emerald-500" />
+                    <span className="pointer-events-none flex items-center justify-center gap-1 bg-black/65 py-px font-mono text-2xs font-medium uppercase tracking-label text-white backdrop-blur-[2px]">
+                      <span className="h-1 w-1 rounded-full bg-emerald-400" />
                       <span aria-hidden>Open</span>
                       <span className="sr-only">Open to work</span>
                     </span>
