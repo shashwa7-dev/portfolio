@@ -114,15 +114,24 @@ const categories: Category[] = [
  * defaults. `cn` is tailwind-merge, so the passed utilities win over the
  * component's own, and the larger pill stays intact at its other call site on the
  * work case-study page.
+ *
+ * The tags are `rounded-sm`, not `rounded-full`. At roughly 20px tall a capsule
+ * and a 10px `rounded-md` corner are the same shape, so the only way to make a tag
+ * read as a rounded rectangle at this size is to go below the previous smallest
+ * step. See the radius scale in docs/design-system.md.
  */
 const TechStack = () => {
   return (
     <Section id="tech_stack" number="03" label="Toolkit" title="Tools I reach for" width="reading">
-      <div className="border-t border-border">
+      {/* `divide-y` rather than a border on the wrapper plus one per row: it
+          draws only between children, so the rules that boxed the section in at
+          the top and bottom are gone and only the internal grouping remains.
+          `py-4` gives each row more air now that there is no frame holding it. */}
+      <div className="divide-y divide-border">
         {categories.map((cat, i) => (
           <div
             key={cat.label}
-            className="grid items-start gap-y-2 border-b border-border py-3 sm:grid-cols-[8.5rem_1fr] sm:gap-x-4"
+            className="grid items-start gap-y-2 py-4 first:pt-0 last:pb-0 sm:grid-cols-[8.5rem_1fr] sm:gap-x-4"
           >
             <div className="font-mono text-2xs uppercase leading-5 tracking-label text-subtle">
               <span aria-hidden className="mr-1.5 text-border-strong">

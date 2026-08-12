@@ -70,7 +70,7 @@ export function BlogPosts() {
                 {JSON.parse(post.metadata.tags).map((tag: string, i: number) => (
                   <span
                     key={i}
-                    className="rounded-full border border-border px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-muted-foreground"
+                    className="rounded-sm border border-border px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-muted-foreground"
                   >
                     {tag}
                   </span>

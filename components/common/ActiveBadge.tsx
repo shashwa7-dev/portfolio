@@ -10,7 +10,7 @@ const variantStyles = {
   default:
     "inline-flex items-center gap-1.5 rounded-md border border-green-500/30 bg-green-500/10 px-2 py-0.5 text-xs font-medium text-green-600 dark:text-green-400",
   overlay:
-    "inline-flex items-center gap-1.5 rounded-full border border-green-500/30 bg-green-500/20 px-2.5 py-1 text-xs font-medium text-green-600 dark:text-green-400 backdrop-blur-sm",
+    "inline-flex items-center gap-1.5 rounded-sm border border-green-500/30 bg-green-500/20 px-2.5 py-1 text-xs font-medium text-green-600 dark:text-green-400 backdrop-blur-sm",
   pill:
     "inline-flex items-center gap-1.5 rounded-full bg-green-500/20 px-2 py-0.5 text-xs font-medium text-green-500 dark:text-green-400",
   minimal:

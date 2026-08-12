@@ -25,7 +25,7 @@ export default function ProjectShowcaseCard({ project }: { project: ProjectCardD
         {project.badge && (
           <Shimmer
             tone="surface"
-            className="absolute left-3 top-3 inline-block rounded-full border border-border-strong bg-background/80 backdrop-blur"
+            className="absolute left-3 top-3 inline-block rounded-sm border border-border-strong bg-background/80 backdrop-blur"
           >
             <span className="block px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-foreground">
               {project.badge}
@@ -33,7 +33,7 @@ export default function ProjectShowcaseCard({ project }: { project: ProjectCardD
           </Shimmer>
         )}
         {project.metric && (
-          <span className="absolute bottom-3 left-3 rounded-full border border-border-strong bg-background/80 px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-foreground backdrop-blur">
+          <span className="absolute bottom-3 left-3 rounded-sm border border-border-strong bg-background/80 px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-foreground backdrop-blur">
             {project.metric}
           </span>
         )}

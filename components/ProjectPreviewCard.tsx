@@ -68,7 +68,7 @@ export default function ProjectPreviewCard({ project }: { project: ProjectCardDa
           {project.badge && (
             <Shimmer
               tone="surface"
-              className="inline-block shrink-0 rounded-full border border-border-strong"
+              className="inline-block shrink-0 rounded-sm border border-border-strong"
             >
               <span className="block px-1.5 font-mono text-2xs uppercase tracking-label text-foreground">
                 {project.badge}

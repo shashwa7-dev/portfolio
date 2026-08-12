@@ -297,7 +297,7 @@ export default function StackIcon({
   return (
     <span
       className={cn(
-        "group inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary px-2.5 py-1 text-xs text-muted-foreground transition-colors duration-base ease-out hover:border-border-strong hover:text-foreground",
+        "group inline-flex items-center gap-1.5 rounded-sm border border-border bg-secondary px-2.5 py-1 text-xs text-muted-foreground transition-colors duration-base ease-out hover:border-border-strong hover:text-foreground",
         className
       )}
     >

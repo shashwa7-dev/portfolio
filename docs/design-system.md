@@ -106,17 +106,29 @@ Sections use `py-10 md:py-14` (~40px / 56px). This is baked into the `Section` c
 
 ### Border radius
 
-Four steps. Nothing else, and no arbitrary values.
+Five steps. Nothing else, and no arbitrary values.
 
 | Class | Value | Use |
 |---|---|---|
-| `rounded-full` | 9999px | Anything capsule-shaped: buttons, pills, badges, tags, dots, `StackIcon` labels |
+| `rounded-full` | 9999px | Circles (dots, avatars) and **interactive** pills: CTAs, filter buttons, the play button |
 | `rounded-2xl` | 16px | Outermost surfaces: modals, the chat window, the command palette, bento cells |
 | `rounded-lg` | `0.75rem` = 12px (CSS `--radius`) | The default box: cards, panels, thumbnails, inputs |
-| `rounded-md` | `calc(0.75rem - 2px)` = 10px | Elements under roughly 40px, where 12px would read as a circle |
+| `rounded-md` | `calc(0.75rem - 2px)` = 10px | Elements roughly 24–40px tall |
+| `rounded-sm` | `calc(0.75rem - 4px)` = 8px | Text tags and badges, roughly 20px tall |
 
 Nesting goes larger outside, smaller inside: a `rounded-2xl` container holds
-`rounded-lg` children, which hold `rounded-md` ones.
+`rounded-lg` children, which hold `rounded-md` or `rounded-sm` ones.
+
+**Tags are not pills.** Non-interactive text badges (`StackIcon` labels,
+`EmploymentTag`, `Tag`, `OrgLinkChip`, `ActiveBadge`, post tags, project
+`Recent`/`Live` flags) use `rounded-sm`. Buttons stay `rounded-full`. The
+distinction is worth holding onto: a capsule reads as pressable, and a badge is
+not.
+
+`rounded-sm` exists because of arithmetic, not taste. A tag is about 20px tall, so
+a 10px `rounded-md` corner is half its height and renders as a capsule, meaning
+`rounded-md` and `rounded-full` are the same shape at that size. 8px leaves about
+4px of straight edge, which is what makes it read as a rounded rectangle.
 
 **Retired, do not reintroduce:**
 

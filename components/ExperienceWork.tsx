@@ -121,7 +121,7 @@ export default function ExperienceWork() {
                           term, which is what a `dl` exists to rule out. */}
                       <dt className="sr-only">Status</dt>
                       <dd>
-                        <span className="inline-flex items-center gap-1.5 rounded-full border border-border-strong px-2 py-0.5 font-mono text-2xs font-medium uppercase tracking-label text-muted-foreground">
+                        <span className="inline-flex items-center gap-1.5 rounded-sm border border-border-strong px-2 py-0.5 font-mono text-2xs font-medium uppercase tracking-label text-muted-foreground">
                           <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                           Currently building
                         </span>
