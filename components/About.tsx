@@ -85,11 +85,14 @@ export default function About() {
                 a soft one, dark mode a deeper one that reads as depth rather than
                 as a smudge.
 
-                The edge itself comes from `ring-1 ring-inset ring-border-strong`
-                inside `AvatarHover`. It has to be inset: this wrapper's
-                `overflow-hidden` (needed so the band's corners follow the avatar's
-                radius) would otherwise clip the ring, since Tailwind paints rings
-                as box-shadows outside the element.
+                The edge is a plain `border` on this wrapper. Earlier attempts put
+                a ring inside `AvatarHover` instead, which was the wrong place
+                twice over: a non-inset ring is a box-shadow and this wrapper's
+                `overflow-hidden` clipped it away entirely, and once inset it sat
+                a pixel inside the artwork rather than describing the shape. A
+                border on the wrapper is not clipped by that wrapper's own
+                overflow, and it traces the avatar and its band as one object,
+                which is what they are.
 
                 The visible word is just "Open". At `text-2xs` in mono, "Open to
                 work" measures about 84px against a 64px avatar, so the full
@@ -103,7 +106,7 @@ export default function About() {
                 so it cannot swallow the hover that arms the avatar's own GIF. */}
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="group relative shrink-0 overflow-hidden rounded-2xl shadow-md shadow-black/10 dark:shadow-lg dark:shadow-black/40">
+                <div className="group relative shrink-0 overflow-hidden rounded-2xl border border-border-strong shadow-md shadow-black/10 dark:shadow-lg dark:shadow-black/40">
                   <AvatarHover />
                   <Shimmer className="absolute inset-x-0 bottom-0 block">
                     <span className="pointer-events-none flex items-center justify-center gap-1 bg-black/65 py-px font-mono text-2xs font-medium uppercase tracking-label text-white backdrop-blur-[2px]">

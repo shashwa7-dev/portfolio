@@ -43,19 +43,13 @@ export default function AvatarHover() {
 
   return (
     <div
-      /* `ring-inset` is required, not cosmetic. Tailwind implements `ring` as a
-         box-shadow painted outside the element's box, and an ancestor's
-         `overflow-hidden` clips a child's shadow. About.tsx wraps this in exactly
-         such a container (it has to, so the availability band's corners follow the
-         avatar's radius), so a non-inset ring was clipped away completely and the
-         avatar had no visible edge in either theme.
-
-         `ring-border-strong`, not `ring-border`. At 89.5% lightness against a
-         98.5% page, `--border` is a nine-point delta across a single pixel, which
-         is faint enough to read as no border at all. `--border-strong` at 81% is
-         the token this app already uses wherever a hairline needs to be seen, so
-         it is the subtle end of the scale rather than a step beyond it. */
-      className="group relative h-16 w-16 overflow-hidden rounded-2xl ring-1 ring-inset ring-border-strong"
+      /* No ring here. The visible edge is a `border` on the wrapper in About.tsx,
+         which owns both this and the availability band and so traces the whole
+         object. Two earlier attempts put it here and both were wrong: a plain
+         `ring` is a box-shadow, so the wrapper's `overflow-hidden` clipped it away
+         entirely, and `ring-inset` then drew a pixel inside the artwork rather
+         than around it. */
+      className="group relative h-16 w-16 overflow-hidden rounded-2xl"
       onPointerEnter={(e) => {
         if (e.pointerType === "mouse") setArmed(true);
       }}
