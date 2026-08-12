@@ -9,71 +9,78 @@ import StackIcon, { type StackName } from "@/components/common/StackIcon";
  * section and the Side-projects grid on the homepage, so a change here lands in
  * both places.
  *
- * The thumbnail is not an inline box any more. It bleeds from the card's left
- * edge across roughly half the width and fades out to the right, so it reads as
- * part of the card surface rather than as a pasted rectangle. The copy sits on
- * top of it, offset far enough right that it never lands on the solid part of
- * the image.
+ * The thumbnail fills a fixed-width column flush to the card's left edge, full
+ * height, with no ring of its own. The card's own border is the only frame; a
+ * second hairline around the image inside it reads as a box in a box. The card
+ * carries `overflow-hidden` so the image takes the rounded corner from it rather
+ * than needing its own radius.
+ *
+ * Two earlier approaches are recorded here because both were worse and it would
+ * be easy to drift back into either.
+ *
+ * The image used to bleed across the left 38 percent at 70 percent opacity behind
+ * a right-fading mask, with the copy offset by `pl-[40%]` to clear it. It was
+ * never legible at that size behind a fade, so it spent a third of the card
+ * saying nothing, the copy was squeezed into the remainder, and the width, the
+ * mask stops and the copy's offset were three numbers that only worked as a set.
+ *
+ * The metric used to be a pill absolutely positioned over that image at
+ * `max-w-[34%] truncate`, so "100K mints · day one" was clipped: the strongest
+ * fact on the card was the one thing you could not read. A solid high-contrast
+ * chip was tried instead and read as too loud for a card this small. It is now
+ * plain mono text in `text-foreground`, sitting on the last row against a
+ * `text-muted-foreground` tagline. In a palette with no hue, that step in
+ * lightness is the emphasis lever, and it needs no container to work.
  */
 export default function ProjectPreviewCard({ project }: { project: ProjectCardData }) {
   return (
     <Link
       href={project.href}
-      className="group relative flex min-h-[4.75rem] items-center overflow-hidden rounded-xl border border-border bg-card p-2.5 transition-colors duration-base ease-out hover:border-border-strong"
+      className="group flex overflow-hidden rounded-xl border border-border bg-card transition-colors duration-base ease-out hover:border-border-strong"
     >
-      {/* Thumbnail: anchored to the left edge, full card height, masked so it
-          dissolves rightward into the card instead of ending on a hard edge.
-
-          The three numbers here are one system and only make sense together.
-          The image occupies the left 38 percent. Its mask holds solid for the
-          first 40 percent of that (so to 15 percent of the card) and reaches
-          fully transparent at 38 percent. The copy then starts at 40 percent,
-          which is past the point where the image has already faded out
-          completely, so text never sits on top of visible image. Change one and
-          the other two need rechecking. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-y-0 left-0 w-[38%] select-none"
-      >
+      {/* `self-stretch` is what makes this full height: the column takes its
+          height from the content beside it, which `fill` then needs to resolve
+          against. */}
+      <span className="relative w-[4.5rem] shrink-0 self-stretch bg-elevated sm:w-20">
         <Image
           src={project.thumbnail}
           alt=""
           fill
-          sizes="(max-width: 640px) 40vw, 160px"
-          className="object-cover object-left-top opacity-70 transition-transform duration-base ease-out group-hover:scale-[1.04]"
-          style={{
-            maskImage:
-              "linear-gradient(to right, black 0%, black 40%, transparent 100%)",
-            WebkitMaskImage:
-              "linear-gradient(to right, black 0%, black 40%, transparent 100%)",
-          }}
+          sizes="80px"
+          className="object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
         />
-      </div>
+      </span>
 
-      {/* Copy, above the thumbnail and clear of it entirely. */}
-      <div className="relative z-[1] min-w-0 flex-1 pl-[40%]">
-        <div className="flex items-center gap-1.5">
-          <span className="truncate text-sm font-medium text-foreground">{project.title}</span>
+      <span className="min-w-0 flex-1 p-3">
+        <span className="flex items-center gap-1.5">
+          <span className="truncate text-sm font-medium text-foreground">
+            {project.title}
+          </span>
           {project.badge && (
-            <span className="shrink-0 font-mono text-2xs uppercase tracking-label text-foreground">{project.badge}</span>
+            <span className="shrink-0 font-mono text-2xs uppercase tracking-label text-foreground">
+              {project.badge}
+            </span>
           )}
           <ArrowUpRight className="ml-auto h-3.5 w-3.5 shrink-0 text-subtle transition-colors duration-base ease-out group-hover:text-foreground" />
-        </div>
-        <p className="line-clamp-1 text-xs text-muted-foreground">{project.tagline}</p>
-        <div className="mt-1.5 flex items-center gap-1.5 text-subtle">
-          {project.stack.slice(0, 4).map((t) => (
-            <StackIcon key={t} name={t as StackName} size={13} showLabel={false} />
-          ))}
-        </div>
-      </div>
-
-      {/* Metric moves out of the old thumbnail box and pins to the card's
-          bottom-left, over the solid part of the image. */}
-      {project.metric && (
-        <span className="absolute bottom-1.5 left-2.5 z-[1] max-w-[34%] truncate rounded-full border border-border-strong bg-background/80 px-1.5 font-mono text-2xs font-medium text-foreground backdrop-blur">
-          {project.metric}
         </span>
-      )}
+
+        <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">
+          {project.tagline}
+        </p>
+
+        <span className="mt-2 flex items-center gap-2">
+          {project.metric && (
+            <span className="truncate font-mono text-2xs font-medium text-foreground">
+              {project.metric}
+            </span>
+          )}
+          <span className="ml-auto flex shrink-0 items-center gap-1.5 text-subtle">
+            {project.stack.slice(0, 4).map((t) => (
+              <StackIcon key={t} name={t as StackName} size={13} showLabel={false} />
+            ))}
+          </span>
+        </span>
+      </span>
     </Link>
   );
 }
