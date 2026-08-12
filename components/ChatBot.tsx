@@ -327,27 +327,26 @@ const S7Bot = () => {
             onClick={() => setIsOpen(true)}
             className="fixed bottom-4 right-4 -md:right-2.5 h-12 w-12 rounded-2xl overflow-hidden ring-1 ring-border-strong shadow-lg bg-card"
           >
-            {/* Single image by request: the GIF is the avatar, with no static
-                frame layered under it. Note the consequence, since it is not
-                obvious: a GIF's loop cannot be paused by CSS, so with nothing
-                underneath there is no `motion-reduce` variant to apply here.
-                Hiding the GIF would leave an empty button, so reduced-motion
-                visitors see the loop.
+            {/* Single image, no layered fallback. Now a static JPEG rather than
+                an animated GIF, which also retires the reduced-motion caveat the
+                GIF carried: a GIF's loop cannot be paused by CSS, so there was no
+                way to honour prefers-reduced-motion without leaving an empty
+                button. A still image has nothing to pause.
+
+                No `scale` either. The previous asset had the subject sitting
+                inside a wide white margin and needed scaling to crop it; this one
+                is 736x736 with the artwork bleeding to all four edges, so plain
+                object-cover already fills the button.
 
                 The path is absolute. It used to be `./truffycc.png`, resolved
                 against the document URL, so it 404'd on every nested route: on
                 /work/shopos the browser asked for /work/truffycc.png, and this
                 FAB mounts globally from the layout. */}
-            {/* `scale-[1.45]` fills the button. The GIF is 457x457 with the dog
-                sitting inside a wide white margin, so at plain object-cover the
-                subject reads small and floats in the middle. Scaling up crops
-                that margin against the button's overflow-hidden. Adjust this one
-                value if the ears or the popcorn get clipped. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/images/agent.gif"
+              src="/images/agent.jpg"
               alt="Truffy assistant"
-              className="w-full h-full scale-[1.45] object-cover object-center"
+              className="w-full h-full object-cover object-center"
             />
           </motion.button>
         )}
@@ -370,8 +369,8 @@ const S7Bot = () => {
                 <div className="relative h-9 w-9 overflow-hidden rounded-xl flex-shrink-0">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src="/images/agent.gif"
-                    className="w-full h-full scale-[1.45] object-cover object-center"
+                    src="/images/agent.jpg"
+                    className="w-full h-full object-cover object-center"
                     alt="Truffy assistant"
                   />
                   <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-500 ring-2 ring-card" />

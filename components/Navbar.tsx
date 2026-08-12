@@ -19,8 +19,13 @@ export function openCommandPalette() {
 
 /** Scroll distance over which the cloud backdrop reaches full strength. */
 const FADE_OVER_PX = 220;
-/** Ceiling opacity. Held well below 1 so the nav stays legible over the art. */
-const MAX_OPACITY = 0.55;
+/**
+ * Ceiling opacity. Deliberately low: the artwork is high-contrast line work, and
+ * at 0.55 it competed with the nav labels badly enough that they were hard to
+ * read. This is meant to register as texture behind the header, not as a picture,
+ * so the header's own `bg-background/70` stays the dominant layer.
+ */
+const MAX_OPACITY = 0.14;
 
 export default function Navbar() {
   const { isDarkMode, toggleDarkMode } = useDarkMode();
