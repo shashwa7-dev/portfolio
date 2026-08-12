@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
 import { Link as LinkCTA } from "@/components/common/Link";
 import { baseUrl } from "@/app/sitemap";
-import { ogUrl } from "@/lib/seo";
+import { ogUrl, breadcrumbLd } from "@/lib/seo";
 import Container from "@/components/layout/Container";
 
 type Props = {
@@ -49,6 +49,19 @@ export default function BookPage({ params }: Props) {
 
   return (
     <main className="min-h-screen py-8 md:py-12">
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            breadcrumbLd([
+              { name: "Home", path: "" },
+              { name: "Books", path: "books" },
+              { name: book.name, path: `books/${book.slug}` },
+            ])
+          ),
+        }}
+      />
       <Container width="reading" className="space-y-10">
         {/* Header */}
         <header className="flex flex-col gap-6 md:flex-row md:items-start">
