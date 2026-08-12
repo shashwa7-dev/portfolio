@@ -171,15 +171,11 @@ import Bento from "@/components/layout/Bento";
 - Inner div uses `grid gap-px bg-border` -- the `gap-px` on the `bg-border` parent creates 1px hairline separators between cells.
 - Each cell should have `bg-card` (or `bg-background`) so the border background peeks through as the hairline.
 
-### Divider
-
-```tsx
-import Divider from "@/components/layout/Divider";
-
-<Divider />
-```
-
-A full-width faded horizontal rule: `h-px bg-gradient-to-r from-transparent via-border-strong to-transparent`, constrained to `max-w-[760px]`. Use between every major section, matching the homepage pattern.
+There is no standalone divider primitive. Sections are separated by vertical
+rhythm alone (`py-10 md:py-14` on `Section`), not by a rule element. If a
+section boundary ever reads as too weak, the documented fallback is
+`border-t border-border` on the `Section` primitive itself, not a new
+standalone separator component.
 
 ### Label
 
@@ -191,18 +187,6 @@ import Label from "@/components/layout/Label";
 ```
 
 Renders a `<span>` with `font-mono text-xs uppercase tracking-label text-subtle`.
-
-### Reveal
-
-```tsx
-import Reveal from "@/components/layout/Reveal";
-
-<Reveal>
-  <p>Fades up on first viewport entry.</p>
-</Reveal>
-```
-
-A client component wrapping Motion's `motion.div` with a fade-up animation triggered by `whileInView`. Uses `--ease-out` easing.
 
 ---
 
@@ -338,9 +322,7 @@ Rules: exits animate faster than enters; keyboard surfaces (command palette, sho
 | `components/layout/Container.tsx` | Width-constrained wrapper |
 | `components/layout/Section.tsx` | Numbered section with eyebrow + title |
 | `components/layout/Bento.tsx` | Hairline-grid card layout |
-| `components/layout/Divider.tsx` | Faded horizontal separator |
 | `components/layout/Label.tsx` | Mono eyebrow label |
-| `components/layout/Reveal.tsx` | Fade-up on viewport entry |
 | `components/common/StackIcon.tsx` | Brand icon chips (simple-icons) |
 | `lib/seo.ts` | `ogUrl()`, structured data helpers |
 | `app/sitemap.ts` | `baseUrl` export + sitemap generation |
