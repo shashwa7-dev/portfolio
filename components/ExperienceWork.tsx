@@ -57,11 +57,18 @@ export default function ExperienceWork() {
                 </Link>
               </div>
 
-              {/* The rail, stopping exactly 16px short of the bottom so the
-                  elbow below can continue it. `before:bottom-4` matches the
-                  elbow's `h-4`, and both sit at `left-3`, so the vertical line
-                  and the elbow's left border are colinear and contiguous with no
+              {/* The rail stops 26px short of the bottom so the elbow below can
+                  continue it, and both sit at `left-3`, so the vertical line and
+                  the elbow's left border are colinear and contiguous with no
                   overlap.
+
+                  26px is the elbow's own 16px height plus a 10px lift. The lift
+                  is what puts the elbow's horizontal stroke level with the last
+                  line of text rather than below it: that last line is the
+                  deep-dive link at `text-sm`, 13px on a 1.55 line height, so its
+                  box is about 20px and its centre sits 10px above the wrapper's
+                  bottom edge. Without the lift the stroke landed on the very
+                  bottom of the line box, reading as though the rail overshot.
 
                   An earlier version ran the rail `h-full` and masked its tail
                   with a `bg-background` box, following the reference
@@ -71,7 +78,7 @@ export default function ExperienceWork() {
                   by side. Shortening the rail needs no mask, so it also cannot
                   drift out of alignment or depend on a box matching the page
                   background in both themes. */}
-              <div className="relative pl-9 pt-2 before:absolute before:left-3 before:top-0 before:bottom-4 before:w-px before:bg-border">
+              <div className="relative pl-9 pt-2 before:absolute before:left-3 before:top-0 before:bottom-[1.625rem] before:w-px before:bg-border">
                 {/* Role metadata as a real description list, so each value says
                     what it is to a screen reader and to the markdown
                     renditions. */}
@@ -217,7 +224,7 @@ export default function ExperienceWork() {
                     are the same two the rail above uses. */}
                 <span
                   aria-hidden
-                  className="pointer-events-none absolute bottom-0 left-3 h-4 w-4 rounded-bl-md border-b border-l border-border"
+                  className="pointer-events-none absolute bottom-2.5 left-3 h-4 w-4 rounded-bl-md border-b border-l border-border"
                 />
               </div>
             </div>
