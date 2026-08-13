@@ -21,11 +21,15 @@ import Image from "next/image";
  *    paused by CSS, so `prefers-reduced-motion` had no effect on it otherwise.
  *    Nothing moves here, so there is nothing to opt out of.
  *
- * Greyscale follows the site-wide rule for decorative artwork: permanently
- * desaturated, no hover restore, since it is texture rather than something to
- * reveal. Worth knowing this image is a gold duotone, so that rule costs it more
- * than it cost the GIFs. Dropping `grayscale` from the className below is the whole
- * change if the colour should stay.
+ * **This one keeps its colour, deliberately, against the site-wide greyscale rule
+ * for decorative artwork.** That rule exists so brand logos and screenshots cannot
+ * drag arbitrary hues onto a hueless page. It does not fit here: the image is a
+ * gold duotone chosen for that gold, and desaturating it leaves a grey halftone
+ * that is a different picture. Greyscale was applied first and looked so unlike the
+ * source that it read as the wrong file having been used.
+ *
+ * The rule still holds everywhere else, including the two other decorative
+ * surfaces. Nothing about this is a precedent for un-greyscaling a logo.
  */
 export default function FooterScenery() {
   return (
@@ -36,7 +40,7 @@ export default function FooterScenery() {
           alt=""
           fill
           sizes="100vw"
-          className="object-cover object-center opacity-90 grayscale dark:opacity-75"
+          className="object-cover object-center opacity-90 dark:opacity-75"
           style={{
             maskImage:
               "linear-gradient(to top, black 0%, black 72%, transparent 100%)",
