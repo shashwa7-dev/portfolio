@@ -324,7 +324,7 @@ const S7Bot = () => {
             whileHover={hoverLiftRotate}
             whileTap={tapPress}
             onClick={() => setIsOpen(true)}
-            className="group fixed bottom-4 right-4 -md:right-2.5 grid h-12 w-12 place-items-center rounded-2xl bg-black shadow-lg ring-1 ring-border-strong"
+            className="group fixed bottom-4 right-4 -md:right-2.5 grid h-12 w-12 place-items-center rounded-2xl bg-white shadow-lg ring-1 ring-border-strong"
           >
             {/* An inline mark rather than a raster. It draws in `currentColor`, so
                 it is monochrome by construction and needs no greyscale class, and
@@ -340,7 +340,7 @@ const S7Bot = () => {
                 caveat from when this was an animated GIF, whose loop CSS cannot
                 pause, and a `./truffycc.png` relative path that 404'd on every
                 nested route because this FAB mounts globally from the layout. */}
-            <AgentMark className="h-9 w-auto text-white" />
+            <AgentMark className="h-9 w-auto text-black" />
           </motion.button>
         )}
       </AnimatePresence>
@@ -359,8 +359,8 @@ const S7Bot = () => {
             {/* Header */}
             <div className="flex items-center justify-between border-b border-border bg-card px-4 py-3">
               <div className="flex items-center gap-2">
-                <div className="relative grid h-9 w-9 flex-shrink-0 place-items-center rounded-lg bg-black">
-                  <AgentMark className="h-6 w-auto text-white" />
+                <div className="relative grid h-9 w-9 flex-shrink-0 place-items-center rounded-lg bg-white">
+                  <AgentMark className="h-6 w-auto text-black" />
                   <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-card" />
                 </div>
                 <div>

@@ -21,6 +21,14 @@ import Image from "next/image";
  *    paused by CSS, so `prefers-reduced-motion` had no effect on it otherwise.
  *    Nothing moves here, so there is nothing to opt out of.
  *
+ * Dark mode gets a much lower opacity, 40 against 90. The halftone is a light
+ * image: a cream sky over a mid-toned mountain. At the same weight it used to
+ * carry in dark mode it read as a bright band glowing off a near-black page,
+ * which is the opposite of a backdrop. Dimming it is the fix rather than
+ * inverting, because `dark:invert` would darken the sky but light up the treeline
+ * along the bottom edge, which is precisely where the wordmark and the copyright
+ * line sit.
+ *
  * Greyscale, with no exception. The source is a gold duotone and an earlier pass
  * exempted it on the grounds that desaturating it changed the picture, which was
  * the wrong call: the site is black and white, and an exemption for the largest
@@ -36,7 +44,7 @@ export default function FooterScenery() {
           alt=""
           fill
           sizes="100vw"
-          className="object-cover object-center opacity-90 grayscale dark:opacity-75"
+          className="object-cover object-center opacity-90 grayscale dark:opacity-40"
           /* The fade holds solid to 80% and softens across the top 20%.
              It used to hold to 72% with a second gradient overlay washing the
              top half toward the page background on top of that, so the image
