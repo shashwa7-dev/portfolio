@@ -28,10 +28,9 @@ const Footer = () => {
         </p>
       </Container>
 
-      {/* Scenery band. Lives in its own client component because the GIF is
-          chosen at random per page load, which has to happen in the browser: this
-          page is statically generated, so a server-side roll would be baked in at
-          build time and never change. See FooterScenery.tsx. */}
+      {/* Scenery band, full viewport width: it sits directly on the footer
+          rather than inside the Container above, which is scoped to the
+          copyright line. */}
       <FooterScenery />
 
       {/* Wordmark, bleeding off the bottom edge, above the scenery. */}
