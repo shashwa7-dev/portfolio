@@ -45,18 +45,22 @@ export default function FooterScenery() {
           fill
           sizes="100vw"
           className="object-cover object-center opacity-90 grayscale dark:opacity-40"
-          /* The fade holds solid to 80% and softens across the top 20%.
-             It used to hold to 72% with a second gradient overlay washing the
-             top half toward the page background on top of that, so the image
-             was being faded twice and lost most of its sky. One mechanism is
-             enough: where the mask reaches transparent, the page background
-             already shows through, which is exactly what the overlay was
-             re-creating by hand. */
+          /* Back to the original stop: solid to 72%, softening across the top
+             28%. Two shorter fades were tried on the way, 88% and 80%, chasing
+             more visible sky; both left too hard an edge in dark mode, where a
+             pale halftone meeting a near-black page needs a long ramp to read as
+             a backdrop rather than as a pasted rectangle.
+
+             The mask is the only fade. A second gradient overlay used to wash the
+             top half toward the page background on top of this, and doubling up
+             is what ate the sky originally. It stays gone: where the mask reaches
+             transparent the page background already shows through, in whichever
+             theme, which is what the overlay was re-creating by hand. */
           style={{
             maskImage:
-              "linear-gradient(to top, black 0%, black 80%, transparent 100%)",
+              "linear-gradient(to top, black 0%, black 72%, transparent 100%)",
             WebkitMaskImage:
-              "linear-gradient(to top, black 0%, black 80%, transparent 100%)",
+              "linear-gradient(to top, black 0%, black 72%, transparent 100%)",
           }}
         />
       </div>
