@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "motion/react";
 import MarkdownMessage from "./chat/MarkdownMessage";
 import { cn } from "@/lib/utils";
 import IconSwap from "@/components/common/IconSwap";
+import AgentMark from "@/components/common/AgentMark";
 import {
   popoverUpVariants,
   fabPopVariants,
@@ -323,29 +324,23 @@ const S7Bot = () => {
             whileHover={hoverLiftRotate}
             whileTap={tapPress}
             onClick={() => setIsOpen(true)}
-            className="group fixed bottom-4 right-4 -md:right-2.5 h-12 w-12 rounded-2xl overflow-hidden ring-1 ring-border-strong shadow-lg bg-card"
+            className="group fixed bottom-4 right-4 -md:right-2.5 grid h-12 w-12 place-items-center rounded-2xl bg-black shadow-lg ring-1 ring-border-strong"
           >
-            {/* Single image, no layered fallback. Now a static JPEG rather than
-                an animated GIF, which also retires the reduced-motion caveat the
-                GIF carried: a GIF's loop cannot be paused by CSS, so there was no
-                way to honour prefers-reduced-motion without leaving an empty
-                button. A still image has nothing to pause.
+            {/* An inline mark rather than a raster. It draws in `currentColor`, so
+                it is monochrome by construction and needs no greyscale class, and
+                it is sharp at any size instead of being a 49KB JPEG scaled into a
+                48px button.
 
-                No `scale` either. The previous asset had the subject sitting
-                inside a wide white margin and needed scaling to crop it; this one
-                is 736x736 with the artwork bleeding to all four edges, so plain
-                object-cover already fills the button.
+                `place-items-center` rather than `object-cover`: the artwork is a
+                line drawing with its own breathing room, so filling the button
+                edge to edge would crop the headset. That also retires the
+                `overflow-hidden` the bleed used to need.
 
-                The path is absolute. It used to be `./truffycc.png`, resolved
-                against the document URL, so it 404'd on every nested route: on
-                /work/shopos the browser asked for /work/truffycc.png, and this
-                FAB mounts globally from the layout. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/images/agent.jpg"
-              alt="Truffy assistant"
-              className="w-full h-full object-cover object-center grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
-            />
+                Two older problems are gone with the file itself: the reduced-motion
+                caveat from when this was an animated GIF, whose loop CSS cannot
+                pause, and a `./truffycc.png` relative path that 404'd on every
+                nested route because this FAB mounts globally from the layout. */}
+            <AgentMark className="h-9 w-auto text-white" />
           </motion.button>
         )}
       </AnimatePresence>
@@ -364,14 +359,9 @@ const S7Bot = () => {
             {/* Header */}
             <div className="flex items-center justify-between border-b border-border bg-card px-4 py-3">
               <div className="flex items-center gap-2">
-                <div className="group relative h-9 w-9 overflow-hidden rounded-lg flex-shrink-0">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/images/agent.jpg"
-                    className="w-full h-full object-cover object-center grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
-                    alt="Truffy assistant"
-                  />
-                  <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-500 ring-2 ring-card" />
+                <div className="relative grid h-9 w-9 flex-shrink-0 place-items-center rounded-lg bg-black">
+                  <AgentMark className="h-6 w-auto text-white" />
+                  <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-card" />
                 </div>
                 <div>
                   <h3 className="text-base leading-tight text-foreground">

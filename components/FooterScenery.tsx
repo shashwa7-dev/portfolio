@@ -21,15 +21,11 @@ import Image from "next/image";
  *    paused by CSS, so `prefers-reduced-motion` had no effect on it otherwise.
  *    Nothing moves here, so there is nothing to opt out of.
  *
- * **This one keeps its colour, deliberately, against the site-wide greyscale rule
- * for decorative artwork.** That rule exists so brand logos and screenshots cannot
- * drag arbitrary hues onto a hueless page. It does not fit here: the image is a
- * gold duotone chosen for that gold, and desaturating it leaves a grey halftone
- * that is a different picture. Greyscale was applied first and looked so unlike the
- * source that it read as the wrong file having been used.
- *
- * The rule still holds everywhere else, including the two other decorative
- * surfaces. Nothing about this is a precedent for un-greyscaling a logo.
+ * Greyscale, with no exception. The source is a gold duotone and an earlier pass
+ * exempted it on the grounds that desaturating it changed the picture, which was
+ * the wrong call: the site is black and white, and an exemption for the largest
+ * decorative surface on the page is not an exception to that rule so much as an
+ * end to it. The halftone reads as texture either way, which is all this band is.
  */
 export default function FooterScenery() {
   return (
@@ -40,9 +36,9 @@ export default function FooterScenery() {
           alt=""
           fill
           sizes="100vw"
-          className="object-cover object-center opacity-90 dark:opacity-75"
-          /* The fade holds solid to 88% and only softens across the top 12%.
-             It used to hold to 72%, and a second gradient overlay washed the
+          className="object-cover object-center opacity-90 grayscale dark:opacity-75"
+          /* The fade holds solid to 80% and softens across the top 20%.
+             It used to hold to 72% with a second gradient overlay washing the
              top half toward the page background on top of that, so the image
              was being faded twice and lost most of its sky. One mechanism is
              enough: where the mask reaches transparent, the page background
@@ -50,9 +46,9 @@ export default function FooterScenery() {
              re-creating by hand. */
           style={{
             maskImage:
-              "linear-gradient(to top, black 0%, black 88%, transparent 100%)",
+              "linear-gradient(to top, black 0%, black 80%, transparent 100%)",
             WebkitMaskImage:
-              "linear-gradient(to top, black 0%, black 88%, transparent 100%)",
+              "linear-gradient(to top, black 0%, black 80%, transparent 100%)",
           }}
         />
       </div>
