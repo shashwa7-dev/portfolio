@@ -29,21 +29,45 @@ import Image from "next/image";
  * along the bottom edge, which is precisely where the wordmark and the copyright
  * line sit.
  *
+ * The band is the width of the footer's own column, 1080px, not the viewport. It
+ * used to bleed edge to edge, which read as a separate full-bleed section rather
+ * than as backing for the footer it belongs to. Now it lines up with the
+ * copyright line above it, and the side fades stop it ending on two hard vertical
+ * edges.
+ *
  * Greyscale, with no exception. The source is a gold duotone and an earlier pass
  * exempted it on the grounds that desaturating it changed the picture, which was
  * the wrong call: the site is black and white, and an exemption for the largest
  * decorative surface on the page is not an exception to that rule so much as an
  * end to it. The halftone reads as texture either way, which is all this band is.
  */
+/**
+ * Two mask layers intersected: the long top fade, and a shorter fade on each
+ * side. Composited rather than combined into one gradient because a single
+ * gradient only runs along one axis, and `intersect` keeps whichever layer is
+ * more transparent at every pixel, so the corners fall away naturally.
+ *
+ * `-webkit-mask-composite: source-in` is the older WebKit spelling of the same
+ * operation and is what Safari reads; both are set.
+ *
+ * The sides fade over 10% rather than the top's 28%. The top has to dissolve into
+ * open page above it, while the sides only need to lose their edge against the
+ * same background a few pixels away.
+ */
+const EDGE_MASK = [
+  "linear-gradient(to top, black 0%, black 72%, transparent 100%)",
+  "linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)",
+].join(", ");
+
 export default function FooterScenery() {
   return (
-    <div aria-hidden className="pointer-events-none relative z-0 w-full select-none">
+    <div aria-hidden className="pointer-events-none relative z-0 mx-auto w-full max-w-[1080px] select-none">
       <div className="relative h-[16rem] overflow-hidden md:h-[26rem]">
         <Image
           src="/images/footer-backdrop.webp"
           alt=""
           fill
-          sizes="100vw"
+          sizes="(max-width: 1080px) 100vw, 1080px"
           className="object-cover object-center opacity-90 grayscale dark:opacity-40"
           /* Back to the original stop: solid to 72%, softening across the top
              28%. Two shorter fades were tried on the way, 88% and 80%, chasing
@@ -57,10 +81,10 @@ export default function FooterScenery() {
              transparent the page background already shows through, in whichever
              theme, which is what the overlay was re-creating by hand. */
           style={{
-            maskImage:
-              "linear-gradient(to top, black 0%, black 72%, transparent 100%)",
-            WebkitMaskImage:
-              "linear-gradient(to top, black 0%, black 72%, transparent 100%)",
+            maskImage: EDGE_MASK,
+            WebkitMaskImage: EDGE_MASK,
+            maskComposite: "intersect",
+            WebkitMaskComposite: "source-in",
           }}
         />
       </div>
