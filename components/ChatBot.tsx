@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { X, Send, Copy, Check, ArrowDown } from "lucide-react";
+import { X, Send, Copy, Check, ArrowDown, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import MarkdownMessage from "./chat/MarkdownMessage";
 import { cn } from "@/lib/utils";
@@ -398,13 +398,19 @@ const S7Bot = () => {
                    The per-prompt Cpu / Briefcase / Sparkles icons are gone too.
                    They were decoration standing in for meaning, and a magic wand
                    next to "What projects has he built?" tells a reader nothing the
-                   sentence does not already say. */
+                   sentence does not already say.
+
+                   The prompts themselves are plain text rows, not cards. A border
+                   and a fill made three suggestions look like three controls
+                   competing with the input below them, in a 360px panel that has
+                   room for one focal point. A leading arrow is enough to say they
+                   are clickable, and the row still brightens on hover. */
                 <div className="flex h-full flex-col justify-center py-4">
                   <p className="mb-3 text-sm text-muted-foreground">
                     Ask about Shashwat&apos;s work, stack, or availability.
                   </p>
 
-                  <div className="w-full space-y-1.5">
+                  <div className="w-full space-y-0.5">
                     {[
                       "What tech stack does Shashwat use?",
                       "Tell me about his work experience",
@@ -416,10 +422,10 @@ const S7Bot = () => {
                         initial="hidden"
                         animate="visible"
                         transition={{ delay: stagger.loose + idx * stagger.tight }}
-                        whileTap={tapPress}
                         onClick={() => sendMessage(prompt)}
-                        className="w-full rounded-lg border border-border bg-card px-3 py-2 text-left text-xs text-muted-foreground transition-colors duration-base ease-out hover:border-border-strong hover:text-foreground"
+                        className="group/prompt flex w-full items-start gap-1.5 py-1 text-left text-xs text-muted-foreground transition-colors duration-base ease-out hover:text-foreground"
                       >
+                        <ArrowRight className="mt-0.5 h-3 w-3 shrink-0 text-subtle transition-colors duration-base ease-out group-hover/prompt:text-foreground" />
                         {prompt}
                       </motion.button>
                     ))}
