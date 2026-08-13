@@ -13,6 +13,14 @@ export const metadata = {
     description: "What I'm reading",
     images: [{ url: ogUrl({ title: "Books", subtitle: "What I'm reading", type: "books" }) }],
   },
+  // Without this, Next inherits `twitter` wholesale from the root layout, so a
+  // shared link showed the homepage card instead of this page's.
+  twitter: {
+    card: "summary_large_image",
+    title: "Books",
+    description: "What I'm reading",
+    images: [ogUrl({ title: "Books", subtitle: "What I'm reading", type: "books" })],
+  },
 };
 
 export default function BooksPage() {
