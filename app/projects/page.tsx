@@ -14,6 +14,12 @@ export const metadata = {
     description: "Personal projects and experiments I've built.",
     images: [{ url: ogUrl({ title: "Projects", subtitle: "Things I've built", type: "generic", label: "Work" }) }],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Projects",
+    description: "Personal projects and experiments I've built.",
+    images: [ogUrl({ title: "Projects", subtitle: "Things I've built", type: "generic", label: "Work" })],
+  },
 };
 
 export default function ProjectsPage() {

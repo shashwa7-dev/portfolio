@@ -1,8 +1,15 @@
 import { getOrganization, getProjectFromOrg } from "@/lib/workData";
-import { breadcrumbLd } from "@/lib/seo";
+import { breadcrumbLd, ogUrl } from "@/lib/seo";
+import { baseUrl } from "@/app/sitemap";
 
 /**
- * Exists only to emit this route's breadcrumb JSON-LD from the server.
+ * Carries this route's server-only metadata: the breadcrumb JSON-LD, and the
+ * page metadata including its OG card.
+ *
+ * The metadata has to live here for the same reason the JSON-LD does. A client
+ * component cannot export `generateMetadata`, so before this the case-study pages
+ * had no OG image of their own and fell back to the site-wide default, meaning
+ * every shared case study looked identical.
  *
  * The page itself is a client component (`"use client"`, for the video modal's
  * `useState` and its motion variants), and `lib/seo.ts` reads `baseUrl` from
@@ -11,6 +18,37 @@ import { breadcrumbLd } from "@/lib/seo";
  * browser bundle. A server layout gets the same `params` and keeps the boundary
  * where it belongs, without having to refactor the page.
  */
+export async function generateMetadata({
+  params,
+}: {
+  params: { org: string; project: string };
+}) {
+  const org = getOrganization(params.org);
+  const project = getProjectFromOrg(params.org, params.project);
+  if (!org || !project) return { title: "Not Found" };
+
+  const url = `${baseUrl}work/${org.slug}/${project.slug}`;
+  const description = project.description;
+  const image = ogUrl({
+    title: project.title,
+    subtitle: `Built at ${org.name}`,
+    type: "project",
+  });
+
+  return {
+    title: `${project.title} · ${org.name}`,
+    description,
+    alternates: { canonical: url },
+    openGraph: { title: project.title, description, url, images: [{ url: image }] },
+    twitter: {
+      card: "summary_large_image",
+      title: project.title,
+      description,
+      images: [image],
+    },
+  };
+}
+
 export default function WorkProjectLayout({
   children,
   params,

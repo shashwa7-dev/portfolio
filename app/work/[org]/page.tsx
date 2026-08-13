@@ -3,6 +3,7 @@ import Image from "next/image";
 import { ExternalLink } from "lucide-react";
 import { organizations, getOrganization } from "@/lib/workData";
 import { getDiary } from "@/lib/diaryData";
+import { baseUrl } from "@/app/sitemap";
 import Container from "@/components/layout/Container";
 import Label from "@/components/layout/Label";
 import ProjectShowcaseCard from "@/components/ProjectShowcaseCard";
@@ -10,7 +11,7 @@ import { workProjectToCard } from "@/lib/projectCards";
 import DiaryEntry from "@/components/common/DiaryEntry";
 import { EmploymentTag, OrgLinkChip } from "@/components/common/OrgChips";
 import { formatPeriod, formatTenure } from "@/lib/tenure";
-import { breadcrumbLd } from "@/lib/seo";
+import { breadcrumbLd, ogUrl } from "@/lib/seo";
 
 export async function generateStaticParams() {
   return organizations.map((org) => ({ org: org.slug }));
@@ -20,9 +21,15 @@ export async function generateMetadata({ params }: { params: Promise<{ org: stri
   const { org: orgSlug } = await params;
   const org = getOrganization(orgSlug);
   if (!org) return { title: "Not Found" };
+  const description = `Work, projects, and long-form contributions log at ${org.name}, ${org.role}.`;
+  const image = ogUrl({ title: org.name, subtitle: org.role, type: "project", label: "Experience" });
+
   return {
     title: `${org.name} · Work`,
-    description: `Work, projects, and long-form contributions log at ${org.name}, ${org.role}.`,
+    description,
+    alternates: { canonical: `${baseUrl}work/${org.slug}` },
+    openGraph: { title: org.name, description, url: `${baseUrl}work/${org.slug}`, images: [{ url: image }] },
+    twitter: { card: "summary_large_image", title: org.name, description, images: [image] },
   };
 }
 

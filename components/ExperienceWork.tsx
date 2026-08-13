@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { organizations } from "@/lib/workData";
-import { formatPeriod, formatTenure, isCurrent } from "@/lib/tenure";
+import { formatPeriod, formatTenure } from "@/lib/tenure";
 import Section from "@/components/layout/Section";
 import ProjectPreviewCard from "@/components/ProjectPreviewCard";
 import ClientStrip from "@/components/common/ClientStrip";
@@ -21,11 +21,10 @@ export default function ExperienceWork() {
     >
       <div>
         {organizations.map((org) => {
-          const current = isCurrent(org.period);
           const tenure = formatTenure(org.period);
           const featured = org.projects.filter((p) => p.featured);
           return (
-            <div key={org.id} className="pb-12 last:pb-0">
+            <div key={org.id} className="pb-10 last:pb-0 sm:pb-12">
               {/* Identity, at the top level. Everything else hangs off the rail
                   below, so the org visibly owns its content.
 
@@ -57,11 +56,18 @@ export default function ExperienceWork() {
                 </Link>
               </div>
 
-              {/* The rail, stopping exactly 16px short of the bottom so the
-                  elbow below can continue it. `before:bottom-4` matches the
-                  elbow's `h-4`, and both sit at `left-3`, so the vertical line
-                  and the elbow's left border are colinear and contiguous with no
+              {/* The rail stops 26px short of the bottom so the elbow below can
+                  continue it, and both sit at `left-3`, so the vertical line and
+                  the elbow's left border are colinear and contiguous with no
                   overlap.
+
+                  26px is the elbow's own 16px height plus a 10px lift. The lift
+                  is what puts the elbow's horizontal stroke level with the last
+                  line of text rather than below it: that last line is the
+                  deep-dive link at `text-sm`, 13px on a 1.55 line height, so its
+                  box is about 20px and its centre sits 10px above the wrapper's
+                  bottom edge. Without the lift the stroke landed on the very
+                  bottom of the line box, reading as though the rail overshot.
 
                   An earlier version ran the rail `h-full` and masked its tail
                   with a `bg-background` box, following the reference
@@ -71,10 +77,16 @@ export default function ExperienceWork() {
                   by side. Shortening the rail needs no mask, so it also cannot
                   drift out of alignment or depend on a box matching the page
                   background in both themes. */}
-              <div className="relative pl-9 pt-2 before:absolute before:left-3 before:top-0 before:bottom-4 before:w-px before:bg-border">
+              <div className="relative pl-9 pt-2 before:absolute before:left-3 before:top-0 before:bottom-[1.625rem] before:w-px before:bg-border">
                 {/* Role metadata as a real description list, so each value says
-                    what it is to a screen reader and to the markdown
-                    renditions. */}
+                    what it is to a screen reader and to the markdown renditions.
+                    Values carry `whitespace-nowrap` so a narrow column wraps
+                    between them rather than through the middle of a date range.
+
+                    A "Currently building" badge used to sit at the end of this
+                    row. It was the single biggest source of clutter on a phone,
+                    and it was redundant: `formatPeriod` already renders the
+                    ongoing case as "Present". */}
                 <dl className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-sm text-muted-foreground">
                   <dt className="sr-only">Role</dt>
                   <dd>{org.role}</dd>
@@ -86,7 +98,7 @@ export default function ExperienceWork() {
                   )}
 
                   <dt className="sr-only">Employment period</dt>
-                  <dd className="font-mono text-xs tabular-nums text-subtle">
+                  <dd className="whitespace-nowrap font-mono text-xs tabular-nums text-subtle">
                     {formatPeriod(org.period)}
                   </dd>
 
@@ -101,7 +113,7 @@ export default function ExperienceWork() {
                   {tenure && (
                     <>
                       <dt className="sr-only">Duration</dt>
-                      <dd className="font-mono text-xs tabular-nums text-subtle">
+                      <dd className="whitespace-nowrap font-mono text-xs tabular-nums text-subtle">
                         <span aria-hidden className="mr-2 text-border-strong">
                           ·
                         </span>
@@ -110,24 +122,6 @@ export default function ExperienceWork() {
                     </>
                   )}
 
-                  {/* Green is the dot only, matching the availability badge in
-                      About.tsx. See the note there for why. No ping: a
-                      permanent ambient loop is what this repo's motion audit
-                      rejected. */}
-                  {current && (
-                    <>
-                      {/* Paired with a `dt` so it is a term and a value like every
-                          other entry here. As a bare `dd` it was a value with no
-                          term, which is what a `dl` exists to rule out. */}
-                      <dt className="sr-only">Status</dt>
-                      <dd>
-                        <span className="inline-flex items-center gap-1.5 rounded-sm border border-border-strong px-2 py-0.5 font-mono text-2xs font-medium uppercase tracking-label text-muted-foreground">
-                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                          Currently building
-                        </span>
-                      </dd>
-                    </>
-                  )}
                 </dl>
 
                 {org.skills && org.skills.length > 0 && (
@@ -174,19 +168,8 @@ export default function ExperienceWork() {
                     </div>
                   )}
 
-                {/* Deep-dive CTA — the org page includes the full diary inline */}
-                <div className="mt-4">
-                  <MarkerLink
-                    href={`/work/${org.slug}`}
-                    size="sm"
-                    tone="foreground"
-                  >
-                    See what I built at {org.name}
-                  </MarkerLink>
-                </div>
-
                 {featured.length > 0 && (
-                  <div className="mt-5">
+                  <div className="mt-4">
                     <div className="mb-3 flex items-baseline justify-between">
                       <span className="font-mono text-2xs uppercase tracking-label text-subtle">
                         Featured projects
@@ -210,6 +193,21 @@ export default function ExperienceWork() {
                   </div>
                 )}
 
+                {/* Deep-dive CTA, deliberately last. It used to sit above the featured
+                    projects, so it invited a reader deeper and was then followed by
+                    more content. Being last also makes the rail's elbow land on a
+                    line of text for every org rather than only for those with no
+                    projects. */}
+                <div className="mt-5">
+                  <MarkerLink
+                    href={`/work/${org.slug}`}
+                    size="sm"
+                    tone="foreground"
+                  >
+                    See what I built at {org.name}
+                  </MarkerLink>
+                </div>
+
                 {/* The rail's bottom terminator. Its left border picks up
                     exactly where the rail stops, so the two read as one stroke
                     turning a corner. Nothing is masked and nothing is
@@ -217,7 +215,7 @@ export default function ExperienceWork() {
                     are the same two the rail above uses. */}
                 <span
                   aria-hidden
-                  className="pointer-events-none absolute bottom-0 left-3 h-4 w-4 rounded-bl-md border-b border-l border-border"
+                  className="pointer-events-none absolute bottom-2.5 left-3 h-4 w-4 rounded-bl-md border-b border-l border-border"
                 />
               </div>
             </div>

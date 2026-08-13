@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { X, Send, Copy, Check, ArrowDown } from "lucide-react";
+import { X, Send, Copy, Check, ArrowDown, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import MarkdownMessage from "./chat/MarkdownMessage";
 import { cn } from "@/lib/utils";
 import IconSwap from "@/components/common/IconSwap";
+import AgentMark from "@/components/common/AgentMark";
 import {
   popoverUpVariants,
   fabPopVariants,
@@ -323,29 +324,23 @@ const S7Bot = () => {
             whileHover={hoverLiftRotate}
             whileTap={tapPress}
             onClick={() => setIsOpen(true)}
-            className="group fixed bottom-4 right-4 -md:right-2.5 h-12 w-12 rounded-2xl overflow-hidden ring-1 ring-border-strong shadow-lg bg-card"
+            className="group fixed bottom-4 right-4 -md:right-2.5 grid h-12 w-12 place-items-center rounded-2xl bg-white shadow-lg ring-1 ring-border-strong"
           >
-            {/* Single image, no layered fallback. Now a static JPEG rather than
-                an animated GIF, which also retires the reduced-motion caveat the
-                GIF carried: a GIF's loop cannot be paused by CSS, so there was no
-                way to honour prefers-reduced-motion without leaving an empty
-                button. A still image has nothing to pause.
+            {/* An inline mark rather than a raster. It draws in `currentColor`, so
+                it is monochrome by construction and needs no greyscale class, and
+                it is sharp at any size instead of being a 49KB JPEG scaled into a
+                48px button.
 
-                No `scale` either. The previous asset had the subject sitting
-                inside a wide white margin and needed scaling to crop it; this one
-                is 736x736 with the artwork bleeding to all four edges, so plain
-                object-cover already fills the button.
+                `place-items-center` rather than `object-cover`: the artwork is a
+                line drawing with its own breathing room, so filling the button
+                edge to edge would crop the headset. That also retires the
+                `overflow-hidden` the bleed used to need.
 
-                The path is absolute. It used to be `./truffycc.png`, resolved
-                against the document URL, so it 404'd on every nested route: on
-                /work/shopos the browser asked for /work/truffycc.png, and this
-                FAB mounts globally from the layout. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/images/agent.jpg"
-              alt="Truffy assistant"
-              className="w-full h-full object-cover object-center grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
-            />
+                Two older problems are gone with the file itself: the reduced-motion
+                caveat from when this was an animated GIF, whose loop CSS cannot
+                pause, and a `./truffycc.png` relative path that 404'd on every
+                nested route because this FAB mounts globally from the layout. */}
+            <AgentMark className="h-9 w-auto text-black" />
           </motion.button>
         )}
       </AnimatePresence>
@@ -364,14 +359,9 @@ const S7Bot = () => {
             {/* Header */}
             <div className="flex items-center justify-between border-b border-border bg-card px-4 py-3">
               <div className="flex items-center gap-2">
-                <div className="group relative h-9 w-9 overflow-hidden rounded-lg flex-shrink-0">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/images/agent.jpg"
-                    className="w-full h-full object-cover object-center grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
-                    alt="Truffy assistant"
-                  />
-                  <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-500 ring-2 ring-card" />
+                <div className="relative grid h-9 w-9 flex-shrink-0 place-items-center rounded-lg bg-white">
+                  <AgentMark className="h-6 w-auto text-black" />
+                  <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-card" />
                 </div>
                 <div>
                   <h3 className="text-base leading-tight text-foreground">
@@ -408,13 +398,26 @@ const S7Bot = () => {
                    The per-prompt Cpu / Briefcase / Sparkles icons are gone too.
                    They were decoration standing in for meaning, and a magic wand
                    next to "What projects has he built?" tells a reader nothing the
-                   sentence does not already say. */
+                   sentence does not already say.
+
+                   The prompts themselves are plain text rows, not cards. A border
+                   and a fill made three suggestions look like three controls
+                   competing with the input below them, in a 360px panel that has
+                   room for one focal point. A leading arrow is enough to say they
+                   are clickable, and the row still brightens on hover.
+
+                   Centred, because this state fills a 360px-wide panel and the
+                   eye lands in the middle of it. Left-aligned rows put the three
+                   suggestions against an edge with a wide empty margin beside
+                   them. The arrow moves to `items-center` with the text for the
+                   same reason, since there is no longer a left rail for it to
+                   hang off. */
                 <div className="flex h-full flex-col justify-center py-4">
-                  <p className="mb-3 text-sm text-muted-foreground">
+                  <p className="mb-3 text-center text-sm text-muted-foreground">
                     Ask about Shashwat&apos;s work, stack, or availability.
                   </p>
 
-                  <div className="w-full space-y-1.5">
+                  <div className="w-full space-y-0.5">
                     {[
                       "What tech stack does Shashwat use?",
                       "Tell me about his work experience",
@@ -426,10 +429,10 @@ const S7Bot = () => {
                         initial="hidden"
                         animate="visible"
                         transition={{ delay: stagger.loose + idx * stagger.tight }}
-                        whileTap={tapPress}
                         onClick={() => sendMessage(prompt)}
-                        className="w-full rounded-lg border border-border bg-card px-3 py-2 text-left text-xs text-muted-foreground transition-colors duration-base ease-out hover:border-border-strong hover:text-foreground"
+                        className="group/prompt flex w-full items-center justify-center gap-1.5 py-1 text-center text-xs text-muted-foreground transition-colors duration-base ease-out hover:text-foreground"
                       >
+                        <ArrowRight className="h-3 w-3 shrink-0 text-subtle transition-colors duration-base ease-out group-hover/prompt:text-foreground" />
                         {prompt}
                       </motion.button>
                     ))}

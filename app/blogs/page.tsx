@@ -3,12 +3,29 @@ import Container from "@/components/layout/Container";
 import Label from "@/components/layout/Label";
 import { getBlogPosts } from "@/app/blogs/utils";
 import { baseUrl } from "@/app/sitemap";
-import { blogLd, breadcrumbLd } from "@/lib/seo";
+import { blogLd, breadcrumbLd, ogUrl } from "@/lib/seo";
+
+const BLOG_OG = ogUrl({
+  title: "Blog",
+  subtitle: "Thoughts, learnings, and things I find interesting.",
+  type: "post",
+});
 
 export const metadata = {
   title: "Blog",
   description: "Thoughts, learnings, and things I find interesting.",
   alternates: { canonical: `${baseUrl}blogs` },
+  openGraph: {
+    title: "Blog",
+    description: "Thoughts, learnings, and things I find interesting.",
+    images: [{ url: BLOG_OG }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Blog",
+    description: "Thoughts, learnings, and things I find interesting.",
+    images: [BLOG_OG],
+  },
 };
 
 export default function Page() {
