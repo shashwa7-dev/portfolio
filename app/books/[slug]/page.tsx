@@ -1,4 +1,4 @@
-import { books } from "@/lib/books";
+import { books, type Book } from "@/lib/books";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -11,6 +11,25 @@ import Container from "@/components/layout/Container";
 type Props = {
   params: { slug: string };
 };
+
+/**
+ * One reading of "how far through this am I", shared by the card and the page.
+ *
+ * They derived it separately before: the card from `isDone`, the page from the
+ * chapters. Both are true of `lib/books.ts` as it stands, which is exactly why
+ * the drift would have gone unnoticed. Set `isDone` before flipping the last
+ * chapter and the shared card says FINISHED while the page it links to still
+ * renders 5/18.
+ *
+ * Chapters win over the flag because they are what the page displays, so a
+ * disagreement would be visible on arrival. The flag is the fallback for a book
+ * logged without a chapter list, where there is nothing to count.
+ */
+function readProgress(book: Book) {
+  const total = book.chapters.length;
+  const read = book.chapters.filter((c) => c.completed).length;
+  return { total, read, finished: total > 0 ? read === total : book.isDone };
+}
 
 export function generateMetadata({ params }: Props) {
   const book = books.find((b) => b.slug === params.slug);
@@ -32,19 +51,21 @@ export function generateMetadata({ params }: Props) {
    * reader weighs here: who wrote it, and how far through it I am. `cover`
    * keeps its real job on the shelf and on the page itself.
    */
-  const total = book.chapters.length;
-  const read = book.chapters.filter((c) => c.completed).length;
-  const progress = book.isDone
-    ? "Finished"
-    : total
-      ? `${read}/${total} chapters`
-      : "Reading";
+  const { total, read, finished } = readProgress(book);
 
   const ogImage = ogUrl({
     title,
     subtitle: description,
     type: "books",
-    meta: `${book.author} · ${progress}`,
+    /**
+     * `label` is passed explicitly rather than left to `type`. The OG route maps
+     * `books` to the fixed word "Reading", so a finished book was going out with
+     * READING in the header pill and "Finished" in the footer line at once.
+     * Overriding the label here fixes it without giving the shared LABELS map a
+     * second books entry.
+     */
+    label: finished ? "Read" : "Reading",
+    meta: `${book.author} · ${finished ? "Finished" : `${read}/${total} chapters`}`,
   });
 
   return {
@@ -72,8 +93,7 @@ export default function BookPage({ params }: Props) {
   const book = books.find((b) => b.slug === params.slug);
   if (!book) notFound();
 
-  const completedCount = book.chapters.filter((c) => c.completed).length;
-  const isComplete = completedCount === book.chapters.length;
+  const { read: completedCount, finished: isComplete } = readProgress(book);
 
   return (
     <main className="min-h-screen py-8 md:py-12">
