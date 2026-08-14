@@ -30,7 +30,10 @@ export default function NotFound() {
             <div className="relative w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden ring-2 ring-border">
               <Image
                 src="/apple-touch-icon.png"
-                alt="Shashwat Tripathi"
+                /* Names what is actually on screen. This slot draws the mark,
+                   not a portrait, so "Shashwat Tripathi" described the wrong
+                   thing to anyone who could not see which of the two it was. */
+                alt="offcod8"
                 fill
                 className="object-cover"
                 priority

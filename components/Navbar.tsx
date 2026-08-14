@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Sun, Moon } from "lucide-react";
 import { useDarkMode } from "@/app/hooks/useDarkMode";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
 /**
  * `match` is the route this link owns, for the current-page state. The two
@@ -54,22 +55,32 @@ export default function Navbar() {
             Dropping the word takes the link's accessible name with it, so the
             name moves to `aria-label`. Without it the only thing a screen
             reader could announce for the home link is its href. */}
-        <Link href="/" aria-label="Shashwat Tripathi, home" className="flex shrink-0">
-          <span
-            aria-hidden
-            className="block h-7 w-7 bg-foreground"
-            style={{
-              WebkitMaskImage: "url(/brand-mark.png)",
-              maskImage: "url(/brand-mark.png)",
-              WebkitMaskSize: "contain",
-              maskSize: "contain",
-              WebkitMaskRepeat: "no-repeat",
-              maskRepeat: "no-repeat",
-              WebkitMaskPosition: "center",
-              maskPosition: "center",
-            }}
-          />
-        </Link>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Link href="/" aria-label="offcod8, home" className="flex shrink-0">
+              <span
+                aria-hidden
+                className="block h-7 w-7 bg-foreground"
+                style={{
+                  WebkitMaskImage: "url(/brand-mark.png)",
+                  maskImage: "url(/brand-mark.png)",
+                  WebkitMaskSize: "contain",
+                  maskSize: "contain",
+                  WebkitMaskRepeat: "no-repeat",
+                  maskRepeat: "no-repeat",
+                  WebkitMaskPosition: "center",
+                  maskPosition: "center",
+                }}
+              />
+            </Link>
+          </TooltipTrigger>
+          {/* The tooltip names the mark for anyone who does not already read it
+              as a wordmark. It is not the accessible name: Radix would wire it
+              up as one, but a tooltip only reaches pointers, so the `aria-label`
+              on the link carries the name for everyone else and the tooltip
+              repeats it rather than supplying it. */}
+          <TooltipContent>offcod8</TooltipContent>
+        </Tooltip>
 
         <ul className="hidden items-center gap-6 md:flex">
           {navLinks.map((l) => {
