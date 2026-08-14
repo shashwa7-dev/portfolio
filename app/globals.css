@@ -168,6 +168,23 @@
   .dark .card-elevated {
     box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.2);
   }
+
+  /* Ordinal gutter numeral, drawn from `data-index`.
+
+     It lives in CSS rather than in the markup on purpose. The numeral is pure
+     ornament: it counts rows nobody refers to by number, and it duplicates no
+     information the label does not already carry. As a text node at
+     --border-strong it sat at 1.49:1 and axe flagged it, but the only colour
+     that clears 4.5:1 on this background is --subtle, which is exactly the
+     colour of the label beside it. Passing would have meant deleting the
+     hierarchy the numeral exists to create. WCAG exempts pure decoration from
+     the contrast floor, so the honest fix is to stop shipping decoration as
+     content. */
+  .gutter-index::before {
+    content: attr(data-index);
+    margin-right: 0.375rem;
+    color: hsl(var(--border-strong));
+  }
 }
 
 /* Motion tokens — the CSS side of lib/motionVariants.ts. Keep both in sync.

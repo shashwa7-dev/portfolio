@@ -48,6 +48,7 @@ export default function BookListItem({
         <p className="truncate text-xs italic text-muted-foreground">{author}</p>
         <div
           role="progressbar"
+          aria-label={`Reading progress for ${name}`}
           aria-valuenow={progress}
           aria-valuemin={0}
           aria-valuemax={100}
