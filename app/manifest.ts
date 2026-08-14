@@ -12,17 +12,25 @@ export default function manifest(): MetadataRoute.Manifest {
         sizes: "any",
         type: "image/x-icon",
       },
+      /**
+       * "any", not "maskable". A maskable icon has to survive being cropped to
+       * the central 80% circle, which means the artwork must bleed to all four
+       * edges with nothing load-bearing near them. This mark is a rounded tile
+       * on transparency whose diagonal runs corner to corner, so masking it
+       * would clip both ends of the stroke and expose the transparent corners.
+       * The previous entries claimed maskable for artwork that was not.
+       */
       {
-        src: "/android-chrome-192x192.png",
+        src: "/web-app-manifest-192x192.png",
         sizes: "192x192",
         type: "image/png",
-        purpose: "maskable",
+        purpose: "any",
       },
       {
-        src: "/android-chrome-512x512.png",
+        src: "/web-app-manifest-512x512.png",
         sizes: "512x512",
         type: "image/png",
-        purpose: "maskable",
+        purpose: "any",
       },
     ],
     theme_color: "#0E0D0C",

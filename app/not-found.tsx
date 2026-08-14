@@ -29,7 +29,7 @@ export default function NotFound() {
           >
             <div className="relative w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden ring-2 ring-border">
               <Image
-                src="/favicon.svg"
+                src="/apple-touch-icon.png"
                 alt="Shashwat Tripathi"
                 fill
                 className="object-cover"

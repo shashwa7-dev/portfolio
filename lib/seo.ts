@@ -18,12 +18,27 @@ export const JSON_LD_ID = {
 /** Reference to the canonical Person node rather than a restated copy of it. */
 const AUTHOR_REF = { "@id": JSON_LD_ID.person } as const;
 
-export function ogUrl(p: { title: string; subtitle?: string; type?: string; label?: string }) {
+export function ogUrl(p: {
+  title: string;
+  subtitle?: string;
+  type?: string;
+  label?: string;
+  /** Footer-right line: reading time, date, stack. Kept short, it is set in caps. */
+  meta?: string;
+  /**
+   * Organisation slug whose avatar heads the card. A slug, not a path: the OG
+   * route resolves it against the org list, so the query string cannot name a
+   * file for the server to read and inline.
+   */
+  logo?: string;
+}) {
   const q = new URLSearchParams();
   q.set("title", p.title);
   if (p.subtitle) q.set("subtitle", p.subtitle);
   if (p.type) q.set("type", p.type);
   if (p.label) q.set("label", p.label);
+  if (p.meta) q.set("meta", p.meta);
+  if (p.logo) q.set("logo", p.logo);
   return `${baseUrl}og?${q.toString()}`;
 }
 

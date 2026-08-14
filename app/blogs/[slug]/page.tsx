@@ -29,7 +29,16 @@ export function generateMetadata({ params }: any) {
     summary: description,
     image,
   } = post.metadata;
-  let ogImage = image ? image : ogUrl({ title, subtitle: description, type: "post" });
+  // The card gets the post's own summary as its brief, plus the two facts a
+  // reader weighs before opening a link: how long it is and how old it is.
+  let ogImage = image
+    ? image
+    : ogUrl({
+        title,
+        subtitle: description,
+        type: "post",
+        meta: `${readingTime(post.content)} min read · ${formatDate(publishedTime, false)}`,
+      });
 
   return {
     title,

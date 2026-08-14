@@ -20,7 +20,16 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
   const title = project.title;
   const description = project.tagline;
   const stack = [...(project.stack.fe || []), ...(project.stack.be || [])];
-  const og = ogUrl({ title, subtitle: description, type: "project", label: stack.slice(0, 3).join(" · ") });
+  // The stack belongs in the footer, not the pill. The pill is a one-word
+  // category set in tracked caps, so a three-item stack list overflowed it and
+  // truncated mid-word; the footer line is the wider of the two and is exactly
+  // where the card puts secondary context everywhere else.
+  const og = ogUrl({
+    title,
+    subtitle: description,
+    type: "project",
+    meta: stack.slice(0, 3).join(" · "),
+  });
   return {
     title,
     description,

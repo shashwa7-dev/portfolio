@@ -66,11 +66,25 @@ export const metadata: Metadata = {
     images: [ogUrl({ title: "Shashwat Tripathi", subtitle: "Frontend Engineer · Crafting quality interfaces", type: "home" })],
   },
   icons: {
-    icon: [{ url: "/favicon.svg", sizes: "32x32", type: "image/svg" }],
+    /**
+     * Raster first, SVG last. The SVG is a 128KB PNG in an SVG wrapper rather
+     * than real vector, so it buys no sharpness over the PNGs and costs
+     * thirty times their weight; it stays only as the any-size fallback for
+     * clients that ask for one. Browsers pick the closest declared size, so
+     * the 96px PNG is what a tab actually ends up loading.
+     *
+     * `mask-icon` is gone with it. Safari's pinned-tab icon must be a
+     * single-colour vector with a real path, and it silently renders a wrapped
+     * raster as a solid black square.
+     */
+    icon: [
+      { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
     apple: [
       { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
     ],
-    other: [{ rel: "mask-icon", url: "/favicon.svg" }],
   },
   robots: {
     index: true,
