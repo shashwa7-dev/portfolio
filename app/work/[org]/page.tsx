@@ -22,7 +22,14 @@ export async function generateMetadata({ params }: { params: Promise<{ org: stri
   const org = getOrganization(orgSlug);
   if (!org) return { title: "Not Found" };
   const description = `Work, projects, and long-form contributions log at ${org.name}, ${org.role}.`;
-  const image = ogUrl({ title: org.name, subtitle: org.role, type: "project", label: "Experience" });
+  const image = ogUrl({
+    title: org.name,
+    subtitle: org.role,
+    type: "project",
+    label: "Experience",
+    logo: org.slug,
+    meta: formatPeriod(org.period),
+  });
 
   return {
     title: `${org.name} · Work`,

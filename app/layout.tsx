@@ -66,11 +66,29 @@ export const metadata: Metadata = {
     images: [ogUrl({ title: "Shashwat Tripathi", subtitle: "Frontend Engineer · Crafting quality interfaces", type: "home" })],
   },
   icons: {
-    icon: [{ url: "/favicon.svg", sizes: "32x32", type: "image/svg" }],
+    /**
+     * Raster only, and no SVG at all.
+     *
+     * The generator's favicon.svg is a 128KB PNG in an SVG wrapper rather than
+     * real vector, so it is a bitmap either way. Declaring it as a fallback did
+     * not make it a fallback: Firefox prefers an SVG icon whenever one is
+     * offered, regardless of the sizes on the other candidates, so the 128KB
+     * file was what a tab actually fetched and the PNGs were the thing going
+     * unused. The file is deleted rather than left undeclared, since nothing
+     * else references it.
+     *
+     * `mask-icon` is gone for the same underlying reason. Safari's pinned-tab
+     * icon must be a single-colour vector with a real path, and it renders a
+     * wrapped raster as a solid black square. Both entries come back the day
+     * there is a genuine vector of the mark to point them at.
+     */
+    icon: [
+      { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
     apple: [
       { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
     ],
-    other: [{ rel: "mask-icon", url: "/favicon.svg" }],
   },
   robots: {
     index: true,

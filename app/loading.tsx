@@ -9,11 +9,12 @@ export default function Loading() {
             aria-hidden
           />
           {/* eslint-disable-next-line @next/next/no-img-element -- A plain <img>
-              is correct here. next/image does not optimise SVG, and this renders
-              during a route transition, so a raw tag avoids pulling the image
-              component into the loading boundary to move zero bytes. */}
+              is correct here: this renders during a route transition, so a raw
+              tag avoids pulling the image component into the loading boundary
+              to move four kilobytes. The 96px PNG is the smallest icon that
+              still draws cleanly at 56px. */}
           <img
-            src="/favicon.svg"
+            src="/favicon-96x96.png"
             alt=""
             width={56}
             height={56}

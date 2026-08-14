@@ -8,32 +8,7 @@ import Label from "@/components/layout/Label";
 import Bento from "@/components/layout/Bento";
 import Marker from "@/components/common/Marker";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
-
-type Stat = {
-  n: string;
-  c: string;
-  /** Brand logos anchoring the number — small overlapping avatars below the stat. */
-  orgs?: { name: string; img: string }[];
-};
-
-const NFT_PARTNERS = [
-  { name: "Coinbase", img: "/clients/client_coinbase.png" },
-  { name: "Polygon", img: "/clients/client_polygon.jpg" },
-];
-
-const stats: Stat[] = [
-  { n: "1M+", c: "users reached", orgs: NFT_PARTNERS },
-  { n: "100K", c: "day-one mints", orgs: NFT_PARTNERS },
-  {
-    n: "9+",
-    c: "products shipped",
-    orgs: [
-      { name: "ShopOS", img: "/images/shopos.jpeg" },
-      { name: "Dehidden", img: "/images/dehidden_logo.jpeg" },
-    ],
-  },
-  { n: "4+ yrs", c: "building frontend" },
-];
+import { stats } from "@/lib/stats";
 
 export default function About() {
   return (

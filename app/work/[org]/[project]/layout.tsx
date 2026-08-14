@@ -31,8 +31,13 @@ export async function generateMetadata({
   const description = project.description;
   const image = ogUrl({
     title: project.title,
-    subtitle: `Built at ${org.name}`,
+    // The description, not "Built at <org>": the org is already carried by the
+    // logo and the footer, so the subtitle was spending the card's most
+    // readable secondary line restating the header.
+    subtitle: description,
     type: "project",
+    logo: org.slug,
+    meta: project.metric || `Built at ${org.name}`,
   });
 
   return {

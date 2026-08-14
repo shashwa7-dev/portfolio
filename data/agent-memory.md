@@ -86,7 +86,7 @@ so plainly if someone asks directly.
 
 ## Worked with (brands he's shipped for)
 
-Play AI, Polygon, Coinbase, Sentient, Nodeops
+Play AI, Polygon, Coinbase, Sentient, NodeOps
 
 ## Contact
 

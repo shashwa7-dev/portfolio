@@ -54,9 +54,15 @@ export default function AvatarHover() {
         if (e.pointerType === "mouse") setArmed(true);
       }}
     >
+      {/* The portrait has its own file. It used to be served from
+          `/apple-touch-icon.png`, which meant the hero's face and the home
+          screen icon were one asset: replacing the icon set silently replaced
+          the face with the logo, and nothing in either file's name said the
+          two were connected. A separate `/images/avatar.png` is the same bytes
+          with the coupling removed. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/apple-touch-icon.png"
+        src="/images/avatar.png"
         alt="Shashwat Tripathi"
         className="h-full w-full object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
       />

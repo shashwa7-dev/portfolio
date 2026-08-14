@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Sun, Moon } from "lucide-react";
 import { useDarkMode } from "@/app/hooks/useDarkMode";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
 /**
  * `match` is the route this link owns, for the current-page state. The two
@@ -42,9 +43,44 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/70 backdrop-blur-xl">
       <nav className="mx-auto flex max-w-[1080px] items-center justify-between px-6 py-3.5">
-        <Link href="/" className="text-lg font-semibold text-foreground">
-          offcod8
-        </Link>
+        {/* The mark alone, with no wordmark beside it.
+
+            It is painted as a mask rather than drawn as an <img>: the asset is
+            a single flat colour on transparency, so as an image it would stay
+            #0E0D0C and disappear into the dark theme. Masking `bg-foreground`
+            through its alpha lets the mark take the theme's ink the same way
+            the text beside it does, from one file and with no second asset to
+            keep in sync.
+
+            Dropping the word takes the link's accessible name with it, so the
+            name moves to `aria-label`. Without it the only thing a screen
+            reader could announce for the home link is its href. */}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Link href="/" aria-label="offcod8, home" className="flex shrink-0">
+              <span
+                aria-hidden
+                className="block h-7 w-7 bg-foreground"
+                style={{
+                  WebkitMaskImage: "url(/brand-mark.png)",
+                  maskImage: "url(/brand-mark.png)",
+                  WebkitMaskSize: "contain",
+                  maskSize: "contain",
+                  WebkitMaskRepeat: "no-repeat",
+                  maskRepeat: "no-repeat",
+                  WebkitMaskPosition: "center",
+                  maskPosition: "center",
+                }}
+              />
+            </Link>
+          </TooltipTrigger>
+          {/* The tooltip names the mark for anyone who does not already read it
+              as a wordmark. It is not the accessible name: Radix would wire it
+              up as one, but a tooltip only reaches pointers, so the `aria-label`
+              on the link carries the name for everyone else and the tooltip
+              repeats it rather than supplying it. */}
+          <TooltipContent>offcod8</TooltipContent>
+        </Tooltip>
 
         <ul className="hidden items-center gap-6 md:flex">
           {navLinks.map((l) => {
