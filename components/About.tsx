@@ -143,6 +143,10 @@ export default function About() {
                 <span
                   className="grid h-4 w-4 shrink-0 place-items-center rounded-full bg-foreground text-background"
                   title="Verified engineer"
+                  /* `role="img"` is load-bearing, not decoration: `aria-label`
+                     on a bare span is a prohibited attribute, so without a role
+                     the label is dropped and the mark reads as nothing. */
+                  role="img"
                   aria-label="Verified"
                 >
                   <Check className="h-2.5 w-2.5" strokeWidth={3} />
