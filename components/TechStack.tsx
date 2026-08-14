@@ -133,10 +133,10 @@ const TechStack = () => {
             key={cat.label}
             className="grid items-start gap-y-2 py-4 first:pt-0 last:pb-0 sm:grid-cols-[8.5rem_1fr] sm:gap-x-4"
           >
-            <div className="font-mono text-2xs uppercase leading-5 tracking-label text-subtle">
-              <span aria-hidden className="mr-1.5 text-border-strong">
-                {String(i + 1).padStart(2, "0")}
-              </span>
+            <div
+              className="gutter-index font-mono text-2xs uppercase leading-5 tracking-label text-subtle"
+              data-index={String(i + 1).padStart(2, "0")}
+            >
               {cat.label}
             </div>
             <ul className="flex flex-wrap gap-1.5">
