@@ -382,10 +382,40 @@ const S7Bot = () => {
 
             {/* Messages */}
             <div className="relative flex-1">
+              {/* Watermark. Painted as a mask over `bg-foreground` for the same
+                  reason the header's mark is: the asset is one flat colour on
+                  transparency, so as an <img> it would stay near-black and sink
+                  into the dark theme.
+
+                  It sits in the corner at 64px rather than filling the panel.
+                  A large centred mark would be behind the conversation, and
+                  every message would cross it; in a 360px column that reads as
+                  interference rather than as stationery. The opacity is doubled
+                  in dark mode because the same 5% reads far weaker as light ink
+                  on a dark ground than as dark ink on a light one.
+
+                  No z-index anywhere. The scroll container below is `relative`
+                  and comes later in the DOM, which is enough to paint it over
+                  an absolutely positioned sibling, and the "new messages" pill
+                  is later still. */}
+              <span
+                aria-hidden
+                className="pointer-events-none absolute bottom-3 right-3 h-16 w-16 bg-foreground opacity-5 dark:opacity-10"
+                style={{
+                  WebkitMaskImage: "url(/brand-mark.png)",
+                  maskImage: "url(/brand-mark.png)",
+                  WebkitMaskSize: "contain",
+                  maskSize: "contain",
+                  WebkitMaskRepeat: "no-repeat",
+                  maskRepeat: "no-repeat",
+                  WebkitMaskPosition: "center",
+                  maskPosition: "center",
+                }}
+              />
               <div
                 ref={chatWindowRef}
                 onScroll={onMessagesScroll}
-                className="h-full overflow-y-auto p-3 space-y-3 min-h-[280px] max-h-[340px]"
+                className="relative h-full overflow-y-auto p-3 space-y-3 min-h-[280px] max-h-[340px]"
               >
               {messages.length === 0 && (
                 /* Empty state. Text only.

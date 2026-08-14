@@ -43,12 +43,6 @@ export const itemVariants: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: duration.slow, ease: ease.out } },
 };
 
-/** Plain fade-in, no movement. */
-export const fadeInVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: duration.slow, ease: ease.out } },
-};
-
 /** Generic "fade up from 10px below" — the most reused inline pattern in the app. */
 export const slideUpVariants: Variants = {
   hidden: { opacity: 0, y: 10 },

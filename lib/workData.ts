@@ -383,6 +383,3 @@ export const getProjectFromOrg = (orgSlug: string, projectSlug: string) => {
   const org = getOrganization(orgSlug);
   return org?.projects.find((p) => p.slug === projectSlug);
 };
-
-export const getAllWorkProjects = () =>
-  organizations.flatMap((org) => org.projects);
