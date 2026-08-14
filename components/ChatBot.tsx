@@ -406,14 +406,17 @@ const S7Bot = () => {
                    room for one focal point. A leading arrow is enough to say they
                    are clickable, and the row still brightens on hover.
 
-                   Centred, because this state fills a 360px-wide panel and the
-                   eye lands in the middle of it. Left-aligned rows put the three
-                   suggestions against an edge with a wide empty margin beside
-                   them. The arrow moves to `items-center` with the text for the
-                   same reason, since there is no longer a left rail for it to
-                   hang off. */
+                   Flush left, while the block stays centred in the panel's
+                   height. Centring the text too gave every row a different
+                   starting x, so the three suggestions had no common edge to
+                   scan down, and each one re-centred as it wrapped. Ragged-left
+                   is the harder thing to read in a narrow column, and this
+                   column is 360px. The arrows now form that left rail, and they
+                   align to the first line rather than to the middle of a row,
+                   so a prompt that wraps to two lines keeps its arrow beside
+                   the line it starts on. */
                 <div className="flex h-full flex-col justify-center py-4">
-                  <p className="mb-3 text-center text-sm text-muted-foreground">
+                  <p className="mb-3 text-sm text-muted-foreground">
                     Ask about Shashwat&apos;s work, stack, or availability.
                   </p>
 
@@ -430,9 +433,9 @@ const S7Bot = () => {
                         animate="visible"
                         transition={{ delay: stagger.loose + idx * stagger.tight }}
                         onClick={() => sendMessage(prompt)}
-                        className="group/prompt flex w-full items-center justify-center gap-1.5 py-1 text-center text-xs text-muted-foreground transition-colors duration-base ease-out hover:text-foreground"
+                        className="group/prompt flex w-full items-start gap-1.5 py-1 text-left text-xs text-muted-foreground transition-colors duration-base ease-out hover:text-foreground"
                       >
-                        <ArrowRight className="h-3 w-3 shrink-0 text-subtle transition-colors duration-base ease-out group-hover/prompt:text-foreground" />
+                        <ArrowRight className="mt-0.5 h-3 w-3 shrink-0 text-subtle transition-colors duration-base ease-out group-hover/prompt:text-foreground" />
                         {prompt}
                       </motion.button>
                     ))}
