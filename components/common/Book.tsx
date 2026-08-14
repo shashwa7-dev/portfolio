@@ -84,6 +84,7 @@ export default function Book({
       {/* Progress bar */}
       <div
         role="progressbar"
+        aria-label={`Reading progress for ${name}`}
         aria-valuenow={progress}
         aria-valuemin={0}
         aria-valuemax={100}
