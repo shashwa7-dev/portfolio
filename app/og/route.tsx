@@ -116,7 +116,17 @@ function loadLogo(key: string): Promise<string | null> {
       .then((b) => `data:${mime};base64,${b.toString("base64")}`)
       // A missing avatar must not take the whole card down with it. The layout
       // treats the logo as optional everywhere, so a null just draws without.
-      .catch(() => null);
+      //
+      // Only successes stay cached. A failure here need not mean the file is
+      // absent: a crawler burst can exhaust file descriptors, and a read during
+      // a deploy can catch the directory mid-swap. Holding the rejection would
+      // turn either into every card for that org shipping logo-less for the
+      // rest of the process, recoverable only by a restart. Dropping the entry
+      // costs one retried read and fixes itself.
+      .catch(() => {
+        logoCache.delete(key);
+        return null;
+      });
     logoCache.set(key, cached);
   }
   return cached;
@@ -307,7 +317,14 @@ export async function GET(request: Request) {
             <div
               style={{
                 fontWeight: 600,
-                fontSize: isHome ? 82 : titleSize(title),
+                /* Home caps at 82 rather than taking the scale's 86, because it
+                   is the one card with a stat strip and a client list under the
+                   title and so has the least room for it. `min` rather than a
+                   flat 82: `type` and `title` both come from the query string,
+                   so a 90-character home title is reachable from outside the
+                   site, and pinning the size meant it ran through the header
+                   pill and the footer instead of stepping down. */
+                fontSize: isHome ? Math.min(82, titleSize(title)) : titleSize(title),
                 lineHeight: 1.04,
                 letterSpacing: -2.4,
                 color: INK,

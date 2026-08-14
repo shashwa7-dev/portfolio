@@ -11,9 +11,8 @@ export default function Loading() {
           {/* eslint-disable-next-line @next/next/no-img-element -- A plain <img>
               is correct here: this renders during a route transition, so a raw
               tag avoids pulling the image component into the loading boundary
-              to move four kilobytes. The 96px PNG rather than favicon.svg,
-              which is a 128KB raster in an SVG wrapper and buys no sharpness
-              over a bitmap at a 56px draw. */}
+              to move four kilobytes. The 96px PNG is the smallest icon that
+              still draws cleanly at 56px. */}
           <img
             src="/favicon-96x96.png"
             alt=""

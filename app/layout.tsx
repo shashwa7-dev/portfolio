@@ -67,20 +67,24 @@ export const metadata: Metadata = {
   },
   icons: {
     /**
-     * Raster first, SVG last. The SVG is a 128KB PNG in an SVG wrapper rather
-     * than real vector, so it buys no sharpness over the PNGs and costs
-     * thirty times their weight; it stays only as the any-size fallback for
-     * clients that ask for one. Browsers pick the closest declared size, so
-     * the 96px PNG is what a tab actually ends up loading.
+     * Raster only, and no SVG at all.
      *
-     * `mask-icon` is gone with it. Safari's pinned-tab icon must be a
-     * single-colour vector with a real path, and it silently renders a wrapped
-     * raster as a solid black square.
+     * The generator's favicon.svg is a 128KB PNG in an SVG wrapper rather than
+     * real vector, so it is a bitmap either way. Declaring it as a fallback did
+     * not make it a fallback: Firefox prefers an SVG icon whenever one is
+     * offered, regardless of the sizes on the other candidates, so the 128KB
+     * file was what a tab actually fetched and the PNGs were the thing going
+     * unused. The file is deleted rather than left undeclared, since nothing
+     * else references it.
+     *
+     * `mask-icon` is gone for the same underlying reason. Safari's pinned-tab
+     * icon must be a single-colour vector with a real path, and it renders a
+     * wrapped raster as a solid black square. Both entries come back the day
+     * there is a genuine vector of the mark to point them at.
      */
     icon: [
       { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
       { url: "/favicon.ico", sizes: "any" },
-      { url: "/favicon.svg", type: "image/svg+xml" },
     ],
     apple: [
       { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },

@@ -28,6 +28,10 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
     title,
     subtitle: description,
     type: "project",
+    // Explicit, because `type: "project"` defaults the pill to "Case Study",
+    // which is what the employer work under /work/[org]/[project] is labelled.
+    // These are the side projects, and a shared card should say which it is.
+    label: "Project",
     meta: stack.slice(0, 3).join(" · "),
   });
   return {
