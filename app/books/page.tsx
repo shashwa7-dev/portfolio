@@ -4,6 +4,15 @@ import Container from "@/components/layout/Container";
 import { ogUrl } from "@/lib/seo";
 import { baseUrl } from "@/app/sitemap";
 
+// Built once and shared by both blocks, as the blog index does. The two calls
+// this replaced took identical arguments, so they were the same URL written
+// twice, which is one place for them to drift apart.
+const BOOKS_OG = ogUrl({
+  title: "Books",
+  subtitle: "What I'm reading",
+  type: "books",
+});
+
 export const metadata = {
   title: "Books",
   description: "Books I've read and am currently reading.",
@@ -11,7 +20,7 @@ export const metadata = {
   openGraph: {
     title: "Books",
     description: "What I'm reading",
-    images: [{ url: ogUrl({ title: "Books", subtitle: "What I'm reading", type: "books" }) }],
+    images: [{ url: BOOKS_OG }],
   },
   // Without this, Next inherits `twitter` wholesale from the root layout, so a
   // shared link showed the homepage card instead of this page's.
@@ -19,7 +28,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "Books",
     description: "What I'm reading",
-    images: [ogUrl({ title: "Books", subtitle: "What I'm reading", type: "books" })],
+    images: [BOOKS_OG],
   },
 };
 

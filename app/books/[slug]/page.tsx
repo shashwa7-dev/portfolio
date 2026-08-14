@@ -1,4 +1,4 @@
-import { books } from "@/lib/books";
+import { books, type Book } from "@/lib/books";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -12,17 +12,66 @@ type Props = {
   params: { slug: string };
 };
 
+/**
+ * One reading of "how far through this am I", shared by the card and the page.
+ *
+ * They derived it separately before: the card from `isDone`, the page from the
+ * chapters. Both are true of `lib/books.ts` as it stands, which is exactly why
+ * the drift would have gone unnoticed. Set `isDone` before flipping the last
+ * chapter and the shared card says FINISHED while the page it links to still
+ * renders 5/18.
+ *
+ * Chapters win over the flag because they are what the page displays, so a
+ * disagreement would be visible on arrival. The flag is the fallback for a book
+ * logged without a chapter list, where there is nothing to count.
+ */
+function readProgress(book: Book) {
+  const total = book.chapters.length;
+  const read = book.chapters.filter((c) => c.completed).length;
+  return { total, read, finished: total > 0 ? read === total : book.isDone };
+}
+
 export function generateMetadata({ params }: Props) {
   const book = books.find((b) => b.slug === params.slug);
   if (!book) return undefined;
 
-  const { name: title, description, cover: image } = book;
-  const ogImage = image
-    ? image
-    : ogUrl({ title: book.name, type: "books" });
+  const { name: title, description } = book;
+
+  /**
+   * Always the generated card, never the book's `cover`.
+   *
+   * A cover is a 2:3 portrait scan sized for the shelf grid. Blown up to
+   * 1200x630 in a timeline it arrives letterboxed and soft, with nothing on it
+   * to say whose shelf it came from or why the link is worth opening, so
+   * sharing a book that happened to carry a cover looked nothing like sharing
+   * one that did not. This is the fault the blog had before its cards were
+   * fixed, and it takes the same fix.
+   *
+   * The card gets the book's own blurb as its brief, plus the two facts a
+   * reader weighs here: who wrote it, and how far through it I am. `cover`
+   * keeps its real job on the shelf and on the page itself.
+   */
+  const { total, read, finished } = readProgress(book);
+
+  const ogImage = ogUrl({
+    title,
+    subtitle: description,
+    type: "books",
+    /**
+     * `label` is passed explicitly rather than left to `type`. The OG route maps
+     * `books` to the fixed word "Reading", so a finished book was going out with
+     * READING in the header pill and "Finished" in the footer line at once.
+     * Overriding the label here fixes it without giving the shared LABELS map a
+     * second books entry.
+     */
+    label: finished ? "Read" : "Reading",
+    meta: `${book.author} · ${finished ? "Finished" : `${read}/${total} chapters`}`,
+  });
+
   return {
     title: book.name,
     description: book.description,
+    alternates: { canonical: `${baseUrl}books/${book.slug}` },
     openGraph: {
       title,
       description,
@@ -44,8 +93,7 @@ export default function BookPage({ params }: Props) {
   const book = books.find((b) => b.slug === params.slug);
   if (!book) notFound();
 
-  const completedCount = book.chapters.filter((c) => c.completed).length;
-  const isComplete = completedCount === book.chapters.length;
+  const { read: completedCount, finished: isComplete } = readProgress(book);
 
   return (
     <main className="min-h-screen py-8 md:py-12">
