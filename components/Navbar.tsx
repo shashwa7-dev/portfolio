@@ -42,8 +42,33 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/70 backdrop-blur-xl">
       <nav className="mx-auto flex max-w-[1080px] items-center justify-between px-6 py-3.5">
-        <Link href="/" className="text-lg font-semibold text-foreground">
-          offcod8
+        {/* The mark alone, with no wordmark beside it.
+
+            It is painted as a mask rather than drawn as an <img>: the asset is
+            a single flat colour on transparency, so as an image it would stay
+            #0E0D0C and disappear into the dark theme. Masking `bg-foreground`
+            through its alpha lets the mark take the theme's ink the same way
+            the text beside it does, from one file and with no second asset to
+            keep in sync.
+
+            Dropping the word takes the link's accessible name with it, so the
+            name moves to `aria-label`. Without it the only thing a screen
+            reader could announce for the home link is its href. */}
+        <Link href="/" aria-label="Shashwat Tripathi, home" className="flex shrink-0">
+          <span
+            aria-hidden
+            className="block h-7 w-7 bg-foreground"
+            style={{
+              WebkitMaskImage: "url(/brand-mark.png)",
+              maskImage: "url(/brand-mark.png)",
+              WebkitMaskSize: "contain",
+              maskSize: "contain",
+              WebkitMaskRepeat: "no-repeat",
+              maskRepeat: "no-repeat",
+              WebkitMaskPosition: "center",
+              maskPosition: "center",
+            }}
+          />
         </Link>
 
         <ul className="hidden items-center gap-6 md:flex">
