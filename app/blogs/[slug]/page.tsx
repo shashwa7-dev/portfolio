@@ -23,22 +23,28 @@ export function generateMetadata({ params }: any) {
     return;
   }
 
-  let {
+  let { title, publishedAt: publishedTime, summary: description } = post.metadata;
+
+  /**
+   * Always the generated card, never the post's `image`.
+   *
+   * `image` is the thumbnail the blog index draws beside the excerpt, and it is
+   * cropped and composed for that job: a wide screenshot that reads fine at
+   * 96px in a list and arrives as an unlabelled, off-ratio picture when it is
+   * blown up to 1200x630 in a timeline. Sharing a post that happened to carry a
+   * thumbnail therefore looked nothing like sharing one that did not.
+   *
+   * The card gets the post's own summary as its brief, plus the two facts a
+   * reader weighs before opening a link: how long it is, and how old it is.
+   * `image` keeps its real job in the index and in the BlogPosting schema,
+   * where a genuine photograph beats a text card.
+   */
+  let ogImage = ogUrl({
     title,
-    publishedAt: publishedTime,
-    summary: description,
-    image,
-  } = post.metadata;
-  // The card gets the post's own summary as its brief, plus the two facts a
-  // reader weighs before opening a link: how long it is and how old it is.
-  let ogImage = image
-    ? image
-    : ogUrl({
-        title,
-        subtitle: description,
-        type: "post",
-        meta: `${readingTime(post.content)} min read · ${formatDate(publishedTime, false)}`,
-      });
+    subtitle: description,
+    type: "post",
+    meta: `${readingTime(post.content)} min read · ${formatDate(publishedTime, false)}`,
+  });
 
   return {
     title,

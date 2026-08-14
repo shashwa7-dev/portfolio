@@ -140,7 +140,15 @@ function loadLogo(key: string): Promise<string | null> {
  */
 function clamp(value: string, max: number) {
   const trimmed = value.trim();
-  return trimmed.length > max ? `${trimmed.slice(0, max - 1).trimEnd()}…` : trimmed;
+  if (trimmed.length <= max) return trimmed;
+  // Cut back to the last word boundary. Slicing at the character limit ended
+  // real summaries on fragments like "with built-in rate limiting an…", which
+  // reads as a rendering fault rather than as an abbreviation. The fallback
+  // covers a single token longer than the limit, which has no boundary to
+  // retreat to.
+  const cut = trimmed.slice(0, max - 1);
+  const lastSpace = cut.lastIndexOf(" ");
+  return `${(lastSpace > max * 0.6 ? cut.slice(0, lastSpace) : cut).trimEnd()}…`;
 }
 
 /**

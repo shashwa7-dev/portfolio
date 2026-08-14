@@ -126,8 +126,20 @@ export function blogPostingLd(post: PostLike) {
     datePublished: post.metadata.publishedAt,
     dateModified: post.metadata.publishedAt,
     description: post.metadata.summary,
+    /**
+     * Still prefers the post's own thumbnail, unlike `og:image`, which is
+     * always the generated card. The two feed different consumers and want
+     * different things: a social preview is a labelled card that has to say
+     * what the link is, while this one feeds rich results, where Google asks
+     * for a large, representative image of the subject and a card of text is
+     * the weaker answer.
+     */
+    // `baseUrl` carries a trailing slash and frontmatter image paths carry a
+    // leading one, so joining them naively emitted "shashwa7.in//projects/...".
+    // Breadcrumb paths below are written without the leading slash, which is
+    // why only this join needed it stripped.
     image: post.metadata.image
-      ? `${baseUrl}${post.metadata.image}`
+      ? `${baseUrl}${post.metadata.image.replace(/^\//, "")}`
       : ogUrl({ title: post.metadata.title, type: "post" }),
     url: `${baseUrl}blogs/${post.slug}`,
     author: AUTHOR_REF,
