@@ -16,13 +16,41 @@ export function generateMetadata({ params }: Props) {
   const book = books.find((b) => b.slug === params.slug);
   if (!book) return undefined;
 
-  const { name: title, description, cover: image } = book;
-  const ogImage = image
-    ? image
-    : ogUrl({ title: book.name, type: "books" });
+  const { name: title, description } = book;
+
+  /**
+   * Always the generated card, never the book's `cover`.
+   *
+   * A cover is a 2:3 portrait scan sized for the shelf grid. Blown up to
+   * 1200x630 in a timeline it arrives letterboxed and soft, with nothing on it
+   * to say whose shelf it came from or why the link is worth opening, so
+   * sharing a book that happened to carry a cover looked nothing like sharing
+   * one that did not. This is the fault the blog had before its cards were
+   * fixed, and it takes the same fix.
+   *
+   * The card gets the book's own blurb as its brief, plus the two facts a
+   * reader weighs here: who wrote it, and how far through it I am. `cover`
+   * keeps its real job on the shelf and on the page itself.
+   */
+  const total = book.chapters.length;
+  const read = book.chapters.filter((c) => c.completed).length;
+  const progress = book.isDone
+    ? "Finished"
+    : total
+      ? `${read}/${total} chapters`
+      : "Reading";
+
+  const ogImage = ogUrl({
+    title,
+    subtitle: description,
+    type: "books",
+    meta: `${book.author} · ${progress}`,
+  });
+
   return {
     title: book.name,
     description: book.description,
+    alternates: { canonical: `${baseUrl}books/${book.slug}` },
     openGraph: {
       title,
       description,
