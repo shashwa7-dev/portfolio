@@ -1,7 +1,7 @@
-import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft } from "lucide-react";
 import Container from "@/components/layout/Container";
+import { cn } from "@/lib/utils";
+import Marker from "@/components/common/Marker";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl, breadcrumbLd } from "@/lib/seo";
 import { communities } from "@/lib/coffee";
@@ -115,9 +115,23 @@ function Illus({
   );
 }
 
-function Part({ label, title }: { label: string; title: string }) {
+function Part({
+  label,
+  title,
+  first,
+}: {
+  label: string;
+  title: string;
+  /** The first part follows the lede, which has already opened the page, so
+   *  it does not need the full break. Left at the section step it opened a
+   *  96px hole between the standfirst and the first thing to read. */
+  first?: boolean;
+}) {
   return (
-    <div data-part className="mt-16 border-t border-border pt-8">
+    <div
+      data-part
+      className={cn("border-t border-border pt-8", first ? "mt-8" : "mt-14")}
+    >
       <p className="font-mono text-2xs uppercase tracking-label text-subtle">
         {label}
       </p>
@@ -133,7 +147,7 @@ function H2({ id, children }: { id: string; children: React.ReactNode }) {
   return (
     <h2
       id={id}
-      className="mt-12 scroll-mt-24 text-xl font-semibold tracking-tight text-foreground md:text-2xl"
+      className="mt-10 scroll-mt-24 text-2xl font-semibold tracking-tight text-foreground"
     >
       {children}
     </h2>
@@ -142,14 +156,14 @@ function H2({ id, children }: { id: string; children: React.ReactNode }) {
 
 function H3({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="mt-8 text-base font-semibold tracking-tight text-foreground">
+    <h3 className="mt-6 text-lg font-semibold tracking-tight text-foreground">
       {children}
     </h3>
   );
 }
 
 function P({ children }: { children: React.ReactNode }) {
-  return <p className="mt-4 leading-relaxed text-muted-foreground">{children}</p>;
+  return <p className="my-4 leading-relaxed text-foreground">{children}</p>;
 }
 
 function Strong({ children }: { children: React.ReactNode }) {
@@ -265,15 +279,7 @@ export default function CoffeePage() {
           break, so a section heading adding its own 48 on top left the part
           label stranded above a gap it had just created. */}
       <Container width="reading" className="[&>[data-part]+h2]:mt-6">
-        <Link
-          href="/shelf"
-          className="inline-flex items-center gap-1.5 font-mono text-2xs uppercase tracking-label text-subtle transition-colors hover:text-foreground"
-        >
-          <ArrowLeft className="h-3 w-3" />
-          Shelf
-        </Link>
-
-        <h1 className="mt-8 text-3xl font-semibold tracking-tight md:text-4xl">
+        <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
           How I got into coffee
         </h1>
         <p className="mt-4 max-w-[58ch] text-lg leading-relaxed text-muted-foreground">
@@ -284,7 +290,7 @@ export default function CoffeePage() {
         </p>
 
 
-        <Part label="Part one" title="How I got here" />
+        <Part label="Part one" title="How I got here" first />
 
         <H2 id="instant">Where I actually started</H2>
         <P>
@@ -437,13 +443,13 @@ export default function CoffeePage() {
           like brown water, and leaning harder on the arm changed nothing.
         </P>
         <P>
-          <Strong>You do not apply nine bars. You generate them.</Strong>{" "}
+          <Strong><Marker>You do not apply nine bars.</Marker></Strong> You generate them.{" "}
           Pressure is what happens when you push against something that pushes
           back, and the thing pushing back is the bed of coffee. Grind too coarse
           and there is nothing to push against: the water leaves as fast as you
           supply it, the pressure never builds, and it is gone before it has
           taken much flavour with it. A fast, thin shot is almost never fixed at
-          the lever. It is fixed at the grinder.
+          the lever. It is <Marker>fixed at the grinder</Marker>.
         </P>
         <Illus
           src="/coffee/old-grinder-limits.webp"
@@ -672,7 +678,8 @@ export default function CoffeePage() {
           so it is worth thirty seconds.
         </P>
         <P>
-          When coffee people say <Strong>acidity</Strong>, they mean brightness.
+          When coffee people say <Strong>acidity</Strong>, <Marker>they mean
+          brightness</Marker>.
           The snap of a green apple, the lift of orange juice. It is a compliment.
           It is a thing people pay more for.
         </P>
@@ -814,7 +821,8 @@ export default function CoffeePage() {
         </P>
         <P>
           Which brings up the label you have definitely seen.{" "}
-          <Strong>&ldquo;100% arabica&rdquo; is not a quality claim.</Strong> It
+          <Strong>&ldquo;100% arabica&rdquo; is <Marker>not a quality
+          claim</Marker>.</Strong> It
           is a statement about species and nothing else, and there is an enormous
           amount of mediocre arabica in the world. It meant something when the
           alternative was cheap robusta padding out a supermarket tin. Notice
@@ -842,7 +850,7 @@ export default function CoffeePage() {
           <Def term="Honey, or pulped natural">
             The middle path. The skin comes off but the sticky layer underneath
             stays on to dry. Sweet, between the other two.{" "}
-            <Strong>There is no honey involved.</Strong> That sticky layer just
+            <Strong><Marker>There is no honey involved.</Marker></Strong> That sticky layer just
             looks and behaves like honey, and the name stuck.
           </Def>
         </dl>
@@ -855,7 +863,7 @@ export default function CoffeePage() {
 
         <H3>The date that matters</H3>
         <P>
-          Look for a <Strong>roast date</Strong>, not a best before date.
+          Look for a <Marker>roast date</Marker>, not a best before date.
         </P>
         <P>
           Coffee does not spoil the way milk does. It is shelf stable, so a best
