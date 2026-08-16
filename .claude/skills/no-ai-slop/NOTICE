@@ -1,0 +1,6 @@
+Vendored from https://github.com/petergyang/no-ai-slop (MIT, (c) 2026 Peter Yang).
+SKILL.md and eval.md are unmodified. LICENSE is the upstream copy.
+
+Where this skill and the repo disagree, the repo wins. The one live conflict:
+this skill permits 1-2 em dashes in a longer draft, while CLAUDE.md bans them
+outright in user-facing copy. Use none.
