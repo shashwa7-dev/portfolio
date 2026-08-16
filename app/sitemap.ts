@@ -20,6 +20,14 @@ export default async function sitemap() {
       url: `${baseUrl}books`,
       lastModified: today,
     },
+    {
+      url: `${baseUrl}shelf`,
+      lastModified: today,
+    },
+    {
+      url: `${baseUrl}shelf/coffee`,
+      lastModified: today,
+    },
   ];
 
   const projects = getAllSideProjects().map((p) => ({
