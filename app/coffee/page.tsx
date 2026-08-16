@@ -1074,14 +1074,6 @@ export default function CoffeePage() {
           come back to room temperature before you open it, or water condenses
           straight onto cold beans.
         </P>
-        <Aside>
-          The single biggest freshness fact, and the reason a grinder is worth
-          more than a machine: whole beans stay good for around three weeks.
-          Ground coffee stays good for about an hour. Grinding multiplies the
-          surface exposed to air by an enormous factor, and most of the trapped
-          gas escapes within five minutes.
-        </Aside>
-
         <H3>What you can safely ignore for now</H3>
         <P>
           <Strong>Altitude.</Strong> &ldquo;1600 MASL&rdquo; means metres above

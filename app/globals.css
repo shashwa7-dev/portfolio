@@ -327,8 +327,11 @@ a {
  * The wrapper scrolls rather than the page: a three-column table of numbers is
  * fine on a phone, but a wide one would otherwise push the whole article
  * sideways. `text-left` because every table here starts with a label column. */
+/* No margin here: the scroll wrapper owns it. `overflow-x` makes that wrapper
+ * a block formatting context, so a margin on the table cannot collapse through
+ * it and the two would stack to twice the block step. */
 .prose table {
-  @apply my-6 w-full border-collapse text-sm;
+  @apply w-full border-collapse text-sm;
 }
 
 /* The scroll container the table used to be. */

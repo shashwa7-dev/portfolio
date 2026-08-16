@@ -54,7 +54,11 @@ export default function StickyScrollSpyTOC({
            pushes its first and last entries off a laptop screen with no way to
            reach them. The scrollbar is hidden because the rules are the
            interface; the overflow is a backstop, not a feature. */
-        "max-h-[70vh] overflow-y-auto overscroll-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+        /* `p-0.5` is for the focus ring, not for looks. `overflow-y` makes
+           this a scroll container, which clips descendants at its padding box,
+           and the rows are exactly as wide as it is, so a 2px ring painted
+           outside their border box lost its left and right edges. */
+        "max-h-[70vh] overflow-y-auto overscroll-contain p-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
         className
       )}
     >

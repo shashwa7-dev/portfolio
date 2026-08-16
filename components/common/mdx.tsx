@@ -130,6 +130,15 @@ const components = {
   Image: RoundedImage,
   a: CustomLink,
   code: Code,
+  /* Pipe tables in a post become a raw `table`, not the `Table` component, so
+     they need the scroll wrapper mapped on separately. Without this they are
+     the one table path with no container, and since the table itself no longer
+     scrolls, a wide row pushes the whole article sideways instead. */
+  table: (props: React.ComponentPropsWithoutRef<"table">) => (
+    <div className="table-scroll">
+      <table {...props} />
+    </div>
+  ),
   Table,
   /**
    * The drawn underline, available to posts as `<Marker>phrase</Marker>`.

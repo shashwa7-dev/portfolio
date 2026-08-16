@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { CustomMDX } from "@/components/common/mdx";
 import StickyScrollSpyTOC from "@/components/common/StickyScrollSpyTOC";
 import { tocFromMdx } from "@/lib/toc";
+import { cn } from "@/lib/utils";
 import { readingTime } from "@/lib/readingTime";
 import { formatDate, getBlogPosts } from "../utils";
 import { baseUrl } from "@/app/sitemap";
@@ -89,9 +90,20 @@ export default function Blog({ params }: any) {
   // because "next" is ambiguous to a reader and "older" is not.
   const older = posts[index + 1];
   const newer = posts[index - 1];
+  const toc = tocFromMdx(post.content);
 
   return (
-    <Container as="section" width="reading" className="py-8 pb-28 md:py-12 md:pb-28 xl:pb-12 relative">
+    <Container
+      as="section"
+      width="reading"
+      className={cn(
+        "relative py-8 md:py-12",
+        /* Only reserved when there is something to reserve it for. The table
+           of contents renders nothing without headings, so a post that has
+           none would otherwise end on 112px of empty page. */
+        toc.length > 0 && "pb-28 md:pb-28 xl:pb-12"
+      )}
+    >
       <script
         type="application/ld+json"
         suppressHydrationWarning
@@ -128,7 +140,7 @@ export default function Blog({ params }: any) {
       {/* Derived from the source rather than the DOM, so it is server
           rendered and costs no layout pass. It returns null on a post with no
           headings, which is why there is no guard here. */}
-      <StickyScrollSpyTOC sections={tocFromMdx(post.content)} />
+      <StickyScrollSpyTOC sections={toc} />
       <article className="prose">
         <CustomMDX source={post.content} />
       </article>
