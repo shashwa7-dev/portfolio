@@ -1,7 +1,9 @@
 "use client";
 
-import { useId, useRef, useState } from "react";
+import { useId, useState } from "react";
+import { Check, Minus, TriangleAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Scrubber from "@/components/ui/Scrubber";
 import { ROAST_STOPS, type Fit } from "@/lib/roasts";
 
 /**
@@ -13,16 +15,25 @@ import { ROAST_STOPS, type Fit } from "@/lib/roasts";
  * one slider and watching the answers change teaches the same grid in about
  * five seconds.
  *
- * It is a native `<input type="range">` rather than a row of buttons, for two
- * reasons. Roast is a continuum, not four species, and the control should say
- * so. And a range input arrives with arrow keys, Home, End, a focus ring and a
- * screen-reader announcement already working, none of which a div would have.
+ * The control is a slider rather than a row of buttons because roast is a
+ * continuum, not four species, and it should say so. The stop names underneath
+ * stay tappable, since dragging to an exact stop on a phone is fiddly.
  */
 
-const FIT_LABEL: Record<Fit, string> = {
-  great: "Great",
-  works: "Works",
-  tricky: "Tricky",
+/**
+ * The verdict column, as an icon plus a colour plus a word.
+ *
+ * Colour alone would fail anyone who cannot separate the two hues, so the icon
+ * carries the same distinction in shape and the word carries it in text.
+ *
+ * "Tricky" is amber rather than red on purpose. Red would say do not, and the
+ * page argues the opposite: light roast espresso is a real and respected style,
+ * it is just the hardest thing on the list. Amber says proceed knowing that.
+ */
+const FIT: Record<Fit, { label: string; icon: typeof Check; className: string }> = {
+  great: { label: "Great", icon: Check, className: "text-good" },
+  works: { label: "Works", icon: Minus, className: "text-muted-foreground" },
+  tricky: { label: "Tricky", icon: TriangleAlert, className: "text-caution" },
 };
 
 export default function RoastExplorer() {
@@ -40,10 +51,16 @@ export default function RoastExplorer() {
           Drag to change the roast
         </p>
 
-        <RoastScrubber
+        <Scrubber
           labelledBy={id}
-          index={i}
-          onChange={setI}
+          value={i}
+          onValueChange={setI}
+          min={0}
+          max={ROAST_STOPS.length - 1}
+          step={1}
+          valueText={stop.name}
+          ticks={ROAST_STOPS.map((_, n) => n)}
+          fill={`linear-gradient(to right, ${ROAST_STOPS.map((s) => s.swatch).join(", ")})`}
           className="mt-3"
         />
 
@@ -106,18 +123,7 @@ export default function RoastExplorer() {
                   {b.why}
                 </span>
               </span>
-              <span
-                className={cn(
-                  "shrink-0 font-mono text-2xs uppercase tracking-label",
-                  b.fit === "great"
-                    ? "text-foreground"
-                    : b.fit === "works"
-                      ? "text-muted-foreground"
-                      : "text-subtle"
-                )}
-              >
-                {FIT_LABEL[b.fit]}
-              </span>
+              <Verdict fit={b.fit} />
             </li>
           ))}
         </ul>
@@ -131,138 +137,18 @@ export default function RoastExplorer() {
   );
 }
 
-/**
- * The track: a capsule you can drag, click or arrow through.
- *
- * It replaced a native `<input type="range">`, which is the safe choice and
- * looked like a browser widget dropped into the page. What it gave away for
- * free has to be rebuilt by hand here, so this carries the full slider
- * contract: `role="slider"` with min, max and now, plus `aria-valuetext` so a
- * screen reader announces "Medium-dark" rather than "2".
- *
- * The value is an index, not a quantity. Pointer position is converted to the
- * nearest stop rather than a continuous number, so the thumb always lands on a
- * roast and a click anywhere on the track picks the closest one.
- *
- * Motion is CSS rather than a spring library: `duration-fast` and `ease-out`
- * resolve to the tokens in `lib/motionVariants.ts`, which is the only sanctioned
- * curve in this codebase, and the whole thing is two transitions.
- */
-function RoastScrubber({
-  index,
-  onChange,
-  labelledBy,
-  className,
-}: {
-  index: number;
-  onChange: (i: number) => void;
-  labelledBy: string;
-  className?: string;
-}) {
-  const trackRef = useRef<HTMLDivElement>(null);
-  const [dragging, setDragging] = useState(false);
-  const last = ROAST_STOPS.length - 1;
-  const pct = (index / last) * 100;
-
-  const fromPointer = (clientX: number) => {
-    const el = trackRef.current;
-    if (!el) return index;
-    const r = el.getBoundingClientRect();
-    const ratio = Math.min(1, Math.max(0, (clientX - r.left) / r.width));
-    return Math.round(ratio * last);
-  };
-
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    const next =
-      e.key === "ArrowRight" || e.key === "ArrowUp"
-        ? index + 1
-        : e.key === "ArrowLeft" || e.key === "ArrowDown"
-          ? index - 1
-          : e.key === "Home"
-            ? 0
-            : e.key === "End"
-              ? last
-              : null;
-    if (next === null) return;
-    e.preventDefault();
-    onChange(Math.min(last, Math.max(0, next)));
-  };
-
+function Verdict({ fit }: { fit: Fit }) {
+  const { label, icon: Icon, className } = FIT[fit];
   return (
-    <div
-      ref={trackRef}
-      role="slider"
-      tabIndex={0}
-      aria-labelledby={labelledBy}
-      aria-valuemin={0}
-      aria-valuemax={last}
-      aria-valuenow={index}
-      aria-valuetext={ROAST_STOPS[index].name}
-      onKeyDown={onKeyDown}
-      onPointerDown={(e) => {
-        e.preventDefault();
-        trackRef.current?.setPointerCapture(e.pointerId);
-        setDragging(true);
-        onChange(fromPointer(e.clientX));
-      }}
-      onPointerMove={(e) => dragging && onChange(fromPointer(e.clientX))}
-      onPointerUp={(e) => {
-        trackRef.current?.releasePointerCapture(e.pointerId);
-        setDragging(false);
-      }}
-      onPointerCancel={() => setDragging(false)}
+    <span
       className={cn(
-        "relative h-11 cursor-pointer touch-none select-none overflow-hidden rounded-xl border border-border bg-elevated outline-offset-2",
+        "flex shrink-0 items-center gap-1.5 font-mono text-2xs uppercase tracking-label",
         className
       )}
     >
-      {/* The roast ramp, revealed left to right. Clipped rather than resized:
-          a gradient on a growing box would slide its own colours along with
-          the thumb, so dark would never be at the dark end. */}
-      <div
-        aria-hidden
-        className={cn(
-          "absolute inset-0",
-          !dragging && "transition-[clip-path] duration-fast ease-out motion-reduce:transition-none"
-        )}
-        style={{
-          clipPath: `inset(0 ${100 - pct}% 0 0)`,
-          background: `linear-gradient(to right, ${ROAST_STOPS.map((s) => s.swatch).join(", ")})`,
-        }}
-      />
-
-      {/* Ticks for the two interior stops. The outer two sit under the thumb
-          at its end positions, where a mark would only ever be covered up. */}
-      <div aria-hidden className="pointer-events-none absolute inset-0">
-        {ROAST_STOPS.slice(1, -1).map((s, n) => (
-          <span
-            key={s.name}
-            className="absolute top-1/2 h-1.5 w-px -translate-x-1/2 -translate-y-1/2 rounded-full bg-foreground/25"
-            style={{ left: `${((n + 1) / last) * 100}%` }}
-          />
-        ))}
-      </div>
-
-      <div
-        aria-hidden
-        className={cn(
-          "pointer-events-none absolute top-1/2 -translate-x-1/2 -translate-y-1/2",
-          !dragging && "transition-[left] duration-fast ease-out motion-reduce:transition-none"
-        )}
-        style={{ left: `${pct}%` }}
-      >
-        {/* Ink thumb with a ring in the card colour, because it has to stay
-            visible against four backgrounds: bare track at the light end and
-            near-black gradient at the dark end, in both themes. Ink alone
-            disappears into dark roast in light mode; the ring is what saves it.
-            Inset a little at the ends so it reads as a mark on the track
-            rather than half a mark falling off it. */}
-        <span
-          className="block h-6 w-1 rounded-full bg-foreground ring-2 ring-card"
-          style={{ marginLeft: index === 0 ? 3 : index === last ? -3 : 0 }}
-        />
-      </div>
-    </div>
+      <Icon aria-hidden className="h-3.5 w-3.5" />
+      {label}
+    </span>
   );
 }
 

@@ -95,9 +95,10 @@ function Illus({
   height?: number;
 }) {
   return (
-    /* No card around it. The illustrations already carry their own light
-       background and their own frame, so a bordered surface behind them was a
-       second frame a few pixels outside the first one. */
+    /* No card and no rounding. Each illustration carries its own light
+       background and its own square drawn frame, so a bordered surface behind
+       them was a second frame a few pixels outside the first, and rounding the
+       corners cut across the drawn one. */
     <figure className="my-6">
       <Image
         src={src}
@@ -105,7 +106,7 @@ function Illus({
         width={1600}
         height={height}
         sizes="(max-width: 760px) 100vw, 712px"
-        className="block h-auto w-full rounded-2xl"
+        className="block h-auto w-full"
       />
     </figure>
   );
