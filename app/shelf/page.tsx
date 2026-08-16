@@ -6,6 +6,7 @@ import Section from "@/components/layout/Section";
 import RoasterPicker from "@/components/shelf/RoasterPicker";
 import GearTimeline from "@/components/shelf/GearTimeline";
 import { bookmarks } from "@/lib/bookmarks";
+import { setup, scents } from "@/lib/everyday";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl, breadcrumbLd } from "@/lib/seo";
 
@@ -89,9 +90,9 @@ export default function ShelfPage() {
         <RoasterPicker />
       </Section>
 
-      <Section number="02" label="Gear" title="How I got here" width="reading">
+      <Section number="02" label="Gear" title="Coffee gear" width="reading">
         <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
-          Each one solved the problem the last one left me with.
+          How I got here. Each one solved the problem the last one left me with.
         </p>
         <GearTimeline />
       </Section>
@@ -130,7 +131,54 @@ export default function ShelfPage() {
         </Link>
       </Container>
 
-      <Section number="03" label="Bookmarks" title="Worth keeping" width="reading">
+      <Section number="03" label="Gear" title="Everyday setup" width="reading">
+        <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
+          The rest of the desk. No shopping links on this one, on purpose.
+        </p>
+        <ul className="border-t border-border">
+          {setup.map((item) => (
+            <li
+              key={item.name}
+              className="flex flex-col gap-1 border-b border-border py-4 sm:flex-row sm:items-baseline sm:gap-6"
+            >
+              <span className="font-mono text-2xs uppercase tracking-label text-subtle sm:w-24 sm:shrink-0">
+                {item.role}
+              </span>
+              <span className="min-w-0">
+                <span className="block font-medium text-foreground">{item.name}</span>
+                {item.note && (
+                  <span className="mt-1 block max-w-[58ch] text-sm text-muted-foreground">
+                    {item.note}
+                  </span>
+                )}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </Section>
+
+      <Section number="04" label="Scent" title="What I wear" width="reading">
+        <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
+          Two, and I rotate between them. I am not a collector.
+        </p>
+        <ul className="border-t border-border">
+          {scents.map((s) => (
+            <li key={s.name} className="border-b border-border py-4">
+              <p className="font-medium text-foreground">
+                {s.name}
+                <span className="ml-2 font-mono text-2xs uppercase tracking-label text-subtle">
+                  {s.house}
+                </span>
+              </p>
+              <p className="mt-1 max-w-[62ch] text-sm text-muted-foreground">
+                {s.note}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </Section>
+
+      <Section number="05" label="Bookmarks" title="Worth keeping" width="reading">
         <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
           Links I come back to. Every one carries a reason, or it does not go in.
         </p>
