@@ -2,6 +2,8 @@ import Link from "next/link";
 import Image, { ImageProps } from "next/image";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { highlight } from "sugar-high";
+import remarkGfm from "remark-gfm";
+import Marker from "@/components/common/Marker";
 import React from "react";
 
 interface TableProps {
@@ -134,6 +136,16 @@ const components = {
   a: CustomLink,
   code: Code,
   Table,
+  /**
+   * The drawn underline, available to posts as `<Marker>phrase</Marker>`.
+   *
+   * Prose needs a way to point at the one phrase that carries a paragraph.
+   * Bold is the obvious reach and the wrong one here: scattered through a long
+   * article it stops meaning "this matters" and becomes texture. The underline
+   * is the site's own emphasis device, it is already used in the hero copy, and
+   * being expensive to type keeps it rare.
+   */
+  Marker,
 };
 
 interface CustomMDXProps {
@@ -147,6 +159,21 @@ export function CustomMDX(props: CustomMDXProps) {
       {...props}
       //@ts-ignore
       components={{ ...components, ...(props.components || {}) }}
+      /**
+       * GitHub-flavoured markdown, so a post can write a pipe table and get a
+       * table. Without it, MDX parses the pipes as literal text and the rows
+       * run together into one paragraph.
+       *
+       * `remark-gfm` was already a dependency, used by the chat renderer in
+       * `components/chat/MarkdownMessage.tsx`. Only the blog pipeline was
+       * missing it. This also restores strikethrough, task lists and bare
+       * autolinks, which had the same silent failure.
+       *
+       * Placed after the spread deliberately: callers pass `source` and nothing
+       * else, and a caller that did pass `options` would otherwise drop GFM
+       * without any error to notice.
+       */
+      options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }}
     />
   );
 }
