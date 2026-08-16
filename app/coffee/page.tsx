@@ -360,48 +360,39 @@ export default function CoffeePage() {
 
         <H2 id="grinder">Then the grinder became the problem</H2>
         <P>
-          So I now had a press that let me control the pressure exactly. My
-          coffee did not get better. The shots gushed out in about ten seconds
-          and tasted like brown water, and the grinder I still owned was the
-          reason.
-        </P>
-        <P>
-          What confused me for weeks was that pulling harder did nothing. I could
-          lean my whole weight on the arm and the shot still ran away from me.
-          Then the actual mechanism landed, and it is the thing I would most like
-          to hand to anyone reading this.
+          So I had a press that let me set the pressure exactly, and my coffee
+          did not improve. The shots gushed out in about ten seconds and tasted
+          like brown water, and leaning harder on the arm changed nothing.
         </P>
         <P>
           <Strong>You do not apply nine bars. You generate them.</Strong>{" "}
           Pressure is what happens when you push against something that pushes
           back, and the thing pushing back is the bed of coffee. Grind too coarse
-          and there is nothing to push against. Water leaves as fast as you can
-          supply it, the pressure never builds whether you were aiming for five
-          bars or nine, and the water is through the coffee long before it has
-          taken much flavour with it.
+          and there is nothing to push against: the water leaves as fast as you
+          supply it, the pressure never builds, and it is gone before it has
+          taken much flavour with it. A fast, thin shot is almost never fixed at
+          the lever. It is fixed at the grinder.
         </P>
         <P>
-          Which means a fast, thin shot is almost never fixed at the lever.{" "}
-          <Strong>It is fixed at the grinder.</Strong> Finer grounds pack tighter
-          and hold the water back, the pressure climbs because it finally has
-          something to climb against, and the water stays in contact long enough
-          to actually dissolve something.
+          Except I could not fix it. My old grinder was already on its finest
+          setting, and there was simply no more dial to turn.{" "}
+          <Strong>
+            That is the quiet limit of a cheap grinder: not that it grinds badly,
+            but that it runs out of road right where espresso starts.
+          </Strong>
         </P>
         <P>
-          The catch is that a cheap grinder cannot simply be turned finer. Ask it
-          for espresso and it gives you dust mixed with gravel, which either
-          chokes solid or lets water carve a channel straight through. So the
-          answer was not a finer setting. It was a better grinder.{" "}
-          <Strong>Good press, bad grind, bad coffee</Strong> is the order things
-          go wrong in, and it is why the grinder is usually the better upgrade
-          once your brewer is decent.
-        </P>
-        <P>
-          I went for a <GearLink slug="1zpresso-jx-pro" />. It is a hand grinder
-          with conical burrs, which means two cone-shaped cutters shear the beans
-          into pieces of a similar size rather than smashing them. Even grounds
-          matter because water flows through them evenly, so you get one
+          I went for a <GearLink slug="1zpresso-jx-pro" />. It is a hand
+          grinder with conical burrs, which means two cone-shaped cutters shear
+          the beans into pieces of a similar size rather than smashing them. Even
+          grounds matter because water flows through them evenly, so you get one
           extraction rather than some of it over-extracted and some of it under.
+        </P>
+        <P>
+          It also has range to spare. Espresso sits comfortably inside its dial
+          rather than at the very end of it, and if you keep turning you go past
+          espresso, past flour, and somewhere into splitting the atom. I will
+          never use that end. Knowing it is there is the point.
         </P>
         <P>
           The part I did not expect to care about is the stepped dial. Every
