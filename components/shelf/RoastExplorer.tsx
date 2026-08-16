@@ -43,7 +43,13 @@ export default function RoastExplorer() {
   const id = useId();
 
   return (
-    <div className="my-8 overflow-hidden rounded-2xl border border-border bg-card">
+    /* Anchored so the shelf can link straight at the control. Landing on the
+       section heading instead would put the thing the link promised about six
+       hundred pixels below the fold. `scroll-mt` clears the sticky header. */
+    <div
+      id="roast-picker"
+      className="my-8 scroll-mt-24 overflow-hidden rounded-2xl border border-border bg-card"
+    >
       <div className="border-b border-border p-5 md:p-6">
         <p
           id={id}

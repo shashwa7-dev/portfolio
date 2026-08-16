@@ -30,12 +30,20 @@ export default function Activity() {
             <BookListItem {...book} />
           </div>
         ))}
-        {/* The shelf sits under the books rather than beside the writing card:
-            someone who has read this far down the "Now" section is already the
-            person it is for, and the two-column row above is about work. */}
-        <div className="col-span-full flex items-center justify-between gap-4 bg-card px-5 py-3">
-          <p className="font-mono text-2xs uppercase tracking-label text-subtle">Off the clock</p>
-          <Link href="/shelf" className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground">Coffee, gear &amp; bookmarks <ArrowRight className="h-3.5 w-3.5" /></Link>
+        {/* Built like the Writing card rather than like the "Currently
+            Reading" strip above. As a strip it was a label and a small link in
+            a row of similar rows, which is the shape of a caption; the shelf is
+            a destination and needed the weight of one.
+
+            It sits under the books because someone who has read this far down
+            "Now" is already the person it is for, and the two-column row at the
+            top is about work. */}
+        <div className="col-span-full bg-card p-5">
+          <p className="mb-2.5 font-mono text-2xs uppercase tracking-label text-subtle">Off the clock</p>
+          <Link href="/shelf" className="group inline-flex items-center gap-2 text-base font-medium transition-colors hover:text-foreground">
+            What I drink, brew and carry <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </Link>
+          <p className="mt-2 text-xs text-muted-foreground">Coffee and the gear behind it, my everyday setup, scent, and links worth keeping.</p>
         </div>
       </Bento>
     </Section>

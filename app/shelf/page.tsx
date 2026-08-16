@@ -88,6 +88,32 @@ export default function ShelfPage() {
         </p>
 
         <RoasterPicker />
+
+        {/* The ratings above are mine, which is only useful once you know what
+            the roast words mean. This is the one thing on the coffee page a
+            reader can use rather than read, so it gets a link of its own rather
+            than being left at the bottom of a 3,000 word article. */}
+        <Link
+          href="/coffee#roast-picker"
+          className="group mt-6 flex items-center justify-between gap-4 rounded-2xl border border-border bg-card p-5 transition-colors duration-base ease-out hover:border-border-strong"
+        >
+          <span className="min-w-0">
+            <span className="font-mono text-2xs uppercase tracking-label text-subtle">
+              Not sure what to buy
+            </span>
+            <span className="mt-2 block font-medium text-foreground">
+              Pick a roast, see what to brew with it
+            </span>
+            <span className="mt-1 block text-sm text-muted-foreground">
+              A slider from light to dark. Each one tells you how it tastes and
+              which methods suit it, including the ones to avoid.
+            </span>
+          </span>
+          <ArrowRight
+            aria-hidden
+            className="h-4 w-4 shrink-0 text-subtle transition-transform duration-base ease-out group-hover:translate-x-0.5"
+          />
+        </Link>
       </Section>
 
       <Section number="02" label="Gear" title="Coffee gear" width="reading">
