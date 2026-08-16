@@ -224,8 +224,10 @@ export default function CoffeePage() {
         </h1>
         <p className="mt-4 max-w-[58ch] text-lg leading-relaxed text-muted-foreground">
           I drank instant coffee for most of my life and thought nothing of it.
-          This is what changed, and the handful of things I wish someone had
-          explained to me at the start.
+          Café coffee always tasted better, and I could never say what the
+          difference actually was. This is what happened when I went looking for
+          the answer, and the handful of things I wish someone had explained to
+          me at the start.
         </p>
 
 
