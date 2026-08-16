@@ -15,9 +15,20 @@ import {
 const DESCRIPTION =
   "How I got into coffee, and the handful of things I wish someone had explained at the start: roast levels, grind size, portafilters, brew ratios, and why instant is fine.";
 
+/**
+ * The card gets its own subtitle rather than reusing DESCRIPTION.
+ *
+ * DESCRIPTION opens by restating the page's name, which is right for a search
+ * result, where the snippet has to stand on its own. On the card the title is
+ * already set in 76px directly above it, so those first four words were spent
+ * saying it again, and the sentence then ran past the clamp and lost "why
+ * instant is fine" off the end. This is the same list with the repetition
+ * removed, and it fits without truncating.
+ */
 const COFFEE_OG = ogUrl({
   title: "How I got into coffee",
-  subtitle: DESCRIPTION,
+  subtitle:
+    "Roast levels, grind size, portafilters, brew ratios, and why instant is fine.",
   type: "generic",
   label: "Coffee",
   meta: "A long read",
@@ -46,10 +57,28 @@ export const metadata = {
  * heading to stay navigable. Three levels: a part label that splits the story
  * from the reference material, section headings inside each part, and a
  * subheading for the two places a section needs to break in half.
+ *
+ * All of it runs on one vertical scale, and every value below comes from it:
+ *
+ *   16  mt-4   between paragraphs
+ *   24  my-6   a block set into the prose: aside, figure, table, list
+ *   32  mt-8   a subheading, and the two blocks heavy enough to need the room
+ *   48  mt-12  a section heading
+ *   96  mt-16 + pt-8 over a rule, a part
+ *
+ * It was previously nine values between 16 and 112 with no relationship
+ * between them, which is what made the gaps read as arbitrary: a section
+ * heading sat at 56 and a subheading at 40, close enough that the two levels
+ * looked like the same break rendered inconsistently, while both were large
+ * enough to strand the text above them. The ladder here roughly doubles at
+ * each step, so a reader can tell the levels apart by the space alone.
  */
 function Part({ label, title }: { label: string; title: string }) {
   return (
-    <div className="mt-20 border-t border-border pt-8 first:mt-0">
+    <div
+      data-part
+      className="mt-16 border-t border-border pt-8 first:mt-0"
+    >
       <p className="font-mono text-2xs uppercase tracking-label text-subtle">
         {label}
       </p>
@@ -65,7 +94,7 @@ function H2({ id, children }: { id: string; children: React.ReactNode }) {
   return (
     <h2
       id={id}
-      className="mt-14 scroll-mt-24 text-xl font-semibold tracking-tight text-foreground md:text-2xl"
+      className="mt-12 scroll-mt-24 text-xl font-semibold tracking-tight text-foreground md:text-2xl"
     >
       {children}
     </h2>
@@ -74,7 +103,7 @@ function H2({ id, children }: { id: string; children: React.ReactNode }) {
 
 function H3({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="mt-10 text-base font-semibold tracking-tight text-foreground">
+    <h3 className="mt-8 text-base font-semibold tracking-tight text-foreground">
       {children}
     </h3>
   );
@@ -150,7 +179,11 @@ export default function CoffeePage() {
         }}
       />
 
-      <Container width="reading">
+      {/* The first heading after a part header sits at the block step, not the
+          section step. The rule and the part title have already announced the
+          break, so a section heading adding its own 48 on top left the part
+          label stranded above a gap it had just created. */}
+      <Container width="reading" className="[&>[data-part]+h2]:mt-6">
         <Link
           href="/shelf"
           className="inline-flex items-center gap-1.5 font-mono text-2xs uppercase tracking-label text-subtle transition-colors hover:text-foreground"
@@ -162,7 +195,7 @@ export default function CoffeePage() {
         <h1 className="mt-8 text-3xl font-semibold tracking-tight md:text-4xl">
           How I got into coffee
         </h1>
-        <p className="mt-5 max-w-[58ch] text-lg leading-relaxed text-muted-foreground">
+        <p className="mt-4 max-w-[58ch] text-lg leading-relaxed text-muted-foreground">
           I drank instant coffee for most of my life and thought nothing of it.
           This is what changed, and the handful of things I wish someone had
           explained to me at the start.
@@ -270,7 +303,7 @@ export default function CoffeePage() {
         </P>
 
         {/* The one block on the page allowed to raise its voice. */}
-        <div className="my-10 rounded-2xl border border-foreground bg-card p-6 md:p-8">
+        <div className="my-8 rounded-2xl border border-foreground bg-card p-6 md:p-8">
           <p className="font-mono text-2xs uppercase tracking-label text-subtle">
             If you remember one thing from this page
           </p>
@@ -443,7 +476,7 @@ export default function CoffeePage() {
 
         <H2 id="methods">Ways to make it</H2>
         <P>Three families, and they want different grinds.</P>
-        <dl className="mt-4 border-t border-border">
+        <dl className="my-6 border-t border-border">
           <Def term="Espresso based">
             Hot water forced through a compacted puck at pressure, in about
             thirty seconds. Fine grind. This is the base for a cortado, a latte,
@@ -496,7 +529,7 @@ export default function CoffeePage() {
 
         <H3>When to move it</H3>
         <P>Taste first, then adjust one thing.</P>
-        <dl className="mt-4 border-t border-border">
+        <dl className="my-6 border-t border-border">
           <Def term="Sour, thin, and it ran fast">
             Under-extracted. You did not get enough out. <Strong>Grind finer.</Strong>{" "}
             That slows the water down and gives it more surface to work on.
@@ -565,7 +598,7 @@ export default function CoffeePage() {
           is expensive. Everything on my shelf came from one of two places, and I
           would send a friend to either.
         </P>
-        <dl className="mt-4 border-t border-border">
+        <dl className="my-6 border-t border-border">
           <Def term={<A href="https://somethingsbrewing.in">Something&apos;s Brewing</A>}>
             Where the Budan and the Nanopresso came from. Broad range across
             machines, grinders and brewers, and they carry the Indian brands as
@@ -590,7 +623,7 @@ export default function CoffeePage() {
           a genuinely warm bunch. If you want to go further than this page does,
           your time is better spent there than on more of me.
         </P>
-        <ul className="mt-6 border-t border-border">
+        <ul className="my-6 border-t border-border">
           {communities.map((c) => (
             <li key={c.url} className="border-b border-border py-4">
               <a

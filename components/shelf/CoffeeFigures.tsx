@@ -22,7 +22,7 @@ function Figure({
   children: React.ReactNode;
 }) {
   return (
-    <figure className="my-8 rounded-2xl border border-border bg-card p-5 md:p-6">
+    <figure className="my-6 rounded-2xl border border-border bg-card p-5 md:p-6">
       <svg
         viewBox={`0 0 620 ${height}`}
         role="img"

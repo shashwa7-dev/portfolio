@@ -69,7 +69,7 @@ export default function ShelfPage() {
             moved every time someone switched to a roaster with a different
             number of beans, which is a layout shift caused by nothing the
             reader did on purpose. */}
-        <div className="mb-8 rounded-2xl border border-border bg-card p-5">
+        <div className="mb-6 rounded-2xl border border-border bg-card p-5">
           <p className="text-sm leading-relaxed text-muted-foreground">
             <span className="font-semibold text-foreground">
               Where my taste sits.
@@ -81,7 +81,7 @@ export default function ShelfPage() {
           </p>
         </div>
 
-        <p className="mb-5 max-w-[62ch] text-sm text-muted-foreground">
+        <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
           Pick one to see what I have had. A dot underneath means it is in
           rotation right now.
         </p>
@@ -90,7 +90,7 @@ export default function ShelfPage() {
       </Section>
 
       <Section number="02" label="Gear" title="How I got here" width="reading">
-        <p className="mb-8 max-w-[62ch] text-sm text-muted-foreground">
+        <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
           Each one solved the problem the last one left me with.
         </p>
         <GearTimeline />
