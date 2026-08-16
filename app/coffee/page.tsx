@@ -88,12 +88,10 @@ export const metadata = {
 function Illus({
   src,
   alt,
-  caption,
   height = 873,
 }: {
   src: string;
   alt: string;
-  caption: string;
   height?: number;
 }) {
   return (
@@ -106,9 +104,6 @@ function Illus({
         sizes="(max-width: 760px) 100vw, 712px"
         className="h-auto w-full"
       />
-      <figcaption className="border-t border-border p-5 text-sm leading-relaxed text-muted-foreground md:px-6">
-        {caption}
-      </figcaption>
     </figure>
   );
 }
@@ -269,7 +264,6 @@ export default function CoffeePage() {
         <Illus
           src="/coffee/kitchen-table-instant.webp"
           alt="A family at a kitchen table with steel tumblers of coffee, biscuits on a plate, a kettle, a carton of milk and a jar of Nescafé Classic."
-          caption="Steel tumblers, a jar on the table, everyone served at once. This is the coffee I grew up on and the reason none of what follows is a rejection of it."
         />
         <P>
           <Strong>Instant is how almost every Indian meets coffee.</Strong> It is
@@ -325,7 +319,6 @@ export default function CoffeePage() {
         <Illus
           src="/coffee/nanopresso-beginning.webp"
           alt="A man at a kitchen table pressing a Nanopresso hand pump into a small glass, a hand grinder and a bag of beans beside him, a coffee video playing on a laptop behind, and family watching with mild bemusement."
-          caption="The whole setup at this point: a hand pump, a basic grinder, and a video paused on the laptop. The expressions in the background are the correct response to a man making one small coffee for eleven minutes."
         />
 
         <H2 id="lever">Why a lever press, of all things</H2>
@@ -424,7 +417,6 @@ export default function CoffeePage() {
         <Illus
           src="/coffee/old-grinder-limits.webp"
           alt="Three panels. Pulling a lever press with a basic grinder beside it, labelled peak pressure nine bars and limited range. Then tasting the shot and asking why it is so sour. Then a cut-away of the coffee basket where water carves a channel through an uneven bed of boulders and dust, giving sour and bitter at once."
-          caption="The third panel is the part that took me longest to understand. Water does not soak through evenly, it finds the weakest path and takes it, so one shot ends up under-extracted and over-extracted at the same time."
         />
         <P>
           Except I could not fix it. My old grinder was already on its finest
@@ -456,7 +448,6 @@ export default function CoffeePage() {
         <Illus
           src="/coffee/jx-pro-resolution.webp"
           alt="Three panels. Setting the clicks on a 1Zpresso JX-Pro hand grinder, noting its conical burrs and stepped dial. Then pulling a shot where the pressure gauge finally reads nine bars because the coffee bed is providing resistance. Then drinking it, tasting chocolate and nutty sweetness with no sourness."
-          caption="The same lever, the same beans, the same hands. The only thing that changed is what the water had to push through."
         />
 
         {/* The one block on the page allowed to raise its voice. */}
@@ -525,7 +516,6 @@ export default function CoffeePage() {
         <Illus
           src="/coffee/the-whole-shelf.webp"
           alt="A kitchen counter lined up with, left to right, a jar of Nescafé, a Nanopresso hand pump, a Flair lever press, a JX-Pro hand grinder, a semi-automatic espresso machine and a Kalita pour over set, with bags of Indian coffee on the shelves behind."
-          caption="Every stage still in the house, which is the honest version. Nothing here replaced what came before it, it just joined the queue."
           height={819}
         />
         <P>
@@ -617,7 +607,6 @@ export default function CoffeePage() {
         <Illus
           src="/coffee/roast-levels.webp"
           alt="Four coffee beans in a row getting darker. A pale green raw seed. A light roast stopped after first crack, tasting of green apple, citrus and flowers. A medium roast, balanced, tasting of chocolate and toasted nut. A dark roast taken through second crack, tasting of molasses, deep caramel and smoky spice."
-          caption="Left to right is simply time in the roaster. Notice the raw seed on the far left: that is what coffee is before anyone applies heat to it, and it tastes of almost nothing."
         />
         <Aside>
           A useful shorthand for the whole picture above:{" "}
