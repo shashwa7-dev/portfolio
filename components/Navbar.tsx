@@ -6,20 +6,8 @@ import { usePathname } from "next/navigation";
 import { Sun, Moon } from "lucide-react";
 import { useDarkMode } from "@/app/hooks/useDarkMode";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import { navLinks } from "@/lib/siteLinks";
 
-/**
- * `match` is the route this link owns, for the current-page state. The two
- * homepage anchors deliberately have none: knowing whether "Work" or "Projects"
- * is current would take scroll tracking, and marking both active on `/` would be
- * worse than marking neither.
- */
-const navLinks = [
-  { label: "Work", href: "/#experience" },
-  { label: "Projects", href: "/#projects" },
-  { label: "Writing", href: "/blogs", match: "/blogs" },
-  { label: "Books", href: "/books", match: "/books" },
-  { label: "Shelf", href: "/shelf", match: "/shelf" },
-];
 
 /**
  * The header controls: a filled surface, no border.
