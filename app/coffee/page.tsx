@@ -360,8 +360,40 @@ export default function CoffeePage() {
 
         <H2 id="grinder">Then the grinder became the problem</H2>
         <P>
-          Good press, bad grind, bad coffee. That is the order things go wrong
-          in, and it is why <Strong>the grinder is usually the better upgrade</Strong>{" "}
+          So I now had a press that let me control the pressure exactly. My
+          coffee did not get better. The shots gushed out in about ten seconds
+          and tasted like brown water, and the grinder I still owned was the
+          reason.
+        </P>
+        <P>
+          What confused me for weeks was that pulling harder did nothing. I could
+          lean my whole weight on the arm and the shot still ran away from me.
+          Then the actual mechanism landed, and it is the thing I would most like
+          to hand to anyone reading this.
+        </P>
+        <P>
+          <Strong>You do not apply nine bars. You generate them.</Strong>{" "}
+          Pressure is what happens when you push against something that pushes
+          back, and the thing pushing back is the bed of coffee. Grind too coarse
+          and there is nothing to push against. Water leaves as fast as you can
+          supply it, the pressure never builds whether you were aiming for five
+          bars or nine, and the water is through the coffee long before it has
+          taken much flavour with it.
+        </P>
+        <P>
+          Which means a fast, thin shot is almost never fixed at the lever.{" "}
+          <Strong>It is fixed at the grinder.</Strong> Finer grounds pack tighter
+          and hold the water back, the pressure climbs because it finally has
+          something to climb against, and the water stays in contact long enough
+          to actually dissolve something.
+        </P>
+        <P>
+          The catch is that a cheap grinder cannot simply be turned finer. Ask it
+          for espresso and it gives you dust mixed with gravel, which either
+          chokes solid or lets water carve a channel straight through. So the
+          answer was not a finer setting. It was a better grinder.{" "}
+          <Strong>Good press, bad grind, bad coffee</Strong> is the order things
+          go wrong in, and it is why the grinder is usually the better upgrade
           once your brewer is decent.
         </P>
         <P>
