@@ -481,8 +481,11 @@ export default function CoffeePage() {
           alt="Three panels. Setting the clicks on a 1Zpresso JX-Pro hand grinder, noting its conical burrs and stepped dial. Then pulling a shot where the pressure gauge finally reads nine bars because the coffee bed is providing resistance. Then drinking it, tasting chocolate and nutty sweetness with no sourness."
         />
 
-        {/* The one block on the page allowed to raise its voice. */}
-        <div className="my-8 rounded-2xl border border-foreground bg-card p-6 md:p-8">
+        {/* The one block on the page allowed to raise its voice, though it
+            does it with size and position rather than with a hard outline.
+            `border-foreground` put full-strength ink around a card in both
+            themes, which read as a warning box rather than as emphasis. */}
+        <div className="my-8 rounded-2xl border border-border-strong bg-card p-6 md:p-8">
           <p className="font-mono text-2xs uppercase tracking-label text-subtle">
             If you remember one thing from this page
           </p>

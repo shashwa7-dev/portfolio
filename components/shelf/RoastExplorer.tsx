@@ -1,10 +1,12 @@
 "use client";
 
 import { useId, useState } from "react";
+import { motion } from "motion/react";
 import Image from "next/image";
 import { Check, Minus, TriangleAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Scrubber from "@/components/ui/Scrubber";
+import { duration, ease } from "@/lib/motionVariants";
 import { ROAST_STOPS, type Fit, type RoastStop } from "@/lib/roasts";
 
 /**
@@ -93,23 +95,33 @@ export default function RoastExplorer() {
         </div>
       </div>
 
-      {/* All four panels are rendered, stacked in one grid cell, with the
-          inactive ones held at `invisible`.
+      {/* All four panels stay in the document; only the active one is in
+          flow. The other three are taken out of it and held at `invisible`,
+          which keeps them out of the layout and out of the tab order while
+          leaving their text where a crawler can read it. Rendering only the
+          selected roast, as this first did, put one roast in the markup and
+          hid the other three from search entirely.
 
-          Two things fall out of that. The card is always as tall as its longest
-          roast, so switching cannot move the page under the reader; the version
-          that rendered only the active stop grew and shrank by a couple of
-          lines every time, because a two-line taste note is not a three-line
-          one. And every roast's text stays in the document rather than only
-          whichever one happened to be selected when the page was built, which
-          is what a crawler sees.
+          Holding all four in flow was the other thing tried, and it fixed the
+          jump by making the card as tall as its longest roast. It also left
+          the shorter ones sitting in up to forty pixels of slack, which reads
+          as a mistake at the bottom of the card rather than as breathing room.
 
-          `invisible` and not `hidden`: visibility keeps the box in the layout,
-          which is the whole point here, and unlike `display` it can be
-          transitioned. */}
-      <div className="grid p-5 md:p-6">
-        {/* The panels are swapped by visibility, which screen readers do not
-            reliably announce, so the change is reported here instead. */}
+          So the height follows the active panel and is animated instead.
+          `layout` measures the box before and after and interpolates, which
+          plain CSS cannot do: there are no two values to move `height: auto`
+          between.
+
+          The padding sits on each panel rather than on this wrapper, so the
+          absolutely positioned ones can be pinned with `inset-0` and land
+          exactly where the in-flow one does. */}
+      <motion.div
+        layout
+        transition={{ duration: duration.base, ease: ease.out }}
+        className="relative"
+      >
+        {/* Swapping by visibility is not something screen readers reliably
+            announce, so the change is reported here instead. */}
         <p className="sr-only" aria-live="polite">
           {stop.name} roast
         </p>
@@ -119,17 +131,17 @@ export default function RoastExplorer() {
             key={s.name}
             aria-hidden={n !== i}
             className={cn(
-              "col-start-1 row-start-1",
-              "transition-[opacity,transform,visibility] duration-base ease-out motion-reduce:transition-none",
+              "p-5 md:p-6",
+              "transition-[opacity,transform] duration-base ease-out motion-reduce:transition-none",
               n === i
-                ? "visible translate-y-0 opacity-100"
-                : "pointer-events-none invisible translate-y-1 opacity-0"
+                ? "relative visible translate-y-0 opacity-100"
+                : "pointer-events-none invisible absolute inset-0 translate-y-1 opacity-0"
             )}
           >
             <RoastPanel stop={s} />
           </div>
         ))}
-      </div>
+      </motion.div>
     </div>
   );
 }
