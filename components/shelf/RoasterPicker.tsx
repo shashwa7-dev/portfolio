@@ -75,13 +75,13 @@ export default function RoasterPicker() {
                   Deliberately no vertical movement on select: the row is an
                   `overflow-x-auto` scroller, which clips in the block direction
                   too, so a lifted chip had its top shaved off. */}
-              {/* Square, matching the source file. The pouch art is a square
-                  image, so a non-square box letterboxes it and every percentage
-                  below stops describing the place on the bag it was measured
+              {/* The box matches the source file's ratio exactly. Any other
+                  ratio letterboxes the art, and every percentage below then
+                  stops describing the place on the bag it was measured
                   against. */}
-              <span className="relative block aspect-square w-full">
+              <span className="relative block aspect-[400/489] w-full">
                 <Image
-                  src="/shelf/pouch-white.webp"
+                  src="/shelf/pouch-flat.webp"
                   alt=""
                   fill
                   sizes="(min-width: 640px) 96px, 80px"
@@ -90,19 +90,17 @@ export default function RoasterPicker() {
                     selected ? "opacity-100" : "opacity-40"
                   )}
                 />
-                {/* Centred, because this bag is shot straight on. Measured
-                    from the file's alpha rather than by eye: the artwork spans
-                    x 80..275 of 360, so its centre is 49.3% and the panel wants
-                    a symmetric box. The old 29/39 split was for the previous
-                    bag, which was photographed at an angle with its face left
-                    of centre. */}
+                {/* Centred, because this bag is shot straight on rather than
+                    at an angle. Sat just below the middle so it lands on the
+                    flat of the face and clears the zip seal, which runs across
+                    roughly the top fifth of the artwork. */}
                 <span
                   className="absolute flex items-center justify-center"
                   style={{
-                    left: "33%",
-                    right: "33%",
-                    top: "38%",
-                    bottom: "42%",
+                    left: "32%",
+                    right: "32%",
+                    top: "45%",
+                    bottom: "35%",
                   }}
                 >
                   {r.logo ? (
@@ -116,25 +114,25 @@ export default function RoasterPicker() {
                          so an SVG logo renders as nothing at all. Vector art
                          has nothing to gain from resizing anyway. */
                       unoptimized={r.logo.endsWith(".svg")}
-                      /* Flattened to a solid dark mark, which is how one colour
-                         gets printed on a light bag. `brightness-0` rather than
-                         greyscale alone: greyscale keeps a pale logo pale, and
-                         a pale mark on a white bag is no mark at all. The
-                         previous bag was dark, so this was `grayscale invert`
-                         to print white. */
+                      /* Flattened then inverted, which is how one colour gets
+                         printed on a dark bag. Greyscale first because
+                         inverting a colour logo reads as a photographic
+                         negative; taking the colour out leaves a clean white
+                         mark. The white bag wanted `brightness-0` for the
+                         mirror image of this reason. */
                       className={cn(
-                        "h-full w-full object-contain brightness-0 transition-opacity duration-base ease-out",
+                        "h-full w-full object-contain grayscale invert transition-opacity duration-base ease-out",
                         selected ? "opacity-95" : "opacity-50"
                       )}
                     />
                   ) : (
                     <span
-                      /* Dark in both themes, because the bag is an image and
-                         stays white in both. `text-foreground dark:text-background`
-                         reads oddly but is the pair that means "near-black
-                         either way" in these tokens. */
+                      /* Light in both themes, because the bag is an image and
+                         stays black in both. `text-background dark:text-foreground`
+                         is the pair that means "near-white either way" in
+                         these tokens. */
                       className={cn(
-                        "font-mono text-2xs text-foreground transition-opacity duration-base ease-out dark:text-background",
+                        "font-mono text-2xs text-background transition-opacity duration-base ease-out dark:text-foreground",
                         selected ? "opacity-95" : "opacity-50"
                       )}
                     >
