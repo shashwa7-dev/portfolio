@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { ChevronUp, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { blurSwapVariants, duration, ease } from "@/lib/motionVariants";
+import { blurSwapVariants } from "@/lib/motionVariants";
 import { goToSection, type TocSection } from "@/app/hooks/useActiveSection";
 
 /**
@@ -135,30 +135,29 @@ export default function MobileChapters({
 
   return (
     <div className="xl:hidden">
-      {/* `layout="size"` is what makes the width change smoothly. The pill is
-          sized by its label, and a label swap is a layout change, which is not
-          something a CSS transition can interpolate: `width: auto` has no two
-          values to move between.
+      {/* The pill is a fixed width, so there is no width to animate.
 
-          Size and not position, deliberately. Layout animation measures in
-          page coordinates, and the scroll lock pins the body, so closing the
-          sheet changes this element's page position by a whole scroll offset
-          while its position on screen does not move at all. Plain `layout`
-          read that as travel and flew the pill in from the top of the
-          document every time. */}
-      {/* Centred by a flex parent rather than by `-translate-x-1/2`. A layout
-          animation drives `transform` itself, so a translate used for centring
-          gets overwritten mid-animation and the pill slides off to the left.
-          The wrapper takes no pointer events, or it would cover the width of
-          the page along the bottom. */}
-      {/* `bottom` clears the home indicator on a notched phone, where a flat
-          `bottom-4` lands inside it. */}
+          It used to be sized by its label, which meant it grew and shrank as
+          the reader scrolled, and smoothing that needed a layout animation.
+          That animation is what flew the pill in from the top of the document
+          whenever the sheet closed: layout measures in page coordinates, and
+          the scroll lock pins the body, so the pill's page position moved by a
+          whole scroll offset while its position on screen did not move at all.
+
+          Holding the width still removes the jitter, the animation and that
+          whole class of bug together. The label truncates instead, which costs
+          nothing, since the full list is one tap away. The text still blurs
+          and lifts between chapters: that is `AnimatePresence` on the label
+          below, and it never touched the pill's size.
+
+          Centred by a flex parent rather than by `-translate-x-1/2`, and the
+          wrapper takes no pointer events or it would cover the width of the
+          page. `bottom` clears the home indicator on a notched phone, where a
+          flat `bottom-4` lands inside it. */}
       <div className="pointer-events-none fixed inset-x-0 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 flex justify-center px-6">
-      <motion.button
+      <button
         ref={pillRef}
         type="button"
-        layout="size"
-        transition={{ duration: duration.base, ease: ease.out }}
         onClick={() => setOpen(true)}
         aria-expanded={open}
         aria-controls="chapter-sheet"
@@ -167,10 +166,10 @@ export default function MobileChapters({
            button sitting behind the scrim. */
         tabIndex={open ? -1 : 0}
         aria-hidden={open}
-        /* `max-w-full` against the wrapper's padding is what stops a long
-           chapter name stretching this to the edges; the label truncates. */
+        /* `max-w-full` is a guard for a very narrow phone, where 14rem plus
+           the wrapper's padding would not fit. */
         className={cn(
-          "pointer-events-auto flex max-w-full items-center gap-2.5",
+          "pointer-events-auto flex w-56 max-w-full items-center gap-2.5",
           "rounded-full border border-border bg-elevated/90 py-2 pl-2 pr-3.5 shadow-lg backdrop-blur-md",
           "transition-[opacity] duration-base ease-out motion-reduce:transition-none",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
@@ -182,7 +181,7 @@ export default function MobileChapters({
             the incoming one is not pushed sideways by a word that is already
             on its way out. `initial={false}` keeps the first paint still
             rather than blurring in on load. */}
-        <span className="min-w-0 overflow-hidden">
+        <span className="min-w-0 flex-1 overflow-hidden text-left">
           <AnimatePresence mode="popLayout" initial={false}>
             <motion.span
               key={current?.id ?? "none"}
@@ -197,7 +196,7 @@ export default function MobileChapters({
           </AnimatePresence>
         </span>
         <ChevronUp aria-hidden className="h-3.5 w-3.5 shrink-0 text-subtle" />
-      </motion.button>
+      </button>
       </div>
 
       {/* Kept mounted so it can animate both ways. `invisible` rather than
