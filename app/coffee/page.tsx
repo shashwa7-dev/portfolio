@@ -12,6 +12,7 @@ import {
   PortafilterFigure,
   RedditMark,
 } from "@/components/shelf/CoffeeFigures";
+import RoastExplorer from "@/components/shelf/RoastExplorer";
 
 const DESCRIPTION =
   "How I got into coffee, and the handful of things I wish someone had explained at the start: roast levels, grind size, portafilters, brew ratios, and why instant is fine.";
@@ -172,13 +173,6 @@ function Def({ term, children }: { term: React.ReactNode; children: React.ReactN
     </div>
   );
 }
-
-const ROASTS = [
-  { name: "Light", swatch: "hsl(30 25% 62%)", note: "Acidic and fruity. Origin flavours come through hardest here.", mine: false },
-  { name: "Medium", swatch: "hsl(28 28% 44%)", note: "Balanced. Some fruit, some sweetness, more body.", mine: false },
-  { name: "Medium-dark", swatch: "hsl(25 30% 28%)", note: "Chocolate and nut. Acidity mostly gone.", mine: true },
-  { name: "Dark", swatch: "hsl(22 25% 16%)", note: "Smoke, cocoa, heavy body. Stands up to milk.", mine: true },
-];
 
 const SIZES = [
   { mm: 58, name: "58mm", note: "The commercial standard. Nearly every café machine uses it, so tampers, distributors and baskets are easy to find and cheap." },
@@ -439,32 +433,94 @@ export default function CoffeePage() {
 
         <Part label="Part two" title="What I learnt along the way" />
 
-        <H2 id="roast">Roast levels, briefly</H2>
+        <H2 id="roast">Roast levels, from the beginning</H2>
         <P>
-          This is where personal taste lives, and it is the single most useful
-          thing to understand when you are choosing a bag.
+          Start here, because this is the word on the front of every bag and it
+          decides more about how your coffee tastes than almost anything else
+          you can buy.
         </P>
-        <div className="my-6 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-4">
-          {ROASTS.map((r) => (
-            <div key={r.name} className="bg-card p-4">
-              <div className="mb-3 h-1.5 rounded-full" style={{ background: r.swatch }} />
-              <p className="text-sm font-semibold text-foreground">{r.name}</p>
-              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{r.note}</p>
-              {r.mine && (
-                <p className="mt-2 font-mono text-2xs uppercase tracking-label text-foreground">
-                  I drink this
-                </p>
-              )}
-            </div>
-          ))}
-        </div>
+
+        <H3>What a roaster is actually doing</H3>
         <P>
-          Longer in the roaster trades acidity for body. Neither end is better,
-          and anyone telling you light roast is objectively superior is
-          describing their own preference. Mine sits firmly at the dark end.
-          Citrusy, high-acid coffees are not what I want at seven in the morning,
-          so a light roast rarely makes it past one bag in my kitchen.
+          A coffee bean is a seed. It grows inside a small red fruit, and before
+          anyone roasts it, it is green, it smells faintly of hay, and it tastes
+          of nothing you would want. <Strong>Roasting is cooking it.</Strong>{" "}
+          That is the entire craft: applying heat to a seed until it becomes
+          something worth drinking.
         </P>
+        <P>
+          Heat does two useful things. It drives the water out, and it browns the
+          sugars inside the bean, which is the same reaction that makes bread
+          crust taste different from bread dough.
+        </P>
+        <P>
+          While that happens, the roaster is listening. Beans make two distinct
+          sounds as they cook, and those two sounds are the landmarks the whole
+          craft is built around.
+        </P>
+        <dl className="my-6 border-t border-border">
+          <Def term="First crack">
+            Steam builds up until it bursts the bean open, with a loud pop that
+            sounds like popcorn. The bean is now drinkable. Stop here or just
+            after, and you have a <Strong>light roast</Strong>.
+          </Def>
+          <Def term="Second crack">
+            Keep going and there is a second, quieter, cracklier round of popping
+            as the structure gives way further and oil is pushed out to the
+            surface. Around here you are at <Strong>medium-dark</Strong>. Go
+            through it and you are at <Strong>dark</Strong>.
+          </Def>
+        </dl>
+        <P>
+          That is all a roast level is: <Strong>how long the roaster waited,
+          measured against those two sounds.</Strong> Light, medium, medium-dark
+          and dark are four names for four places to stop.
+        </P>
+        <Aside>
+          You will see roast temperatures quoted, usually around 200°C for first
+          crack. Treat them loosely. That number is a probe reading, and because
+          every machine puts its probe in a slightly different place, first crack
+          is reported anywhere from 170°C to 207°C by people who all know exactly
+          what they are doing. The sounds are the same on every machine. The
+          numbers are not.
+        </Aside>
+        <P>
+          And there is a trade running underneath all of it.{" "}
+          <Strong>
+            The longer a bean roasts, the more of the farm you lose and the more
+            of the fire you gain.
+          </Strong>{" "}
+          Acidity falls, body rises, and the flavours that came from the soil and
+          the altitude give way to flavours that came from the roaster. Neither
+          end is better. Anyone telling you light roast is objectively superior
+          is describing their own preference. Mine sits firmly at the dark end.
+        </P>
+
+        <H3>Acidity is not sourness</H3>
+        <P>
+          This one word confuses more beginners than anything else on this page,
+          so it is worth thirty seconds.
+        </P>
+        <P>
+          When coffee people say <Strong>acidity</Strong>, they mean brightness.
+          The snap of a green apple, the lift of orange juice. It is a compliment.
+          It is a thing people pay more for.
+        </P>
+        <P>
+          <Strong>Sourness is a different thing and it is a mistake.</Strong> It
+          is what you get when water has not pulled enough out of the coffee,
+          which is nearly always a grind problem rather than a bean problem. If a
+          light roast tastes sharp and unpleasant and thin, the honest first
+          assumption is not that you dislike light roast. It is that you
+          under-extracted it. Grind finer and try again before you blame the bag.
+        </P>
+
+        <H3>Pick a roast and see what to do with it</H3>
+        <P>
+          Drag the slider. This is the part that took me the longest to work out
+          by trial and error, and it fits on one screen.
+        </P>
+        <RoastExplorer />
 
         <H3>One warning about the labels</H3>
         <P>
@@ -490,6 +546,195 @@ export default function CoffeePage() {
           one roaster talking about their own range, never as a measurement you
           can carry between brands. The only reliable calibration is a bag you
           have already drunk.
+        </P>
+        <P>
+          This is not me being cynical, incidentally. There is a lab measurement
+          for roast colour, and when people run it, Starbucks Pike Place, sold as
+          a medium, and Peet&apos;s Major Dickason, sold as a dark, land in the
+          same very dark band. Two different words on two bags for effectively
+          the same roast.
+        </P>
+
+        <H3>While we are killing myths: caffeine</H3>
+        <P>
+          You will hear that dark roast has more caffeine because it is stronger,
+          and you will hear the opposite from the other half of the internet.
+          Here is the boring truth.
+        </P>
+        <P>
+          Caffeine barely cares about roasting. It survives the temperatures
+          involved almost untouched, so{" "}
+          <Strong>
+            if you weigh your coffee on a scale, roast level makes almost no
+            difference
+          </Strong>
+          . One study that brewed five roast levels carefully found the peak in
+          the cup was somewhere around medium, and concluded that how you brew
+          matters more than how it was roasted.
+        </P>
+        <P>
+          The popular claim is only true if you measure by the scoop. Light roast
+          beans spend less time expanding, so they stay denser, and a scoop of
+          them weighs more than a scoop of dark. More bean, more caffeine. Weigh
+          instead and the whole argument disappears.
+        </P>
+
+        <H2 id="bag">Reading the rest of the bag</H2>
+        <P>
+          Roast level is the word you notice first. The rest of a specialty bag
+          reads like a form somebody forgot to explain, so here is a short
+          decoder. You do not need all of it to buy good coffee. You need enough
+          that the bag stops being intimidating.
+        </P>
+
+        <H3>Single origin, or a blend</H3>
+        <P>
+          <Strong>Single origin</Strong> means the coffee came from one place.
+          The catch is that nobody has agreed how big &ldquo;one place&rdquo; is,
+          and there is no official definition. It can mean one country, one
+          region, one co-operative, one farm, or one specific plot on one farm.
+          &ldquo;Single origin, Brazil&rdquo; tells you almost nothing, because
+          Brazil grows about a third of the world&apos;s coffee. A named estate
+          tells you a great deal.
+        </P>
+        <P>
+          <Strong>A blend</Strong> is coffee from more than one place, mixed on
+          purpose. Anything that is not single origin is a blend. There is no
+          such thing as a &ldquo;double origin&rdquo;, and no triple either. Two
+          origins in a bag is simply a blend of two.
+        </P>
+        <P>
+          Blends have a reputation for being the cheap option, and that
+          reputation is out of date. Roasters blend for real reasons: coffee is a
+          crop, so a single farm&apos;s lot runs out and tastes different next
+          harvest, while a blend can be adjusted to taste the same all year.
+          Blends are also built deliberately to have enough body to cut through
+          milk. If you want proof this is not a compromise, the coffee that won
+          the World Barista Championship in 2023 was a blend.
+        </P>
+        <Aside>
+          Which should you buy first? If you mostly make lattes, buy a
+          roaster&apos;s house espresso blend, because it was designed for
+          exactly that job. If you brew filter and want to learn what origins
+          actually taste like, buy two contrasting single origins at once, say an
+          Ethiopian and a Colombian, and drink them the same week. The
+          difference is the lesson.
+        </Aside>
+
+        <H3>Arabica and robusta</H3>
+        <P>
+          These are two species of coffee plant. <Strong>Arabica</Strong> is the
+          one specialty coffee is mostly built on: sweeter, more acidic, more
+          aromatic, fussier to grow, more expensive.{" "}
+          <Strong>Robusta</Strong> has roughly twice the caffeine, more
+          bitterness, less sugar, grows lower and hotter, and resists disease
+          far better.
+        </P>
+        <P>
+          Robusta&apos;s bad reputation is real but is also partly a story about
+          money rather than the plant. For decades nobody paid for good robusta,
+          so nobody grew good robusta. There is now a defined{" "}
+          <Strong>fine robusta</Strong> grade with its own graders and standards,
+          and it matters here more than most places:{" "}
+          <Strong>
+            roughly 70% of the coffee India grows is robusta
+          </Strong>
+          , and Indian roasters sell single-origin robusta that is genuinely
+          good, which is still unusual worldwide.
+        </P>
+        <P>
+          Which brings up the label you have definitely seen.{" "}
+          <Strong>&ldquo;100% arabica&rdquo; is not a quality claim.</Strong> It
+          is a statement about species and nothing else, and there is an enormous
+          amount of mediocre arabica in the world. It meant something when the
+          alternative was cheap robusta padding out a supermarket tin. Notice
+          that the bags you most want to buy usually do not bother saying it.
+        </P>
+
+        <H3>How the fruit was removed</H3>
+        <P>
+          Every coffee bean starts inside a fruit, and somebody has to get it
+          out. How they did it changes the taste as much as the roast does, which
+          is why it is printed on the bag.
+        </P>
+        <dl className="my-6 border-t border-border">
+          <Def term="Washed">
+            The fruit is stripped off before drying. You taste the seed and the
+            place it grew, with nothing in the way. Cleaner and brighter, and the
+            usual choice when a roaster wants chocolate and caramel to lead.
+          </Def>
+          <Def term="Natural">
+            The whole fruit is dried with the seed still inside, so the sugars
+            soak in. Much fruitier, heavier, sometimes almost like wine or berry
+            jam. Harder to do well, because fruit left on a drying bed can go
+            wrong.
+          </Def>
+          <Def term="Honey, or pulped natural">
+            The middle path. The skin comes off but the sticky layer underneath
+            stays on to dry. Sweet, between the other two.{" "}
+            <Strong>There is no honey involved.</Strong> That sticky layer just
+            looks and behaves like honey, and the name stuck.
+          </Def>
+        </dl>
+        <P>
+          For a beginner&apos;s palate, this is often a louder difference than
+          the country on the bag. A washed Ethiopian and a natural Ethiopian can
+          taste less alike than two washed coffees from opposite sides of the
+          world.
+        </P>
+
+        <H3>The date that matters</H3>
+        <P>
+          Look for a <Strong>roast date</Strong>, not a best before date.
+        </P>
+        <P>
+          Coffee does not spoil the way milk does. It is shelf stable, so a best
+          before date twelve months out is a legal formality that tells you
+          nothing about flavour. What coffee does is go flat, and it starts the
+          day it is roasted.
+        </P>
+        <P>
+          Fresher is not automatically better either, which surprises people.
+          Fresh coffee is full of carbon dioxide, and that gas physically pushes
+          water away from the grounds and gives you a sour, uneven cup.{" "}
+          <Strong>
+            Give filter coffee about three to seven days after roasting, and
+            espresso about seven to fourteen
+          </Strong>
+          , then drink it within a month or so. Every good roaster publishes
+          slightly different numbers, so treat that as a window rather than a
+          rule.
+        </P>
+        <Aside>
+          The single biggest freshness fact, and the reason a grinder is worth
+          more than a machine: whole beans stay good for around three weeks.
+          Ground coffee stays good for about an hour. Grinding multiplies the
+          surface exposed to air by an enormous factor, and most of the trapped
+          gas escapes within five minutes.
+        </Aside>
+
+        <H3>What you can safely ignore for now</H3>
+        <P>
+          <Strong>Altitude.</Strong> &ldquo;1600 MASL&rdquo; means metres above
+          sea level. Higher usually means colder, which means the fruit ripens
+          more slowly and develops more flavour, so it is weak evidence that the
+          roaster buys carefully. It is not comparable between countries, because
+          1,600 metres near the equator and 1,600 metres far from it are
+          completely different climates.
+        </P>
+        <P>
+          <Strong>Cupping scores.</Strong> A number like &ldquo;86
+          points&rdquo; comes from a tasting protocol where 80 and above counts
+          as specialty. On a retail bag it is usually self-assigned by the
+          roaster or their importer, and one point is inside the margin of error
+          for most professional tasters. It carries real weight when it comes
+          from a competition or a public auction, and very little otherwise.
+        </P>
+        <P>
+          <Strong>Variety names.</Strong> Bourbon, Typica, SL28, Gesha and the
+          rest are to coffee what Granny Smith is to apples. Worth knowing later.
+          Worth ignoring while you are still working out whether you like fruit
+          or chocolate.
         </P>
 
         <H2 id="portafilters">Portafilters, and why 58mm keeps coming up</H2>
