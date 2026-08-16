@@ -9,7 +9,6 @@
 export type Bookmark = {
   title: string;
   url: string;
-  kind: "Channel" | "Video" | "Article" | "Repo" | "Tool";
   why: string;
 };
 
@@ -17,7 +16,6 @@ export const bookmarks: Bookmark[] = [
   {
     title: "James Hoffmann",
     url: "https://www.youtube.com/@jameshoffmann",
-    kind: "Channel",
     why: "Where I learnt most of what I know about coffee. Watch the espresso and grinder videos before buying anything.",
   },
 ];

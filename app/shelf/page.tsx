@@ -110,6 +110,10 @@ export default function ShelfPage() {
             alt=""
             width={1600}
             height={1067}
+            /* Without `sizes`, next/image builds an x-descriptor srcset off the
+               `width` prop, so a 1x screen downloads the 1600w variant for a
+               slot that never exceeds the reading container's 712px. */
+            sizes="(max-width: 760px) 100vw, 712px"
             aria-hidden
             className="pointer-events-none absolute inset-x-0 bottom-0 w-full select-none object-cover opacity-[0.13] grayscale transition-opacity duration-med ease-out group-hover:opacity-[0.2] dark:opacity-[0.08] dark:group-hover:opacity-[0.14]"
           />

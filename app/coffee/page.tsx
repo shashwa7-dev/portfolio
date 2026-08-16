@@ -76,10 +76,7 @@ export const metadata = {
  */
 function Part({ label, title }: { label: string; title: string }) {
   return (
-    <div
-      data-part
-      className="mt-16 border-t border-border pt-8 first:mt-0"
-    >
+    <div data-part className="mt-16 border-t border-border pt-8">
       <p className="font-mono text-2xs uppercase tracking-label text-subtle">
         {label}
       </p>
@@ -659,8 +656,9 @@ export default function CoffeePage() {
         <H2 id="buying">Where I buy</H2>
         <P>
           Coffee gear is a category with a lot of noise in it, and buying badly
-          is expensive. Everything on my shelf came from one of two places, and I
-          would send a friend to either.
+          is expensive. Nearly everything on my shelf came from one of two
+          places, and I would send a friend to either. The grinder is the
+          exception: that one came direct from 1Zpresso.
         </P>
         <dl className="my-6 border-t border-border">
           <Def term={<A href="https://somethingsbrewing.in">Something&apos;s Brewing</A>}>

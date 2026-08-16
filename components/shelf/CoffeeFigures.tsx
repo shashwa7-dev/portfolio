@@ -13,18 +13,23 @@ function Figure({
   children,
   label,
   height,
+  width = 620,
 }: {
   caption: string;
   label: string;
   /** Content height in viewBox units. Every diagram used to pad out to a
    *  shared 250, which left a visible gap under the shorter ones. */
   height: number;
+  /** Widen past the default when a row of text would otherwise run past the
+   *  right edge. An SVG root clips to its viewport, so the overrun is not
+   *  visible as overflow, it simply shears the last word off. */
+  width?: number;
   children: React.ReactNode;
 }) {
   return (
     <figure className="my-6 rounded-2xl border border-border bg-card p-5 md:p-6">
       <svg
-        viewBox={`0 0 620 ${height}`}
+        viewBox={`0 0 ${width} ${height}`}
         role="img"
         aria-label={label}
         className="block h-auto w-full text-foreground"
@@ -157,6 +162,9 @@ export function RatioFigure() {
   return (
     <Figure
       height={186}
+      /* The Lungo row starts its text at x=500, and "1:3 · lighter, brighter"
+         needs roughly 140 units after that, which overruns the usual 620. */
+      width={660}
       label="Three bars showing dose against yield. Ristretto one to one, normale one to two, lungo one to three."
       caption="Same 18g of coffee in every row. The only thing changing is how much liquid you let out before you stop the shot."
     >

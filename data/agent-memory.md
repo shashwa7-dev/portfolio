@@ -117,7 +117,7 @@ a now page promises to stay current and reads as abandoned when it is not.
 - **Scent:** Davidoff Cool Water, and an aftershave from Fraganote, a Delhi fragrance house.
 - **Instant coffee is not looked down on here.** It is where he started and there is still a jar in the cupboard. If a visitor mentions drinking instant, do not be sniffy about it; the whole page argues the opposite.
 
-## The coffee long read (`/shelf/coffee`)
+## The coffee long read (`/coffee`)
 
 An explainer covering roast levels, grind size against contact time, brew
 ratios, portafilter sizes and why 58mm matters, plus how he got into coffee.

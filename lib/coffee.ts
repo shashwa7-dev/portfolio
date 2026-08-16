@@ -29,7 +29,6 @@ export type Roaster = {
   name: string;
   /** Sits in `public/shelf/roasters/`. Omit to fall back to initials. */
   logo?: string;
-  url?: string;
   /** Currently in the cupboard, as opposed to tried once and moved on. */
   inRotation?: boolean;
   beans: Bean[];
@@ -40,7 +39,6 @@ export const roasters: Roaster[] = [
     slug: "blue-tokai",
     name: "Blue Tokai",
     logo: "/shelf/roasters/blue-tokai.webp",
-    url: "https://bluetokaicoffee.com",
     inRotation: true,
     beans: [
       {
@@ -74,20 +72,17 @@ export const roasters: Roaster[] = [
     slug: "araku",
     name: "Araku",
     logo: "/shelf/roasters/araku.svg",
-    url: "https://arakucoffee.in",
     inRotation: true,
     beans: [
+      // Deliberately described by roast rather than by product name: Araku sell
+      // several dark bags and naming the wrong one would be a worse error than
+      // being general. Swap in the actual bag when the next one is open.
       {
-        name: "Signature Dark",
+        name: "Araku Valley, dark",
         roast: "Dark",
         origin: "Araku Valley",
         rating: 3,
-        note: "Placeholder name until Shashwat confirms the bag. Araku roast several dark options and inventing one would be worse than leaving this obvious.",
-      },
-      {
-        name: "Next bag",
-        roast: "Dark",
-        note: "Queued rather than tasted, so it carries no rating.",
+        note: "Grown and roasted in the valley it is named after, which is rare enough here to be worth the shelf space on its own.",
       },
     ],
   },
@@ -95,7 +90,6 @@ export const roasters: Roaster[] = [
     slug: "starbucks",
     name: "Starbucks",
     logo: "/shelf/roasters/starbucks.webp",
-    url: "https://athome.starbucks.com",
     beans: [
       {
         name: "House Blend",
@@ -116,7 +110,6 @@ export const roasters: Roaster[] = [
     slug: "nescafe",
     name: "Nescafé",
     logo: "/shelf/roasters/nescafe.webp",
-    url: "https://www.nescafe.com/in/",
     inRotation: true,
     beans: [
       {

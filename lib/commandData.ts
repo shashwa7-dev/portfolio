@@ -26,6 +26,12 @@ export function buildCommands(): Command[] {
       { id: "nav-exp", label: "Experience", group: "Navigation", href: "/#experience" },
       { id: "nav-writing", label: "Writing", group: "Navigation", href: "/blogs" },
       { id: "nav-books", label: "Books", group: "Navigation", href: "/books" },
+      // Deliberately absent from the navbar, so the palette is the only
+      // in-product way to reach these. Both are in the sitemap; leaving them
+      // out here too would mean crawlers could find pages that visitors
+      // could not.
+      { id: "nav-shelf", label: "Shelf", group: "Navigation", href: "/shelf" },
+      { id: "nav-coffee", label: "Coffee", group: "Navigation", href: "/coffee" },
     ] satisfies Command[]
   ).map(withGoToKeys);
   const projects: Command[] = getAllSideProjects().map((p) => ({

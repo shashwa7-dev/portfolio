@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
@@ -21,6 +21,26 @@ import { roasters, roasterInitials, type Bean } from "@/lib/coffee";
 export default function RoasterPicker() {
   const [active, setActive] = useState(roasters[0].slug);
   const current = roasters.find((r) => r.slug === active) ?? roasters[0];
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  /**
+   * The tab roles promise keyboard behaviour that has to be supplied by hand:
+   * one stop in the tab order for the whole set, arrows to move between them,
+   * Home/End to jump. Without this a screen reader announces "tab 1 of 4" and
+   * then the arrow keys do nothing, which is worse than plain buttons.
+   */
+  const onKeyDown = (e: React.KeyboardEvent, i: number) => {
+    const delta =
+      e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+    let next = -1;
+    if (delta) next = (i + delta + roasters.length) % roasters.length;
+    else if (e.key === "Home") next = 0;
+    else if (e.key === "End") next = roasters.length - 1;
+    if (next < 0) return;
+    e.preventDefault();
+    setActive(roasters[next].slug);
+    tabRefs.current[next]?.focus();
+  };
 
   return (
     <div className="space-y-6">
@@ -31,14 +51,20 @@ export default function RoasterPicker() {
         aria-label="Roasters"
         className="-mx-6 flex gap-6 overflow-x-auto px-6 pb-3 pt-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        {roasters.map((r) => {
+        {roasters.map((r, i) => {
           const selected = r.slug === active;
           return (
             <button
               key={r.slug}
+              id={`roaster-tab-${r.slug}`}
+              ref={(el) => {
+                tabRefs.current[i] = el;
+              }}
               role="tab"
               aria-selected={selected}
               aria-controls="roaster-panel"
+              tabIndex={selected ? 0 : -1}
+              onKeyDown={(e) => onKeyDown(e, i)}
               onClick={() => setActive(r.slug)}
               className="flex w-[76px] shrink-0 flex-col items-center gap-2 text-center sm:w-[84px]"
             >
@@ -60,6 +86,12 @@ export default function RoasterPicker() {
                     alt=""
                     width={64}
                     height={64}
+                    /* The optimizer refuses SVG unless `dangerouslyAllowSVG` is
+                       set, and it answers 400 rather than falling through, so
+                       an SVG logo renders as an empty disc. Vector art has
+                       nothing to gain from resizing anyway, so it is served
+                       as-is instead of opening the config flag site-wide. */
+                    unoptimized={r.logo.endsWith(".svg")}
                     className={cn(
                       "h-full w-full object-contain grayscale transition-opacity duration-base ease-out",
                       selected ? "opacity-100" : "opacity-45"
@@ -96,9 +128,14 @@ export default function RoasterPicker() {
         })}
       </div>
 
+      {/* `tabIndex={0}` because three of the four panels contain no focusable
+          element, so without it a keyboard user tabbing off the chips skips
+          the content region entirely. */}
       <div
         id="roaster-panel"
         role="tabpanel"
+        aria-labelledby={`roaster-tab-${current.slug}`}
+        tabIndex={0}
         className="overflow-hidden rounded-2xl border border-border"
       >
         {current.beans.map((bean, i) => (
