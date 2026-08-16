@@ -4,6 +4,7 @@ import Container from "@/components/layout/Container";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl, breadcrumbLd } from "@/lib/seo";
 import { communities } from "@/lib/coffee";
+import { gear } from "@/lib/gear";
 import {
   GrindEvennessFigure,
   GrindSizeFigure,
@@ -115,6 +116,32 @@ function P({ children }: { children: React.ReactNode }) {
 
 function Strong({ children }: { children: React.ReactNode }) {
   return <strong className="font-semibold text-foreground">{children}</strong>;
+}
+
+/**
+ * A piece of my gear, named in prose and linked to where I bought it.
+ *
+ * Resolved from `lib/gear.ts` by slug rather than taking a URL, so the vendor
+ * link lives in exactly one place. The shelf timeline reads the same entry, and
+ * a moved product page is a one-line fix rather than a hunt through prose.
+ *
+ * Falls back to plain bold text if the slug ever stops matching, because a
+ * missing link should not take a paragraph down with it.
+ */
+function GearLink({ slug, children }: { slug: string; children?: React.ReactNode }) {
+  const item = gear.find((g) => g.slug === slug);
+  if (!item) return <Strong>{children ?? slug}</Strong>;
+  return (
+    <a
+      href={item.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      title={`${item.name}, ${item.vendor}`}
+      className="font-semibold text-foreground underline decoration-border-strong underline-offset-4 transition-colors hover:decoration-foreground"
+    >
+      {children ?? item.name}
+    </a>
+  );
 }
 
 function Aside({ children }: { children: React.ReactNode }) {
@@ -248,7 +275,7 @@ export default function CoffeePage() {
           this page, take his channel.
         </P>
         <P>
-          My first piece of gear was a <Strong>Wacaco Nanopresso</Strong> and a
+          My first piece of gear was a <GearLink slug="nanopresso" /> and a
           very basic grinder. The Nanopresso is a hand pump. You put in the
           grounds, add hot water, and pump until espresso comes out. It costs
           very little and it makes a genuinely good shot, which is exactly the
@@ -257,7 +284,7 @@ export default function CoffeePage() {
 
         <H2 id="lever">Why a lever press, of all things</H2>
         <P>
-          The next thing I bought was a <Strong>Flair Pro 2</Strong>, and it is
+          The next thing I bought was a <GearLink slug="flair-pro-2" />, and it is
           worth explaining what that actually is, because a lever press looks
           strange if you have only seen café machines.
         </P>
@@ -289,7 +316,7 @@ export default function CoffeePage() {
           once your brewer is decent.
         </P>
         <P>
-          I went for a <Strong>1Zpresso JX-Pro</Strong>. It is a hand grinder
+          I went for a <GearLink slug="1zpresso-jx-pro" />. It is a hand grinder
           with conical burrs, which means two cone-shaped cutters shear the beans
           into pieces of a similar size rather than smashing them. Even grounds
           matter because water flows through them evenly, so you get one
@@ -337,7 +364,7 @@ export default function CoffeePage() {
         <H2 id="budan">And then time became the problem</H2>
         <P>
           The manual workflow is lovely, and it is also about fifteen minutes I
-          do not have on a Tuesday morning. So I bought a <Strong>Budan</Strong>,
+          do not have on a Tuesday morning. So I bought a <GearLink slug="budan" />,
           a semi-automatic machine made here in India. It heats itself while I do
           something else, and a weekday coffee stops being a project.
         </P>
@@ -367,8 +394,9 @@ export default function CoffeePage() {
         <H2 id="both">I still drink both</H2>
         <Aside>
           I pick by mood and by clock as much as by taste. Weekend, unhurried,
-          happy to fuss: the lever and the Kalita. Weekday, thinking about
-          something else: the Budan. Running for the door: the jar. All three are
+          happy to fuss: the lever and the <GearLink slug="kalita-wave-185">Kalita</GearLink>. Weekday, thinking about
+          something else: the <GearLink slug="budan">Budan</GearLink>. Running
+          for the door: the jar. All three are
           me, and the jar has been me for the longest.
         </Aside>
         <P>
@@ -545,7 +573,7 @@ export default function CoffeePage() {
           </Def>
         </dl>
         <P>
-          A stepped grinder makes this much easier to live with. On my JX-Pro,
+          A stepped grinder makes this much easier to live with. On my <GearLink slug="1zpresso-jx-pro">JX-Pro</GearLink>,
           espresso and pour over sit a fixed number of clicks apart, so moving
           between them is a count rather than a memory, and a change I liked is a
           change I can find again.
