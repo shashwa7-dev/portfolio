@@ -6,36 +6,41 @@ summary: "Learn how to build an AI assistant that can chat intelligently and han
 image: "/projects/project_truffy2.jpg"
 ---
 
-This tutorial assumes basic familiarity with Next.js, TypeScript, and API routes.
+I put a chat assistant on this site that answers questions about my work. It can also send me an email on your behalf, which is where it stopped being a weekend toy.
 
-Ever wondered how to create an AI assistant that can both chat intelligently and handle email communications securely? In this post, I'll walk you through how I built a smart AI assistant using Google's Gemini Pro that not only engages in natural conversations but also includes a rate-limited email service to prevent spam.
+A chat box that can send email is a spam relay wearing a friendly face. Anyone who can type into it can make my server deliver mail. This post is mostly about the parts that stop that happening.
 
-<img
-  src="/projects/project_truffy.jpg"
-  alt="AI Assistant Interface"
-  className="my-8 rounded-lg overflow-hidden w-full grayscale transition-[filter] duration-base ease-out hover:grayscale-0"
-  priority
-/>
+<Image src="/projects/project_truffy.jpg" width="783" height="843" alt="The chat assistant answering a question in a small panel on the site" />
 
-## Key Features
+It runs on Next.js API routes, Google Gemini Pro, and NodeMailer, in TypeScript. Answers stream back token by token over Server-Sent Events, so you see the reply forming instead of watching a spinner.
 
-- Intelligent conversations using Google's Gemini Pro
-- Secure email handling with rate limiting
-- Stream-based responses for real-time interactions
-- Multi-step email collection process
-- Built-in security measures and validation
+You need <Marker>basic familiarity with Next.js, TypeScript and API routes</Marker> to follow the code here.
 
-## Tech Stack
+## What happens when you type
 
-Our solution is built using Next.js API Routes, Google Gemini Pro, NodeMailer, TypeScript, and Server-Sent Events.
+Every message hits one API route, which first decides what you are asking for.
 
-## The Architecture
+If it reads as a question, it goes to Gemini and streams back. If it reads as "email Shashwat," it enters a separate flow that collects an address, a subject and a message, checks all three, shows you a preview, and only then sends. Nothing leaves the server before you confirm.
 
-The assistant is built with a streaming-first approach, enabling real-time responses as the AI generates them. The flow goes from client request through Next.js API routes, where intent detection determines whether to process it as a chat (via Gemini Pro API) or email request (through the email flow with rate limiting).
+<Image src="/projects/project_truffy2.jpg" width="1280" height="720" alt="The assistant collecting an email address, subject and message step by step" />
 
-## Rate Limiting Implementation
+The steps run in this order:
 
-One of the most crucial features is the rate-limiting system. It prevents spam by limiting to 3 emails per hour per sender and session.
+| Step | What it does |
+|---|---|
+| Detect | Recognises that you want to send an email rather than ask a question |
+| Collect | Asks for your address, a subject and a message, one at a time |
+| Validate | Checks each field before accepting it |
+| Preview | Shows you exactly what will be sent |
+| Rate check | Confirms you have not already used up the hour |
+
+Collecting one field at a time was not the first design. Asking for everything at once produced messages with an empty subject and a body that said "hi", because people answer the last question they read.
+
+<Image src="/projects/project_truffy3.jpg" width="1280" height="720" alt="The assistant showing a preview of the message before sending" />
+
+## Rate limiting
+
+<Marker>Three emails per hour</Marker>, counted per sender and per session. Both, because either one alone is trivial to walk around: a fresh session gets a new bucket, and a fresh address does too.
 
 ```typescript
 const RATE_LIMIT = {
@@ -71,34 +76,13 @@ const checkRateLimit = (
 };
 ```
 
-## Smart Email Flow
+It returns `timeRemaining` rather than a bare refusal, so the assistant can say when you can try again instead of just saying no.
 
-The assistant implements a user-friendly, multi-step email collection process:
+The counter lives in an in-memory `Map`, which resets on deploy and does not survive across instances. For a personal site that is the right trade. Anything with real traffic wants Redis or Upstash, or the limit becomes a suggestion.
 
-<img
-  src="/projects/project_truffy2.jpg"
-  alt="SMTP step assistance"
-  className="rounded-lg overflow-hidden w-full border grayscale transition-[filter] duration-base ease-out hover:grayscale-0"
-  priority
-/>
+## Validating what gets sent
 
-<br />
-1. Email Detection: Recognizes when users want to send an email 2. Information Collection:
-Guides users through providing their email, subject, and message 3. Validation: Ensures
-all inputs are valid and safe 4. Confirmation: Shows a preview and asks for confirmation
-before sending 5. Rate Checking: Verifies rate limits before proceeding
-<br />
-
-<img
-  src="/projects/project_truffy3.jpg"
-  alt="SMTP step assistance final"
-  className="rounded-lg overflow-hidden w-full border grayscale transition-[filter] duration-base ease-out hover:grayscale-0"
-  priority
-/>
-
-## Security Measures
-
-Security is paramount in any application handling user communications. Here's how we ensure safety:
+The mail goes out from my address. Anything the assistant accepts is something I am putting my name on, so the checks run before the preview, not after.
 
 ```typescript
 const validateEmailContent = (subject: string, body: string): boolean => {
@@ -118,9 +102,13 @@ const validateEmailContent = (subject: string, body: string): boolean => {
 };
 ```
 
-## Setting Up Your Own Instance
+Blocking every URL is blunt, and it does reject legitimate messages that just wanted to share a link. I kept it because <Marker>the main reason a stranger sends automated mail is to get a link in front of someone</Marker>. Take the links away and most of the incentive goes with them.
 
-1. Set up environment variables in `.env.local`:
+The length floors do more work than they look like they do. A body under ten characters is almost always a test, a probe, or someone bouncing off the interface.
+
+## Running your own
+
+Set three environment variables in `.env.local`:
 
 ```env
 EMAIL_USER=your-email@gmail.com
@@ -128,32 +116,22 @@ EMAIL_APP_PASSWORD=your-app-specific-password
 GOOGLE_AI_API_KEY=your-google-ai-api-key
 ```
 
-<br />
-2. Install dependencies:
+`EMAIL_APP_PASSWORD` is an app-specific password, not your account password. Gmail will not accept the account password from NodeMailer, and generating an app password is the fix.
+
+Then install the two dependencies:
 
 ```bash
 npm install @google/generative-ai nodemailer
 ```
 
-<br />
-3. Configure the email service with your SMTP settings
-<br />
-4. Initialize the AI model with your Google API key
+Point NodeMailer at your SMTP provider, initialise Gemini with the API key, and the rest is the flow above.
 
-## Best Practices and Learnings
+## What I would tell someone building this
 
-Implementing this AI assistant has taught us several valuable lessons:
+Rate limit before you ship, not after. The email endpoint is the only part of this project that can cost me money or reputation, and it is the part a bot finds first.
 
-- Always Rate Limit: Essential for preventing abuse and maintaining system stability
-- Stream Responses: Providing real-time feedback creates a better user experience
-- Validate Everything: Never trust user input and always implement thorough validation
-- Clear Feedback: Keep users informed about the status of their actions
-- Error Handling: Implement comprehensive error handling for better reliability
+Stream the response. The same answer feels twice as fast when the words appear as they are generated, and it costs one API route change.
 
-The complete code is available in my [Portfolio repository](https://github.com/shashwa7-dev/portfolio). Feel free to check it out and create your own version!
+Ask for one thing at a time. The multi-step collection exists because the single-form version produced unusable messages, not because it looked nicer.
 
-Follow me on [Twitter @offcod8\_](https://twitter.com/offcod8) for more web development content and updates!
-
-export default ({ children }) => <article className="prose lg:prose-xl">{children}</article
-
->
+The complete code is in my [portfolio repository](https://github.com/shashwa7-dev/portfolio), and the assistant is running in the corner of this site if you want to try talking to it.

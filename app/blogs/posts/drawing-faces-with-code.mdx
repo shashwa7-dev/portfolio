@@ -29,7 +29,7 @@ Dead straight, identical thickness end to end, both ends cut square. Everyone re
 
 Watch what a pencil actually does. The line starts light because you have not committed yet. It thickens in the middle where your hand presses hardest. It thins again as you lift off. It wobbles, because your wrist is a hinge and not a rail. Graphite crumbs break off the sides. In patches, the tooth of the paper shows through and the line skips.
 
-So the trick is that you do not draw a line at all. You build a filled shape and vary its width along the path:
+So the trick is that <Marker>you do not draw a line at all</Marker>. You build a filled shape and vary its width along the path:
 
 ```javascript
 // walk the path, and at each step decide how wide the stroke is here
@@ -61,9 +61,9 @@ Two more touches finish it. Sometimes the same path gets redrawn underneath, fai
 lift = chance(R, 0.035);
 ```
 
-Add those together and a shape stops looking computed. Take them away and you have a diagram.
+Add those together and a shape stops looking computed. Take them away and you have a diagram. **The imperfection is doing the work.**
 
-None of this code knows what a face is. The same functions draw hats, sunglasses, a cowboy brim and the handwritten name under each portrait.
+<Marker>None of this code knows what a face is.</Marker> The same functions draw hats, sunglasses, a cowboy brim and the handwritten name under each portrait.
 
 ## The same name gives the same face
 
@@ -71,7 +71,7 @@ None of this code knows what a face is. The same functions draw hats, sunglasses
 
 Computers do not really produce random numbers. They take a starting number and run it through a formula that spits out values which look scattered. Feed in the same starting number and you get the same sequence every time.
 
-That property is usually an annoyance. Here it is the entire feature.
+That property is usually an annoyance. <Marker>Here it is the entire feature.</Marker>
 
 ```javascript
 // FNV-1a, then a mixing step so similar names land far apart
@@ -92,7 +92,7 @@ const R = mulberry32(hashStr("shashwa7"));
 
 `R` is now a function. Every decision after this point pulls from it: skull width, jaw shape, which of seventeen hairstyles, whether there are glasses and which kind, whether the light in the room is a monitor.
 
-Nothing is saved anywhere. There is no database, no image on disk, no cache to invalidate. The name is the storage. I rendered the same handle twice through headless Chrome and compared the files, and the two PNGs were byte for byte identical.
+Nothing is saved anywhere. There is no database, no image on disk, no cache to invalidate. **The name is the storage.** I rendered the same handle twice through headless Chrome and compared the files, and the two PNGs were byte for byte identical.
 
 ## Deciding and drawing are separate
 
@@ -131,13 +131,13 @@ The first time was when I added a control for how the portrait presents, so that
 | masc | 19% | 44% |
 | fluid | 41% | 18% |
 
-The bias was working perfectly. The real fault was that pale hair rendered too faint to see, so long-haired portraits read as bald. I would have spent an evening rewriting the correct half.
+The bias was working perfectly. The real fault was that <Marker>pale hair rendered too faint to see</Marker>, so long-haired portraits read as bald. I would have spent an evening rewriting the correct half.
 
 ## A bigger drawing is not a zoomed drawing
 
 Scaling the portrait up looked coarse and flat. Blowing it up to card size gave me a heavy black mass of hair with no interior detail.
 
-Photocopy a postcard onto a poster and the lines get fat and clumsy. A drawing actually made at poster size has the same thin pencil lines the postcard had, because the pencil tip never changed. There are simply more of them, carrying more detail.
+Photocopy a postcard onto a poster and the lines get fat and clumsy. A drawing actually made at poster size has the same thin pencil lines the postcard had, because <Marker>the pencil tip never changed</Marker>. There are simply more of them, carrying more detail.
 
 So line weight and texture spacing needed a correction that runs against size:
 
@@ -155,7 +155,7 @@ hatchFill(R, pts, s * 0.045 * K, angle, 0.4, TW);  // tighter texture too
 
 A vending machine that works nineteen times out of twenty is a bad vending machine. The one time it eats your money is the round anyone remembers.
 
-Generated art has the same shape, and it is worse, because failures hide. Eight portraits appear, one is broken, you refresh and it is gone. I spent days chasing artefacts I could not reproduce, guessing at causes, and shipping fixes that changed nothing.
+Generated art has the same shape, and it is worse, because <Marker>failures hide</Marker>. Eight portraits appear, one is broken, you refresh and it is gone. I spent days chasing artefacts I could not reproduce, guessing at causes, and shipping fixes that changed nothing.
 
 What ended it was giving up on random samples and building contact sheets. One cell per hairstyle, traits pinned, nowhere for a lucky seed to hide:
 
@@ -164,7 +164,7 @@ What ended it was giving up on random samples and building contact sheets. One c
 if (opts.force) Object.assign(T, opts.force);
 ```
 
-One page load and five broken renderers were sitting there in a row.
+One page load and **five broken renderers** were sitting there in a row.
 
 `slick`, `buzz`, `mohawk`, `buns` and `spiky` all drew bald heads. The cap-shaped hair styles built their outline from a hairline at `-0.66s` and a crown at `-0.85s`, so the polygon between them came out as a crescent about a tenth of a unit thick. That is a sliver, and the head showed straight through it.
 
@@ -182,8 +182,8 @@ Thirty-two portraits render in under a second, including browser startup. The fi
 
 Read someone else's rendering code first. A working generator answers questions that documentation never raises, because you can break it and watch what happens.
 
-Keep deciding separate from drawing. You get to measure what your generator does without rendering anything, and every fix stays local.
+<Marker>Keep deciding separate from drawing.</Marker> You get to measure what your generator does without rendering anything, and every fix stays local.
 
-Build the contact sheet before you think you need it. Every hour I spent staring at random output was an hour I could have spent looking at all the cases at once.
+<Marker>Build the contact sheet before you think you need it.</Marker> Every hour I spent staring at random output was an hour I could have spent looking at all the cases at once.
 
 Source and full credit: [github.com/kengocodes/cyber-crowd](https://github.com/kengocodes/cyber-crowd), MIT licensed, by [Kevin Ngo](https://x.com/kevin_t_ngo).
