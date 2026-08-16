@@ -48,12 +48,19 @@ export default function GearTimeline() {
           </p>
 
           <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:gap-6">
-            <div className="flex aspect-[16/10] w-full shrink-0 items-center justify-center rounded-xl border border-border bg-card p-3 sm:aspect-square sm:w-28">
+            {/* A small square on every width, rather than a full-width 16:10
+                panel below `sm`. Stretched to the column it stood about 210px
+                tall, so five steps pushed most of the timeline off a phone
+                screen and the copy that explains each one sat below the fold.
+                The artwork is a product cut-out on a plain field; it carries
+                nothing at 210px that it does not carry at 96. */}
+            <div className="flex aspect-square w-24 shrink-0 items-center justify-center rounded-xl border border-border bg-card p-3 sm:w-28">
               <Image
                 src={step.image}
                 alt={step.name}
                 width={220}
                 height={220}
+                sizes="112px"
                 className="h-full w-full object-contain grayscale transition-[filter] duration-base ease-out hover:grayscale-0"
               />
             </div>
