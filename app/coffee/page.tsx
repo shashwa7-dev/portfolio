@@ -287,22 +287,73 @@ export default function CoffeePage() {
           strange if you have only seen café machines.
         </P>
         <P>
-          Espresso needs roughly nine bars of pressure pushed through finely
-          ground coffee. A machine does that with an electric pump. A lever press
-          does it with you. You load the basket, pour in hot water, and pull the
-          arm down. Your own weight on that arm is the pressure, and because the
-          arm is long you can feel exactly what is happening: where the
-          resistance builds, where it eases off as the puck gives way.
+          Espresso is hot water pushed through finely ground coffee under
+          pressure. Pressure is measured in <Strong>bars</Strong>, where one bar
+          is roughly the air pressure you are standing in right now.
+        </P>
+        <P>
+          <Strong>Nine bars is the number everyone quotes</Strong>, and nearly
+          every machine ever built is designed around it. It is worth knowing
+          that it is a convention rather than a law of physics. In practice
+          anywhere from <Strong>six to nine bars</Strong> makes good espresso,
+          and plenty of people who have thought about it harder than me prefer
+          the lower end, on the grounds that gentler pressure is less likely to
+          punch a channel straight through the coffee. Nine is the default, not
+          the target.
+        </P>
+        <P>
+          A pump machine settles that question for you. It pushes at whatever
+          pressure it was built to push at, and you do not get a vote.{" "}
+          <Strong>A lever press hands the job to your arm.</Strong> You load the
+          basket, pour in hot water, and pull the arm down. Your own weight is
+          the pressure, and because the arm is long you can feel exactly what is
+          happening: where the resistance builds, where it eases as the coffee
+          gives way.
+        </P>
+        <P>
+          That sounds like a downgrade until you notice what it buys you.{" "}
+          <Strong>
+            You are not just supplying the pressure, you are shaping it over the
+            course of the shot.
+          </Strong>{" "}
+          On most machines that is fixed in the factory. Better ones give you
+          control of temperature and timing, and the genuinely expensive ones
+          let you vary pressure as the shot runs. On a lever, that last one is
+          just how it works.
+        </P>
+
+        <H3>Pre-infusion, the bit worth learning</H3>
+        <P>
+          Dry coffee does not absorb water evenly. Hit a dry puck with full
+          pressure and the water finds the path of least resistance, carves a
+          channel, and rushes through it while the rest of the coffee sits there
+          barely touched. That is the sour and bitter cup at the same time.
+        </P>
+        <P>
+          The fix is to wet it gently first.{" "}
+          <Strong>
+            Ease in at around three or four bars, hold there for a few seconds
+            while the coffee soaks and swells shut, and only then push on to six,
+            seven, eight, nine.
+          </Strong>{" "}
+          The trade is a few seconds against a much more even extraction.
+        </P>
+        <P>
+          The word for this is <Strong>pre-infusion</Strong>. On espresso
+          machines it is a feature, sometimes a costly one. On a lever you simply
+          do it with your hand, and after a while you stop counting seconds and
+          start going by feel.
         </P>
         <Aside>
           Hoffmann&apos;s argument was that a good lever gets you espresso
           genuinely close to machines costing many times more, because the
-          expensive part of a machine is holding temperature and pressure steady,
-          and a lever hands both of those jobs to you. Having used one for a
-          while, I think that is right.
+          expensive parts of a machine are the ones holding temperature and
+          pressure steady, and a lever hands both of those jobs to you. Having
+          used one for a while, I think that is right. You are the pump, and the
+          pump is the part you were going to pay for.
         </Aside>
         <P>
-          There is no motor, nothing to break, and it taught me more about
+          There is no motor and nothing to break, and it taught me more about
           extraction in a month than reading would have in a year. When a shot
           ran fast and tasted thin, I could feel that it had run fast.
         </P>
