@@ -261,8 +261,28 @@ export default function CoffeePage() {
           before a call, and the choice is between instant and nothing.
         </P>
         <P>
-          None of what follows is me growing out of that. The jar has not moved.
-          It is just what happened after I got curious.
+          What did nag at me was cafés. I would order a cappuccino, drink it,
+          and genuinely wonder what made it different from the cup I made at
+          home. Same coffee, roughly. Same milk. Something in it was not the
+          same, and I could not name what.
+        </P>
+        <P>
+          So I tried to close the gap. I followed the tutorials, the ones where
+          somebody pours a tidy little heart and tells you it is straightforward
+          once you get the feel for it.{" "}
+          <Strong>I never got anywhere near it.</Strong> Not once. The milk was
+          wrong, or the coffee underneath it was wrong, and no video ever told me
+          which.
+        </P>
+        <P>
+          That failure is the reason for this entire page. Not wanting better
+          coffee exactly, more wanting to know what the cafés knew that I did
+          not. Pulling on that thread is how I found out there was a whole world
+          of specialty coffee sitting behind the question.
+        </P>
+        <P>
+          None of what follows is me growing out of instant. The jar has not
+          moved. It is just what happened after I got curious.
         </P>
 
         <H2 id="start">It started with a YouTube video</H2>
@@ -390,6 +410,35 @@ export default function CoffeePage() {
           mornings when enjoying it is not the point.
         </P>
 
+
+        <H2 id="kit">Everything on my shelf, in order</H2>
+        <P>
+          The whole list in one place, since it is scattered through the story
+          above. Each one links to where I bought it.
+        </P>
+        <ol className="mt-6 border-t border-border">
+          {gear.map((g) => (
+            <li
+              key={g.slug}
+              className="flex flex-col gap-1 border-b border-border py-4 sm:flex-row sm:items-baseline sm:gap-6"
+            >
+              <span className="font-mono text-2xs uppercase tracking-label text-subtle sm:w-40 sm:shrink-0">
+                {g.when}
+              </span>
+              <span className="min-w-0">
+                <a
+                  href={g.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-foreground underline decoration-border-strong underline-offset-4 transition-colors hover:decoration-foreground"
+                >
+                  {g.name}
+                </a>
+                <span className="ml-2 text-sm text-subtle">{g.kind}</span>
+              </span>
+            </li>
+          ))}
+        </ol>
 
         <H2 id="both">I still drink both</H2>
         <Aside>

@@ -48,7 +48,7 @@ export default function RoasterPicker() {
                   direction too, so a lifted chip had its top border shaved off. */}
               <span
                 className={cn(
-                  "flex h-14 w-14 items-center justify-center rounded-full border bg-card p-2.5 transition-[box-shadow,border-color] duration-base ease-out sm:h-16 sm:w-16",
+                  "flex h-14 w-14 items-center justify-center rounded-full border bg-card p-2.5 transition-[box-shadow,border-color] duration-base ease-out dark:bg-foreground sm:h-16 sm:w-16",
                   selected
                     ? "border-border-strong shadow-[0_2px_12px_-2px_rgba(0,0,0,0.18)] dark:shadow-[0_2px_12px_-2px_rgba(0,0,0,0.55)]"
                     : "border-border hover:border-border-strong"
