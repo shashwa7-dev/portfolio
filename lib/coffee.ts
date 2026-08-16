@@ -137,3 +137,39 @@ export const roasters: Roaster[] = [
 export function roasterInitials(name: string) {
   return name.slice(0, 2);
 }
+
+/**
+ * Subreddits I actually read.
+ *
+ * Kept here rather than in `bookmarks.ts` because these are places to go and
+ * talk, not links to read once, and the coffee page is where someone is when
+ * they want more than the page has.
+ */
+export type Community = {
+  handle: string;
+  url: string;
+  what: string;
+};
+
+export const communities: Community[] = [
+  {
+    handle: "r/IndiaCoffee",
+    url: "https://www.reddit.com/r/IndiaCoffee/",
+    what: "Indian roasters, Indian prices, and people solving the same shipping and humidity problems you are. The most useful of the four if you are here.",
+  },
+  {
+    handle: "r/espresso",
+    url: "https://www.reddit.com/r/espresso/",
+    what: "Dial-in help, machine repairs, and a steady stream of people posting a shot and asking what went wrong. Read the answers even when the question is not yours.",
+  },
+  {
+    handle: "r/JamesHoffmann",
+    url: "https://www.reddit.com/r/JamesHoffmann/",
+    what: "Discussion around the videos, plus the follow-up questions the videos leave open.",
+  },
+  {
+    handle: "r/latteart",
+    url: "https://www.reddit.com/r/latteart/",
+    what: "Pure practice and encouragement. Worth it for how patient people are with beginners posting their first blob.",
+  },
+];

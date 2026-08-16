@@ -3,11 +3,13 @@ import { ArrowLeft } from "lucide-react";
 import Container from "@/components/layout/Container";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl, breadcrumbLd } from "@/lib/seo";
+import { communities } from "@/lib/coffee";
 import {
   GrindEvennessFigure,
   GrindSizeFigure,
   RatioFigure,
   PortafilterFigure,
+  RedditMark,
 } from "@/components/shelf/CoffeeFigures";
 
 const DESCRIPTION =
@@ -579,6 +581,36 @@ export default function CoffeePage() {
         <P>
           Neither of them pays me anything and these are not affiliate links.
           They are simply where my money went.
+        </P>
+
+        <H2 id="communities">Where people actually talk about this</H2>
+        <P>
+          Most of what I know past the basics came from reading other people
+          argue about it. These are the corners of Reddit I follow, and they are
+          a genuinely warm bunch. If you want to go further than this page does,
+          your time is better spent there than on more of me.
+        </P>
+        <ul className="mt-6 border-t border-border">
+          {communities.map((c) => (
+            <li key={c.url} className="border-b border-border py-4">
+              <a
+                href={c.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-flex items-center gap-2 font-medium text-foreground underline decoration-border-strong underline-offset-4 transition-colors hover:decoration-foreground"
+              >
+                <RedditMark className="h-4 w-4 shrink-0 text-subtle transition-colors group-hover:text-foreground" />
+                {c.handle}
+              </a>
+              <p className="mt-1.5 max-w-[62ch] text-sm leading-relaxed text-muted-foreground">
+                {c.what}
+              </p>
+            </li>
+          ))}
+        </ul>
+        <P>
+          Worth saying plainly: nobody there is precious about it. Turn up with a
+          bad shot and a question and you will get five careful answers.
         </P>
 
         <div className="mt-12 rounded-2xl border border-border bg-card p-6">
