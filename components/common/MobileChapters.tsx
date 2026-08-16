@@ -1,0 +1,235 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { ChevronUp, X } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { goToSection, type TocSection } from "@/app/hooks/useActiveSection";
+
+/**
+ * The small-screen half of the table of contents: a pill at the bottom that
+ * opens a sheet of chapters.
+ *
+ * The rail the desktop uses needs a gutter to live in, and a phone has none. A
+ * pill costs one line at the bottom of the screen, which is the one place on a
+ * phone that is always reachable with a thumb.
+ */
+export default function MobileChapters({
+  sections,
+  active,
+}: {
+  sections: TocSection[];
+  active: string | null;
+}) {
+  const [open, setOpen] = useState(false);
+  /** Whether the sheet has been opened at least once, so closing it on first
+   *  render does not steal focus from wherever the reader actually is. */
+  const opened = useRef(false);
+  const pillRef = useRef<HTMLButtonElement>(null);
+  const sheetRef = useRef<HTMLDivElement>(null);
+
+  const index = sections.findIndex((s) => s.id === active);
+  // Before the first heading scrolls in there is no current chapter, and
+  // showing "0" would be wrong while showing the first would be a lie. The pill
+  // reads as chapter one, unfilled.
+  const position = index < 0 ? 0 : index + 1;
+  const current = index < 0 ? sections[0] : sections[index];
+
+  useEffect(() => {
+    if (!open) return;
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+
+    // The sheet scrolls internally, so the page behind it must not, or a flick
+    // past the end of the list drags the article instead.
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    sheetRef.current?.focus();
+
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = previous;
+    };
+  }, [open]);
+
+  /* Focus goes back to the pill when the sheet closes, so dismissing it with
+     Escape does not drop the caret at the top of the document. Skipped when a
+     chapter was picked: that hands focus to the section instead. */
+  const returnFocus = useRef(true);
+  useEffect(() => {
+    if (open) {
+      opened.current = true;
+      returnFocus.current = true;
+      return;
+    }
+    if (opened.current && returnFocus.current) pillRef.current?.focus();
+  }, [open]);
+
+  const pick = (id: string) => {
+    returnFocus.current = false;
+    setOpen(false);
+    goToSection(id);
+  };
+
+  return (
+    <div className="xl:hidden">
+      <button
+        ref={pillRef}
+        type="button"
+        onClick={() => setOpen(true)}
+        aria-expanded={open}
+        aria-controls="chapter-sheet"
+        /* The cap is set by the chat bubble, not by the screen. That sits at
+           `bottom-4 right-4` and is 48px square, so a centred pill free to use
+           the full width would grow into it as soon as a chapter name got long.
+           Reserving 9rem keeps a gap at every width from a phone up to `xl`. */
+        className={cn(
+          "fixed bottom-4 left-1/2 z-40 flex max-w-[calc(100vw-9rem)] -translate-x-1/2 items-center gap-2.5",
+          "rounded-full border border-border bg-elevated/90 py-2 pl-2 pr-3.5 shadow-lg backdrop-blur-md",
+          "transition-[opacity,transform] duration-base ease-out motion-reduce:transition-none",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          open && "pointer-events-none opacity-0"
+        )}
+      >
+        <ProgressRing position={position} total={sections.length} />
+        <span className="truncate text-xs font-medium text-foreground">
+          {current?.label}
+        </span>
+        <ChevronUp aria-hidden className="h-3.5 w-3.5 shrink-0 text-subtle" />
+      </button>
+
+      {/* Kept mounted so it can animate both ways. `invisible` rather than
+          `hidden` because it still removes the contents from the tab order,
+          but unlike `display: none` it can be transitioned. */}
+      <div
+        aria-hidden={!open}
+        onClick={() => setOpen(false)}
+        className={cn(
+          /* Above the chat bubble's z-50, which would otherwise float over
+             the scrim and the sheet as though it were part of them. */
+          "fixed inset-0 z-[60] bg-background/70 backdrop-blur-sm",
+          "transition-[opacity,visibility] duration-base ease-out motion-reduce:transition-none",
+          open ? "visible opacity-100" : "invisible opacity-0"
+        )}
+      />
+
+      <div
+        id="chapter-sheet"
+        ref={sheetRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Chapters"
+        tabIndex={-1}
+        className={cn(
+          "fixed inset-x-0 bottom-0 z-[70] rounded-t-2xl border-t border-border bg-card outline-none",
+          "transition-[transform,visibility] duration-base ease-out motion-reduce:transition-none",
+          open ? "visible translate-y-0" : "invisible translate-y-full"
+        )}
+      >
+        <div className="flex items-center justify-between gap-4 border-b border-border px-5 py-3.5">
+          <p className="font-mono text-2xs uppercase tracking-label text-subtle">
+            {position > 0
+              ? `Chapter ${position} of ${sections.length}`
+              : `${sections.length} chapters`}
+          </p>
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            aria-label="Close chapters"
+            className="-mr-1.5 rounded-full p-1.5 text-subtle transition-colors duration-fast ease-out hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <X aria-hidden className="h-4 w-4" />
+          </button>
+        </div>
+
+        {/* Capped and scrolled internally: at fifteen chapters an uncapped
+            sheet covers the article completely, and `dvh` so an iOS toolbar
+            appearing does not push the last row under the fold. */}
+        <ul className="max-h-[60dvh] overflow-y-auto overscroll-contain px-2 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+          {sections.map((s, i) => {
+            const isCurrent = s.id === active;
+            return (
+              <li key={s.id}>
+                <button
+                  type="button"
+                  onClick={() => pick(s.id)}
+                  aria-current={isCurrent ? "location" : undefined}
+                  className={cn(
+                    "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left",
+                    "transition-colors duration-fast ease-out",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                    isCurrent ? "bg-elevated" : "hover:bg-elevated/60"
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "w-5 shrink-0 font-mono text-2xs tabular-nums",
+                      isCurrent ? "text-foreground" : "text-subtle"
+                    )}
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span
+                    className={cn(
+                      "min-w-0 flex-1 truncate text-sm",
+                      isCurrent
+                        ? "font-semibold text-foreground"
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    {s.label}
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * The chapter number inside a ring that fills as you go.
+ *
+ * Drawn with `stroke-dasharray` on a circle rather than with a conic gradient,
+ * because a gradient cannot be given a round cap and the join at 0% shows as a
+ * hard seam. The ring is rotated so it starts at twelve o'clock.
+ */
+function ProgressRing({ position, total }: { position: number; total: number }) {
+  const r = 11;
+  const circumference = 2 * Math.PI * r;
+  const fraction = total > 0 ? position / total : 0;
+
+  return (
+    <span className="relative flex h-7 w-7 shrink-0 items-center justify-center">
+      <svg viewBox="0 0 28 28" className="absolute inset-0 h-full w-full -rotate-90">
+        <circle
+          cx="14"
+          cy="14"
+          r={r}
+          fill="none"
+          strokeWidth="2"
+          className="stroke-border-strong"
+        />
+        <circle
+          cx="14"
+          cy="14"
+          r={r}
+          fill="none"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={circumference * (1 - fraction)}
+          className="stroke-foreground transition-[stroke-dashoffset] duration-base ease-out motion-reduce:transition-none"
+        />
+      </svg>
+      <span className="font-mono text-2xs tabular-nums text-foreground">
+        {position > 0 ? position : 1}
+      </span>
+    </span>
+  );
+}
