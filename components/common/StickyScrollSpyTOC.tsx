@@ -113,7 +113,17 @@ export default function StickyScrollSpyTOC({
         className
       )}
     >
-      <ul className="flex flex-col gap-1">
+      {/* No gap, and the row height is animated rather than fixed.
+          Collapsed, this wants to be tight: it is a column of 1px rules and
+          spacing them out makes it read as fifteen things rather than one
+          scale. Expanded, it cannot be tight, because 12px labels in an 8px
+          row would overlap each other and be unreadable.
+
+          So the pitch itself is part of the expansion. The height also has to
+          be explicit: an empty label span still carries its line box, which is
+          what was quietly holding every row at 24px no matter what padding
+          said. */}
+      <ul className="flex flex-col">
         {sections.map((s) => {
           const current = s.id === active;
           return (
@@ -122,7 +132,12 @@ export default function StickyScrollSpyTOC({
                 href={`#${s.id}`}
                 onClick={(e) => go(e, s.id)}
                 aria-current={current ? "location" : undefined}
-                className="flex items-center justify-end gap-3 rounded py-1 pl-3 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className={cn(
+                  "flex h-2 items-center justify-end gap-3 rounded pl-3 outline-none",
+                  "transition-[height] duration-base ease-out motion-reduce:transition-none",
+                  "group-hover:h-6 group-focus-within:h-6",
+                  "focus-visible:ring-2 focus-visible:ring-ring"
+                )}
               >
                 {/* The expanded width is capped to the gutter, not to the
                     label. Both routes that use this set a 760px column, so at
@@ -134,7 +149,7 @@ export default function StickyScrollSpyTOC({
                 <span
                   title={s.label}
                   className={cn(
-                    "max-w-0 truncate text-right text-xs opacity-0",
+                    "max-w-0 truncate text-right text-xs leading-none opacity-0",
                     "transition-[max-width,opacity] duration-base ease-out motion-reduce:transition-none",
                     "group-hover:max-w-[10rem] group-hover:opacity-100 group-focus-within:max-w-[10rem] group-focus-within:opacity-100",
                     "2xl:group-hover:max-w-[15rem] 2xl:group-focus-within:max-w-[15rem]",
