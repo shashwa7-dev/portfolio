@@ -95,14 +95,17 @@ function Illus({
   height?: number;
 }) {
   return (
-    <figure className="my-6 overflow-hidden rounded-2xl border border-border bg-card">
+    /* No card around it. The illustrations already carry their own light
+       background and their own frame, so a bordered surface behind them was a
+       second frame a few pixels outside the first one. */
+    <figure className="my-6">
       <Image
         src={src}
         alt={alt}
         width={1600}
         height={height}
         sizes="(max-width: 760px) 100vw, 712px"
-        className="h-auto w-full"
+        className="block h-auto w-full rounded-2xl"
       />
     </figure>
   );
