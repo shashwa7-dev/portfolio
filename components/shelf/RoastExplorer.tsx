@@ -1,12 +1,10 @@
 "use client";
 
 import { useId, useState } from "react";
-import { motion } from "motion/react";
 import Image from "next/image";
 import { Check, Minus, TriangleAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Scrubber from "@/components/ui/Scrubber";
-import { duration, ease } from "@/lib/motionVariants";
 import { ROAST_STOPS, type Fit, type RoastStop } from "@/lib/roasts";
 
 /**
@@ -107,19 +105,15 @@ export default function RoastExplorer() {
           the shorter ones sitting in up to forty pixels of slack, which reads
           as a mistake at the bottom of the card rather than as breathing room.
 
-          So the height follows the active panel and is animated instead.
-          `layout` measures the box before and after and interpolates, which
-          plain CSS cannot do: there are no two values to move `height: auto`
-          between.
+          So the height follows the active panel, and the swap is instant.
+          There is no transition on any of this on purpose: dragging the slider
+          is a continuous gesture, and a fade behind it meant the panel was
+          still catching up with a roast the reader had already moved past.
 
           The padding sits on each panel rather than on this wrapper, so the
           absolutely positioned ones can be pinned with `inset-0` and land
           exactly where the in-flow one does. */}
-      <motion.div
-        layout
-        transition={{ duration: duration.base, ease: ease.out }}
-        className="relative"
-      >
+      <div className="relative">
         {/* Swapping by visibility is not something screen readers reliably
             announce, so the change is reported here instead. */}
         <p className="sr-only" aria-live="polite">
@@ -132,16 +126,15 @@ export default function RoastExplorer() {
             aria-hidden={n !== i}
             className={cn(
               "p-5 md:p-6",
-              "transition-[opacity,transform] duration-base ease-out motion-reduce:transition-none",
               n === i
-                ? "relative visible translate-y-0 opacity-100"
-                : "pointer-events-none invisible absolute inset-0 translate-y-1 opacity-0"
+                ? "relative"
+                : "pointer-events-none invisible absolute inset-0"
             )}
           >
             <RoastPanel stop={s} />
           </div>
         ))}
-      </motion.div>
+      </div>
     </div>
   );
 }
