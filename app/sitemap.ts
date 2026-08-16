@@ -25,7 +25,7 @@ export default async function sitemap() {
       lastModified: today,
     },
     {
-      url: `${baseUrl}shelf/coffee`,
+      url: `${baseUrl}coffee`,
       lastModified: today,
     },
   ];

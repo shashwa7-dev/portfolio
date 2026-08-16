@@ -38,11 +38,11 @@ const COFFEE_OG = ogUrl({
 export const metadata = {
   title: "How I got into coffee",
   description: DESCRIPTION,
-  alternates: { canonical: `${baseUrl}shelf/coffee` },
+  alternates: { canonical: `${baseUrl}coffee` },
   openGraph: {
     title: "How I got into coffee",
     description: DESCRIPTION,
-    url: `${baseUrl}shelf/coffee`,
+    url: `${baseUrl}coffee`,
     images: [{ url: COFFEE_OG }],
   },
   twitter: {
@@ -199,8 +199,7 @@ export default function CoffeePage() {
           __html: JSON.stringify(
             breadcrumbLd([
               { name: "Home", path: "" },
-              { name: "Shelf", path: "shelf" },
-              { name: "Coffee", path: "shelf/coffee" },
+              { name: "Coffee", path: "coffee" },
             ])
           ),
         }}
@@ -224,10 +223,9 @@ export default function CoffeePage() {
         </h1>
         <p className="mt-4 max-w-[58ch] text-lg leading-relaxed text-muted-foreground">
           I drank instant coffee for most of my life and thought nothing of it.
-          Café coffee always tasted better, and I could never say what the
-          difference actually was. This is what happened when I went looking for
-          the answer, and the handful of things I wish someone had explained to
-          me at the start.
+          Café coffee always tasted different to mine, and I could never work
+          out why. This is what happened when I went looking, and the handful of
+          things I wish someone had explained to me at the start.
         </p>
 
 
@@ -263,24 +261,11 @@ export default function CoffeePage() {
           before a call, and the choice is between instant and nothing.
         </P>
         <P>
-          What did nag at me was cafés. I would order a cappuccino, drink it,
-          and genuinely wonder what made it different from the cup I made at
-          home. Same coffee, roughly. Same milk. Something in it was not the
-          same, and I could not name what.
-        </P>
-        <P>
-          So I tried to close the gap. I followed the tutorials, the ones where
-          somebody pours a tidy little heart and tells you it is straightforward
-          once you get the feel for it.{" "}
-          <Strong>I never got anywhere near it.</Strong> Not once. The milk was
-          wrong, or the coffee underneath it was wrong, and no video ever told me
-          which.
-        </P>
-        <P>
-          That failure is the reason for this entire page. Not wanting better
-          coffee exactly, more wanting to know what the cafés knew that I did
-          not. Pulling on that thread is how I found out there was a whole world
-          of specialty coffee sitting behind the question.
+          What sent me looking was cafés. Coffee from a café always tasted
+          different to what I made at home. Not better exactly, just different,
+          and it was a difference I could not get anywhere near on my own. I
+          wanted to know how they were doing it, and that question turned out to
+          have a whole world behind it.
         </P>
         <P>
           None of what follows is me growing out of instant. The jar has not

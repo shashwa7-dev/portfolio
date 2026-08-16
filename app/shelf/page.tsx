@@ -102,7 +102,7 @@ export default function ShelfPage() {
           rather than photographic, so it sits with the rest of the design. */}
       <Container width="reading" className="py-10 md:py-14">
         <Link
-          href="/shelf/coffee"
+          href="/coffee"
           className="group relative block overflow-hidden rounded-2xl border border-border bg-card"
         >
           <Image

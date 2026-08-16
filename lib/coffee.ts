@@ -125,7 +125,7 @@ export const roasters: Roaster[] = [
         rating: 4,
         note: "In the cupboard on purpose, and I still get through plenty of it. Let us be honest, this is where all of us started.",
         link: {
-          href: "/shelf/coffee#instant",
+          href: "/coffee#instant",
           label: "We all started here",
         },
       },
