@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
 import Container from "@/components/layout/Container";
 import { baseUrl } from "@/app/sitemap";
@@ -75,6 +76,43 @@ export const metadata = {
  * enough to strand the text above them. The ladder here roughly doubles at
  * each step, so a reader can tell the levels apart by the space alone.
  */
+/**
+ * A drawn illustration, as opposed to the SVG diagrams in `CoffeeFigures`.
+ *
+ * The diagrams explain a mechanism and are drawn in code so they inherit the
+ * theme. These are scene illustrations and carry their own labelling inside the
+ * picture, which is why the alt text has to restate what the picture says
+ * rather than just naming it: a screen reader gets nothing from text baked into
+ * a bitmap.
+ */
+function Illus({
+  src,
+  alt,
+  caption,
+  height = 873,
+}: {
+  src: string;
+  alt: string;
+  caption: string;
+  height?: number;
+}) {
+  return (
+    <figure className="my-6 overflow-hidden rounded-2xl border border-border bg-card">
+      <Image
+        src={src}
+        alt={alt}
+        width={1600}
+        height={height}
+        sizes="(max-width: 760px) 100vw, 712px"
+        className="h-auto w-full"
+      />
+      <figcaption className="border-t border-border p-5 text-sm leading-relaxed text-muted-foreground md:px-6">
+        {caption}
+      </figcaption>
+    </figure>
+  );
+}
+
 function Part({ label, title }: { label: string; title: string }) {
   return (
     <div data-part className="mt-16 border-t border-border pt-8">
@@ -228,6 +266,11 @@ export default function CoffeePage() {
           at the top of this page rather than hidden at the bottom, because
           let us be honest, this is where all of us started.
         </P>
+        <Illus
+          src="/coffee/kitchen-table-instant.webp"
+          alt="A family at a kitchen table with steel tumblers of coffee, biscuits on a plate, a kettle, a carton of milk and a jar of Nescafé Classic."
+          caption="Steel tumblers, a jar on the table, everyone served at once. This is the coffee I grew up on and the reason none of what follows is a rejection of it."
+        />
         <P>
           <Strong>Instant is how almost every Indian meets coffee.</Strong> It is
           in the house before you have heard the word specialty, before you know
@@ -279,6 +322,11 @@ export default function CoffeePage() {
           very little and it makes a genuinely good shot, which is exactly the
           problem, because it makes you wonder how much further this goes.
         </P>
+        <Illus
+          src="/coffee/nanopresso-beginning.webp"
+          alt="A man at a kitchen table pressing a Nanopresso hand pump into a small glass, a hand grinder and a bag of beans beside him, a coffee video playing on a laptop behind, and family watching with mild bemusement."
+          caption="The whole setup at this point: a hand pump, a basic grinder, and a video paused on the laptop. The expressions in the background are the correct response to a man making one small coffee for eleven minutes."
+        />
 
         <H2 id="lever">Why a lever press, of all things</H2>
         <P>
@@ -373,6 +421,11 @@ export default function CoffeePage() {
           taken much flavour with it. A fast, thin shot is almost never fixed at
           the lever. It is fixed at the grinder.
         </P>
+        <Illus
+          src="/coffee/old-grinder-limits.webp"
+          alt="Three panels. Pulling a lever press with a basic grinder beside it, labelled peak pressure nine bars and limited range. Then tasting the shot and asking why it is so sour. Then a cut-away of the coffee basket where water carves a channel through an uneven bed of boulders and dust, giving sour and bitter at once."
+          caption="The third panel is the part that took me longest to understand. Water does not soak through evenly, it finds the weakest path and takes it, so one shot ends up under-extracted and over-extracted at the same time."
+        />
         <P>
           Except I could not fix it. My old grinder was already on its finest
           setting, and there was simply no more dial to turn.{" "}
@@ -400,6 +453,11 @@ export default function CoffeePage() {
           a fixed number of clicks apart. Dialling in stops being guesswork and
           becomes arithmetic.
         </P>
+        <Illus
+          src="/coffee/jx-pro-resolution.webp"
+          alt="Three panels. Setting the clicks on a 1Zpresso JX-Pro hand grinder, noting its conical burrs and stepped dial. Then pulling a shot where the pressure gauge finally reads nine bars because the coffee bed is providing resistance. Then drinking it, tasting chocolate and nutty sweetness with no sourness."
+          caption="The same lever, the same beans, the same hands. The only thing that changed is what the water had to push through."
+        />
 
         {/* The one block on the page allowed to raise its voice. */}
         <div className="my-8 rounded-2xl border border-foreground bg-card p-6 md:p-8">
@@ -464,6 +522,12 @@ export default function CoffeePage() {
 
 
         <H2 id="kit">Everything on my shelf, in order</H2>
+        <Illus
+          src="/coffee/the-whole-shelf.webp"
+          alt="A kitchen counter lined up with, left to right, a jar of Nescafé, a Nanopresso hand pump, a Flair lever press, a JX-Pro hand grinder, a semi-automatic espresso machine and a Kalita pour over set, with bags of Indian coffee on the shelves behind."
+          caption="Every stage still in the house, which is the honest version. Nothing here replaced what came before it, it just joined the queue."
+          height={819}
+        />
         <P>
           The whole list in one place, since it is scattered through the story
           above. Each one links to where I bought it.
@@ -550,6 +614,15 @@ export default function CoffeePage() {
           measured against those two sounds.</Strong> Light, medium, medium-dark
           and dark are four names for four places to stop.
         </P>
+        <Illus
+          src="/coffee/roast-levels.webp"
+          alt="Four coffee beans in a row getting darker. A pale green raw seed. A light roast stopped after first crack, tasting of green apple, citrus and flowers. A medium roast, balanced, tasting of chocolate and toasted nut. A dark roast taken through second crack, tasting of molasses, deep caramel and smoky spice."
+          caption="Left to right is simply time in the roaster. Notice the raw seed on the far left: that is what coffee is before anyone applies heat to it, and it tastes of almost nothing."
+        />
+        <Aside>
+          A useful shorthand for the whole picture above:{" "}
+          <Strong>you lose farm and you gain fire.</Strong>
+        </Aside>
         <Aside>
           You will see roast temperatures quoted, usually around 200°C for first
           crack. Treat them loosely. That number is a probe reading, and because
