@@ -1,10 +1,11 @@
 "use client";
 
 import { useId, useState } from "react";
+import Image from "next/image";
 import { Check, Minus, TriangleAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Scrubber from "@/components/ui/Scrubber";
-import { ROAST_STOPS, type Fit } from "@/lib/roasts";
+import { ROAST_STOPS, type Fit, type RoastStop } from "@/lib/roasts";
 
 /**
  * Pick a roast, see what to make with it.
@@ -42,7 +43,13 @@ export default function RoastExplorer() {
   const id = useId();
 
   return (
-    <div className="my-8 overflow-hidden rounded-2xl border border-border bg-card">
+    /* Anchored so the shelf can link straight at the control. Landing on the
+       section heading instead would put the thing the link promised about six
+       hundred pixels below the fold. `scroll-mt` clears the sticky header. */
+    <div
+      id="roast-picker"
+      className="my-8 scroll-mt-24 overflow-hidden rounded-2xl border border-border bg-card"
+    >
       <div className="border-b border-border p-5 md:p-6">
         <p
           id={id}
@@ -86,54 +93,112 @@ export default function RoastExplorer() {
         </div>
       </div>
 
-      {/* Announced on change, because the whole point of the control is the
-          text underneath it and a sighted user gets that for free. */}
-      <div aria-live="polite" className="p-5 md:p-6">
-        <p className="text-lg font-semibold tracking-tight text-foreground">
-          {stop.name}
-        </p>
-        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-          {stop.inTheRoaster}
+      {/* All four panels stay in the document; only the active one is in
+          flow. The other three are taken out of it and held at `invisible`,
+          which keeps them out of the layout and out of the tab order while
+          leaving their text where a crawler can read it. Rendering only the
+          selected roast, as this first did, put one roast in the markup and
+          hid the other three from search entirely.
+
+          Holding all four in flow was the other thing tried, and it fixed the
+          jump by making the card as tall as its longest roast. It also left
+          the shorter ones sitting in up to forty pixels of slack, which reads
+          as a mistake at the bottom of the card rather than as breathing room.
+
+          So the height follows the active panel, and the swap is instant.
+          There is no transition on any of this on purpose: dragging the slider
+          is a continuous gesture, and a fade behind it meant the panel was
+          still catching up with a roast the reader had already moved past.
+
+          The padding sits on each panel rather than on this wrapper, so the
+          absolutely positioned ones can be pinned with `inset-0` and land
+          exactly where the in-flow one does. */}
+      <div className="relative">
+        {/* Swapping by visibility is not something screen readers reliably
+            announce, so the change is reported here instead. */}
+        <p className="sr-only" aria-live="polite">
+          {stop.name} roast
         </p>
 
-        <div className="mt-5 grid gap-5 sm:grid-cols-2">
-          <Meter label="Acidity" value={stop.acidity} hint={stop.acidityHint} />
-          <Meter label="Body" value={stop.body} hint={stop.bodyHint} />
-        </div>
-
-        <p className="mt-5 font-mono text-2xs uppercase tracking-label text-subtle">
-          Tastes like
-        </p>
-        <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-          {stop.taste}
-        </p>
-
-        <p className="mt-5 font-mono text-2xs uppercase tracking-label text-subtle">
-          Make it as
-        </p>
-        <ul className="mt-2 border-t border-border">
-          {stop.brews.map((b) => (
-            <li
-              key={b.method}
-              className="flex items-baseline justify-between gap-4 border-b border-border py-2.5"
-            >
-              <span className="min-w-0">
-                <span className="text-sm text-foreground">{b.method}</span>
-                <span className="ml-2 text-xs text-muted-foreground">
-                  {b.why}
-                </span>
-              </span>
-              <Verdict fit={b.fit} />
-            </li>
-          ))}
-        </ul>
-
-        <p className="mt-5 rounded-xl bg-elevated p-4 text-sm leading-relaxed text-muted-foreground">
-          <span className="font-semibold text-foreground">Remember this: </span>
-          {stop.remember}
-        </p>
+        {ROAST_STOPS.map((s, n) => (
+          <div
+            key={s.name}
+            aria-hidden={n !== i}
+            className={cn(
+              "p-5 md:p-6",
+              n === i
+                ? "relative"
+                : "pointer-events-none invisible absolute inset-0"
+            )}
+          >
+            <RoastPanel stop={s} />
+          </div>
+        ))}
       </div>
     </div>
+  );
+}
+
+function RoastPanel({ stop }: { stop: RoastStop }) {
+  return (
+    <>
+      <div className="flex items-start gap-4">
+        {/* The bean is the answer to "what does this look like in the bag",
+            which is the question the words underneath cannot answer. */}
+        <Image
+          src={stop.bean}
+          alt={`A coffee bean roasted to ${stop.name.toLowerCase()}`}
+          width={240}
+          height={240}
+          sizes="64px"
+          className="h-14 w-14 shrink-0 object-contain sm:h-16 sm:w-16"
+          style={{ filter: stop.beanFilter }}
+        />
+        <div className="min-w-0">
+          <p className="text-lg font-semibold tracking-tight text-foreground">
+            {stop.name}
+          </p>
+          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+            {stop.inTheRoaster}
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-5 grid gap-5 sm:grid-cols-2">
+        <Meter label="Acidity" value={stop.acidity} hint={stop.acidityHint} />
+        <Meter label="Body" value={stop.body} hint={stop.bodyHint} />
+      </div>
+
+      <p className="mt-5 font-mono text-2xs uppercase tracking-label text-subtle">
+        Tastes like
+      </p>
+      <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+        {stop.taste}
+      </p>
+
+      <p className="mt-5 font-mono text-2xs uppercase tracking-label text-subtle">
+        Make it as
+      </p>
+      <ul className="mt-2 border-t border-border">
+        {stop.brews.map((b) => (
+          <li
+            key={b.method}
+            className="flex items-baseline justify-between gap-4 border-b border-border py-2.5"
+          >
+            <span className="min-w-0">
+              <span className="text-sm text-foreground">{b.method}</span>
+              <span className="ml-2 text-xs text-muted-foreground">{b.why}</span>
+            </span>
+            <Verdict fit={b.fit} />
+          </li>
+        ))}
+      </ul>
+
+      <p className="mt-5 rounded-xl bg-elevated p-4 text-sm leading-relaxed text-muted-foreground">
+        <span className="font-semibold text-foreground">Remember this: </span>
+        {stop.remember}
+      </p>
+    </>
   );
 }
 

@@ -12,7 +12,6 @@ import Footer from "@/components/Footer";
 import UmamiAnalytics from "@/components/Umami";
 import NoScript from "@/components/NoScript";
 
-const S7Bot = dynamic(() => import("@/components/ChatBot"), { ssr: false });
 const CommandPalette = dynamic(() => import("@/components/CommandPalette"), {
   ssr: false,
 });
@@ -133,7 +132,6 @@ export default function RootLayout({
               {children}
               <CommandPalette />
               <KeyboardShortcuts />
-              <S7Bot />
             </TooltipProvider>
             <Analytics />
             <UmamiAnalytics />

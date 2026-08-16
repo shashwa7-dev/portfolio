@@ -40,6 +40,17 @@ export const metadata = {
   },
 };
 
+/**
+ * The fan behind the roast link: light, medium, dark, tilted outward from the
+ * middle so the group reads as a cluster rather than a row. Negative margins
+ * overlap them; the middle one sits highest.
+ */
+const BACKDROP_BEANS = [
+  { src: "/coffee/beans/light.webp", transform: "rotate(-14deg) translateY(6px)", overlap: 0 },
+  { src: "/coffee/beans/medium.webp", transform: "rotate(2deg) translateY(-4px)", overlap: -18 },
+  { src: "/coffee/beans/dark.webp", transform: "rotate(16deg) translateY(8px)", overlap: -18 },
+];
+
 export default function ShelfPage() {
   return (
     <main className="py-8 md:py-12">
@@ -88,6 +99,68 @@ export default function ShelfPage() {
         </p>
 
         <RoasterPicker />
+
+        {/* The ratings above are mine, which is only useful once you know what
+            the roast words mean. This is the one thing on the coffee page a
+            reader can use rather than read, so it gets a link of its own rather
+            than being left at the bottom of a 3,000 word article. */}
+        <Link
+          href="/coffee#roast-picker"
+          className="group relative mt-6 block overflow-hidden rounded-2xl border border-border bg-card p-5 transition-colors duration-base ease-out hover:border-border-strong"
+        >
+          {/* The three beans as a backdrop, fanned light to dark left to
+              right, which is the same order the slider runs in. Held well back
+              so it reads as a texture on the card rather than as content: it is
+              decoration, and the sentence over it is the thing being sold.
+
+              Bled off the right edge on purpose: fully inside the card they
+              looked like three product shots that had been placed there rather
+              than a backdrop.
+
+              The arrow moved inline after the heading to make room. Parked at
+              the card's right edge it fought the fan for the same corner, and
+              moving the beans only changed which one it landed on.
+
+              Hidden below `sm`, where the sentence uses the full width and
+              there is no room for anything behind it. */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -right-8 top-1/2 hidden -translate-y-1/2 items-center opacity-30 transition-opacity duration-base ease-out group-hover:opacity-40 sm:flex"
+          >
+            {BACKDROP_BEANS.map((b) => (
+              <Image
+                key={b.src}
+                src={b.src}
+                alt=""
+                width={240}
+                height={240}
+                sizes="88px"
+                className="h-20 w-20 object-contain md:h-[88px] md:w-[88px]"
+                style={{ transform: b.transform, marginLeft: b.overlap }}
+              />
+            ))}
+          </span>
+
+          {/* `block`, because `max-width` does nothing on an inline box and the
+              description was running the full width of the card and straight
+              under the beans. */}
+          <span className="relative block max-w-[46ch]">
+            <span className="font-mono text-2xs uppercase tracking-label text-subtle">
+              Not sure what to buy
+            </span>
+            <span className="mt-2 flex items-center gap-2 font-medium text-foreground">
+              Pick a roast, see what to brew with it
+              <ArrowRight
+                aria-hidden
+                className="h-4 w-4 shrink-0 text-subtle transition-transform duration-base ease-out group-hover:translate-x-0.5"
+              />
+            </span>
+            <span className="mt-1 block text-sm text-muted-foreground">
+              A slider from light to dark. Each one tells you how it tastes and
+              which methods suit it, including the ones to avoid.
+            </span>
+          </span>
+        </Link>
       </Section>
 
       <Section number="02" label="Gear" title="Coffee gear" width="reading">

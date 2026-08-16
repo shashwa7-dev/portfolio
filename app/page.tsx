@@ -6,7 +6,9 @@ import Activity from "@/components/Activity";
 import Faq from "@/components/Faq";
 import Socials from "@/components/Socials";
 import LaunchNudge from "@/components/LaunchNudge";
+import ChatBotMount from "@/components/ChatBotMount";
 import { profilePageLd } from "@/lib/seo";
+
 
 export default function Home() {
   return (
@@ -29,6 +31,7 @@ export default function Home() {
       {/* Homepage only, deliberately: mounted here rather than in the layout so
           it never appears on a blog post or a case study. */}
       <LaunchNudge />
+      <ChatBotMount />
     </main>
   );
 }

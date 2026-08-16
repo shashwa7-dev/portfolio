@@ -1,7 +1,7 @@
-import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft } from "lucide-react";
 import Container from "@/components/layout/Container";
+import { cn } from "@/lib/utils";
+import Marker from "@/components/common/Marker";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl, breadcrumbLd } from "@/lib/seo";
 import { communities } from "@/lib/coffee";
@@ -14,6 +14,9 @@ import {
   RedditMark,
 } from "@/components/shelf/CoffeeFigures";
 import RoastExplorer from "@/components/shelf/RoastExplorer";
+import StickyScrollSpyTOC, {
+  type TocSection,
+} from "@/components/common/StickyScrollSpyTOC";
 
 const DESCRIPTION =
   "How I got into coffee, and the handful of things I wish someone had explained at the start: roast levels, grind size, portafilters, brew ratios, and why instant is fine.";
@@ -112,9 +115,23 @@ function Illus({
   );
 }
 
-function Part({ label, title }: { label: string; title: string }) {
+function Part({
+  label,
+  title,
+  first,
+}: {
+  label: string;
+  title: string;
+  /** The first part follows the lede, which has already opened the page, so
+   *  it does not need the full break. Left at the section step it opened a
+   *  96px hole between the standfirst and the first thing to read. */
+  first?: boolean;
+}) {
   return (
-    <div data-part className="mt-16 border-t border-border pt-8">
+    <div
+      data-part
+      className={cn("border-t border-border pt-8", first ? "mt-8" : "mt-14")}
+    >
       <p className="font-mono text-2xs uppercase tracking-label text-subtle">
         {label}
       </p>
@@ -130,7 +147,7 @@ function H2({ id, children }: { id: string; children: React.ReactNode }) {
   return (
     <h2
       id={id}
-      className="mt-12 scroll-mt-24 text-xl font-semibold tracking-tight text-foreground md:text-2xl"
+      className="mt-10 scroll-mt-24 text-2xl font-semibold tracking-tight text-foreground"
     >
       {children}
     </h2>
@@ -139,14 +156,14 @@ function H2({ id, children }: { id: string; children: React.ReactNode }) {
 
 function H3({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="mt-8 text-base font-semibold tracking-tight text-foreground">
+    <h3 className="mt-6 text-lg font-semibold tracking-tight text-foreground">
       {children}
     </h3>
   );
 }
 
 function P({ children }: { children: React.ReactNode }) {
-  return <p className="mt-4 leading-relaxed text-muted-foreground">{children}</p>;
+  return <p className="my-4 leading-relaxed text-foreground">{children}</p>;
 }
 
 function Strong({ children }: { children: React.ReactNode }) {
@@ -211,6 +228,66 @@ function Def({ term, children }: { term: React.ReactNode; children: React.ReactN
   );
 }
 
+/**
+ * Listed rather than scraped from the DOM, so the labels can be shorter than
+ * the headings they point at. "Portafilters, and why 58mm keeps coming up" is a
+ * good heading and a bad table of contents entry.
+ */
+const TOC: TocSection[] = [
+  { id: "instant", label: "Where I started" },
+  { id: "start", label: "A YouTube video" },
+  { id: "lever", label: "The lever press" },
+  { id: "grinder", label: "The grinder problem" },
+  { id: "budan", label: "The time problem" },
+  { id: "kit", label: "The whole shelf" },
+  { id: "both", label: "I still drink both" },
+  { id: "roast", label: "Roast levels" },
+  { id: "bag", label: "Reading the bag" },
+  { id: "portafilters", label: "Portafilters" },
+  { id: "methods", label: "Ways to make it" },
+  { id: "grind", label: "Grind size" },
+  { id: "ratios", label: "Ratios" },
+  { id: "buying", label: "Where I buy" },
+  { id: "communities", label: "Communities" },
+  { id: "glossary", label: "Glossary" },
+];
+
+/**
+ * Every term the page uses that a beginner would not already own.
+ *
+ * Kept as data and rendered as a real table rather than written out as prose,
+ * because this is the one part of the page nobody reads start to finish. It is
+ * for scanning back to after the article has sent you off to buy something.
+ */
+const GLOSSARY: { term: string; meaning: string }[] = [
+  { term: "Arabica", meaning: "The species most specialty coffee is made from. Sweeter and more aromatic than robusta, and fussier to grow." },
+  { term: "Robusta", meaning: "The other species. Roughly twice the caffeine, more bitter, hardier. About 70% of what India grows." },
+  { term: "Single origin", meaning: "Coffee from one place. Nobody has agreed how big a place, so it can mean one country or one plot on one farm." },
+  { term: "Blend", meaning: "Coffee from more than one place, mixed deliberately. There is no such thing as a double origin." },
+  { term: "First crack", meaning: "The popping sound as steam bursts the beans open in the roaster. Stop here or just after and you have a light roast." },
+  { term: "Second crack", meaning: "A quieter, cracklier round of popping later on, as oil is pushed to the surface. Through it and you are at dark." },
+  { term: "Washed", meaning: "The fruit is stripped off before drying. Cleaner and brighter in the cup." },
+  { term: "Natural", meaning: "The whole fruit is dried with the seed inside. Fruitier and heavier." },
+  { term: "Honey", meaning: "Skin off, sticky layer left on to dry. Between the two, and involving no honey." },
+  { term: "Acidity", meaning: "Brightness, the snap of a green apple. A compliment, and not the same thing as sourness." },
+  { term: "Body", meaning: "How heavy the coffee feels in your mouth. Tea at one end, milk at the other." },
+  { term: "Extraction", meaning: "How much you pulled out of the grounds. Too little tastes sour and thin, too much tastes bitter and drying." },
+  { term: "Degassing", meaning: "Carbon dioxide escaping a bean after roasting. Why very fresh coffee brews badly and needs a few days first." },
+  { term: "Crema", meaning: "The tan foam on an espresso. Carbon dioxide coming out of the liquid as the pressure drops. A sign of freshness, not of quality." },
+  { term: "Staling", meaning: "The slower clock. Aroma escaping and oils oxidising, which unlike degassing never stops." },
+  { term: "Dialling in", meaning: "Adjusting grind, dose and time until a coffee tastes right, then being able to repeat it." },
+  { term: "Brew ratio", meaning: "Coffee in against liquid out, by weight. 1:2 for espresso, about 1:16 for filter." },
+  { term: "Dose", meaning: "The weight of dry coffee you start with. 18g is a common espresso dose." },
+  { term: "Yield", meaning: "The weight of liquid you finish with. 36g out of 18g in is a 1:2 ratio." },
+  { term: "Portafilter", meaning: "The handled basket you lock into an espresso machine. 58mm is the size worth having." },
+  { term: "Puck", meaning: "The compacted bed of coffee in the basket. The thing the water has to push through." },
+  { term: "Channeling", meaning: "Water carving one path through the puck instead of soaking it evenly. Tastes sour and bitter at once." },
+  { term: "Pre-infusion", meaning: "Wetting the puck gently before the full pressure, so it swells shut and does not channel." },
+  { term: "Bar", meaning: "The unit pressure is measured in. Roughly the air pressure around you. Espresso runs at six to nine." },
+  { term: "Immersion", meaning: "Coffee sits in water for a set time, then gets separated. A French press." },
+  { term: "Percolation", meaning: "Water passes through the bed and drains away. A pour over, and espresso under pressure." },
+];
+
 const SIZES = [
   { mm: 58, name: "58mm", note: "The commercial standard. Nearly every café machine uses it, so tampers, distributors and baskets are easy to find and cheap." },
   { mm: 54, name: "54mm", note: "Common on home machines from Breville and others. Good gear exists, but you have fewer options." },
@@ -219,7 +296,11 @@ const SIZES = [
 
 export default function CoffeePage() {
   return (
-    <main className="py-8 md:py-12">
+    /* `pb-28` on small screens leaves room for the chapter pill, which is
+       fixed to the bottom of the viewport and would otherwise sit on top of
+       the last thing on the page. The rail replaces it at `xl`. */
+    <main className="py-8 pb-28 md:py-12 md:pb-28 xl:pb-12">
+      <StickyScrollSpyTOC sections={TOC} />
       <script
         type="application/ld+json"
         suppressHydrationWarning
@@ -238,15 +319,7 @@ export default function CoffeePage() {
           break, so a section heading adding its own 48 on top left the part
           label stranded above a gap it had just created. */}
       <Container width="reading" className="[&>[data-part]+h2]:mt-6">
-        <Link
-          href="/shelf"
-          className="inline-flex items-center gap-1.5 font-mono text-2xs uppercase tracking-label text-subtle transition-colors hover:text-foreground"
-        >
-          <ArrowLeft className="h-3 w-3" />
-          Shelf
-        </Link>
-
-        <h1 className="mt-8 text-3xl font-semibold tracking-tight md:text-4xl">
+        <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
           How I got into coffee
         </h1>
         <p className="mt-4 max-w-[58ch] text-lg leading-relaxed text-muted-foreground">
@@ -256,8 +329,7 @@ export default function CoffeePage() {
           things I wish someone had explained to me at the start.
         </p>
 
-
-        <Part label="Part one" title="How I got here" />
+        <Part label="Part one" title="How I got here" first />
 
         <H2 id="instant">Where I actually started</H2>
         <P>
@@ -403,6 +475,38 @@ export default function CoffeePage() {
           ran fast and tasted thin, I could feel that it had run fast.
         </P>
 
+        <H3>The foam on top</H3>
+        <P>
+          The tan layer on an espresso is called <Strong>crema</Strong>, and it
+          is worth a minute, because most people read it as a scorecard and it
+          is not one.
+        </P>
+        <P>
+          Roasting leaves a bean full of carbon dioxide. Under pressure that gas
+          goes into the liquid, and the moment the shot leaves the machine and
+          meets ordinary air it comes back out as thousands of small bubbles,
+          held together by the coffee&apos;s own oils. That is crema, and it is
+          why filter coffee has none: nothing ever pressurised it. The bloom you
+          see when you pour water on fresh grounds is the same gas leaving, just
+          with nowhere to be trapped.
+        </P>
+        <P>
+          Which means crema mostly tells you about{" "}
+          <Marker>freshness, not quality</Marker>. The clearest evidence is
+          robusta: it reliably produces more crema than arabica, whatever the
+          coffee tastes like. A very fresh bag gives a thick head, an old one
+          barely any, and a beautifully crowned shot can still taste like
+          nothing. Judge the drink.
+        </P>
+        <Aside>
+          Two things worth knowing. A great deal of crema is a hint that the
+          beans have not rested long enough, though only a hint, because species
+          and roast move it too. And on its own crema tends to taste bitter and
+          intense, which is why plenty of experienced people stir it in rather
+          than protect it. World Barista Championship judges are told to stir
+          the shot before tasting. You are allowed to.
+        </Aside>
+
         <H2 id="grinder">Then the grinder became the problem</H2>
         <P>
           So I had a press that let me set the pressure exactly, and my coffee
@@ -410,13 +514,14 @@ export default function CoffeePage() {
           like brown water, and leaning harder on the arm changed nothing.
         </P>
         <P>
-          <Strong>You do not apply nine bars. You generate them.</Strong>{" "}
-          Pressure is what happens when you push against something that pushes
-          back, and the thing pushing back is the bed of coffee. Grind too coarse
-          and there is nothing to push against: the water leaves as fast as you
-          supply it, the pressure never builds, and it is gone before it has
-          taken much flavour with it. A fast, thin shot is almost never fixed at
-          the lever. It is fixed at the grinder.
+          It took me a while to work out why pushing harder did nothing. The
+          pressure does not really come from the lever.{" "}
+          <Strong>It comes from the coffee <Marker>getting in the way</Marker>.</Strong>{" "}
+          Grind too coarse and there is nothing in the way: the water finds a
+          clear path straight through and is gone before it has picked up much
+          flavour, however slowly and however carefully I pulled the arm.
+          A fast, thin shot is almost never fixed at the lever. It is{" "}
+          <Marker>fixed at the grinder</Marker>.
         </P>
         <Illus
           src="/coffee/old-grinder-limits.webp"
@@ -454,8 +559,11 @@ export default function CoffeePage() {
           alt="Three panels. Setting the clicks on a 1Zpresso JX-Pro hand grinder, noting its conical burrs and stepped dial. Then pulling a shot where the pressure gauge finally reads nine bars because the coffee bed is providing resistance. Then drinking it, tasting chocolate and nutty sweetness with no sourness."
         />
 
-        {/* The one block on the page allowed to raise its voice. */}
-        <div className="my-8 rounded-2xl border border-foreground bg-card p-6 md:p-8">
+        {/* The one block on the page allowed to raise its voice, though it
+            does it with size and position rather than with a hard outline.
+            `border-foreground` put full-strength ink around a card in both
+            themes, which read as a warning box rather than as emphasis. */}
+        <div className="my-8 rounded-2xl border border-border-strong bg-card p-6 md:p-8">
           <p className="font-mono text-2xs uppercase tracking-label text-subtle">
             If you remember one thing from this page
           </p>
@@ -563,6 +671,45 @@ export default function CoffeePage() {
           page is asking you to change.
         </P>
 
+        {/* Sat here rather than in the header, where it competed with the one
+            thing the top of the page has to do. This is where the personal half
+            signs off, and it is the only section without a picture.
+
+            Held to its native 500px rather than run full width like the drawn
+            illustrations: it is a clip, not a figure, and stretching it to the
+            column would only make it soft.
+
+            Shipped as muted h264 rather than as the GIF it arrived as. Next's
+            optimiser re-encodes to webp or avif and drops animation on the way,
+            so a GIF has to bypass it and ship at full size: 642KB here against
+            39KB for the same frames as video. Animated webp measured 604KB,
+            which is no saving worth having.
+
+            The first frame does two jobs. It is the poster, so the box is
+            filled rather than blank while the video arrives, and since a
+            looping video cannot be stopped by CSS it is what
+            `prefers-reduced-motion` gets instead of the loop. */}
+        <span className="my-8 block overflow-hidden rounded-xl">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            poster="/coffee/lufi-still.webp"
+            aria-hidden
+            className="mx-auto block h-auto w-full max-w-[360px] motion-reduce:hidden"
+          >
+            <source src="/coffee/lufi.mp4" type="video/mp4" />
+          </video>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/coffee/lufi-still.webp"
+            alt=""
+            aria-hidden
+            className="mx-auto hidden h-auto w-full max-w-[360px] motion-reduce:block"
+          />
+        </span>
+
         <Part label="Part two" title="What I learnt along the way" />
 
         <H2 id="roast">Roast levels, from the beginning</H2>
@@ -642,7 +789,8 @@ export default function CoffeePage() {
           so it is worth thirty seconds.
         </P>
         <P>
-          When coffee people say <Strong>acidity</Strong>, they mean brightness.
+          When coffee people say <Strong>acidity</Strong>, <Marker>they mean
+          brightness</Marker>.
           The snap of a green apple, the lift of orange juice. It is a compliment.
           It is a thing people pay more for.
         </P>
@@ -784,7 +932,8 @@ export default function CoffeePage() {
         </P>
         <P>
           Which brings up the label you have definitely seen.{" "}
-          <Strong>&ldquo;100% arabica&rdquo; is not a quality claim.</Strong> It
+          <Strong>&ldquo;100% arabica&rdquo; is <Marker>not a quality
+          claim</Marker>.</Strong> It
           is a statement about species and nothing else, and there is an enormous
           amount of mediocre arabica in the world. It meant something when the
           alternative was cheap robusta padding out a supermarket tin. Notice
@@ -812,7 +961,7 @@ export default function CoffeePage() {
           <Def term="Honey, or pulped natural">
             The middle path. The skin comes off but the sticky layer underneath
             stays on to dry. Sweet, between the other two.{" "}
-            <Strong>There is no honey involved.</Strong> That sticky layer just
+            <Strong><Marker>There is no honey involved.</Marker></Strong> That sticky layer just
             looks and behaves like honey, and the name stuck.
           </Def>
         </dl>
@@ -825,7 +974,7 @@ export default function CoffeePage() {
 
         <H3>The date that matters</H3>
         <P>
-          Look for a <Strong>roast date</Strong>, not a best before date.
+          Look for a <Marker>roast date</Marker>, not a best before date.
         </P>
         <P>
           Coffee does not spoil the way milk does. It is shelf stable, so a best
@@ -835,24 +984,96 @@ export default function CoffeePage() {
         </P>
         <P>
           Fresher is not automatically better either, which surprises people.
-          Fresh coffee is full of carbon dioxide, and that gas physically pushes
-          water away from the grounds and gives you a sour, uneven cup.{" "}
-          <Strong>
-            Give filter coffee about three to seven days after roasting, and
-            espresso about seven to fourteen
-          </Strong>
-          , then drink it within a month or so. Every good roaster publishes
-          slightly different numbers, so treat that as a window rather than a
-          rule.
+          Fresh coffee is full of carbon dioxide, and that gas pushes water away
+          from the grounds and gives you a sour, uneven cup. So a bag wants a
+          few days between the roaster and you.{" "}
+          <Marker>Rest it before you judge it.</Marker>
+        </P>
+        <P>
+          How long depends on two things at once, which is why nobody agrees on
+          a number. <Strong>Roast level sets the direction.</Strong> Darker
+          roasting leaves the bean more porous, so it sheds its gas faster and is
+          ready sooner. A light roast holds on to it and takes longer.{" "}
+          <Strong>Brew method shifts the window.</Strong> Espresso is fussier,
+          because gas escaping inside a pressurised puck fights the water going
+          through it, where a filter brew just lets it bubble off.
+        </P>
+        <div className="my-6 overflow-x-auto rounded-2xl border border-border">
+          <table className="w-full border-collapse text-left">
+            <caption className="sr-only">
+              Rough resting times after roasting, by roast level and brew method
+            </caption>
+            <thead>
+              <tr className="border-b border-border bg-elevated">
+                <th scope="col" className="px-5 py-3 font-mono text-2xs uppercase tracking-label text-subtle">Roast</th>
+                <th scope="col" className="px-5 py-3 font-mono text-2xs uppercase tracking-label text-subtle">Filter</th>
+                <th scope="col" className="px-5 py-3 font-mono text-2xs uppercase tracking-label text-subtle">Espresso</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                ["Dark", "2 to 5 days", "3 to 7 days"],
+                ["Medium", "3 to 7 days", "5 to 10 days"],
+                ["Light", "5 to 14 days", "7 to 21 days, sometimes more"],
+              ].map(([roast, filter, espresso]) => (
+                <tr key={roast} className="border-b border-border last:border-0">
+                  <th scope="row" className="px-5 py-3 align-top font-medium text-foreground">{roast}</th>
+                  <td className="px-5 py-3 align-top text-sm text-muted-foreground">{filter}</td>
+                  <td className="px-5 py-3 align-top text-sm text-muted-foreground">{espresso}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <P>
+          Those are starting points and not expiry dates. I have deliberately not
+          given you one tidy rule, because the people who actually measure this
+          do not agree on one. Square Mile say five to fourteen days for filter
+          and seven to fourteen for espresso whatever the roast. Scott Rao rests
+          a dark oily roast for a day or two and a very light one for up to four
+          weeks. Both are right about their own coffee.
+        </P>
+        <Aside>
+          If you want a single habit rather than a table: open the bag around day
+          five, and if it tastes thin and sharp, wait and try again in three
+          days. Judge it by the cup rather than by the calendar.
+        </Aside>
+
+        <H3>And do not sit on it forever</H3>
+        <P>
+          There are two clocks running. The first is the gas leaving, which is
+          the one you wait out. The second is <Strong>staling</Strong>: aroma
+          escaping and the oils slowly oxidising, and that one never stops.
+        </P>
+        <P>
+          Coffee does not fall off a cliff on a particular day. It fades. The
+          Specialty Coffee Association puts whole beans at{" "}
+          <Strong>roughly three weeks</Strong> of being properly fresh, and that
+          is a fair target to drink within rather than a deadline. What you lose
+          past it is aroma and sweetness, slowly, until one day the cup tastes
+          flat and you cannot say when that happened.
         </P>
         <Aside>
           The single biggest freshness fact, and the reason a grinder is worth
           more than a machine: whole beans stay good for around three weeks.
           Ground coffee stays good for about an hour. Grinding multiplies the
-          surface exposed to air by an enormous factor, and most of the trapped
-          gas escapes within five minutes.
+          surface exposed to air enormously, and most of the trapped gas is gone
+          within minutes.
         </Aside>
-
+        <P>
+          Keep the bag closed, cool and out of the light, and buy in amounts you
+          will actually drink.{" "}
+          <Strong>The fridge is the one place not to put it</Strong>, because it
+          is damp and coffee takes on moisture and smells.
+        </P>
+        <P>
+          The freezer, though, genuinely works, which surprises people who were
+          told otherwise years ago. Frozen properly, coffee ages dramatically
+          more slowly. The condition is moisture:{" "}
+          <Marker>freeze it in small sealed portions</Marker>, and let a portion
+          come back to room temperature before you open it, or water condenses
+          straight onto cold beans.
+        </P>
         <H3>What you can safely ignore for now</H3>
         <P>
           <Strong>Altitude.</Strong> &ldquo;1600 MASL&rdquo; means metres above
@@ -1025,19 +1246,6 @@ export default function CoffeePage() {
           so when a cup is good you can make it again.
         </P>
 
-        <H2 id="curious">If you have ever been curious</H2>
-        <P>
-          It is far less precious than it looks from outside. A hand grinder and
-          a plastic dripper get you a long way, and the whole hobby can start for
-          about what you would spend on two coffees out. We also have very good
-          roasters here now, which was not true when I was growing up. Try a bag
-          from one of them and see whether you notice anything.
-        </P>
-        <P>
-          If you do, welcome, it is a lovely rabbit hole. If you do not, the jar
-          is still in the cupboard and it was never the problem.
-        </P>
-
         <H2 id="buying">Where I buy</H2>
         <P>
           Coffee gear is a category with a lot of noise in it, and buying badly
@@ -1092,6 +1300,54 @@ export default function CoffeePage() {
           Worth saying plainly: nobody there is precious about it. Turn up with a
           bad shot and a question and you will get five careful answers.
         </P>
+
+        <H2 id="glossary">The words, in one place</H2>
+        <P>
+          Everything above, without the article around it. Worth a look before
+          you buy a bag, or after one of these turns up on a menu.
+        </P>
+        {/* `overflow-x-auto` so the table scrolls inside its own box on a phone
+            instead of making the whole page scroll sideways. `w-full` with a
+            fixed first column keeps the terms from wrapping one letter per
+            line when the meanings are long. */}
+        <div className="my-6 overflow-x-auto rounded-2xl border border-border">
+          <table className="w-full border-collapse text-left">
+            <caption className="sr-only">
+              Coffee terms used on this page, with plain English meanings
+            </caption>
+            <thead>
+              <tr className="border-b border-border bg-elevated">
+                <th
+                  scope="col"
+                  className="w-40 px-5 py-3 font-mono text-2xs uppercase tracking-label text-subtle"
+                >
+                  Term
+                </th>
+                <th
+                  scope="col"
+                  className="px-5 py-3 font-mono text-2xs uppercase tracking-label text-subtle"
+                >
+                  What it means
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {GLOSSARY.map((g) => (
+                <tr key={g.term} className="border-b border-border last:border-0">
+                  <th
+                    scope="row"
+                    className="px-5 py-3 align-top font-medium text-foreground"
+                  >
+                    {g.term}
+                  </th>
+                  <td className="px-5 py-3 align-top text-sm leading-relaxed text-muted-foreground">
+                    {g.meaning}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
         <div className="mt-12 rounded-2xl border border-border bg-card p-6">
           <p className="text-base leading-relaxed text-muted-foreground">

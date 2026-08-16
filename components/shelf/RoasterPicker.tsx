@@ -66,47 +66,80 @@ export default function RoasterPicker() {
               tabIndex={selected ? 0 : -1}
               onKeyDown={(e) => onKeyDown(e, i)}
               onClick={() => setActive(r.slug)}
-              className="flex w-[76px] shrink-0 flex-col items-center gap-2 text-center sm:w-[84px]"
+              className="flex w-20 shrink-0 flex-col items-center gap-2 text-center sm:w-24"
             >
-              {/* Selected gains a shadow and full-strength logo; the others
-                  recede to 45% opacity. Deliberately no vertical movement: the
-                  row is an `overflow-x-auto` scroller, which clips in the block
-                  direction too, so a lifted chip had its top border shaved off. */}
-              <span
-                className={cn(
-                  "flex h-14 w-14 items-center justify-center rounded-full border bg-card p-2.5 transition-[box-shadow,border-color] duration-base ease-out dark:bg-foreground sm:h-16 sm:w-16",
-                  selected
-                    ? "border-border-strong shadow-[0_2px_12px_-2px_rgba(0,0,0,0.18)] dark:shadow-[0_2px_12px_-2px_rgba(0,0,0,0.55)]"
-                    : "border-border hover:border-border-strong"
-                )}
-              >
-                {r.logo ? (
-                  <Image
-                    src={r.logo}
-                    alt=""
-                    width={64}
-                    height={64}
-                    /* The optimizer refuses SVG unless `dangerouslyAllowSVG` is
-                       set, and it answers 400 rather than falling through, so
-                       an SVG logo renders as an empty disc. Vector art has
-                       nothing to gain from resizing anyway, so it is served
-                       as-is instead of opening the config flag site-wide. */
-                    unoptimized={r.logo.endsWith(".svg")}
-                    className={cn(
-                      "h-full w-full object-contain grayscale transition-opacity duration-base ease-out",
-                      selected ? "opacity-100" : "opacity-45"
-                    )}
-                  />
-                ) : (
-                  <span
-                    className={cn(
-                      "font-mono text-sm transition-colors",
-                      selected ? "text-foreground" : "text-subtle"
-                    )}
-                  >
-                    {roasterInitials(r.name)}
-                  </span>
-                )}
+              {/* A bag rather than a disc, because that is the thing you
+                  actually pick up in a shop. The pouch is one shared PNG with
+                  the roaster's mark printed onto its front face.
+
+                  Deliberately no vertical movement on select: the row is an
+                  `overflow-x-auto` scroller, which clips in the block direction
+                  too, so a lifted chip had its top shaved off. */}
+              {/* The box matches the source file's ratio exactly. Any other
+                  ratio letterboxes the art, and every percentage below then
+                  stops describing the place on the bag it was measured
+                  against. */}
+              <span className="relative block aspect-[400/489] w-full">
+                <Image
+                  src="/shelf/pouch-flat.webp"
+                  alt=""
+                  fill
+                  sizes="(min-width: 640px) 96px, 80px"
+                  className={cn(
+                    "object-contain transition-opacity duration-base ease-out",
+                    selected ? "opacity-100" : "opacity-40"
+                  )}
+                />
+                {/* Centred, because this bag is shot straight on rather than
+                    at an angle. Sat just below the middle so it lands on the
+                    flat of the face and clears the zip seal, which runs across
+                    roughly the top fifth of the artwork. */}
+                <span
+                  className="absolute flex items-center justify-center"
+                  style={{
+                    left: "32%",
+                    right: "32%",
+                    top: "45%",
+                    bottom: "35%",
+                  }}
+                >
+                  {r.logo ? (
+                    <Image
+                      src={r.logo}
+                      alt=""
+                      width={64}
+                      height={64}
+                      /* The optimizer refuses SVG unless `dangerouslyAllowSVG`
+                         is set, and it answers 400 rather than falling through,
+                         so an SVG logo renders as nothing at all. Vector art
+                         has nothing to gain from resizing anyway. */
+                      unoptimized={r.logo.endsWith(".svg")}
+                      /* Flattened then inverted, which is how one colour gets
+                         printed on a dark bag. Greyscale first because
+                         inverting a colour logo reads as a photographic
+                         negative; taking the colour out leaves a clean white
+                         mark. The white bag wanted `brightness-0` for the
+                         mirror image of this reason. */
+                      className={cn(
+                        "h-full w-full object-contain grayscale invert transition-opacity duration-base ease-out",
+                        selected ? "opacity-95" : "opacity-50"
+                      )}
+                    />
+                  ) : (
+                    <span
+                      /* Light in both themes, because the bag is an image and
+                         stays black in both. `text-background dark:text-foreground`
+                         is the pair that means "near-white either way" in
+                         these tokens. */
+                      className={cn(
+                        "font-mono text-2xs text-background transition-opacity duration-base ease-out dark:text-foreground",
+                        selected ? "opacity-95" : "opacity-50"
+                      )}
+                    >
+                      {roasterInitials(r.name)}
+                    </span>
+                  )}
+                </span>
               </span>
               <span
                 className={cn(

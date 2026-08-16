@@ -75,7 +75,7 @@ npm run lint     # next lint
 
 ## Useful entry points
 
-- Homepage layout composition: `app/page.tsx` → renders `<About>`, `<ExperienceWork>`, `<Projects>`, `<TechStack>`, `<Clients>`, `<Activity>`, `<Faq>`, `<Socials>` back to back, with no divider between sections. `<ChatBot>` and `<CommandPalette>` mount globally from `app/layout.tsx`, not from the homepage itself.
+- Homepage layout composition: `app/page.tsx` → renders `<About>`, `<ExperienceWork>`, `<Projects>`, `<TechStack>`, `<Clients>`, `<Activity>`, `<Faq>`, `<Socials>` back to back, with no divider between sections. `<CommandPalette>` mounts globally from `app/layout.tsx`. `<ChatBot>` is homepage-only, mounted from `app/page.tsx`: as a fixed bottom-right bubble it collided with anything else anchored to that corner on other routes.
 - Org page: `app/work/[org]/page.tsx` — header + key contributions + projects + inline diary.
 - Project case-study: `app/work/[org]/[project]/page.tsx`.
 - Blog: `app/blogs/*` with MDX posts under `app/blogs/posts/`.
