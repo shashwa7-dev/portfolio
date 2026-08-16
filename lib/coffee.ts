@@ -89,7 +89,7 @@ export const roasters: Roaster[] = [
   {
     slug: "starbucks",
     name: "Starbucks",
-    logo: "/shelf/roasters/starbucks.webp",
+    logo: "/shelf/roasters/starbucks.svg",
     beans: [
       {
         name: "House Blend",

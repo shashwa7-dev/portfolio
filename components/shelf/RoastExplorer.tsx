@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
+import Image from "next/image";
 import { Check, Minus, TriangleAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Scrubber from "@/components/ui/Scrubber";
@@ -89,12 +90,28 @@ export default function RoastExplorer() {
       {/* Announced on change, because the whole point of the control is the
           text underneath it and a sighted user gets that for free. */}
       <div aria-live="polite" className="p-5 md:p-6">
-        <p className="text-lg font-semibold tracking-tight text-foreground">
-          {stop.name}
-        </p>
-        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-          {stop.inTheRoaster}
-        </p>
+        <div className="flex items-start gap-4">
+          {/* The bean is the answer to "what does this look like in the bag",
+              which is the question the words underneath cannot answer. */}
+          <Image
+            key={stop.name}
+            src={stop.bean}
+            alt={`A coffee bean roasted to ${stop.name.toLowerCase()}`}
+            width={240}
+            height={240}
+            sizes="64px"
+            className="h-14 w-14 shrink-0 object-contain sm:h-16 sm:w-16"
+            style={{ filter: stop.beanFilter }}
+          />
+          <div className="min-w-0">
+            <p className="text-lg font-semibold tracking-tight text-foreground">
+              {stop.name}
+            </p>
+            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+              {stop.inTheRoaster}
+            </p>
+          </div>
+        </div>
 
         <div className="mt-5 grid gap-5 sm:grid-cols-2">
           <Meter label="Acidity" value={stop.acidity} hint={stop.acidityHint} />

@@ -81,7 +81,7 @@ export default function RoasterPicker() {
                   against. */}
               <span className="relative block aspect-square w-full">
                 <Image
-                  src="/shelf/pouch.webp"
+                  src="/shelf/pouch-white.webp"
                   alt=""
                   fill
                   sizes="(min-width: 640px) 96px, 80px"
@@ -90,16 +90,19 @@ export default function RoasterPicker() {
                     selected ? "opacity-100" : "opacity-40"
                   )}
                 />
-                {/* Positioned over the front panel rather than the middle of
-                    the file: the bag is photographed at an angle, so its flat
-                    face sits left of centre and a little low. */}
+                {/* Centred, because this bag is shot straight on. Measured
+                    from the file's alpha rather than by eye: the artwork spans
+                    x 80..275 of 360, so its centre is 49.3% and the panel wants
+                    a symmetric box. The old 29/39 split was for the previous
+                    bag, which was photographed at an angle with its face left
+                    of centre. */}
                 <span
                   className="absolute flex items-center justify-center"
                   style={{
-                    left: "29%",
-                    right: "39%",
-                    top: "36%",
-                    bottom: "34%",
+                    left: "33%",
+                    right: "33%",
+                    top: "38%",
+                    bottom: "42%",
                   }}
                 >
                   {r.logo ? (
@@ -113,19 +116,25 @@ export default function RoasterPicker() {
                          so an SVG logo renders as nothing at all. Vector art
                          has nothing to gain from resizing anyway. */
                       unoptimized={r.logo.endsWith(".svg")}
-                      /* Flattened then inverted, which is how a one-colour mark
-                         gets printed on a dark bag. Inverting a colour logo
-                         would read as a photographic negative; taking the
-                         colour out first leaves a clean white mark. */
+                      /* Flattened to a solid dark mark, which is how one colour
+                         gets printed on a light bag. `brightness-0` rather than
+                         greyscale alone: greyscale keeps a pale logo pale, and
+                         a pale mark on a white bag is no mark at all. The
+                         previous bag was dark, so this was `grayscale invert`
+                         to print white. */
                       className={cn(
-                        "h-full w-full object-contain grayscale invert transition-opacity duration-base ease-out",
+                        "h-full w-full object-contain brightness-0 transition-opacity duration-base ease-out",
                         selected ? "opacity-95" : "opacity-50"
                       )}
                     />
                   ) : (
                     <span
+                      /* Dark in both themes, because the bag is an image and
+                         stays white in both. `text-foreground dark:text-background`
+                         reads oddly but is the pair that means "near-black
+                         either way" in these tokens. */
                       className={cn(
-                        "font-mono text-2xs text-background transition-opacity duration-base ease-out dark:text-foreground",
+                        "font-mono text-2xs text-foreground transition-opacity duration-base ease-out dark:text-background",
                         selected ? "opacity-95" : "opacity-50"
                       )}
                     >

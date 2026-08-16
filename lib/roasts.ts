@@ -18,6 +18,18 @@ export type Fit = "great" | "works" | "tricky";
 export type RoastStop = {
   name: string;
   swatch: string;
+  /** Photograph of a bean at this roast. */
+  bean: string;
+  /**
+   * A CSS filter applied to `bean`.
+   *
+   * Only medium-dark uses one. There are three bean photographs and four stops,
+   * so rather than repeat a neighbour and quietly imply two roasts look
+   * identical, medium-dark is the medium bean darkened. Roasting darkens a bean
+   * in roughly the way `brightness` does, so it reads as the step it is, but it
+   * is a derived image and not a fourth photograph.
+   */
+  beanFilter?: string;
   /** What the roaster did, in terms a reader can picture. */
   inTheRoaster: string;
   acidity: number;
@@ -34,6 +46,7 @@ export const ROAST_STOPS: RoastStop[] = [
   {
     name: "Light",
     swatch: "hsl(30 25% 62%)",
+    bean: "/coffee/beans/light.webp",
     inTheRoaster:
       "Pulled out as soon as the beans start popping. The beans are dry to the touch and the palest brown of the four.",
     acidity: 5,
@@ -56,6 +69,7 @@ export const ROAST_STOPS: RoastStop[] = [
   {
     name: "Medium",
     swatch: "hsl(28 28% 44%)",
+    bean: "/coffee/beans/medium.webp",
     inTheRoaster:
       "Left in well past the first round of popping, but taken out before the second one starts.",
     acidity: 3,
@@ -78,6 +92,8 @@ export const ROAST_STOPS: RoastStop[] = [
   {
     name: "Medium-dark",
     swatch: "hsl(25 30% 28%)",
+    bean: "/coffee/beans/medium.webp",
+    beanFilter: "brightness(0.72) saturate(0.9)",
     inTheRoaster:
       "Taken right up to the second round of popping. Oil starts appearing on the surface of the beans.",
     acidity: 2,
@@ -100,6 +116,7 @@ export const ROAST_STOPS: RoastStop[] = [
   {
     name: "Dark",
     swatch: "hsl(22 25% 16%)",
+    bean: "/coffee/beans/dark.webp",
     inTheRoaster:
       "Taken all the way through the second round of popping. Nearly black, and visibly oily.",
     acidity: 1,

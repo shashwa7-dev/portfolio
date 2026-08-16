@@ -10,18 +10,30 @@ import { gear } from "@/lib/gear";
  * piece exists because of a problem the one before it left behind, and a
  * timeline is the only layout that carries that.
  *
- * The rail is a left border on the list with a marker absolutely positioned
- * over it, so the line joins the steps without any element needing to know how
- * tall its neighbours are.
+ * The rail is drawn per step rather than as one border on the list, and only
+ * between dots: it runs from this step's marker to the next one's, so the last
+ * step ends on its dot instead of trailing a line down past the artwork and
+ * the copy to the bottom of the list. A border on the <ol> cannot do that,
+ * because it has no way to stop short of its own last child.
+ *
+ * The 11px is the marker's centre: `top-1.5` puts its top edge at 6, and it is
+ * 10 tall. Running each rail from 11 to 11 past the item's bottom edge lands it
+ * exactly on the next marker's centre, so the segments meet without a seam.
  */
 export default function GearTimeline() {
   return (
-    <ol className="ml-[5px] border-l border-border">
+    <ol className="ml-[5px]">
       {gear.map((step, i) => (
         <li
           key={step.slug}
           className={cn("relative pl-8", i < gear.length - 1 && "pb-10")}
         >
+          {i < gear.length - 1 && (
+            <span
+              aria-hidden
+              className="absolute left-0 top-[11px] -bottom-[11px] w-px bg-border"
+            />
+          )}
           <span
             aria-hidden
             className={cn(
