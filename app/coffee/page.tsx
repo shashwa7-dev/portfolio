@@ -249,6 +249,41 @@ const TOC: TocSection[] = [
   { id: "ratios", label: "Ratios" },
   { id: "buying", label: "Where I buy" },
   { id: "communities", label: "Communities" },
+  { id: "glossary", label: "Glossary" },
+];
+
+/**
+ * Every term the page uses that a beginner would not already own.
+ *
+ * Kept as data and rendered as a real table rather than written out as prose,
+ * because this is the one part of the page nobody reads start to finish. It is
+ * for scanning back to after the article has sent you off to buy something.
+ */
+const GLOSSARY: { term: string; meaning: string }[] = [
+  { term: "Arabica", meaning: "The species most specialty coffee is made from. Sweeter and more aromatic than robusta, and fussier to grow." },
+  { term: "Robusta", meaning: "The other species. Roughly twice the caffeine, more bitter, hardier. About 70% of what India grows." },
+  { term: "Single origin", meaning: "Coffee from one place. Nobody has agreed how big a place, so it can mean one country or one plot on one farm." },
+  { term: "Blend", meaning: "Coffee from more than one place, mixed deliberately. There is no such thing as a double origin." },
+  { term: "First crack", meaning: "The popping sound as steam bursts the beans open in the roaster. Stop here or just after and you have a light roast." },
+  { term: "Second crack", meaning: "A quieter, cracklier round of popping later on, as oil is pushed to the surface. Through it and you are at dark." },
+  { term: "Washed", meaning: "The fruit is stripped off before drying. Cleaner and brighter in the cup." },
+  { term: "Natural", meaning: "The whole fruit is dried with the seed inside. Fruitier and heavier." },
+  { term: "Honey", meaning: "Skin off, sticky layer left on to dry. Between the two, and involving no honey." },
+  { term: "Acidity", meaning: "Brightness, the snap of a green apple. A compliment, and not the same thing as sourness." },
+  { term: "Body", meaning: "How heavy the coffee feels in your mouth. Tea at one end, milk at the other." },
+  { term: "Extraction", meaning: "How much you pulled out of the grounds. Too little tastes sour and thin, too much tastes bitter and drying." },
+  { term: "Degassing", meaning: "Carbon dioxide escaping a bean after roasting. Why very fresh coffee brews badly and needs a few days first." },
+  { term: "Dialling in", meaning: "Adjusting grind, dose and time until a coffee tastes right, then being able to repeat it." },
+  { term: "Brew ratio", meaning: "Coffee in against liquid out, by weight. 1:2 for espresso, about 1:16 for filter." },
+  { term: "Dose", meaning: "The weight of dry coffee you start with. 18g is a common espresso dose." },
+  { term: "Yield", meaning: "The weight of liquid you finish with. 36g out of 18g in is a 1:2 ratio." },
+  { term: "Portafilter", meaning: "The handled basket you lock into an espresso machine. 58mm is the size worth having." },
+  { term: "Puck", meaning: "The compacted bed of coffee in the basket. The thing the water has to push through." },
+  { term: "Channeling", meaning: "Water carving one path through the puck instead of soaking it evenly. Tastes sour and bitter at once." },
+  { term: "Pre-infusion", meaning: "Wetting the puck gently before the full pressure, so it swells shut and does not channel." },
+  { term: "Bar", meaning: "The unit pressure is measured in. Roughly the air pressure around you. Espresso runs at six to nine." },
+  { term: "Immersion", meaning: "Coffee sits in water for a set time, then gets separated. A French press." },
+  { term: "Percolation", meaning: "Water passes through the bed and drains away. A pour over, and espresso under pressure." },
 ];
 
 const SIZES = [
@@ -1159,6 +1194,54 @@ export default function CoffeePage() {
           Worth saying plainly: nobody there is precious about it. Turn up with a
           bad shot and a question and you will get five careful answers.
         </P>
+
+        <H2 id="glossary">The words, in one place</H2>
+        <P>
+          Everything above, without the article around it. Worth a look before
+          you buy a bag, or after one of these turns up on a menu.
+        </P>
+        {/* `overflow-x-auto` so the table scrolls inside its own box on a phone
+            instead of making the whole page scroll sideways. `w-full` with a
+            fixed first column keeps the terms from wrapping one letter per
+            line when the meanings are long. */}
+        <div className="my-6 overflow-x-auto rounded-2xl border border-border">
+          <table className="w-full border-collapse text-left">
+            <caption className="sr-only">
+              Coffee terms used on this page, with plain English meanings
+            </caption>
+            <thead>
+              <tr className="border-b border-border bg-elevated">
+                <th
+                  scope="col"
+                  className="w-40 px-5 py-3 font-mono text-2xs uppercase tracking-label text-subtle"
+                >
+                  Term
+                </th>
+                <th
+                  scope="col"
+                  className="px-5 py-3 font-mono text-2xs uppercase tracking-label text-subtle"
+                >
+                  What it means
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {GLOSSARY.map((g) => (
+                <tr key={g.term} className="border-b border-border last:border-0">
+                  <th
+                    scope="row"
+                    className="px-5 py-3 align-top font-medium text-foreground"
+                  >
+                    {g.term}
+                  </th>
+                  <td className="px-5 py-3 align-top text-sm leading-relaxed text-muted-foreground">
+                    {g.meaning}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
         <div className="mt-12 rounded-2xl border border-border bg-card p-6">
           <p className="text-base leading-relaxed text-muted-foreground">

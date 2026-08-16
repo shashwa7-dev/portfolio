@@ -27,13 +27,18 @@ function Table({ data }: TableProps) {
     </tr>
   ));
 
+  /* The scroll lives on the wrapper, not on the table. Putting `overflow-x`
+     on the table itself needs `display: block`, which strips its row and cell
+     roles and leaves a screen reader with an unstructured run of text. */
   return (
-    <table>
-      <thead>
-        <tr>{headers}</tr>
-      </thead>
-      <tbody>{rows}</tbody>
-    </table>
+    <div className="table-scroll">
+      <table>
+        <thead>
+          <tr>{headers}</tr>
+        </thead>
+        <tbody>{rows}</tbody>
+      </table>
+    </div>
   );
 }
 

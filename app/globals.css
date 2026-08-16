@@ -329,8 +329,11 @@ a {
  * sideways. `text-left` because every table here starts with a label column. */
 .prose table {
   @apply my-6 w-full border-collapse text-sm;
-  display: block;
-  overflow-x: auto;
+}
+
+/* The scroll container the table used to be. */
+.prose .table-scroll {
+  @apply my-6 overflow-x-auto;
 }
 
 .prose th {
@@ -367,12 +370,20 @@ input[type="email"] {
   appearance: none;
 }
 
+/* A table stays a table.
+ *
+ * This used to set `display: block` with `overflow-x: auto` and
+ * `white-space: nowrap`, which made every table on the site scroll sideways
+ * rather than wrap. Two problems with that. Changing a table's `display`
+ * removes its implicit row and cell roles in Safari and Firefox, so a screen
+ * reader announces it as an unstructured run of text with no way to navigate
+ * it. And `nowrap` forced a horizontal scroll even where the content would
+ * have wrapped comfortably, which on a phone is the worse of the two options.
+ *
+ * Scrolling belongs to a wrapper around the table, not to the table itself.
+ * Both callers now provide one. */
 table {
-  display: block;
-  max-width: fit-content;
-  overflow-x: auto;
-  white-space: nowrap;
-  @apply text-foreground;
+  @apply w-full border-collapse text-foreground;
 }
 
 .title {

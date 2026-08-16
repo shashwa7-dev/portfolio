@@ -106,19 +106,46 @@ export default function MobileChapters({
     if (opened.current && returnFocus.current) pillRef.current?.focus();
   }, [open]);
 
+  /**
+   * Picking a chapter cannot scroll straight away.
+   *
+   * While the sheet is open the body is pinned by the scroll lock, so a
+   * `scrollIntoView` fired from the click moves nothing, and the lock's cleanup
+   * then restores the old position on top of it. The reader gets the sheet
+   * closing and the page exactly where it was.
+   *
+   * So the target is parked here and taken in the effect below, which React
+   * runs after the lock has been undone.
+   */
+  const pending = useRef<string | null>(null);
+
   const pick = (id: string) => {
     returnFocus.current = false;
+    pending.current = id;
     setOpen(false);
-    goToSection(id);
   };
+
+  useEffect(() => {
+    if (open) return;
+    const id = pending.current;
+    if (!id) return;
+    pending.current = null;
+    goToSection(id);
+  }, [open]);
 
   return (
     <div className="xl:hidden">
-      {/* `layout` is what makes the width change smoothly. The pill is sized by
-          its label, and a label swap is a layout change, which is not something
-          a CSS transition can interpolate: `width: auto` has no two values to
-          move between. Framer measures before and after and animates the
-          difference instead. */}
+      {/* `layout="size"` is what makes the width change smoothly. The pill is
+          sized by its label, and a label swap is a layout change, which is not
+          something a CSS transition can interpolate: `width: auto` has no two
+          values to move between.
+
+          Size and not position, deliberately. Layout animation measures in
+          page coordinates, and the scroll lock pins the body, so closing the
+          sheet changes this element's page position by a whole scroll offset
+          while its position on screen does not move at all. Plain `layout`
+          read that as travel and flew the pill in from the top of the
+          document every time. */}
       {/* Centred by a flex parent rather than by `-translate-x-1/2`. A layout
           animation drives `transform` itself, so a translate used for centring
           gets overwritten mid-animation and the pill slides off to the left.
@@ -130,7 +157,7 @@ export default function MobileChapters({
       <motion.button
         ref={pillRef}
         type="button"
-        layout
+        layout="size"
         transition={{ duration: duration.base, ease: ease.out }}
         onClick={() => setOpen(true)}
         aria-expanded={open}
