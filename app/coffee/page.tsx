@@ -480,13 +480,14 @@ export default function CoffeePage() {
           like brown water, and leaning harder on the arm changed nothing.
         </P>
         <P>
-          <Strong><Marker>You do not apply nine bars.</Marker></Strong> You generate them.{" "}
-          Pressure is what happens when you push against something that pushes
-          back, and the thing pushing back is the bed of coffee. Grind too coarse
-          and there is nothing to push against: the water leaves as fast as you
-          supply it, the pressure never builds, and it is gone before it has
-          taken much flavour with it. A fast, thin shot is almost never fixed at
-          the lever. It is <Marker>fixed at the grinder</Marker>.
+          It took me a while to work out why pushing harder did nothing. The
+          pressure does not really come from the lever.{" "}
+          <Strong>It comes from the coffee <Marker>getting in the way</Marker>.</Strong>{" "}
+          Grind too coarse and there is nothing in the way: the water finds a
+          clear path straight through and is gone before it has picked up much
+          flavour, however slowly and however carefully I pulled the arm.
+          A fast, thin shot is almost never fixed at the lever. It is{" "}
+          <Marker>fixed at the grinder</Marker>.
         </P>
         <Illus
           src="/coffee/old-grinder-limits.webp"
