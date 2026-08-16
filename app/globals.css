@@ -24,6 +24,11 @@
   --accent-hover: 35 9% 22%;
   --destructive: 0 65% 48%;
   --destructive-foreground: 0 0% 100%;
+  /* The only two hues in the palette that are not paper or ink. They exist so
+     a verdict can be read without reading the word next to it, and they are
+     deliberately desaturated so a list of them still looks like this site. */
+  --good: 150 42% 32%;
+  --caution: 32 80% 38%;
   --border: 36 16% 89.5%;
   --border-strong: 36 14% 81%;
   --input: 36 16% 89.5%;
@@ -66,6 +71,10 @@
     --accent-hover: 35 8% 84%;
     --destructive: 0 60% 55%;
     --destructive-foreground: 0 0% 100%;
+    /* Lifted and desaturated for dark: the light values go muddy on a near
+       black card. */
+    --good: 150 40% 58%;
+    --caution: 36 80% 60%;
     --border: 30 6% 16%;
     --border-strong: 30 6% 24%;
     --input: 30 6% 16%;

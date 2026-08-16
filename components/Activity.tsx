@@ -30,6 +30,13 @@ export default function Activity() {
             <BookListItem {...book} />
           </div>
         ))}
+        {/* The shelf sits under the books rather than beside the writing card:
+            someone who has read this far down the "Now" section is already the
+            person it is for, and the two-column row above is about work. */}
+        <div className="col-span-full flex items-center justify-between gap-4 bg-card px-5 py-3">
+          <p className="font-mono text-2xs uppercase tracking-label text-subtle">Off the clock</p>
+          <Link href="/shelf" className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground">Coffee, gear &amp; bookmarks <ArrowRight className="h-3.5 w-3.5" /></Link>
+        </div>
       </Bento>
     </Section>
   );

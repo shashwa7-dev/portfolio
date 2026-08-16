@@ -1,0 +1,21 @@
+/**
+ * Links worth keeping.
+ *
+ * `why` is required, not optional. A bookmark list without a reason attached is
+ * a folder of links, and a folder of links is not worth a page. Making the
+ * field non-optional means the compiler stops a lazy entry before it ships.
+ */
+
+export type Bookmark = {
+  title: string;
+  url: string;
+  why: string;
+};
+
+export const bookmarks: Bookmark[] = [
+  {
+    title: "James Hoffmann",
+    url: "https://www.youtube.com/@jameshoffmann",
+    why: "Where I learnt most of what I know about coffee. Watch the espresso and grinder videos before buying anything.",
+  },
+];

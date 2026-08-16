@@ -39,6 +39,8 @@ Other pages return their default HTML representation regardless of Accept.
 - `/blogs/<slug>` — individual post.
 - `/projects` — independent / side projects.
 - `/books` — reading list with notes.
+- `/shelf` — coffee, gear, everyday setup, scent and bookmarks.
+- `/coffee` — long-form explainer on roast, grind, ratio and portafilter sizes.
 
 ## Content usage preferences
 

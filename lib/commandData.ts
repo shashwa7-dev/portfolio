@@ -26,6 +26,11 @@ export function buildCommands(): Command[] {
       { id: "nav-exp", label: "Experience", group: "Navigation", href: "/#experience" },
       { id: "nav-writing", label: "Writing", group: "Navigation", href: "/blogs" },
       { id: "nav-books", label: "Books", group: "Navigation", href: "/books" },
+      { id: "nav-shelf", label: "Shelf", group: "Navigation", href: "/shelf" },
+      // `/coffee` has no navbar entry of its own: it hangs off the shelf, and
+      // a second coffee link in the header would oversell it. The palette is
+      // the only direct route, so it stays listed here.
+      { id: "nav-coffee", label: "Coffee", group: "Navigation", href: "/coffee" },
     ] satisfies Command[]
   ).map(withGoToKeys);
   const projects: Command[] = getAllSideProjects().map((p) => ({
