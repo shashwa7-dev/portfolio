@@ -40,20 +40,56 @@ export default function MobileChapters({
     if (!open) return;
 
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") {
+        setOpen(false);
+        return;
+      }
+      if (e.key !== "Tab") return;
+      /* `aria-modal` promises the rest of the page is unreachable, and nothing
+         here is `inert`, so Tab is wrapped by hand. Without it the next Tab
+         out of the sheet walks into the article still sitting behind it. */
+      const sheet = sheetRef.current;
+      if (!sheet) return;
+      const focusable = sheet.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement;
+      if (e.shiftKey && (active === first || active === sheet)) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
     document.addEventListener("keydown", onKey);
 
-    // The sheet scrolls internally, so the page behind it must not, or a flick
-    // past the end of the list drags the article instead.
-    const previous = document.body.style.overflow;
+    /* The sheet scrolls internally, so the page behind it must not.
+       `overflow: hidden` on the body is ignored by iOS Safari, which is the
+       platform this component exists for, so the body is pinned and the
+       position restored on close. `overscroll-contain` on the list handles a
+       flick past its own end; this handles a drag started anywhere else. */
+    const previous = {
+      overflow: document.body.style.overflow,
+      position: document.body.style.position,
+      top: document.body.style.top,
+      width: document.body.style.width,
+    };
+    const scrollY = window.scrollY;
     document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = "100%";
 
     sheetRef.current?.focus();
 
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = previous;
+      Object.assign(document.body.style, previous);
+      window.scrollTo(0, scrollY);
     };
   }, [open]);
 
@@ -88,7 +124,9 @@ export default function MobileChapters({
           gets overwritten mid-animation and the pill slides off to the left.
           The wrapper takes no pointer events, or it would cover the width of
           the page along the bottom. */}
-      <div className="pointer-events-none fixed inset-x-0 bottom-4 z-40 flex justify-center px-6">
+      {/* `bottom` clears the home indicator on a notched phone, where a flat
+          `bottom-4` lands inside it. */}
+      <div className="pointer-events-none fixed inset-x-0 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 flex justify-center px-6">
       <motion.button
         ref={pillRef}
         type="button"
@@ -97,6 +135,11 @@ export default function MobileChapters({
         onClick={() => setOpen(true)}
         aria-expanded={open}
         aria-controls="chapter-sheet"
+        /* `opacity-0` hides it from the eye and not from the keyboard, so
+           while the sheet is open Tab would otherwise land on an invisible
+           button sitting behind the scrim. */
+        tabIndex={open ? -1 : 0}
+        aria-hidden={open}
         /* `max-w-full` against the wrapper's padding is what stops a long
            chapter name stretching this to the edges; the label truncates. */
         className={cn(
@@ -137,7 +180,7 @@ export default function MobileChapters({
         aria-hidden={!open}
         onClick={() => setOpen(false)}
         className={cn(
-          "fixed inset-0 z-40 bg-background/70 backdrop-blur-sm",
+          "fixed inset-0 z-40 overscroll-contain bg-background/70 backdrop-blur-sm",
           "transition-[opacity,visibility] duration-base ease-out motion-reduce:transition-none",
           open ? "visible opacity-100" : "invisible opacity-0"
         )}

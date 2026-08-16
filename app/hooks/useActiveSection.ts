@@ -55,18 +55,29 @@ export function useActiveSection(sections: TocSection[]) {
        where the last heading has already scrolled above it. Falling back to the
        last heading passed stops the marker sticking on whatever was current
        several screens ago. */
-    const onScroll = () => {
+    /* Coalesced to one pass per frame. The early return only fires while a
+       heading is inside the band, and the band is narrow, so on a long article
+       this runs for most of the scroll: unthrottled it meant a layout read per
+       heading per scroll event. */
+    let frame = 0;
+    const measure = () => {
+      frame = 0;
       if (seen.size > 0) return;
       const passed = observed.filter((el) => el.getBoundingClientRect().top <= 88);
       const last = passed[passed.length - 1];
       setActive(last ? last.id : null);
     };
-    onScroll();
+    const onScroll = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(measure);
+    };
+    measure();
     window.addEventListener("scroll", onScroll, { passive: true });
 
     return () => {
       observer.disconnect();
       window.removeEventListener("scroll", onScroll);
+      if (frame) cancelAnimationFrame(frame);
       seen.clear();
     };
   }, [sections]);
@@ -83,7 +94,14 @@ export function goToSection(id: string) {
   if (!el) return false;
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   el.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+  /* Headings are not focusable, so one is added for the jump and taken away
+     again on blur. Left in place, every heading the reader has ever jumped to
+     stays in the tab order, and the document's focus order ends up depending
+     on which links they happened to click. */
   el.setAttribute("tabindex", "-1");
+  el.addEventListener("blur", () => el.removeAttribute("tabindex"), {
+    once: true,
+  });
   // `preventScroll` because the line above owns the scrolling, and focusing
   // would otherwise jump straight there and cancel the animation.
   el.focus({ preventScroll: true });

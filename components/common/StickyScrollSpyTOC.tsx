@@ -49,6 +49,12 @@ export default function StickyScrollSpyTOC({
          moves through links they cannot read. */
       className={cn(
         "group fixed right-6 top-1/2 z-30 hidden -translate-y-1/2 xl:block",
+        /* Capped and scrolled, like the mobile sheet. Rows grow from 14px to
+           24px on hover, so a post with thirty headings expands to 720px and
+           pushes its first and last entries off a laptop screen with no way to
+           reach them. The scrollbar is hidden because the rules are the
+           interface; the overflow is a backstop, not a feature. */
+        "max-h-[70vh] overflow-y-auto overscroll-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
         className
       )}
     >

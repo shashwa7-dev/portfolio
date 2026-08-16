@@ -86,6 +86,12 @@ export const chatWindowVariants: Variants = {
 };
 
 /** Compact pill that floats up a few pixels — "new messages" indicators, small toasts. */
+export const pillUpVariants: Variants = {
+  hidden: { opacity: 0, y: 6 },
+  visible: { opacity: 1, y: 0, transition: { duration: duration.fast } },
+  exit: { opacity: 0, y: 6, transition: { duration: duration.fast } },
+};
+
 /**
  * Swapping one short string for another in place.
  *
@@ -108,12 +114,6 @@ export const blurSwapVariants: Variants = {
     y: -2,
     transition: { duration: duration.fast, ease: ease.out },
   },
-};
-
-export const pillUpVariants: Variants = {
-  hidden: { opacity: 0, y: 6 },
-  visible: { opacity: 1, y: 0, transition: { duration: duration.fast } },
-  exit: { opacity: 0, y: 6, transition: { duration: duration.fast } },
 };
 
 // ──────────────────────────────────────────────────────────────────────

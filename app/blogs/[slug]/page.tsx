@@ -91,7 +91,7 @@ export default function Blog({ params }: any) {
   const newer = posts[index - 1];
 
   return (
-    <Container as="section" width="reading" className="py-8 md:py-12 relative">
+    <Container as="section" width="reading" className="py-8 pb-28 md:py-12 md:pb-28 xl:pb-12 relative">
       <script
         type="application/ld+json"
         suppressHydrationWarning
