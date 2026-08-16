@@ -279,15 +279,52 @@ export default function CoffeePage() {
           break, so a section heading adding its own 48 on top left the part
           label stranded above a gap it had just created. */}
       <Container width="reading" className="[&>[data-part]+h2]:mt-6">
-        <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
-          How I got into coffee
-        </h1>
-        <p className="mt-4 max-w-[58ch] text-lg leading-relaxed text-muted-foreground">
-          I drank instant coffee for most of my life and thought nothing of it.
-          Café coffee always tasted different to mine, and I could never work
-          out why. This is what happened when I went looking, and the handful of
-          things I wish someone had explained to me at the start.
-        </p>
+        <div className="flex flex-col gap-6 md:flex-row md:items-center md:gap-10">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
+              How I got into coffee
+            </h1>
+            <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
+              I drank instant coffee for most of my life and thought nothing of
+              it. Café coffee always tasted different to mine, and I could never
+              work out why. This is what happened when I went looking, and the
+              handful of things I wish someone had explained to me at the start.
+            </p>
+          </div>
+
+          {/* Shipped as muted video rather than as the GIF it started life as.
+              Next's optimiser re-encodes to webp or avif and drops animation on
+              the way, so a GIF has to bypass it and ship at full size: 642KB
+              here against 39KB for the same frames as h264. Animated webp was
+              tried too and came back at 604KB, which is no saving at all.
+
+              `poster` is the first frame, so the box is filled before the video
+              has arrived rather than flashing empty.
+
+              The still is not only a poster. A looping video cannot be stopped
+              by CSS, so `prefers-reduced-motion` gets the frame on its own
+              instead. */}
+          <span className="relative block w-40 shrink-0 self-start overflow-hidden rounded-xl border border-border md:w-48 md:self-auto">
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              poster="/coffee/lufi-still.webp"
+              aria-hidden
+              className="block h-auto w-full motion-reduce:hidden"
+            >
+              <source src="/coffee/lufi.mp4" type="video/mp4" />
+            </video>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/coffee/lufi-still.webp"
+              alt=""
+              aria-hidden
+              className="hidden h-auto w-full motion-reduce:block"
+            />
+          </span>
+        </div>
 
 
         <Part label="Part one" title="How I got here" first />
