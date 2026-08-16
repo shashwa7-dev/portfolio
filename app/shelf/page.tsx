@@ -65,14 +65,11 @@ export default function ShelfPage() {
       </Container>
 
       <Section number="01" label="Coffee" title="Roasters I buy from" width="reading">
-        <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
-          Pick one to see what I have had. A dot underneath means it is in
-          rotation right now.
-        </p>
-
-        <RoasterPicker />
-
-        <div className="mt-6 rounded-2xl border border-border bg-card p-5">
+        {/* The taste note sits above the picker, not below it. Underneath, it
+            moved every time someone switched to a roaster with a different
+            number of beans, which is a layout shift caused by nothing the
+            reader did on purpose. */}
+        <div className="mb-8 rounded-2xl border border-border bg-card p-5">
           <p className="text-sm leading-relaxed text-muted-foreground">
             <span className="font-semibold text-foreground">
               Where my taste sits.
@@ -83,6 +80,13 @@ export default function ShelfPage() {
             score: three means <em>not for me</em>, not <em>bad coffee</em>.
           </p>
         </div>
+
+        <p className="mb-5 max-w-[62ch] text-sm text-muted-foreground">
+          Pick one to see what I have had. A dot underneath means it is in
+          rotation right now.
+        </p>
+
+        <RoasterPicker />
       </Section>
 
       <Section number="02" label="Gear" title="How I got here" width="reading">
@@ -131,32 +135,27 @@ export default function ShelfPage() {
           Links I come back to. Every one carries a reason, or it does not go in.
         </p>
 
-        <div className="overflow-hidden rounded-2xl border border-border">
-          {bookmarks.map((b, i) => (
-            <a
-              key={b.url}
-              href={b.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`group flex flex-col gap-2 bg-card p-5 sm:flex-row sm:gap-4 ${
-                i > 0 ? "border-t border-border" : ""
-              }`}
-            >
-              <span className="w-fit shrink-0 bg-secondary px-2 py-1 font-mono text-2xs uppercase tracking-label text-subtle sm:mt-0.5 sm:w-16 sm:text-center">
-                {b.kind}
-              </span>
-              <span className="min-w-0">
-                <span className="flex items-center gap-1 font-medium text-foreground">
-                  {b.title}
-                  <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground transition-transform duration-base ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                </span>
-                <span className="mt-1 block text-sm text-muted-foreground">
-                  {b.why}
-                </span>
-              </span>
-            </a>
+        {/* Plain text. A chip and a card around every link made three
+            bookmarks look like a product grid; the reason is the content, so
+            the reason gets the space. */}
+        <ul className="border-t border-border">
+          {bookmarks.map((b) => (
+            <li key={b.url} className="border-b border-border py-4">
+              <a
+                href={b.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-flex items-baseline gap-1.5 font-medium text-foreground underline decoration-border-strong underline-offset-4 transition-colors hover:decoration-foreground"
+              >
+                {b.title}
+                <ArrowUpRight className="h-3.5 w-3.5 shrink-0 self-center text-subtle transition-transform duration-base ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+              </a>
+              <p className="mt-1 max-w-[62ch] text-sm text-muted-foreground">
+                {b.why}
+              </p>
+            </li>
           ))}
-        </div>
+        </ul>
       </Section>
 
       <Container width="reading" className="pb-10">

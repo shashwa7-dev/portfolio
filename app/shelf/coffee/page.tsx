@@ -39,12 +39,31 @@ export const metadata = {
   },
 };
 
+/**
+ * The page runs to about 2,800 words, so it needs more than one level of
+ * heading to stay navigable. Three levels: a part label that splits the story
+ * from the reference material, section headings inside each part, and a
+ * subheading for the two places a section needs to break in half.
+ */
+function Part({ label, title }: { label: string; title: string }) {
+  return (
+    <div className="mt-20 border-t border-border pt-8 first:mt-0">
+      <p className="font-mono text-2xs uppercase tracking-label text-subtle">
+        {label}
+      </p>
+      <p className="mt-2 text-lg font-semibold tracking-tight text-foreground">
+        {title}
+      </p>
+    </div>
+  );
+}
+
 /** Section heading with a stable anchor, so the shelf can deep-link into it. */
 function H2({ id, children }: { id: string; children: React.ReactNode }) {
   return (
     <h2
       id={id}
-      className="mt-16 scroll-mt-24 text-xl font-semibold tracking-tight text-foreground md:text-2xl"
+      className="mt-14 scroll-mt-24 text-xl font-semibold tracking-tight text-foreground md:text-2xl"
     >
       {children}
     </h2>
@@ -53,7 +72,7 @@ function H2({ id, children }: { id: string; children: React.ReactNode }) {
 
 function H3({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="mt-8 text-base font-semibold tracking-tight text-foreground">
+    <h3 className="mt-10 text-base font-semibold tracking-tight text-foreground">
       {children}
     </h3>
   );
@@ -141,13 +160,48 @@ export default function CoffeePage() {
         <h1 className="mt-8 text-3xl font-semibold tracking-tight md:text-4xl">
           How I got into coffee
         </h1>
-        <p className="mt-4 max-w-[60ch] text-lg leading-relaxed text-muted-foreground">
-          I drank a lot of coffee before I knew anything about it. This is the
-          short version of what changed, and the handful of things I wish
-          someone had explained to me at the start.
+        <p className="mt-5 max-w-[58ch] text-lg leading-relaxed text-muted-foreground">
+          I drank instant coffee for most of my life and thought nothing of it.
+          This is what changed, and the handful of things I wish someone had
+          explained to me at the start.
         </p>
 
-        <div className="my-10 h-px bg-border" />
+
+        <Part label="Part one" title="How I got here" />
+
+        <H2 id="instant">Where I actually started</H2>
+        <P>
+          There is a jar of Nescafé Dark Roast in my cupboard, and it is going
+          at the top of this page rather than hidden at the bottom, because
+          let us be honest, this is where all of us started.
+        </P>
+        <P>
+          <Strong>Instant is how almost every Indian meets coffee.</Strong> It is
+          in the house before you have heard the word specialty, before you know
+          what a roast level is, before you have any idea that beans have
+          origins. A spoon, hot water, milk, sugar if you take it. That was
+          coffee in my home growing up, and it stayed my coffee right up until a
+          few years ago. If you are reading this with a mug of it going cold
+          beside you, no need to be shy. Same, most weeks.
+        </P>
+        <P>
+          So when I read people online talking about instant as though it were a
+          failure of character, I find it hard to take seriously. They are
+          describing my childhood, and the daily cup of most people I know, and
+          honestly a fair chunk of my own adult life. I am not going to stand on
+          the other side of a door I walked through myself and pull a face at it.
+        </P>
+        <P>
+          It also helps to know what instant actually is. It is{" "}
+          <Strong>brewed coffee that has been dried into granules</Strong> so you
+          can bring it back later with hot water. A different product with a
+          different job, and the job is real: some mornings I have eleven minutes
+          before a call, and the choice is between instant and nothing.
+        </P>
+        <P>
+          None of what follows is me growing out of that. The jar has not moved.
+          It is just what happened after I got curious.
+        </P>
 
         <H2 id="start">It started with a YouTube video</H2>
         <P>
@@ -274,7 +328,20 @@ export default function CoffeePage() {
           mornings when enjoying it is not the point.
         </P>
 
-        <div className="my-10 h-px bg-border" />
+
+        <H2 id="both">I still drink both</H2>
+        <Aside>
+          I pick by mood and by clock as much as by taste. Weekend, unhurried,
+          happy to fuss: the lever and the Kalita. Weekday, thinking about
+          something else: the Budan. Running for the door: the jar. All three are
+          me, and the jar has been me for the longest.
+        </Aside>
+        <P>
+          If you drink instant and you are happy, you are done. Nothing on this
+          page is asking you to change.
+        </P>
+
+        <Part label="Part two" title="What I learnt along the way" />
 
         <H2 id="roast">Roast levels, briefly</H2>
         <P>
@@ -343,12 +410,20 @@ export default function CoffeePage() {
         <div className="my-6 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-border bg-border md:grid-cols-3">
           {SIZES.map((s) => (
             <div key={s.name} className="bg-card p-6 text-center">
-              <div
-                className="mx-auto mb-3 rounded-full border border-foreground"
-                style={{ width: s.mm, height: s.mm }}
-              />
+              {/* Fixed-height band with the circle sitting on its floor. The
+                  three circles are deliberately different sizes, so centring
+                  them in auto-height boxes left the labels underneath at three
+                  different heights. */}
+              <div className="mb-4 flex h-16 items-end justify-center">
+                <div
+                  className="rounded-full border border-foreground"
+                  style={{ width: s.mm, height: s.mm }}
+                />
+              </div>
               <p className="text-sm font-semibold text-foreground">{s.name}</p>
-              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{s.note}</p>
+              <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+                {s.note}
+              </p>
             </div>
           ))}
         </div>
@@ -469,56 +544,13 @@ export default function CoffeePage() {
           so when a cup is good you can make it again.
         </P>
 
-        <H2 id="instant">Instant coffee, and where I actually started</H2>
+        <H2 id="curious">If you have ever been curious</H2>
         <P>
-          There is a jar of Nescafé Dark Roast in my cupboard, and I want to be
-          plain about that rather than leave it off the list.
-        </P>
-        <P>
-          <Strong>Instant is how almost every Indian meets coffee.</Strong> It is
-          in the house before you have heard the word specialty, before you know
-          what a roast level is, before you have any idea that beans have
-          origins. A spoon, hot water, milk, sugar if you take it. That was
-          coffee in my home growing up, and it stayed my coffee right up until a
-          few years ago.
-        </P>
-        <P>
-          So when I read people online talking about instant as though it were a
-          failure of character, I find it hard to take seriously. They are
-          describing my childhood, and the daily cup of most people I know, and
-          honestly a fair chunk of my own adult life. I am not going to stand on
-          the other side of a door I walked through myself and pull a face at it.
-        </P>
-        <P>
-          It also helps to know what instant actually is. It is{" "}
-          <Strong>brewed coffee that has been dried into granules</Strong> so you
-          can bring it back later with hot water. A different product with a
-          different job, not a broken version of the thing I make on a Saturday.
-        </P>
-        <P>
-          And the job is real. Some mornings I have eleven minutes before a call.
-          Some evenings I want something warm without weighing anything or
-          washing a portafilter. On those days the choice was never between
-          instant and a beautiful lever shot. It is between instant and nothing,
-          and instant wins that every time.
-        </P>
-        <Aside>
-          I pick by mood and by clock as much as by taste. Weekend, unhurried,
-          happy to fuss: the lever and the Kalita. Weekday, thinking about
-          something else: the Budan. Running for the door: the jar. All three are
-          me, and the jar has been me for the longest.
-        </Aside>
-        <P>
-          If you drink instant and you are happy, you are done. Nothing on this
-          page is asking you to change.
-        </P>
-        <P>
-          What I would say is only this. If you have ever been curious about the
-          other thing, it is far less precious than it looks from outside. A hand
-          grinder and a plastic dripper get you a long way, and the whole hobby
-          can start for about what you would spend on two coffees out. We also
-          have very good roasters here now, which was not true when I was growing
-          up. Try a bag from one of them and see whether you notice anything.
+          It is far less precious than it looks from outside. A hand grinder and
+          a plastic dripper get you a long way, and the whole hobby can start for
+          about what you would spend on two coffees out. We also have very good
+          roasters here now, which was not true when I was growing up. Try a bag
+          from one of them and see whether you notice anything.
         </P>
         <P>
           If you do, welcome, it is a lovely rabbit hole. If you do not, the jar

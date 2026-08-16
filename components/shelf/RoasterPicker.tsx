@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { roasters, roasterInitials, type Bean } from "@/lib/coffee";
 
@@ -27,7 +29,7 @@ export default function RoasterPicker() {
       <div
         role="tablist"
         aria-label="Roasters"
-        className="-mx-6 flex gap-6 overflow-x-auto px-6 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="-mx-6 flex gap-6 overflow-x-auto px-6 pb-3 pt-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {roasters.map((r) => {
           const selected = r.slug === active;
@@ -40,11 +42,15 @@ export default function RoasterPicker() {
               onClick={() => setActive(r.slug)}
               className="flex w-[76px] shrink-0 flex-col items-center gap-2 text-center sm:w-[84px]"
             >
+              {/* Selected gains a shadow and full-strength logo; the others
+                  recede to 45% opacity. Deliberately no vertical movement: the
+                  row is an `overflow-x-auto` scroller, which clips in the block
+                  direction too, so a lifted chip had its top border shaved off. */}
               <span
                 className={cn(
-                  "flex h-14 w-14 items-center justify-center rounded-full border bg-card p-2.5 transition-colors sm:h-16 sm:w-16",
+                  "flex h-14 w-14 items-center justify-center rounded-full border bg-card p-2.5 transition-[box-shadow,border-color] duration-base ease-out sm:h-16 sm:w-16",
                   selected
-                    ? "border-foreground ring-1 ring-foreground ring-offset-2 ring-offset-background"
+                    ? "border-border-strong shadow-[0_2px_12px_-2px_rgba(0,0,0,0.18)] dark:shadow-[0_2px_12px_-2px_rgba(0,0,0,0.55)]"
                     : "border-border hover:border-border-strong"
                 )}
               >
@@ -54,10 +60,18 @@ export default function RoasterPicker() {
                     alt=""
                     width={64}
                     height={64}
-                    className="h-full w-full object-contain opacity-80 grayscale"
+                    className={cn(
+                      "h-full w-full object-contain grayscale transition-opacity duration-base ease-out",
+                      selected ? "opacity-100" : "opacity-45"
+                    )}
                   />
                 ) : (
-                  <span className="font-mono text-sm text-muted-foreground">
+                  <span
+                    className={cn(
+                      "font-mono text-sm transition-colors",
+                      selected ? "text-foreground" : "text-subtle"
+                    )}
+                  >
                     {roasterInitials(r.name)}
                   </span>
                 )}
@@ -114,6 +128,15 @@ function BeanRow({ bean, first }: { bean: Bean; first: boolean }) {
         )}
       </div>
       <p className="mt-2 text-sm text-muted-foreground">{bean.note}</p>
+      {bean.link && (
+        <Link
+          href={bean.link.href}
+          className="group mt-2.5 inline-flex items-center gap-1 text-sm text-foreground underline decoration-border-strong underline-offset-4 transition-colors hover:decoration-foreground"
+        >
+          {bean.link.label}
+          <ArrowRight className="h-3.5 w-3.5 transition-transform duration-base ease-out group-hover:translate-x-0.5" />
+        </Link>
+      )}
     </div>
   );
 }

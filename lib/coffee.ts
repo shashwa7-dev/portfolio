@@ -20,6 +20,8 @@ export type Bean = {
   /** 1 to 5. Omitted entirely for something queued rather than tasted. */
   rating?: number;
   note: string;
+  /** Optional read-more, for a bean the coffee page has more to say about. */
+  link?: { href: string; label: string };
 };
 
 export type Roaster = {
@@ -121,7 +123,11 @@ export const roasters: Roaster[] = [
         name: "Dark Roast",
         roast: "Instant",
         rating: 4,
-        note: "In the cupboard on purpose. Some mornings I want coffee in ninety seconds and I am not going to pretend otherwise.",
+        note: "In the cupboard on purpose, and I still get through plenty of it. Let us be honest, this is where all of us started.",
+        link: {
+          href: "/shelf/coffee#instant",
+          label: "We all started here",
+        },
       },
     ],
   },

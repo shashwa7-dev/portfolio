@@ -12,15 +12,19 @@ function Figure({
   caption,
   children,
   label,
+  height,
 }: {
   caption: string;
   label: string;
+  /** Content height in viewBox units. Every diagram used to pad out to a
+   *  shared 250, which left a visible gap under the shorter ones. */
+  height: number;
   children: React.ReactNode;
 }) {
   return (
     <figure className="my-8 rounded-2xl border border-border bg-card p-5 md:p-6">
       <svg
-        viewBox="0 0 620 250"
+        viewBox={`0 0 620 ${height}`}
         role="img"
         aria-label={label}
         className="block h-auto w-full text-foreground"
@@ -57,6 +61,7 @@ export function GrindEvennessFigure() {
 
   return (
     <Figure
+      height={244}
       label="Two coffee beds compared. Uneven grounds let water carve a channel through one spot. Even grounds let water pass through the whole bed."
       caption="The same dose, the same machine, the same water. The only difference is how evenly the beans were broken up."
     >
@@ -117,6 +122,7 @@ export function GrindSizeFigure() {
 
   return (
     <Figure
+      height={244}
       label="Grind size compared across espresso, pour over and French press, with particle size drawn to relative scale."
       caption="Particles drawn to roughly their real relative size. Short contact needs small pieces to get enough out in time. Long contact needs large ones so it does not pull out too much."
     >
@@ -150,6 +156,7 @@ export function RatioFigure() {
   ];
   return (
     <Figure
+      height={186}
       label="Three bars showing dose against yield. Ristretto one to one, normale one to two, lungo one to three."
       caption="Same 18g of coffee in every row. The only thing changing is how much liquid you let out before you stop the shot."
     >
@@ -173,6 +180,7 @@ export function RatioFigure() {
 export function PortafilterFigure() {
   return (
     <Figure
+      height={238}
       label="Cross sections of a 58mm and a 51mm basket holding the same dose. The wider basket gives a shallower, wider coffee bed."
       caption="Both baskets hold the same weight of coffee. The wider one spreads it into a shallower bed, which is the whole argument for 58mm."
     >
