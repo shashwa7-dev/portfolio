@@ -55,8 +55,10 @@ export default function StickyScrollSpyTOC({
       {/* No gap, and the row height is animated rather than fixed.
           Collapsed, this wants to be tight: it is a column of 1px rules and
           spacing them out makes it read as fifteen things rather than one
-          scale. Expanded, it cannot be tight, because 12px labels in an 8px
-          row would overlap each other and be unreadable.
+          scale. It cannot be as tight as it will go, though. At 8px the rules
+          crowd into a texture and the current one stops standing out from its
+          neighbours, so 14 is the compromise. Expanded it cannot be tight at
+          all, because 12px labels in a 14px row would still collide.
 
           So the pitch itself is part of the expansion. The height also has to
           be explicit: an empty label span still carries its line box, which is
@@ -72,7 +74,7 @@ export default function StickyScrollSpyTOC({
                 onClick={(e) => go(e, s.id)}
                 aria-current={current ? "location" : undefined}
                 className={cn(
-                  "flex h-2 items-center justify-end gap-3 rounded pl-3 outline-none",
+                  "flex h-3.5 items-center justify-end gap-3 rounded pl-3 outline-none",
                   "transition-[height] duration-base ease-out motion-reduce:transition-none",
                   "group-hover:h-6 group-focus-within:h-6",
                   "focus-visible:ring-2 focus-visible:ring-ring"

@@ -86,6 +86,30 @@ export const chatWindowVariants: Variants = {
 };
 
 /** Compact pill that floats up a few pixels — "new messages" indicators, small toasts. */
+/**
+ * Swapping one short string for another in place.
+ *
+ * Blur rather than only a crossfade: two pieces of text dissolving through each
+ * other stay legible the whole way and read as a glitch. Blurring takes the
+ * outgoing word out of focus first, so the eye lets go of it before the next
+ * one resolves. Exit is faster than enter, or the two overlap in the middle.
+ */
+export const blurSwapVariants: Variants = {
+  hidden: { opacity: 0, filter: "blur(4px)", y: 2 },
+  visible: {
+    opacity: 1,
+    filter: "blur(0px)",
+    y: 0,
+    transition: { duration: duration.base, ease: ease.out },
+  },
+  exit: {
+    opacity: 0,
+    filter: "blur(4px)",
+    y: -2,
+    transition: { duration: duration.fast, ease: ease.out },
+  },
+};
+
 export const pillUpVariants: Variants = {
   hidden: { opacity: 0, y: 6 },
   visible: { opacity: 1, y: 0, transition: { duration: duration.fast } },

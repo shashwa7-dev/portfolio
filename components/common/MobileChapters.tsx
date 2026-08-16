@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import { ChevronUp, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { blurSwapVariants, duration, ease } from "@/lib/motionVariants";
 import { goToSection, type TocSection } from "@/app/hooks/useActiveSection";
 
 /**
@@ -76,30 +78,57 @@ export default function MobileChapters({
 
   return (
     <div className="xl:hidden">
-      <button
+      {/* `layout` is what makes the width change smoothly. The pill is sized by
+          its label, and a label swap is a layout change, which is not something
+          a CSS transition can interpolate: `width: auto` has no two values to
+          move between. Framer measures before and after and animates the
+          difference instead. */}
+      {/* Centred by a flex parent rather than by `-translate-x-1/2`. A layout
+          animation drives `transform` itself, so a translate used for centring
+          gets overwritten mid-animation and the pill slides off to the left.
+          The wrapper takes no pointer events, or it would cover the width of
+          the page along the bottom. */}
+      <div className="pointer-events-none fixed inset-x-0 bottom-4 z-40 flex justify-center px-6">
+      <motion.button
         ref={pillRef}
         type="button"
+        layout
+        transition={{ duration: duration.base, ease: ease.out }}
         onClick={() => setOpen(true)}
         aria-expanded={open}
         aria-controls="chapter-sheet"
-        /* The cap is set by the chat bubble, not by the screen. That sits at
-           `bottom-4 right-4` and is 48px square, so a centred pill free to use
-           the full width would grow into it as soon as a chapter name got long.
-           Reserving 9rem keeps a gap at every width from a phone up to `xl`. */
+        /* `max-w-full` against the wrapper's padding is what stops a long
+           chapter name stretching this to the edges; the label truncates. */
         className={cn(
-          "fixed bottom-4 left-1/2 z-40 flex max-w-[calc(100vw-9rem)] -translate-x-1/2 items-center gap-2.5",
+          "pointer-events-auto flex max-w-full items-center gap-2.5",
           "rounded-full border border-border bg-elevated/90 py-2 pl-2 pr-3.5 shadow-lg backdrop-blur-md",
-          "transition-[opacity,transform] duration-base ease-out motion-reduce:transition-none",
+          "transition-[opacity] duration-base ease-out motion-reduce:transition-none",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
           open && "pointer-events-none opacity-0"
         )}
       >
         <ProgressRing position={position} total={sections.length} />
-        <span className="truncate text-xs font-medium text-foreground">
-          {current?.label}
+        {/* `popLayout` takes the outgoing label out of flow as it leaves, so
+            the incoming one is not pushed sideways by a word that is already
+            on its way out. `initial={false}` keeps the first paint still
+            rather than blurring in on load. */}
+        <span className="min-w-0 overflow-hidden">
+          <AnimatePresence mode="popLayout" initial={false}>
+            <motion.span
+              key={current?.id ?? "none"}
+              variants={blurSwapVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="block truncate whitespace-nowrap text-xs font-medium text-foreground"
+            >
+              {current?.label}
+            </motion.span>
+          </AnimatePresence>
         </span>
         <ChevronUp aria-hidden className="h-3.5 w-3.5 shrink-0 text-subtle" />
-      </button>
+      </motion.button>
+      </div>
 
       {/* Kept mounted so it can animate both ways. `invisible` rather than
           `hidden` because it still removes the contents from the tab order,
@@ -108,9 +137,7 @@ export default function MobileChapters({
         aria-hidden={!open}
         onClick={() => setOpen(false)}
         className={cn(
-          /* Above the chat bubble's z-50, which would otherwise float over
-             the scrim and the sheet as though it were part of them. */
-          "fixed inset-0 z-[60] bg-background/70 backdrop-blur-sm",
+          "fixed inset-0 z-40 bg-background/70 backdrop-blur-sm",
           "transition-[opacity,visibility] duration-base ease-out motion-reduce:transition-none",
           open ? "visible opacity-100" : "invisible opacity-0"
         )}
@@ -124,7 +151,7 @@ export default function MobileChapters({
         aria-label="Chapters"
         tabIndex={-1}
         className={cn(
-          "fixed inset-x-0 bottom-0 z-[70] rounded-t-2xl border-t border-border bg-card outline-none",
+          "fixed inset-x-0 bottom-0 z-50 rounded-t-2xl border-t border-border bg-card outline-none",
           "transition-[transform,visibility] duration-base ease-out motion-reduce:transition-none",
           open ? "visible translate-y-0" : "invisible translate-y-full"
         )}
