@@ -18,7 +18,6 @@ const navLinks = [
   { label: "Projects", href: "/#projects" },
   { label: "Writing", href: "/blogs", match: "/blogs" },
   { label: "Books", href: "/books", match: "/books" },
-  { label: "Shelf", href: "/shelf", match: "/shelf" },
 ];
 
 /**
