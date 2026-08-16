@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { CustomMDX } from "@/components/common/mdx";
+import StickyScrollSpyTOC from "@/components/common/StickyScrollSpyTOC";
+import { tocFromMdx } from "@/lib/toc";
 import { readingTime } from "@/lib/readingTime";
 import { formatDate, getBlogPosts } from "../utils";
 import { baseUrl } from "@/app/sitemap";
@@ -123,6 +125,10 @@ export default function Blog({ params }: any) {
           </Badge>
         ))}
       </div>
+      {/* Derived from the source rather than the DOM, so it is server
+          rendered and costs no layout pass. It returns null on a post with no
+          headings, which is why there is no guard here. */}
+      <StickyScrollSpyTOC sections={tocFromMdx(post.content)} />
       <article className="prose">
         <CustomMDX source={post.content} />
       </article>

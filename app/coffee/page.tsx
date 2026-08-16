@@ -14,6 +14,9 @@ import {
   RedditMark,
 } from "@/components/shelf/CoffeeFigures";
 import RoastExplorer from "@/components/shelf/RoastExplorer";
+import StickyScrollSpyTOC, {
+  type TocSection,
+} from "@/components/common/StickyScrollSpyTOC";
 
 const DESCRIPTION =
   "How I got into coffee, and the handful of things I wish someone had explained at the start: roast levels, grind size, portafilters, brew ratios, and why instant is fine.";
@@ -211,6 +214,29 @@ function Def({ term, children }: { term: React.ReactNode; children: React.ReactN
   );
 }
 
+/**
+ * Listed rather than scraped from the DOM, so the labels can be shorter than
+ * the headings they point at. "Portafilters, and why 58mm keeps coming up" is a
+ * good heading and a bad table of contents entry.
+ */
+const TOC: TocSection[] = [
+  { id: "instant", label: "Where I started" },
+  { id: "start", label: "A YouTube video" },
+  { id: "lever", label: "The lever press" },
+  { id: "grinder", label: "The grinder problem" },
+  { id: "budan", label: "The time problem" },
+  { id: "kit", label: "The whole shelf" },
+  { id: "both", label: "I still drink both" },
+  { id: "roast", label: "Roast levels" },
+  { id: "bag", label: "Reading the bag" },
+  { id: "portafilters", label: "Portafilters" },
+  { id: "methods", label: "Ways to make it" },
+  { id: "grind", label: "Grind size" },
+  { id: "ratios", label: "Ratios" },
+  { id: "buying", label: "Where I buy" },
+  { id: "communities", label: "Communities" },
+];
+
 const SIZES = [
   { mm: 58, name: "58mm", note: "The commercial standard. Nearly every café machine uses it, so tampers, distributors and baskets are easy to find and cheap." },
   { mm: 54, name: "54mm", note: "Common on home machines from Breville and others. Good gear exists, but you have fewer options." },
@@ -220,6 +246,7 @@ const SIZES = [
 export default function CoffeePage() {
   return (
     <main className="py-8 md:py-12">
+      <StickyScrollSpyTOC sections={TOC} />
       <script
         type="application/ld+json"
         suppressHydrationWarning
@@ -1023,19 +1050,6 @@ export default function CoffeePage() {
           people I know brew stronger than the middle of that. The useful thing
           about a ratio is not that it is correct, it is that it is repeatable,
           so when a cup is good you can make it again.
-        </P>
-
-        <H2 id="curious">If you have ever been curious</H2>
-        <P>
-          It is far less precious than it looks from outside. A hand grinder and
-          a plastic dripper get you a long way, and the whole hobby can start for
-          about what you would spend on two coffees out. We also have very good
-          roasters here now, which was not true when I was growing up. Try a bag
-          from one of them and see whether you notice anything.
-        </P>
-        <P>
-          If you do, welcome, it is a lovely rabbit hole. If you do not, the jar
-          is still in the cupboard and it was never the problem.
         </P>
 
         <H2 id="buying">Where I buy</H2>

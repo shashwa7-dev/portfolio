@@ -5,6 +5,7 @@ import { highlight } from "sugar-high";
 import remarkGfm from "remark-gfm";
 import Marker from "@/components/common/Marker";
 import React from "react";
+import { slugify } from "@/lib/toc";
 
 interface TableProps {
   data: {
@@ -87,17 +88,6 @@ interface CodeProps extends React.HTMLAttributes<HTMLElement> {
 function Code({ children, ...props }: CodeProps) {
   let codeHTML = highlight(children);
   return <code dangerouslySetInnerHTML={{ __html: codeHTML }} {...props} />;
-}
-
-function slugify(str: string): string {
-  return str
-    .toString()
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/&/g, "-and-")
-    .replace(/[^\w\-]+/g, "")
-    .replace(/\-\-+/g, "-");
 }
 
 interface HeadingProps {
