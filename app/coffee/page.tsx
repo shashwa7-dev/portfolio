@@ -273,6 +273,8 @@ const GLOSSARY: { term: string; meaning: string }[] = [
   { term: "Body", meaning: "How heavy the coffee feels in your mouth. Tea at one end, milk at the other." },
   { term: "Extraction", meaning: "How much you pulled out of the grounds. Too little tastes sour and thin, too much tastes bitter and drying." },
   { term: "Degassing", meaning: "Carbon dioxide escaping a bean after roasting. Why very fresh coffee brews badly and needs a few days first." },
+  { term: "Crema", meaning: "The tan foam on an espresso. Carbon dioxide coming out of the liquid as the pressure drops. A sign of freshness, not of quality." },
+  { term: "Staling", meaning: "The slower clock. Aroma escaping and oils oxidising, which unlike degassing never stops." },
   { term: "Dialling in", meaning: "Adjusting grind, dose and time until a coffee tastes right, then being able to repeat it." },
   { term: "Brew ratio", meaning: "Coffee in against liquid out, by weight. 1:2 for espresso, about 1:16 for filter." },
   { term: "Dose", meaning: "The weight of dry coffee you start with. 18g is a common espresso dose." },
@@ -472,6 +474,38 @@ export default function CoffeePage() {
           extraction in a month than reading would have in a year. When a shot
           ran fast and tasted thin, I could feel that it had run fast.
         </P>
+
+        <H3>The foam on top</H3>
+        <P>
+          The tan layer on an espresso is called <Strong>crema</Strong>, and it
+          is worth a minute, because most people read it as a scorecard and it
+          is not one.
+        </P>
+        <P>
+          Roasting leaves a bean full of carbon dioxide. Under pressure that gas
+          goes into the liquid, and the moment the shot leaves the machine and
+          meets ordinary air it comes back out as thousands of small bubbles,
+          held together by the coffee&apos;s own oils. That is crema, and it is
+          why filter coffee has none: nothing ever pressurised it. The bloom you
+          see when you pour water on fresh grounds is the same gas leaving, just
+          with nowhere to be trapped.
+        </P>
+        <P>
+          Which means crema mostly tells you about{" "}
+          <Marker>freshness, not quality</Marker>. The clearest evidence is
+          robusta: it reliably produces more crema than arabica, whatever the
+          coffee tastes like. A very fresh bag gives a thick head, an old one
+          barely any, and a beautifully crowned shot can still taste like
+          nothing. Judge the drink.
+        </P>
+        <Aside>
+          Two things worth knowing. A great deal of crema is a hint that the
+          beans have not rested long enough, though only a hint, because species
+          and roast move it too. And on its own crema tends to taste bitter and
+          intense, which is why plenty of experienced people stir it in rather
+          than protect it. World Barista Championship judges are told to stir
+          the shot before tasting. You are allowed to.
+        </Aside>
 
         <H2 id="grinder">Then the grinder became the problem</H2>
         <P>
@@ -950,15 +984,95 @@ export default function CoffeePage() {
         </P>
         <P>
           Fresher is not automatically better either, which surprises people.
-          Fresh coffee is full of carbon dioxide, and that gas physically pushes
-          water away from the grounds and gives you a sour, uneven cup.{" "}
-          <Strong>
-            Give filter coffee about three to seven days after roasting, and
-            espresso about seven to fourteen
-          </Strong>
-          , then drink it within a month or so. Every good roaster publishes
-          slightly different numbers, so treat that as a window rather than a
-          rule.
+          Fresh coffee is full of carbon dioxide, and that gas pushes water away
+          from the grounds and gives you a sour, uneven cup. So a bag wants a
+          few days between the roaster and you.{" "}
+          <Marker>Rest it before you judge it.</Marker>
+        </P>
+        <P>
+          How long depends on two things at once, which is why nobody agrees on
+          a number. <Strong>Roast level sets the direction.</Strong> Darker
+          roasting leaves the bean more porous, so it sheds its gas faster and is
+          ready sooner. A light roast holds on to it and takes longer.{" "}
+          <Strong>Brew method shifts the window.</Strong> Espresso is fussier,
+          because gas escaping inside a pressurised puck fights the water going
+          through it, where a filter brew just lets it bubble off.
+        </P>
+        <div className="my-6 overflow-x-auto rounded-2xl border border-border">
+          <table className="w-full border-collapse text-left">
+            <caption className="sr-only">
+              Rough resting times after roasting, by roast level and brew method
+            </caption>
+            <thead>
+              <tr className="border-b border-border bg-elevated">
+                <th scope="col" className="px-5 py-3 font-mono text-2xs uppercase tracking-label text-subtle">Roast</th>
+                <th scope="col" className="px-5 py-3 font-mono text-2xs uppercase tracking-label text-subtle">Filter</th>
+                <th scope="col" className="px-5 py-3 font-mono text-2xs uppercase tracking-label text-subtle">Espresso</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                ["Dark", "2 to 5 days", "3 to 7 days"],
+                ["Medium", "3 to 7 days", "5 to 10 days"],
+                ["Light", "5 to 14 days", "7 to 21 days, sometimes more"],
+              ].map(([roast, filter, espresso]) => (
+                <tr key={roast} className="border-b border-border last:border-0">
+                  <th scope="row" className="px-5 py-3 align-top font-medium text-foreground">{roast}</th>
+                  <td className="px-5 py-3 align-top text-sm text-muted-foreground">{filter}</td>
+                  <td className="px-5 py-3 align-top text-sm text-muted-foreground">{espresso}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <P>
+          Those are starting points and not expiry dates. I have deliberately not
+          given you one tidy rule, because the people who actually measure this
+          do not agree on one. Square Mile say five to fourteen days for filter
+          and seven to fourteen for espresso whatever the roast. Scott Rao rests
+          a dark oily roast for a day or two and a very light one for up to four
+          weeks. Both are right about their own coffee.
+        </P>
+        <Aside>
+          If you want a single habit rather than a table: open the bag around day
+          five, and if it tastes thin and sharp, wait and try again in three
+          days. Judge it by the cup rather than by the calendar.
+        </Aside>
+
+        <H3>And do not sit on it forever</H3>
+        <P>
+          There are two clocks running. The first is the gas leaving, which is
+          the one you wait out. The second is <Strong>staling</Strong>: aroma
+          escaping and the oils slowly oxidising, and that one never stops.
+        </P>
+        <P>
+          Coffee does not fall off a cliff on a particular day. It fades. The
+          Specialty Coffee Association puts whole beans at{" "}
+          <Strong>roughly three weeks</Strong> of being properly fresh, and that
+          is a fair target to drink within rather than a deadline. What you lose
+          past it is aroma and sweetness, slowly, until one day the cup tastes
+          flat and you cannot say when that happened.
+        </P>
+        <Aside>
+          The single biggest freshness fact, and the reason a grinder is worth
+          more than a machine: whole beans stay good for around three weeks.
+          Ground coffee stays good for about an hour. Grinding multiplies the
+          surface exposed to air enormously, and most of the trapped gas is gone
+          within minutes.
+        </Aside>
+        <P>
+          Keep the bag closed, cool and out of the light, and buy in amounts you
+          will actually drink.{" "}
+          <Strong>The fridge is the one place not to put it</Strong>, because it
+          is damp and coffee takes on moisture and smells.
+        </P>
+        <P>
+          The freezer, though, genuinely works, which surprises people who were
+          told otherwise years ago. Frozen properly, coffee ages dramatically
+          more slowly. The condition is moisture:{" "}
+          <Marker>freeze it in small sealed portions</Marker>, and let a portion
+          come back to room temperature before you open it, or water condenses
+          straight onto cold beans.
         </P>
         <Aside>
           The single biggest freshness fact, and the reason a grinder is worth
