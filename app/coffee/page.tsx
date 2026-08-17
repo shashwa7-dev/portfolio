@@ -439,6 +439,15 @@ export default function CoffeePage() {
           just how it works.
         </P>
 
+        {/* Sits above pre-infusion so it is seen early, while the lever is
+            still the subject. Its first panel is the arm being pulled, and
+            its last is the channelling that the section immediately below
+            exists to prevent. */}
+        <Illus
+          src="/coffee/old-grinder-limits.webp"
+          alt="Three panels. Pulling a lever press with a basic grinder beside it, labelled peak pressure nine bars and limited range. Then tasting the shot and asking why it is so sour. Then a cut-away of the coffee basket where water carves a channel through an uneven bed of boulders and dust, giving sour and bitter at once."
+        />
+
         <H3>Pre-infusion, the bit worth learning</H3>
         <P>
           Dry coffee does not absorb water evenly. Hit a dry puck with full
@@ -523,10 +532,6 @@ export default function CoffeePage() {
           A fast, thin shot is almost never fixed at the lever. It is{" "}
           <Marker>fixed at the grinder</Marker>.
         </P>
-        <Illus
-          src="/coffee/old-grinder-limits.webp"
-          alt="Three panels. Pulling a lever press with a basic grinder beside it, labelled peak pressure nine bars and limited range. Then tasting the shot and asking why it is so sour. Then a cut-away of the coffee basket where water carves a channel through an uneven bed of boulders and dust, giving sour and bitter at once."
-        />
         <P>
           Except I could not fix it. My old grinder was already on its finest
           setting, and there was simply no more dial to turn.{" "}
