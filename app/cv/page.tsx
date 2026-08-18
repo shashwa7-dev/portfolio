@@ -141,7 +141,11 @@ export default function CvPage() {
           style={sheetMask}
           className="bg-card px-6 py-11 sm:px-9 sm:py-12 md:px-12"
         >
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+          {/* A row at every width. Stacked on mobile it put the portrait below the
+              contact block, which is the one place a portrait should never be:
+              it reads as a stray image rather than as part of the header. It
+              shrinks instead. */}
+          <div className="flex items-start justify-between gap-4 sm:gap-5">
             <div className="min-w-0">
               <h1 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
                 {cv.name}
@@ -162,8 +166,8 @@ export default function CvPage() {
               alt=""
               width={180}
               height={180}
-              sizes="72px"
-              className="h-16 w-16 shrink-0 rounded-xl border border-border object-cover sm:h-[72px] sm:w-[72px]"
+              sizes="(min-width: 768px) 72px, 64px"
+              className="h-12 w-12 shrink-0 rounded-xl border border-border object-cover sm:h-16 sm:w-16 md:h-[72px] md:w-[72px]"
             />
           </div>
 
