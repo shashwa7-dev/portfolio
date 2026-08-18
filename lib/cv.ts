@@ -33,8 +33,15 @@ export type Cv = {
  */
 const LABEL = /^([A-Z][A-Za-z0-9/+&.,' -]{1,38}):\s(.+)$/;
 
-/** A side-project heading: `**Name** (year) — link`. */
-const PROJECT = /^\*\*(.+?)\*\*\s*(.*)$/;
+/**
+ * A side-project heading: `**Name** (year) — link`.
+ *
+ * The year and dash are required. Matching any line that merely opens with
+ * bold caught the summary's first line, which begins `**AI-adaptive frontend
+ * engineer**`, and tore the paragraph in half with its opening words promoted
+ * to a heading.
+ */
+const PROJECT = /^\*\*(.+?)\*\*\s*(\(\d{4}\)\s*—\s*.*)$/;
 
 /**
  * Inline markdown to HTML: bold, explicit links, then bare contact details and
