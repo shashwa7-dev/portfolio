@@ -58,11 +58,6 @@ blockchain integrations. Delivered for **Coinbase**, **Polygon** and **Play AI**
   with a **50% increase in user retention** during minting.
 - Built [**Polygon Copilot**](https://polygon.technology/blog/introducing-copilot-your-ai-powered-guide-to-polygon-and-web3), an OpenAI GPT-powered assistant for Web3 developers in
   the zkEVM ecosystem, with multi-persona sessions and in-chat minting actions.
-- Built PlayAI Hub, an AI and DeFi platform pairing real-time chat streaming over
-  WebSocket with workflow-preset sessions and a mission and reward system.
-- Delivered NFT Wrapped **concept to launch in 3 weeks**: **250+ wraps in 24 hours**.
-  Built Web3Conf India onboarding with wallet login
-  and soulbound ERC-721 rewards, engaging **2,000+ attendees**.
 
 Stack: React, TypeScript, wagmi, React Query, Tailwind CSS, Framer Motion, Solana
 
@@ -84,20 +79,14 @@ Web3: wagmi, Web3.js, Solana, ERC-721
 
 **shashwa7.in** (2026) — shashwa7.in
 Personal site and writing, built to a **100 Lighthouse accessibility score**:
-ARIA-labelled interactive components, keyboard-navigable menus and sliders,
-focus trapping in dialogs, and WCAG AA contrast across a two-theme palette.
-Next.js, TypeScript, Tailwind CSS, MDX
+ARIA-labelled components, keyboard-navigable menus and sliders, focus trapping
+in dialogs, WCAG AA contrast. Next.js, TypeScript, Tailwind CSS, MDX
 
 **Mehfil** (2026) — mehfil.shashwa7.in
 Web player for golden-era Hindi film music. Six-stage idempotent, resumable
 pipeline parsing a published PDF songlist into **3,916 songs across 66 stations**,
-back-filling credits and verifying every YouTube id is embeddable.
-Next.js, React, TypeScript, Tailwind CSS, React Query, Python, SQLite
-
-**Eatri8.ai** (2025) — github.com/shashwa7-dev/food-analyzer
-Food label analysis app using Google Gemini Flash 1.5 for real-time image
-processing, nutritional scoring and consumption guidance.
-Next.js, TypeScript, Google Gemini, Tailwind CSS
+back-filling credits and verifying every YouTube id is embeddable. Next.js,
+TypeScript, Tailwind CSS, React Query, Python, SQLite
 
 ---
 
