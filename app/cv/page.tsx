@@ -9,6 +9,44 @@ import { parseCv, inlineHtml, type CvBlock } from "@/lib/cv";
 
 const PDF = "/shashwat-tripathi-cv.pdf";
 
+/**
+ * The wave along the top and bottom of the sheet.
+ *
+ * An SVG path rather than repeated radial-gradients. Scallops made of half
+ * circles meet at a cusp on every repeat, and a row of cusps reads as spiky
+ * rather than as a wave. `Q` followed by `T` reflects the control point, so
+ * each crest flows into the next trough with a continuous tangent and no join
+ * is visible.
+ *
+ * A mask rather than a border, because a border traces the element's box and
+ * cannot follow a cut shape. Three layers: the wave along the top, the same
+ * mirrored along the bottom, and a solid band filling everything between.
+ *
+ * The shadow is a `drop-shadow` filter on a wrapper. `box-shadow` is painted
+ * from the element's box, so it would trace a rectangle around a sheet that is
+ * no longer rectangular; `drop-shadow` follows the masked silhouette.
+ */
+const WAVE = 10; // wave band height in px; vertical padding must clear it
+const svg = (d: string) =>
+  `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 12' preserveAspectRatio='none'%3E%3Cpath d='${d}' fill='%23000'/%3E%3C/svg%3E")`;
+
+const maskLayers = [
+  svg("M0 6 Q10 0 20 6 T40 6 L40 12 L0 12 Z"), // crests along the top
+  svg("M0 6 Q10 12 20 6 T40 6 L40 0 L0 0 Z"), // mirrored along the bottom
+  "linear-gradient(#000, #000)",
+].join(", ");
+
+const sheetMask = {
+  WebkitMaskImage: maskLayers,
+  maskImage: maskLayers,
+  WebkitMaskSize: `40px ${WAVE}px, 40px ${WAVE}px, 100% calc(100% - ${WAVE * 2}px)`,
+  maskSize: `40px ${WAVE}px, 40px ${WAVE}px, 100% calc(100% - ${WAVE * 2}px)`,
+  WebkitMaskPosition: "top left, bottom left, center",
+  maskPosition: "top left, bottom left, center",
+  WebkitMaskRepeat: "repeat-x, repeat-x, no-repeat",
+  maskRepeat: "repeat-x, repeat-x, no-repeat",
+} as const;
+
 const DESCRIPTION =
   "The CV of Shashwat Tripathi, frontend engineer. Read it here or download the PDF.";
 
@@ -86,7 +124,19 @@ export default function CvPage() {
             glowing off a near-black background. The shadow is split by theme
             for the same reason: the same alpha that lifts a white card off
             cream is invisible against near-black. */}
-        <article className="mt-4 rounded-2xl border border-border bg-card p-6 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_8px_24px_-12px_rgba(0,0,0,0.12)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.4),0_8px_24px_-12px_rgba(0,0,0,0.6)] sm:p-9 md:p-12">
+        {/* Three drop-shadows, each doing a different job. A half-pixel one
+            traces the silhouette, standing in for the hairline border a mask
+            cannot keep. A tight one seats the sheet. A wide, soft one lifts it.
+
+            The light theme needs all of it: the sheet is 100% lightness on a
+            98.5% page, so a point and a half separates them and only the
+            shadow reads as an edge. Dark already has 8.5% against 5% doing
+            that work, so it takes a shorter, deeper cast instead. */}
+        <div className="mt-4 [filter:drop-shadow(0_0_0.5px_rgb(0_0_0/0.14))_drop-shadow(0_1px_1px_rgb(0_0_0/0.05))_drop-shadow(0_8px_16px_rgb(0_0_0/0.10))] dark:[filter:drop-shadow(0_0_0.5px_rgb(0_0_0/0.5))_drop-shadow(0_2px_3px_rgb(0_0_0/0.45))_drop-shadow(0_10px_20px_rgb(0_0_0/0.5))]">
+        <article
+          style={sheetMask}
+          className="bg-card px-6 py-11 sm:px-9 sm:py-12 md:px-12"
+        >
           <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
               <h1 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
@@ -121,6 +171,7 @@ export default function CvPage() {
             ))}
           </div>
         </article>
+        </div>
       </Container>
     </main>
   );
