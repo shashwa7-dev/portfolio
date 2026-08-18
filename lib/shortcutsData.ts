@@ -12,6 +12,7 @@ export const goToShortcuts: GoTo[] = [
   { key: "r", label: "Writing", href: "/blogs" },
   { key: "b", label: "Books", href: "/books" },
   { key: "s", label: "Shelf", href: "/shelf" },
+  { key: "v", label: "CV", href: "/cv" },
 ];
 
 export type Shortcut = { keys: string[]; label: string };

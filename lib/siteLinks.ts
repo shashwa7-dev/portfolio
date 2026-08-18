@@ -24,6 +24,7 @@ export const navLinks: NavLink[] = [
   { label: "Writing", href: "/blogs", match: "/blogs" },
   { label: "Books", href: "/books", match: "/books" },
   { label: "Shelf", href: "/shelf", match: "/shelf" },
+  { label: "CV", href: "/cv", match: "/cv" },
 ];
 
 /** Named rather than keyed by icon, so the icon stays a rendering concern. */

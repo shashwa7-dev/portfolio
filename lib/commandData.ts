@@ -31,6 +31,7 @@ export function buildCommands(): Command[] {
       // a second coffee link in the header would oversell it. The palette is
       // the only direct route, so it stays listed here.
       { id: "nav-coffee", label: "Coffee", group: "Navigation", href: "/coffee" },
+      { id: "nav-cv", label: "CV", group: "Navigation", href: "/cv" },
     ] satisfies Command[]
   ).map(withGoToKeys);
   const projects: Command[] = getAllSideProjects().map((p) => ({
