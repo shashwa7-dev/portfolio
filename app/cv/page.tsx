@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import Image from "next/image";
-import { Download } from "lucide-react";
+import { Download, Scissors } from "lucide-react";
 import Container from "@/components/layout/Container";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl, breadcrumbLd } from "@/lib/seo";
@@ -19,32 +19,112 @@ const PDF = "/shashwat-tripathi-cv.pdf";
  * is visible.
  *
  * A mask rather than a border, because a border traces the element's box and
- * cannot follow a cut shape. Three layers: the wave along the top, the same
- * mirrored along the bottom, and a solid band filling everything between.
+ * cannot follow a cut shape, and the sheet is cut in three places: the wave
+ * along the top, the wave along the bottom, and the two notches bitten out of
+ * the edges at the tear line.
  *
  * The shadow is a `drop-shadow` filter on a wrapper. `box-shadow` is painted
  * from the element's box, so it would trace a rectangle around a sheet that is
  * no longer rectangular; `drop-shadow` follows the masked silhouette.
  */
-const WAVE = 10; // wave band height in px; vertical padding must clear it
-const svg = (d: string) =>
-  `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 12' preserveAspectRatio='none'%3E%3Cpath d='${d}' fill='%23000'/%3E%3C/svg%3E")`;
+const WAVE = 10; // wave band height; the sheet's vertical padding must clear it
+const NOTCH = 22; // notch diameter, bitten out of both edges at the tear line
+const R = NOTCH / 2;
 
-const maskLayers = [
-  svg("M0 6 Q10 0 20 6 T40 6 L40 12 L0 12 Z"), // crests along the top
-  svg("M0 6 Q10 12 20 6 T40 6 L40 0 L0 0 Z"), // mirrored along the bottom
-  "linear-gradient(#000, #000)",
-].join(", ");
+/**
+ * The stub's height, and the three mask offsets derived from it.
+ *
+ * In `rem`, not pixels, and that is the whole point. The stub is a fixed
+ * height holding text that the reader can scale, so at 200% text-only zoom a
+ * pixel height kept the strip at 64px while the label inside it grew, wrapped
+ * to two lines and painted out through the bottom of the sheet. In `rem` the
+ * strip grows with the text it holds.
+ *
+ * The mask has to grow with it or the notches would part company with the
+ * perforation, so every offset below is derived from the same value rather
+ * than written out. With WAVE 10 and R 11:
+ *   tear line          PERF      = FOOT + 10
+ *   notch row, bottom  PERF - R  = FOOT - 1
+ *   stub band height   PERF-R-10 = FOOT - 11
+ *   body band height   100% - (10 + PERF + R) = 100% - FOOT - 31
+ */
+const FOOT = "4rem"; // 64px at a default root, the same as it ever was
+
+/**
+ * The perforation, painted rather than bordered.
+ *
+ * `border-style: dashed` hands the dash length to the browser, which picks
+ * something short and tight that reads as a hairline rule. A repeating
+ * gradient is the only way to say how long a dash is and how much air sits
+ * between two of them.
+ *
+ * Sized to a single pixel row and not repeated down, so it paints one line and
+ * nothing else. That matters here: the stub sits above the grain layer, so a
+ * background that covered the strip would blank the texture across it.
+ */
+const DASH = 8;
+const GAP = 8;
+const PERFORATION = `repeating-linear-gradient(to right, hsl(var(--border-strong)) 0 ${DASH}px, transparent ${DASH}px ${DASH + GAP}px)`;
+const NOTCH_Y = `calc(${FOOT} - ${R - WAVE}px)`;
+const STUB_H = `calc(${FOOT} - ${R}px)`;
+const BODY_H = `calc(100% - ${FOOT} - ${WAVE * 2 + R}px)`;
+
+const svg = (viewBox: string, d: string) =>
+  `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='${viewBox}' preserveAspectRatio='none'%3E%3Cpath d='${d}' fill='%23000'/%3E%3C/svg%3E")`;
+
+const SOLID = "linear-gradient(#000, #000)";
+const WAVEBOX = "0 0 40 12";
+const NOTCHBOX = `0 0 ${NOTCH} ${NOTCH}`;
+
+/**
+ * Seven layers, because mask layers union rather than subtract.
+ *
+ * There is no "cut a hole" here: every layer adds to the visible area, so a
+ * notch cannot be punched through the solid interior after the fact. Chromium
+ * and Safari spell `mask-composite` differently enough that subtracting is not
+ * worth relying on. Instead the interior is split into bands that stop short
+ * of the notches, and the notch row is assembled from three pieces: a shaped
+ * end at each edge and a plain fill between them.
+ *
+ * Everything below the tear line is measured up from the sheet's bottom edge
+ * off the same FOOT the stub itself is sized by, which is what keeps the
+ * notches on the perforation at any text size. Only the band above the tear
+ * line flexes with the content.
+ */
+const layers = [
+  // The wave along the top, and the same wave mirrored along the bottom.
+  { image: svg(WAVEBOX, "M0 6 Q10 0 20 6 T40 6 L40 12 L0 12 Z"), size: `40px ${WAVE}px`, position: "top left", repeat: "repeat-x" },
+  { image: svg(WAVEBOX, "M0 6 Q10 12 20 6 T40 6 L40 0 L0 0 Z"), size: `40px ${WAVE}px`, position: "bottom left", repeat: "repeat-x" },
+  // The body, from under the top wave down to the top of the notch row.
+  { image: SOLID, size: `100% ${BODY_H}`, position: `left 0px top ${WAVE}px`, repeat: "no-repeat" },
+  // The notch row: a square with a semicircle carved out of its outer edge at
+  // each end, and plain fill spanning between them. The sweep flag is what
+  // carves it. It picks the side of the chord the arc bows to, and bowing the
+  // wrong way puts the bite outside the box, where mask-size clips it away and
+  // the edge comes out straight.
+  { image: svg(NOTCHBOX, `M0 0 H${NOTCH} V${NOTCH} H0 A${R} ${R} 0 0 0 0 0 Z`), size: `${NOTCH}px ${NOTCH}px`, position: `left 0px bottom ${NOTCH_Y}`, repeat: "no-repeat" },
+  { image: svg(NOTCHBOX, `M${NOTCH} 0 H0 V${NOTCH} H${NOTCH} A${R} ${R} 0 0 1 ${NOTCH} 0 Z`), size: `${NOTCH}px ${NOTCH}px`, position: `right 0px bottom ${NOTCH_Y}`, repeat: "no-repeat" },
+  { image: SOLID, size: `calc(100% - ${NOTCH * 2}px) ${NOTCH}px`, position: `left ${NOTCH}px bottom ${NOTCH_Y}`, repeat: "no-repeat" },
+  // The stub, from under the notch row down to the bottom wave.
+  { image: SOLID, size: `100% ${STUB_H}`, position: `left 0px bottom ${WAVE}px`, repeat: "no-repeat" },
+];
+
+const join = (key: keyof (typeof layers)[number]) =>
+  layers.map((l) => l[key]).join(", ");
 
 const sheetMask = {
-  WebkitMaskImage: maskLayers,
-  maskImage: maskLayers,
-  WebkitMaskSize: `40px ${WAVE}px, 40px ${WAVE}px, 100% calc(100% - ${WAVE * 2}px)`,
-  maskSize: `40px ${WAVE}px, 40px ${WAVE}px, 100% calc(100% - ${WAVE * 2}px)`,
-  WebkitMaskPosition: "top left, bottom left, center",
-  maskPosition: "top left, bottom left, center",
-  WebkitMaskRepeat: "repeat-x, repeat-x, no-repeat",
-  maskRepeat: "repeat-x, repeat-x, no-repeat",
+  WebkitMaskImage: join("image"),
+  maskImage: join("image"),
+  WebkitMaskSize: join("size"),
+  maskSize: join("size"),
+  WebkitMaskPosition: join("position"),
+  maskPosition: join("position"),
+  WebkitMaskRepeat: join("repeat"),
+  maskRepeat: join("repeat"),
+  // Set here rather than as a class because the mask decides it: the stub is
+  // positioned from the bottom edge, so the sheet's own bottom padding has to
+  // be exactly the wave band and nothing more.
+  paddingBottom: WAVE,
 } as const;
 
 const DESCRIPTION =
@@ -102,9 +182,10 @@ export default function CvPage() {
       />
 
       <Container width="reading">
-        {/* The page action sits outside the sheet. Inside it, a download button
-            would read as part of the document rather than as something the site
-            offers you. */}
+        {/* The page action sits outside the sheet, where it reads as something
+            the site offers rather than as document content. The sheet carries
+            the same action again at the bottom, on the stub: by the time you
+            have read to the end, this one is long off screen. */}
         <div className="flex items-center justify-between gap-4">
           <p className="font-mono text-2xs uppercase tracking-label text-subtle">
             Curriculum vitae
@@ -139,13 +220,32 @@ export default function CvPage() {
         <div className="mt-4 [filter:drop-shadow(0_0_0.5px_rgb(0_0_0/0.14))_drop-shadow(0_1px_1px_rgb(0_0_0/0.05))_drop-shadow(0_8px_16px_rgb(0_0_0/0.10))] dark:[filter:drop-shadow(0_0_0.5px_rgb(0_0_0/0.5))_drop-shadow(0_2px_3px_rgb(0_0_0/0.45))_drop-shadow(0_10px_20px_rgb(0_0_0/0.5))]">
         <article
           style={sheetMask}
-          className="bg-card px-6 py-11 sm:px-9 sm:py-12 md:px-12"
+          className="relative bg-card px-6 pt-11 sm:px-9 sm:pt-12 md:px-12"
         >
+          {/* Paper grain, as a layer rather than a background on the sheet
+              itself, so its strength can be tuned per theme without touching
+              the card colour.
+
+              `multiply` in light: the texture is light grey, so multiplying it
+              into white leaves the grain and none of the grey. `soft-light` in
+              dark, because multiplying into a near-black card would only make
+              it blacker and the grain would vanish.
+
+              It sits inside the masked element, so the wave clips it too and
+              the texture stops exactly where the paper does. */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-0 opacity-[0.3] mix-blend-multiply dark:opacity-[0.22] dark:mix-blend-soft-light"
+            style={{
+              backgroundImage: "url(/cv/paper-texture.webp)",
+              backgroundSize: "250px 250px",
+            }}
+          />
           {/* A row at every width. Stacked on mobile it put the portrait below the
               contact block, which is the one place a portrait should never be:
               it reads as a stray image rather than as part of the header. It
               shrinks instead. */}
-          <div className="flex items-start justify-between gap-4 sm:gap-5">
+          <div className="relative flex items-start justify-between gap-4 sm:gap-5">
             <div className="min-w-0">
               <h1 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
                 {cv.name}
@@ -173,11 +273,55 @@ export default function CvPage() {
 
           {/* The first section heading opens the body, so it takes the block
               step rather than the section step it would otherwise inherit. */}
-          <div className="[&>h2:first-of-type]:mt-8">
+          <div className="relative [&>h2:first-of-type]:mt-8">
             {cv.blocks.map((block, i) => (
               <Block key={i} block={block} />
             ))}
           </div>
+
+          {/* The tear-off stub.
+              Full bleed, so it negates the sheet's horizontal padding: a
+              perforation that stopped short of the edges would read as a rule
+              under the text rather than as a line the paper tears along.
+              The perforation and the notches meet because both are sized off
+              FOOT: this height, and the mask offsets derived from it. That is
+              also why the height is set here rather than as a class, so the
+              one value feeds both.
+
+              The whole stub is the link, rather than a small link centred in
+              it. The strip below a perforation is one thing you tear, so
+              anything less than all of it is a smaller target than it looks.
+              An anchor rather than a click handler on the div: it is the same
+              one element, and keyboard, middle click and open-in-new-tab come
+              with it instead of being reimplemented.
+
+              No hover fill, deliberately. The stub paints above the grain
+              layer, so a background would blank the texture across the strip
+              on hover and the paper would look like it had a hole in it.
+
+              Typeset as a section heading rather than as a button. Inside the
+              sheet the accent CTA from the top would read as a control dropped
+              onto the paper.
+
+              The scissors snip once on hover. Once, not on a loop: the icon
+              is 14px of decoration next to the thing you actually came for,
+              and anything that keeps moving under the cursor competes with
+              the label instead of pointing at it. */}
+          <a
+            href={PDF}
+            download
+            className="group relative -mx-6 mt-11 flex items-center justify-center gap-2 font-mono text-2xs uppercase tracking-label text-subtle transition-colors duration-fast ease-out hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:-mx-9 md:-mx-12"
+            style={{
+              height: FOOT,
+              backgroundImage: PERFORATION,
+              backgroundSize: "100% 1px",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "top left",
+            }}
+          >
+            <Scissors aria-hidden className="h-3.5 w-3.5 group-hover:animate-snip" />
+            Tear off a copy (PDF)
+          </a>
         </article>
         </div>
       </Container>
