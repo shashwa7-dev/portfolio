@@ -41,7 +41,7 @@ const R = NOTCH / 2;
  * strip grows with the text it holds.
  *
  * The mask has to grow with it or the notches would part company with the
- * dashed border, so every offset below is derived from the same value rather
+ * perforation, so every offset below is derived from the same value rather
  * than written out. With WAVE 10 and R 11:
  *   tear line          PERF      = FOOT + 10
  *   notch row, bottom  PERF - R  = FOOT - 1
@@ -49,6 +49,22 @@ const R = NOTCH / 2;
  *   body band height   100% - (10 + PERF + R) = 100% - FOOT - 31
  */
 const FOOT = "4rem"; // 64px at a default root, the same as it ever was
+
+/**
+ * The perforation, painted rather than bordered.
+ *
+ * `border-style: dashed` hands the dash length to the browser, which picks
+ * something short and tight that reads as a hairline rule. A repeating
+ * gradient is the only way to say how long a dash is and how much air sits
+ * between two of them.
+ *
+ * Sized to a single pixel row and not repeated down, so it paints one line and
+ * nothing else. That matters here: the stub sits above the grain layer, so a
+ * background that covered the strip would blank the texture across it.
+ */
+const DASH = 8;
+const GAP = 8;
+const PERFORATION = `repeating-linear-gradient(to right, hsl(var(--border-strong)) 0 ${DASH}px, transparent ${DASH}px ${DASH + GAP}px)`;
 const NOTCH_Y = `calc(${FOOT} - ${R - WAVE}px)`;
 const STUB_H = `calc(${FOOT} - ${R}px)`;
 const BODY_H = `calc(100% - ${FOOT} - ${WAVE * 2 + R}px)`;
@@ -72,7 +88,7 @@ const NOTCHBOX = `0 0 ${NOTCH} ${NOTCH}`;
  *
  * Everything below the tear line is measured up from the sheet's bottom edge
  * off the same FOOT the stub itself is sized by, which is what keeps the
- * notches on the dashed border at any text size. Only the band above the tear
+ * notches on the perforation at any text size. Only the band above the tear
  * line flexes with the content.
  */
 const layers = [
@@ -267,9 +283,9 @@ export default function CvPage() {
               Full bleed, so it negates the sheet's horizontal padding: a
               perforation that stopped short of the edges would read as a rule
               under the text rather than as a line the paper tears along.
-              The dashed border and the notches meet because both are sized
-              off FOOT: this height, and the mask offsets derived from it. That
-              is also why the height is set here rather than as a class, so the
+              The perforation and the notches meet because both are sized off
+              FOOT: this height, and the mask offsets derived from it. That is
+              also why the height is set here rather than as a class, so the
               one value feeds both.
 
               The whole stub is the link, rather than a small link centred in
@@ -294,8 +310,14 @@ export default function CvPage() {
           <a
             href={PDF}
             download
-            className="group relative -mx-6 mt-11 flex items-center justify-center gap-2 border-t border-dashed border-border-strong font-mono text-2xs uppercase tracking-label text-subtle transition-colors duration-fast ease-out hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:-mx-9 md:-mx-12"
-            style={{ height: FOOT }}
+            className="group relative -mx-6 mt-11 flex items-center justify-center gap-2 font-mono text-2xs uppercase tracking-label text-subtle transition-colors duration-fast ease-out hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:-mx-9 md:-mx-12"
+            style={{
+              height: FOOT,
+              backgroundImage: PERFORATION,
+              backgroundSize: "100% 1px",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "top left",
+            }}
           >
             <Scissors aria-hidden className="h-3.5 w-3.5 group-hover:animate-snip" />
             Tear off a copy (PDF)
