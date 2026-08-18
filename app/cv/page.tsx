@@ -139,13 +139,32 @@ export default function CvPage() {
         <div className="mt-4 [filter:drop-shadow(0_0_0.5px_rgb(0_0_0/0.14))_drop-shadow(0_1px_1px_rgb(0_0_0/0.05))_drop-shadow(0_8px_16px_rgb(0_0_0/0.10))] dark:[filter:drop-shadow(0_0_0.5px_rgb(0_0_0/0.5))_drop-shadow(0_2px_3px_rgb(0_0_0/0.45))_drop-shadow(0_10px_20px_rgb(0_0_0/0.5))]">
         <article
           style={sheetMask}
-          className="bg-card px-6 py-11 sm:px-9 sm:py-12 md:px-12"
+          className="relative bg-card px-6 py-11 sm:px-9 sm:py-12 md:px-12"
         >
+          {/* Paper grain, as a layer rather than a background on the sheet
+              itself, so its strength can be tuned per theme without touching
+              the card colour.
+
+              `multiply` in light: the texture is light grey, so multiplying it
+              into white leaves the grain and none of the grey. `soft-light` in
+              dark, because multiplying into a near-black card would only make
+              it blacker and the grain would vanish.
+
+              It sits inside the masked element, so the wave clips it too and
+              the texture stops exactly where the paper does. */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-0 opacity-[0.3] mix-blend-multiply dark:opacity-[0.22] dark:mix-blend-soft-light"
+            style={{
+              backgroundImage: "url(/cv/paper-texture.webp)",
+              backgroundSize: "250px 250px",
+            }}
+          />
           {/* A row at every width. Stacked on mobile it put the portrait below the
               contact block, which is the one place a portrait should never be:
               it reads as a stray image rather than as part of the header. It
               shrinks instead. */}
-          <div className="flex items-start justify-between gap-4 sm:gap-5">
+          <div className="relative flex items-start justify-between gap-4 sm:gap-5">
             <div className="min-w-0">
               <h1 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
                 {cv.name}
@@ -173,7 +192,7 @@ export default function CvPage() {
 
           {/* The first section heading opens the body, so it takes the block
               step rather than the section step it would otherwise inherit. */}
-          <div className="[&>h2:first-of-type]:mt-8">
+          <div className="relative [&>h2:first-of-type]:mt-8">
             {cv.blocks.map((block, i) => (
               <Block key={i} block={block} />
             ))}
