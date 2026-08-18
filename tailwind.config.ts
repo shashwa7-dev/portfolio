@@ -29,6 +29,10 @@ const config: Config = {
         // Runs once per hover, not on a loop. See components/common/Shimmer.tsx
         // for why this is not ambient.
         shimmer: "shimmer var(--duration-sweep) var(--ease-out)",
+        // Same contract as shimmer: one pass on hover, no iteration count.
+        // Applied through group-hover, so the class comes off on unhover and
+        // the next hover replays it from the top rather than it running on.
+        snip: "snip var(--duration-med) var(--ease-out)",
       },
       keyframes: {
         "loading-bar": {
@@ -62,6 +66,16 @@ const config: Config = {
         "accordion-up": {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
+        },
+        // One close-and-open, with a few pixels of travel so the scissors
+        // read as cutting along the perforation rather than just twitching.
+        // Overshoots slightly past open on the way back, which is what stops
+        // it looking like a rotation played backwards.
+        snip: {
+          "0%": { transform: "translateX(0) rotate(0deg)" },
+          "35%": { transform: "translateX(2px) rotate(-18deg)" },
+          "65%": { transform: "translateX(3px) rotate(2deg)" },
+          "100%": { transform: "translateX(0) rotate(0deg)" },
         },
         // Travels a full width past each edge so the sheen enters and leaves
         // completely, rather than appearing and vanishing inside the surface.
