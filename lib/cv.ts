@@ -13,7 +13,8 @@ export type CvBlock =
   | { kind: "para"; html: string }
   | { kind: "labelled"; rows: { label: string; value: string }[] }
   | { kind: "list"; items: string[] }
-  | { kind: "stack"; text: string };
+  | { kind: "stack"; text: string }
+  | { kind: "project"; name: string; meta: string };
 
 export type Cv = {
   name: string;
@@ -22,8 +23,18 @@ export type Cv = {
   blocks: CvBlock[];
 };
 
-/** Matches a `Label: value` row, the shape the skills and stack lines use. */
-const LABEL = /^([A-Z][A-Za-z0-9/+&. -]{1,34}):\s(.+)$/;
+/**
+ * Matches a `Label: value` row, the shape the skills and stack lines use.
+ *
+ * The character class has to include the comma. Without it "Backend, AI and
+ * Web3" failed to match and fell through to the paragraph branch, so one skills
+ * row rendered as full-width body prose in the middle of an aligned table.
+ * Renaming a category should never change how it lays out.
+ */
+const LABEL = /^([A-Z][A-Za-z0-9/+&.,' -]{1,38}):\s(.+)$/;
+
+/** A side-project heading: `**Name** (year) — link`. */
+const PROJECT = /^\*\*(.+?)\*\*\s*(.*)$/;
 
 /**
  * Inline markdown to HTML: bold, explicit links, then bare contact details and
@@ -115,6 +126,12 @@ export function parseCv(md: string): Cv {
       } else {
         blocks.push({ kind: "labelled", rows });
       }
+    } else if (line.startsWith("**") && PROJECT.test(line)) {
+      // Its own block, or the paragraph collector below swallows the heading
+      // and the description into one run-on line.
+      const m = PROJECT.exec(line)!;
+      blocks.push({ kind: "project", name: m[1], meta: m[2].trim() });
+      i++;
     } else if (line.startsWith("---") || !line.trim()) {
       i++;
     } else {

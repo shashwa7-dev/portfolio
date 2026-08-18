@@ -117,14 +117,14 @@ function Block({ block }: { block: CvBlock }) {
   switch (block.kind) {
     case "section":
       return (
-        <h2 className="mt-12 border-b border-border pb-2 font-mono text-2xs uppercase tracking-label text-subtle">
+        <h2 className="mt-10 border-b border-border pb-2 font-mono text-2xs uppercase tracking-label text-subtle">
           {block.text}
         </h2>
       );
     case "role":
       return (
-        <div className="mt-8">
-          <h3 className="text-lg font-semibold tracking-tight text-foreground">
+        <div className="mt-7">
+          <h3 className="text-base font-semibold tracking-tight text-foreground">
             {block.title}
           </h3>
           <p
@@ -133,20 +133,29 @@ function Block({ block }: { block: CvBlock }) {
           />
         </div>
       );
+    case "project":
+      return (
+        <p
+          className="mt-6 text-sm font-semibold tracking-tight text-foreground [&_a]:font-normal [&_a]:text-muted-foreground [&_a]:underline [&_a]:decoration-border-strong [&_a]:underline-offset-4"
+          dangerouslySetInnerHTML={{
+            __html: `${inlineHtml(block.name)} <span>${inlineHtml(block.meta)}</span>`,
+          }}
+        />
+      );
     case "para":
       return (
         <p
-          className="mt-4 leading-relaxed text-foreground [&_a]:underline [&_a]:decoration-border-strong [&_a]:underline-offset-4 [&_a]:transition-colors hover:[&_a]:decoration-foreground [&_strong]:font-semibold"
+          className="mt-3 text-sm leading-relaxed text-muted-foreground [&_a]:text-foreground [&_a]:underline [&_a]:decoration-border-strong [&_a]:underline-offset-4 [&_strong]:font-semibold [&_strong]:text-foreground"
           dangerouslySetInnerHTML={{ __html: block.html }}
         />
       );
     case "list":
       return (
-        <ul className="mt-4 space-y-2.5">
+        <ul className="mt-3 space-y-2">
           {block.items.map((item) => (
             <li
               key={item}
-              className="relative pl-5 leading-relaxed text-foreground before:absolute before:left-0 before:top-[0.7em] before:h-1 before:w-1 before:rounded-full before:bg-border-strong [&_a]:underline [&_a]:decoration-border-strong [&_a]:underline-offset-4 [&_strong]:font-semibold"
+              className="relative pl-4 text-sm leading-relaxed text-muted-foreground before:absolute before:left-0 before:top-[0.62em] before:h-1 before:w-1 before:rounded-full before:bg-border-strong [&_a]:text-foreground [&_a]:underline [&_a]:decoration-border-strong [&_a]:underline-offset-4 [&_strong]:font-semibold [&_strong]:text-foreground"
               dangerouslySetInnerHTML={{ __html: inlineHtml(item) }}
             />
           ))}
@@ -154,13 +163,13 @@ function Block({ block }: { block: CvBlock }) {
       );
     case "labelled":
       return (
-        <dl className="mt-4 space-y-2">
+        <dl className="mt-3 divide-y divide-border border-y border-border">
           {block.rows.map((row) => (
-            <div key={row.label} className="sm:flex sm:gap-4">
-              <dt className="shrink-0 font-mono text-2xs uppercase tracking-label text-foreground sm:w-52 sm:pt-[3px]">
+            <div key={row.label} className="py-2.5 sm:flex sm:gap-5">
+              <dt className="shrink-0 font-mono text-2xs uppercase tracking-label text-foreground sm:w-48 sm:pt-px">
                 {row.label}
               </dt>
-              <dd className="font-mono text-xs leading-relaxed text-muted-foreground">
+              <dd className="mt-1 text-sm leading-relaxed text-muted-foreground sm:mt-0">
                 {row.value}
               </dd>
             </div>
@@ -169,7 +178,7 @@ function Block({ block }: { block: CvBlock }) {
       );
     case "stack":
       return (
-        <p className="mt-4 font-mono text-2xs text-subtle">{block.text}</p>
+        <p className="mt-3 font-mono text-2xs text-subtle">{block.text}</p>
       );
   }
 }
