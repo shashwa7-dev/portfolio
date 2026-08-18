@@ -66,12 +66,11 @@ Stack: React, TypeScript, wagmi, React Query, Tailwind CSS, Framer Motion, Solan
 ## SKILLS
 
 Languages: TypeScript, JavaScript, Python, HTML, CSS
-Frontend: React, Next.js, Tailwind CSS, shadcn/ui, Chakra UI, Tiptap, Framer Motion, GSAP, Styled Components, responsive UI
+Frontend: React, Next.js, Tailwind CSS, shadcn/ui, Tiptap, Framer Motion, GSAP, responsive UI
 Accessibility: ARIA, keyboard navigation, focus management, WCAG AA contrast
-State management and data fetching: React Query, Zustand, REST, GraphQL, WebSocket
-Testing and tooling: Playwright, Vitest, Git, Vercel, Sentry, PostHog, Figma
-Backend and AI: Node.js, PostgreSQL, MongoDB, Firebase, OpenAI GPT, Google Gemini, streaming chat
-Web3: wagmi, Web3.js, Solana, ERC-721
+State management and data: React Query, Zustand, REST, GraphQL, WebSocket
+Backend, AI and Web3: Node.js, PostgreSQL, Firebase, OpenAI GPT, Google Gemini, streaming chat, wagmi, Solana
+Testing and tooling: Playwright, Vitest, Git, Vercel, Sentry, Figma
 
 ---
 
