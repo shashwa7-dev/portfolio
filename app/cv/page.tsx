@@ -112,9 +112,13 @@ export default function CvPage() {
           <a
             href={PDF}
             download
-            className="inline-flex items-center gap-2 rounded-full border border-border-strong px-3.5 py-1.5 text-xs font-medium text-foreground transition-colors duration-fast ease-out hover:bg-elevated"
+            /* The site's primary CTA, matching the hero on the homepage:
+               filled accent, same radius, weight, padding and press. This is
+               the one action the page exists for, so it takes the primary
+               treatment rather than the outlined secondary one. */
+            className="inline-flex items-center gap-2 rounded-md bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground transition-[color,background-color,transform] duration-150 ease-out hover:bg-accent-hover active:scale-[0.97]"
           >
-            <Download aria-hidden className="h-3.5 w-3.5 text-subtle" />
+            <Download aria-hidden className="h-4 w-4" />
             Download PDF
           </a>
         </div>
@@ -226,8 +230,10 @@ function Block({ block }: { block: CvBlock }) {
         </ul>
       );
     case "labelled":
+      // No top border on the list. The section heading above already draws
+      // one, and the two sat together as a doubled rule under the label.
       return (
-        <dl className="mt-3 divide-y divide-border border-y border-border">
+        <dl className="mt-3 divide-y divide-border border-b border-border">
           {block.rows.map((row) => (
             <div key={row.label} className="py-2.5 sm:flex sm:gap-5">
               <dt className="shrink-0 font-mono text-2xs uppercase tracking-label text-foreground sm:w-48 sm:pt-px">
