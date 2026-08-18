@@ -29,9 +29,29 @@ const PDF = "/shashwat-tripathi-cv.pdf";
  */
 const WAVE = 10; // wave band height; the sheet's vertical padding must clear it
 const NOTCH = 22; // notch diameter, bitten out of both edges at the tear line
-const FOOT = 64; // stub height, from the tear line down to the bottom wave
-const PERF = FOOT + WAVE; // the tear line, measured up from the sheet's bottom
 const R = NOTCH / 2;
+
+/**
+ * The stub's height, and the three mask offsets derived from it.
+ *
+ * In `rem`, not pixels, and that is the whole point. The stub is a fixed
+ * height holding text that the reader can scale, so at 200% text-only zoom a
+ * pixel height kept the strip at 64px while the label inside it grew, wrapped
+ * to two lines and painted out through the bottom of the sheet. In `rem` the
+ * strip grows with the text it holds.
+ *
+ * The mask has to grow with it or the notches would part company with the
+ * dashed border, so every offset below is derived from the same value rather
+ * than written out. With WAVE 10 and R 11:
+ *   tear line          PERF      = FOOT + 10
+ *   notch row, bottom  PERF - R  = FOOT - 1
+ *   stub band height   PERF-R-10 = FOOT - 11
+ *   body band height   100% - (10 + PERF + R) = 100% - FOOT - 31
+ */
+const FOOT = "4rem"; // 64px at a default root, the same as it ever was
+const NOTCH_Y = `calc(${FOOT} - ${R - WAVE}px)`;
+const STUB_H = `calc(${FOOT} - ${R}px)`;
+const BODY_H = `calc(100% - ${FOOT} - ${WAVE * 2 + R}px)`;
 
 const svg = (viewBox: string, d: string) =>
   `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='${viewBox}' preserveAspectRatio='none'%3E%3Cpath d='${d}' fill='%23000'/%3E%3C/svg%3E")`;
@@ -50,27 +70,27 @@ const NOTCHBOX = `0 0 ${NOTCH} ${NOTCH}`;
  * of the notches, and the notch row is assembled from three pieces: a shaped
  * end at each edge and a plain fill between them.
  *
- * Everything below the tear line is a fixed pixel height, which is what lets
- * the notches line up with the dashed border of the stub: both are measured up
- * from the same bottom edge. Only the band above the tear line flexes with the
- * content.
+ * Everything below the tear line is measured up from the sheet's bottom edge
+ * off the same FOOT the stub itself is sized by, which is what keeps the
+ * notches on the dashed border at any text size. Only the band above the tear
+ * line flexes with the content.
  */
 const layers = [
   // The wave along the top, and the same wave mirrored along the bottom.
   { image: svg(WAVEBOX, "M0 6 Q10 0 20 6 T40 6 L40 12 L0 12 Z"), size: `40px ${WAVE}px`, position: "top left", repeat: "repeat-x" },
   { image: svg(WAVEBOX, "M0 6 Q10 12 20 6 T40 6 L40 0 L0 0 Z"), size: `40px ${WAVE}px`, position: "bottom left", repeat: "repeat-x" },
   // The body, from under the top wave down to the top of the notch row.
-  { image: SOLID, size: `100% calc(100% - ${WAVE + PERF + R}px)`, position: `left 0px top ${WAVE}px`, repeat: "no-repeat" },
+  { image: SOLID, size: `100% ${BODY_H}`, position: `left 0px top ${WAVE}px`, repeat: "no-repeat" },
   // The notch row: a square with a semicircle carved out of its outer edge at
   // each end, and plain fill spanning between them. The sweep flag is what
   // carves it. It picks the side of the chord the arc bows to, and bowing the
   // wrong way puts the bite outside the box, where mask-size clips it away and
   // the edge comes out straight.
-  { image: svg(NOTCHBOX, `M0 0 H${NOTCH} V${NOTCH} H0 A${R} ${R} 0 0 0 0 0 Z`), size: `${NOTCH}px ${NOTCH}px`, position: `left 0px bottom ${PERF - R}px`, repeat: "no-repeat" },
-  { image: svg(NOTCHBOX, `M${NOTCH} 0 H0 V${NOTCH} H${NOTCH} A${R} ${R} 0 0 1 ${NOTCH} 0 Z`), size: `${NOTCH}px ${NOTCH}px`, position: `right 0px bottom ${PERF - R}px`, repeat: "no-repeat" },
-  { image: SOLID, size: `calc(100% - ${NOTCH * 2}px) ${NOTCH}px`, position: `left ${NOTCH}px bottom ${PERF - R}px`, repeat: "no-repeat" },
+  { image: svg(NOTCHBOX, `M0 0 H${NOTCH} V${NOTCH} H0 A${R} ${R} 0 0 0 0 0 Z`), size: `${NOTCH}px ${NOTCH}px`, position: `left 0px bottom ${NOTCH_Y}`, repeat: "no-repeat" },
+  { image: svg(NOTCHBOX, `M${NOTCH} 0 H0 V${NOTCH} H${NOTCH} A${R} ${R} 0 0 1 ${NOTCH} 0 Z`), size: `${NOTCH}px ${NOTCH}px`, position: `right 0px bottom ${NOTCH_Y}`, repeat: "no-repeat" },
+  { image: SOLID, size: `calc(100% - ${NOTCH * 2}px) ${NOTCH}px`, position: `left ${NOTCH}px bottom ${NOTCH_Y}`, repeat: "no-repeat" },
   // The stub, from under the notch row down to the bottom wave.
-  { image: SOLID, size: `100% ${PERF - R - WAVE}px`, position: `left 0px bottom ${WAVE}px`, repeat: "no-repeat" },
+  { image: SOLID, size: `100% ${STUB_H}`, position: `left 0px bottom ${WAVE}px`, repeat: "no-repeat" },
 ];
 
 const join = (key: keyof (typeof layers)[number]) =>
@@ -247,9 +267,10 @@ export default function CvPage() {
               Full bleed, so it negates the sheet's horizontal padding: a
               perforation that stopped short of the edges would read as a rule
               under the text rather than as a line the paper tears along.
-              The dashed border and the notches meet because both are measured
-              from the sheet's bottom edge, FOOT and PERF being the same
-              constants the mask is built from.
+              The dashed border and the notches meet because both are sized
+              off FOOT: this height, and the mask offsets derived from it. That
+              is also why the height is set here rather than as a class, so the
+              one value feeds both.
 
               The whole stub is the link, rather than a small link centred in
               it. The strip below a perforation is one thing you tear, so
@@ -264,14 +285,19 @@ export default function CvPage() {
 
               Typeset as a section heading rather than as a button. Inside the
               sheet the accent CTA from the top would read as a control dropped
-              onto the paper. */}
+              onto the paper.
+
+              The scissors snip once on hover. Once, not on a loop: the icon
+              is 14px of decoration next to the thing you actually came for,
+              and anything that keeps moving under the cursor competes with
+              the label instead of pointing at it. */}
           <a
             href={PDF}
             download
-            className="relative -mx-6 mt-11 flex items-center justify-center gap-2 border-t border-dashed border-border-strong font-mono text-2xs uppercase tracking-label text-subtle transition-colors duration-fast ease-out hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:-mx-9 md:-mx-12"
+            className="group relative -mx-6 mt-11 flex items-center justify-center gap-2 border-t border-dashed border-border-strong font-mono text-2xs uppercase tracking-label text-subtle transition-colors duration-fast ease-out hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:-mx-9 md:-mx-12"
             style={{ height: FOOT }}
           >
-            <Scissors aria-hidden className="h-3.5 w-3.5" />
+            <Scissors aria-hidden className="h-3.5 w-3.5 group-hover:animate-snip" />
             Tear off a copy (PDF)
           </a>
         </article>
