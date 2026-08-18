@@ -19,32 +19,76 @@ const PDF = "/shashwat-tripathi-cv.pdf";
  * is visible.
  *
  * A mask rather than a border, because a border traces the element's box and
- * cannot follow a cut shape. Three layers: the wave along the top, the same
- * mirrored along the bottom, and a solid band filling everything between.
+ * cannot follow a cut shape, and the sheet is cut in three places: the wave
+ * along the top, the wave along the bottom, and the two notches bitten out of
+ * the edges at the tear line.
  *
  * The shadow is a `drop-shadow` filter on a wrapper. `box-shadow` is painted
  * from the element's box, so it would trace a rectangle around a sheet that is
  * no longer rectangular; `drop-shadow` follows the masked silhouette.
  */
-const WAVE = 10; // wave band height in px; vertical padding must clear it
-const svg = (d: string) =>
-  `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 12' preserveAspectRatio='none'%3E%3Cpath d='${d}' fill='%23000'/%3E%3C/svg%3E")`;
+const WAVE = 10; // wave band height; the sheet's vertical padding must clear it
+const NOTCH = 22; // notch diameter, bitten out of both edges at the tear line
+const FOOT = 64; // stub height, from the tear line down to the bottom wave
+const PERF = FOOT + WAVE; // the tear line, measured up from the sheet's bottom
+const R = NOTCH / 2;
 
-const maskLayers = [
-  svg("M0 6 Q10 0 20 6 T40 6 L40 12 L0 12 Z"), // crests along the top
-  svg("M0 6 Q10 12 20 6 T40 6 L40 0 L0 0 Z"), // mirrored along the bottom
-  "linear-gradient(#000, #000)",
-].join(", ");
+const svg = (viewBox: string, d: string) =>
+  `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='${viewBox}' preserveAspectRatio='none'%3E%3Cpath d='${d}' fill='%23000'/%3E%3C/svg%3E")`;
+
+const SOLID = "linear-gradient(#000, #000)";
+const WAVEBOX = "0 0 40 12";
+const NOTCHBOX = `0 0 ${NOTCH} ${NOTCH}`;
+
+/**
+ * Seven layers, because mask layers union rather than subtract.
+ *
+ * There is no "cut a hole" here: every layer adds to the visible area, so a
+ * notch cannot be punched through the solid interior after the fact. Chromium
+ * and Safari spell `mask-composite` differently enough that subtracting is not
+ * worth relying on. Instead the interior is split into bands that stop short
+ * of the notches, and the notch row is assembled from three pieces: a shaped
+ * end at each edge and a plain fill between them.
+ *
+ * Everything below the tear line is a fixed pixel height, which is what lets
+ * the notches line up with the dashed border of the stub: both are measured up
+ * from the same bottom edge. Only the band above the tear line flexes with the
+ * content.
+ */
+const layers = [
+  // The wave along the top, and the same wave mirrored along the bottom.
+  { image: svg(WAVEBOX, "M0 6 Q10 0 20 6 T40 6 L40 12 L0 12 Z"), size: `40px ${WAVE}px`, position: "top left", repeat: "repeat-x" },
+  { image: svg(WAVEBOX, "M0 6 Q10 12 20 6 T40 6 L40 0 L0 0 Z"), size: `40px ${WAVE}px`, position: "bottom left", repeat: "repeat-x" },
+  // The body, from under the top wave down to the top of the notch row.
+  { image: SOLID, size: `100% calc(100% - ${WAVE + PERF + R}px)`, position: `left 0px top ${WAVE}px`, repeat: "no-repeat" },
+  // The notch row: a square with a semicircle carved out of its outer edge at
+  // each end, and plain fill spanning between them. The sweep flag is what
+  // carves it. It picks the side of the chord the arc bows to, and bowing the
+  // wrong way puts the bite outside the box, where mask-size clips it away and
+  // the edge comes out straight.
+  { image: svg(NOTCHBOX, `M0 0 H${NOTCH} V${NOTCH} H0 A${R} ${R} 0 0 0 0 0 Z`), size: `${NOTCH}px ${NOTCH}px`, position: `left 0px bottom ${PERF - R}px`, repeat: "no-repeat" },
+  { image: svg(NOTCHBOX, `M${NOTCH} 0 H0 V${NOTCH} H${NOTCH} A${R} ${R} 0 0 1 ${NOTCH} 0 Z`), size: `${NOTCH}px ${NOTCH}px`, position: `right 0px bottom ${PERF - R}px`, repeat: "no-repeat" },
+  { image: SOLID, size: `calc(100% - ${NOTCH * 2}px) ${NOTCH}px`, position: `left ${NOTCH}px bottom ${PERF - R}px`, repeat: "no-repeat" },
+  // The stub, from under the notch row down to the bottom wave.
+  { image: SOLID, size: `100% ${PERF - R - WAVE}px`, position: `left 0px bottom ${WAVE}px`, repeat: "no-repeat" },
+];
+
+const join = (key: keyof (typeof layers)[number]) =>
+  layers.map((l) => l[key]).join(", ");
 
 const sheetMask = {
-  WebkitMaskImage: maskLayers,
-  maskImage: maskLayers,
-  WebkitMaskSize: `40px ${WAVE}px, 40px ${WAVE}px, 100% calc(100% - ${WAVE * 2}px)`,
-  maskSize: `40px ${WAVE}px, 40px ${WAVE}px, 100% calc(100% - ${WAVE * 2}px)`,
-  WebkitMaskPosition: "top left, bottom left, center",
-  maskPosition: "top left, bottom left, center",
-  WebkitMaskRepeat: "repeat-x, repeat-x, no-repeat",
-  maskRepeat: "repeat-x, repeat-x, no-repeat",
+  WebkitMaskImage: join("image"),
+  maskImage: join("image"),
+  WebkitMaskSize: join("size"),
+  maskSize: join("size"),
+  WebkitMaskPosition: join("position"),
+  maskPosition: join("position"),
+  WebkitMaskRepeat: join("repeat"),
+  maskRepeat: join("repeat"),
+  // Set here rather than as a class because the mask decides it: the stub is
+  // positioned from the bottom edge, so the sheet's own bottom padding has to
+  // be exactly the wave band and nothing more.
+  paddingBottom: WAVE,
 } as const;
 
 const DESCRIPTION =
@@ -102,9 +146,10 @@ export default function CvPage() {
       />
 
       <Container width="reading">
-        {/* The page action sits outside the sheet. Inside it, a download button
-            would read as part of the document rather than as something the site
-            offers you. */}
+        {/* The page action sits outside the sheet, where it reads as something
+            the site offers rather than as document content. The sheet carries
+            the same action again at the bottom, on the stub: by the time you
+            have read to the end, this one is long off screen. */}
         <div className="flex items-center justify-between gap-4">
           <p className="font-mono text-2xs uppercase tracking-label text-subtle">
             Curriculum vitae
@@ -139,7 +184,7 @@ export default function CvPage() {
         <div className="mt-4 [filter:drop-shadow(0_0_0.5px_rgb(0_0_0/0.14))_drop-shadow(0_1px_1px_rgb(0_0_0/0.05))_drop-shadow(0_8px_16px_rgb(0_0_0/0.10))] dark:[filter:drop-shadow(0_0_0.5px_rgb(0_0_0/0.5))_drop-shadow(0_2px_3px_rgb(0_0_0/0.45))_drop-shadow(0_10px_20px_rgb(0_0_0/0.5))]">
         <article
           style={sheetMask}
-          className="relative bg-card px-6 py-11 sm:px-9 sm:py-12 md:px-12"
+          className="relative bg-card px-6 pt-11 sm:px-9 sm:pt-12 md:px-12"
         >
           {/* Paper grain, as a layer rather than a background on the sheet
               itself, so its strength can be tuned per theme without touching
@@ -196,6 +241,30 @@ export default function CvPage() {
             {cv.blocks.map((block, i) => (
               <Block key={i} block={block} />
             ))}
+          </div>
+
+          {/* The tear-off stub.
+              Full bleed, so it negates the sheet's horizontal padding: a
+              perforation that stopped short of the edges would read as a rule
+              under the text rather than as a line the paper tears along.
+              The dashed border and the notches meet because both are measured
+              from the sheet's bottom edge, FOOT and PERF being the same
+              constants the mask is built from.
+              Typeset as a section heading rather than as a button. Inside the
+              sheet the accent CTA from the top would read as a control dropped
+              onto the paper. */}
+          <div
+            className="relative -mx-6 mt-11 flex items-center justify-center border-t border-dashed border-border-strong sm:-mx-9 md:-mx-12"
+            style={{ height: FOOT }}
+          >
+            <a
+              href={PDF}
+              download
+              className="inline-flex items-center gap-2 font-mono text-2xs uppercase tracking-label text-subtle transition-colors duration-fast ease-out hover:text-foreground"
+            >
+              <Download aria-hidden className="h-3.5 w-3.5" />
+              Tear off a copy (PDF)
+            </a>
           </div>
         </article>
         </div>
