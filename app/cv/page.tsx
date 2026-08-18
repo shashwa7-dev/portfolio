@@ -211,13 +211,32 @@ export default function CvPage() {
             cream is invisible against near-black. */}
         {/* Three drop-shadows, each doing a different job. A half-pixel one
             traces the silhouette, standing in for the hairline border a mask
-            cannot keep. A tight one seats the sheet. A wide, soft one lifts it.
+            cannot keep. A tight, comparatively dark one is the contact: the
+            line where paper meets desk, and the layer that makes the whole
+            thing read as a shadow rather than as a grey glow. A long, soft one
+            is the cast that lifts it.
+
+            The contact and the cast are what changed. They used to be 1px/1px
+            at 0.05 and 8px/16px at 0.10, which is a card's shadow, and this is
+            not a card: it is a sheet several thousand pixels tall, so a cast
+            that travels eight pixels is lost against it and reads as haze at
+            the edges. The contact now carries roughly twice the alpha over
+            twice the blur so the seat is visible, and the cast drops sixteen
+            pixels over twenty-eight so there is somewhere for the paper to
+            float above.
+
+            Ordered tightest to widest on purpose. Chained `drop-shadow`
+            filters each take the previous one's output as their source, so the
+            wide layer is cast by the sheet plus a one-pixel fringe, which is
+            near enough the sheet. Reversed, the tight layer would be cast by
+            the sheet plus a 28px halo and would smear a second soft ramp over
+            the contact line.
 
             The light theme needs all of it: the sheet is 100% lightness on a
             98.5% page, so a point and a half separates them and only the
             shadow reads as an edge. Dark already has 8.5% against 5% doing
-            that work, so it takes a shorter, deeper cast instead. */}
-        <div className="mt-4 [filter:drop-shadow(0_0_0.5px_rgb(0_0_0/0.14))_drop-shadow(0_1px_1px_rgb(0_0_0/0.05))_drop-shadow(0_8px_16px_rgb(0_0_0/0.10))] dark:[filter:drop-shadow(0_0_0.5px_rgb(0_0_0/0.5))_drop-shadow(0_2px_3px_rgb(0_0_0/0.45))_drop-shadow(0_10px_20px_rgb(0_0_0/0.5))]">
+            that work, so it takes the same shape at a shorter throw. */}
+        <div className="mt-4 [filter:drop-shadow(0_0_0.5px_rgb(0_0_0/0.13))_drop-shadow(0_2px_4px_rgb(0_0_0/0.09))_drop-shadow(0_16px_28px_rgb(0_0_0/0.12))] dark:[filter:drop-shadow(0_0_0.5px_rgb(0_0_0/0.55))_drop-shadow(0_2px_4px_rgb(0_0_0/0.5))_drop-shadow(0_14px_24px_rgb(0_0_0/0.55))]">
         <article
           style={sheetMask}
           className="relative bg-card px-6 pt-11 sm:px-9 sm:pt-12 md:px-12"
@@ -226,16 +245,29 @@ export default function CvPage() {
               itself, so its strength can be tuned per theme without touching
               the card colour.
 
-              `multiply` in light: the texture is light grey, so multiplying it
-              into white leaves the grain and none of the grey. `soft-light` in
-              dark, because multiplying into a near-black card would only make
-              it blacker and the grain would vanish.
+              `multiply` in light: the texture is flat grey with the grain
+              carried in its alpha, so multiplying it into white leaves the
+              tooth and none of the grey. `soft-light` in dark, because
+              multiplying into a near-black card would only make it blacker and
+              the grain would vanish.
+
+              The light opacity is low, and it has to be. The texture is grey
+              203 and its alpha never drops below 84, so there is no clear pixel
+              anywhere on it: whatever opacity this layer carries darkens the
+              whole sheet, not just the grain. At 0.3 the mean landed near 245,
+              which is darker than the 252 page behind it, so the paper read as
+              a grey panel rather than as a white sheet and the ink on it lost
+              its snap. 0.08 puts the mean back at 252, level with the page and
+              free to be lifted off it by the shadow, and still leaves about
+              three levels between the texture's lightest and darkest points.
+              That is little in the abstract and plenty across a sheet this
+              wide, which is the only place it is ever seen.
 
               It sits inside the masked element, so the wave clips it too and
               the texture stops exactly where the paper does. */}
           <span
             aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-[0.3] mix-blend-multiply dark:opacity-[0.22] dark:mix-blend-soft-light"
+            className="pointer-events-none absolute inset-0 opacity-[0.08] mix-blend-multiply dark:opacity-[0.22] dark:mix-blend-soft-light"
             style={{
               backgroundImage: "url(/cv/paper-texture.webp)",
               backgroundSize: "250px 250px",

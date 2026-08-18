@@ -72,23 +72,47 @@ export default function RoasterPicker() {
                   actually pick up in a shop. The pouch is one shared PNG with
                   the roaster's mark printed onto its front face.
 
-                  Deliberately no vertical movement on select: the row is an
-                  `overflow-x-auto` scroller, which clips in the block direction
-                  too, so a lifted chip had its top shaved off. */}
-              {/* The box matches the source file's ratio exactly. Any other
+                  The box matches the source file's ratio exactly. Any other
                   ratio letterboxes the art, and every percentage below then
                   stops describing the place on the bag it was measured
-                  against. */}
-              <span className="relative block aspect-[400/489] w-full">
+                  against.
+
+                  Selection lives on this wrapper rather than on the bag and its
+                  printed mark separately, because the two have to move as one
+                  object: scaling the pouch while the logo held its size would
+                  break the registration those percentages exist to hold.
+
+                  The unselected bags step back to 0.95 rather than fading to
+                  0.4. At 0.4 they read as disabled, as though the other
+                  roasters were unavailable rather than simply not the one on
+                  show, and a row of four bags where three look switched off is
+                  a worse shelf than a row where three sit slightly further
+                  back.
+
+                  Scale, but only downward, and only on the inactive ones. This
+                  row is an `overflow-x-auto` scroller, so it clips in the block
+                  direction too: a chip that grew past its natural box got its
+                  top shaved, which is why selecting one has never lifted it.
+                  Shrinking the other three buys the same contrast and stays
+                  inside the box.
+
+                  The 0.95 opacity is doing almost nothing on its own, and is
+                  not meant to. The scale carries the state, and under it the
+                  label goes semibold and up to `text-foreground`, which is the
+                  part that still reads at a glance, at a distance, and with
+                  motion turned off. */}
+              <span
+                className={cn(
+                  "relative block aspect-[400/489] w-full transition-[opacity,transform] duration-base ease-out",
+                  selected ? "scale-100 opacity-100" : "scale-95 opacity-95"
+                )}
+              >
                 <Image
                   src="/shelf/pouch-flat.webp"
                   alt=""
                   fill
                   sizes="(min-width: 640px) 96px, 80px"
-                  className={cn(
-                    "object-contain transition-opacity duration-base ease-out",
-                    selected ? "opacity-100" : "opacity-40"
-                  )}
+                  className="object-contain"
                 />
                 {/* Centred, because this bag is shot straight on rather than
                     at an angle. Sat just below the middle so it lands on the
@@ -120,10 +144,11 @@ export default function RoasterPicker() {
                          negative; taking the colour out leaves a clean white
                          mark. The white bag wanted `brightness-0` for the
                          mirror image of this reason. */
-                      className={cn(
-                        "h-full w-full object-contain grayscale invert transition-opacity duration-base ease-out",
-                        selected ? "opacity-95" : "opacity-50"
-                      )}
+                      /* A flat 95%, not a selection signal. It was never
+                         standing for state: a mark printed at full white on a
+                         near-black bag looks stuck on rather than printed.
+                         The wrapper above carries the state for both. */
+                      className="h-full w-full object-contain opacity-95 grayscale invert"
                     />
                   ) : (
                     <span
@@ -131,10 +156,7 @@ export default function RoasterPicker() {
                          stays black in both. `text-background dark:text-foreground`
                          is the pair that means "near-white either way" in
                          these tokens. */
-                      className={cn(
-                        "font-mono text-2xs text-background transition-opacity duration-base ease-out dark:text-foreground",
-                        selected ? "opacity-95" : "opacity-50"
-                      )}
+                      className="font-mono text-2xs text-background opacity-95 dark:text-foreground"
                     >
                       {roasterInitials(r.name)}
                     </span>
