@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import Image from "next/image";
-import { Download } from "lucide-react";
+import { Download, Scissors } from "lucide-react";
 import Container from "@/components/layout/Container";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl, breadcrumbLd } from "@/lib/seo";
@@ -250,22 +250,30 @@ export default function CvPage() {
               The dashed border and the notches meet because both are measured
               from the sheet's bottom edge, FOOT and PERF being the same
               constants the mask is built from.
+
+              The whole stub is the link, rather than a small link centred in
+              it. The strip below a perforation is one thing you tear, so
+              anything less than all of it is a smaller target than it looks.
+              An anchor rather than a click handler on the div: it is the same
+              one element, and keyboard, middle click and open-in-new-tab come
+              with it instead of being reimplemented.
+
+              No hover fill, deliberately. The stub paints above the grain
+              layer, so a background would blank the texture across the strip
+              on hover and the paper would look like it had a hole in it.
+
               Typeset as a section heading rather than as a button. Inside the
               sheet the accent CTA from the top would read as a control dropped
               onto the paper. */}
-          <div
-            className="relative -mx-6 mt-11 flex items-center justify-center border-t border-dashed border-border-strong sm:-mx-9 md:-mx-12"
+          <a
+            href={PDF}
+            download
+            className="relative -mx-6 mt-11 flex items-center justify-center gap-2 border-t border-dashed border-border-strong font-mono text-2xs uppercase tracking-label text-subtle transition-colors duration-fast ease-out hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:-mx-9 md:-mx-12"
             style={{ height: FOOT }}
           >
-            <a
-              href={PDF}
-              download
-              className="inline-flex items-center gap-2 font-mono text-2xs uppercase tracking-label text-subtle transition-colors duration-fast ease-out hover:text-foreground"
-            >
-              <Download aria-hidden className="h-3.5 w-3.5" />
-              Tear off a copy (PDF)
-            </a>
-          </div>
+            <Scissors aria-hidden className="h-3.5 w-3.5" />
+            Tear off a copy (PDF)
+          </a>
         </article>
         </div>
       </Container>
