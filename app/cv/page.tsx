@@ -245,16 +245,29 @@ export default function CvPage() {
               itself, so its strength can be tuned per theme without touching
               the card colour.
 
-              `multiply` in light: the texture is light grey, so multiplying it
-              into white leaves the grain and none of the grey. `soft-light` in
-              dark, because multiplying into a near-black card would only make
-              it blacker and the grain would vanish.
+              `multiply` in light: the texture is flat grey with the grain
+              carried in its alpha, so multiplying it into white leaves the
+              tooth and none of the grey. `soft-light` in dark, because
+              multiplying into a near-black card would only make it blacker and
+              the grain would vanish.
+
+              The light opacity is low, and it has to be. The texture is grey
+              203 and its alpha never drops below 84, so there is no clear pixel
+              anywhere on it: whatever opacity this layer carries darkens the
+              whole sheet, not just the grain. At 0.3 the mean landed near 245,
+              which is darker than the 252 page behind it, so the paper read as
+              a grey panel rather than as a white sheet and the ink on it lost
+              its snap. 0.08 puts the mean back at 252, level with the page and
+              free to be lifted off it by the shadow, and still leaves about
+              three levels between the texture's lightest and darkest points.
+              That is little in the abstract and plenty across a sheet this
+              wide, which is the only place it is ever seen.
 
               It sits inside the masked element, so the wave clips it too and
               the texture stops exactly where the paper does. */}
           <span
             aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-[0.3] mix-blend-multiply dark:opacity-[0.22] dark:mix-blend-soft-light"
+            className="pointer-events-none absolute inset-0 opacity-[0.08] mix-blend-multiply dark:opacity-[0.22] dark:mix-blend-soft-light"
             style={{
               backgroundImage: "url(/cv/paper-texture.webp)",
               backgroundSize: "250px 250px",
