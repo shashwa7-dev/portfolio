@@ -111,7 +111,21 @@ function parseTrack(rawTitle: string, channel: string): { title: string; artist:
     title = title.replace(SUFFIX, "");
   } while (title !== previous);
 
-  const artist = channel.trim();
+  /* Split the title on a dash before trusting the channel name.
+     "Artist - Song" is what uploaders overwhelmingly write, and the channel is
+     frequently not the artist in any usable form: a label account, or a VEVO
+     one, where "John Mayer - Something Like Olivia" arrives from a channel
+     called `johnmayerVEVO`. Matching the channel against the front of the
+     title, which is what this used to do, fails on exactly that, and then the
+     artist stays "johnmayerVEVO" and the song keeps its own name glued to the
+     front of it. Both halves have to be non-empty, so a title that merely ends
+     in a dash does not blank itself. */
+  const split = title.match(/^(.{2,60}?)\s+[-–—]\s+(.+)$/);
+  if (split) return { title: split[2].trim(), artist: split[1].trim() };
+
+  // No dash: the channel is the best guess at the artist. `VEVO` is a
+  // distributor's suffix rather than part of anybody's name.
+  const artist = channel.trim().replace(/VEVO$/i, "").trim() || channel.trim();
   const prefix = new RegExp(`^${artist.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*[-–—:]\\s*`, "i");
   const stripped = title.replace(prefix, "").trim();
 
@@ -127,6 +141,31 @@ const fold = (s: string) =>
     .replace(/[̀-ͯ]/g, "")
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "");
+
+/**
+ * The same, with any trailing bracketed clause taken off first.
+ *
+ * Catalogues and uploaders disagree about these constantly, and in both
+ * directions. Apple files most Indian film music with the picture attached,
+ * so a playlist entry called "Pal Pal Dil Ke Paas" has to reach a track called
+ * `Pal Pal Dil Ke Paas (From "Blackmail")`. Going the other way, a video
+ * titled "Someone Like You (Live)" has to reach a plain "Someone Like You".
+ *
+ * Deliberately not a substring test, which is the obvious way to do this and
+ * is wrong: "Stronger" is a substring of "Stronger Than Me", and a play button
+ * that quietly serves a different song is worse than one that is missing.
+ * Dropping the bracket and then requiring the rest to match exactly keeps both
+ * of those apart.
+ */
+const BRACKETED = /\s*[([][^()[\]]*[)\]]\s*$/;
+const core = (s: string) => {
+  let previous: string;
+  do {
+    previous = s;
+    s = s.replace(BRACKETED, "").trim();
+  } while (s !== previous);
+  return fold(s);
+};
 
 /**
  * The clip and the sleeve, from Apple's public search endpoint.
@@ -155,7 +194,7 @@ async function findPreview(
   try {
     const term = encodeURIComponent(`${artist} ${title}`);
     const res = await fetch(
-      `https://itunes.apple.com/search?term=${term}&media=music&limit=3`,
+      `https://itunes.apple.com/search?term=${term}&media=music&limit=5`,
       // A song's clip and sleeve do not change. Only the playlist does.
       { next: { revalidate: 86400 } }
     );
@@ -169,10 +208,16 @@ async function findPreview(
       }[];
     };
 
+    /* Exact first, across every result, and only then the relaxed pass.
+       One combined test would take whichever result came back first, and a
+       search for "The Less I Know The Better" returns a Club Edit above the
+       original often enough to matter. */
+    const playable = (results ?? []).filter((r) => r.previewUrl && r.trackName);
     const want = fold(title);
-    const hit = results?.find(
-      (r) => r.previewUrl && r.trackName && fold(r.trackName) === want
-    );
+    const wantCore = core(title);
+    const hit =
+      playable.find((r) => fold(r.trackName!) === want) ??
+      playable.find((r) => core(r.trackName!) === wantCore);
     if (!hit?.previewUrl || !hit.artworkUrl100) return null;
 
     return {
