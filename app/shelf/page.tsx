@@ -7,6 +7,7 @@ import RoasterPicker from "@/components/shelf/RoasterPicker";
 import GearTimeline from "@/components/shelf/GearTimeline";
 import { bookmarks } from "@/lib/bookmarks";
 import { getPlaylist, PLAYLIST_URL } from "@/lib/playlist";
+import OnRepeat from "@/components/shelf/OnRepeat";
 import { setup, scents } from "@/lib/everyday";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl, breadcrumbLd } from "@/lib/seo";
@@ -310,58 +311,11 @@ export default async function ShelfPage() {
       {tracks.length > 0 && (
         <Section number="06" label="Sound" title="On repeat" width="reading">
           <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
-            Whatever is in heavy rotation right now. This reads a YouTube
-            playlist directly, so it changes when the playlist does and nobody
-            has to deploy anything.
+            What I have had on while working, cooking, or walking somewhere. It
+            changes often. Press a sleeve for fifteen seconds of one.
           </p>
 
-          {/* Text, like the bookmarks above. A grid of video thumbnails would
-              drag YouTube's own visual noise onto a page that is otherwise
-              type on paper, and the song is the content. */}
-          <ul className="border-t border-border">
-            {tracks.map((t) => (
-              <li key={t.url} className="border-b border-border">
-                <a
-                  href={t.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group flex items-center gap-3 py-3"
-                >
-                  {/* A circle, so a row of these reads as records rather than
-                      as a column of video stills. The source is 16:9, so
-                      `object-cover` takes the middle square and throws away the
-                      sides, which is the right crop here: a music thumbnail
-                      puts its subject in the centre.
-
-                      Greyscale until hover, the same treatment every image on
-                      the site gets. It earns its place twice here: it stops a
-                      row of stills shouting on a page that is otherwise type on
-                      paper, and it makes the set read as one thing rather than
-                      as fifteen different colour schemes. */}
-                  <span className="relative block h-11 w-11 shrink-0 overflow-hidden rounded-full bg-elevated ring-1 ring-border">
-                    <Image
-                      src={t.thumbnail}
-                      alt=""
-                      fill
-                      sizes="44px"
-                      className="object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
-                    />
-                  </span>
-
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate font-medium text-foreground">
-                      {t.title}
-                    </span>
-                    <span className="block truncate text-sm text-muted-foreground">
-                      {t.artist}
-                    </span>
-                  </span>
-
-                  <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-subtle transition-transform duration-base ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                </a>
-              </li>
-            ))}
-          </ul>
+          <OnRepeat tracks={tracks} />
 
           <a
             href={PLAYLIST_URL}

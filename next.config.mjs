@@ -24,6 +24,13 @@ const nextConfig = {
         hostname: "i.ytimg.com",
         pathname: "/vi/**",
       },
+      // Album art for the same section. Reached first; the YouTube still above
+      // is only the fallback for a track Apple has never heard of.
+      {
+        protocol: "https",
+        hostname: "is1-ssl.mzstatic.com",
+        pathname: "/image/thumb/**",
+      },
     ],
   },
   eslint: {

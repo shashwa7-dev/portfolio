@@ -11,11 +11,10 @@
  * on, and it would buy nothing this page uses. The feed is a plain GET on a
  * public URL.
  *
- * What that costs: the feed returns at most 15 entries and no more, and it
- * carries the video's own upload date rather than the date it was added to the
- * playlist, so there is no way to sort by "recently added" from here. Items
- * arrive in playlist order, so putting new songs at the top of the playlist is
- * what makes them show first.
+ * The feed carries the video's own upload date rather than the date it was
+ * added to the playlist, so there is no way to sort by "recently added" from
+ * here. Items arrive in playlist order, which makes the top of the playlist the
+ * place to put a new song.
  */
 
 const FEED = "https://www.youtube.com/feeds/videos.xml?playlist_id=";
@@ -25,28 +24,26 @@ export const PLAYLIST_ID = "PLJhr-KnGsmsE";
 
 export const PLAYLIST_URL = `https://www.youtube.com/playlist?list=${PLAYLIST_ID}`;
 
+/**
+ * Five, out of the fifteen the feed will hand over.
+ *
+ * The section is a taste and not a catalogue, and the whole playlist is linked
+ * directly underneath for anyone who wants the rest. Fifteen rows would make
+ * this the longest thing on the shelf, which is more than a list of songs has
+ * earned next to everything else on the page.
+ */
+const LIMIT = 5;
+
 export type Track = {
   title: string;
   artist: string;
+  /** The video, for anyone who wants to actually watch it. */
   url: string;
-  thumbnail: string;
+  /** Album art where it was found, the video still otherwise. */
+  artwork: string;
+  /** A 30 second clip, or null when the track could not be matched. */
+  preview: string | null;
 };
-
-/**
- * Built from the video id rather than taken from the feed, and the difference
- * is visible.
- *
- * The feed's `media:thumbnail` points at `hqdefault.jpg`, which is 480x360.
- * That is 4:3, and every 16:9 video is padded into it with black bars: the top
- * row of that file reads (0,0,0) all the way across. Dropping it into a 16:9
- * box would letterbox a letterbox.
- *
- * `mqdefault.jpg` is 320x180, genuinely 16:9, always present, and a third of
- * the weight. `maxresdefault.jpg` is sharper at 1280x720 but is 191KB and is
- * not generated for every video.
- */
-const thumbnailFor = (id: string) =>
-  `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
 
 /** Entities, because the feed is XML and titles are full of `&amp;` and `&#39;`. */
 function decode(s: string): string {
@@ -65,13 +62,29 @@ function decode(s: string): string {
  *
  * Anchored to the end because these always trail the actual name. Run
  * repeatedly, since one title can carry several ("... (Official Video) [4K]").
+ *
+ * No rule for a trailing `| something`. It looks like the same kind of junk and
+ * is not: "Tere Bina | Guru | A.R. Rahman" carries the film and the composer
+ * after the pipe, and stripping there would throw away the half that says what
+ * the song is. Parentheses are reliably decoration. Pipes are not.
  */
-/* No rule for a trailing `| something`. It looks like the same kind of junk and
-   is not: "Tere Bina | Guru | A.R. Rahman" carries the film and the composer
-   after the pipe, and stripping there would throw away the half that says what
-   the song is. Parentheses are reliably decoration, pipes are not. */
 const SUFFIX =
   /\s*[([]\s*(?:official\s*)?(?:music\s*)?(?:lyric\s*)?(?:video|audio|visualizer|visualiser|version|hd|4k|mv)\s*[)\]]\s*$/i;
+
+/**
+ * Built from the video id rather than taken from the feed, and the difference
+ * is visible.
+ *
+ * The feed's `media:thumbnail` points at `hqdefault.jpg`, which is 480x360.
+ * That is 4:3, and every 16:9 video is padded into it with black bars: the top
+ * row of that file reads (0,0,0) all the way across.
+ *
+ * `mqdefault.jpg` is 320x180, genuinely 16:9, always present, and a third of
+ * the weight. It is only reached for when Apple has no sleeve for the track,
+ * since a video still cropped to a circle is a poor substitute for one.
+ */
+const thumbnailFor = (id: string) =>
+  `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
 
 /**
  * A cleaner title and a real artist, from two fields that disagree about which
@@ -107,6 +120,72 @@ function parseTrack(rawTitle: string, channel: string): { title: string; artist:
   return { title: stripped || title.trim() || rawTitle.trim(), artist };
 }
 
+/** Case, punctuation and accents off, so two spellings of one title compare equal. */
+const fold = (s: string) =>
+  s
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "");
+
+/**
+ * The clip and the sleeve, from Apple's public search endpoint.
+ *
+ * Apple rather than YouTube for the audio, and it is not a close call. Playing
+ * a preview through YouTube means their iframe player, which means a
+ * third-party script on a page that currently has none, cookies with it, and a
+ * real chance of serving an advert to somebody who asked for fifteen seconds of
+ * a song. This endpoint needs no key, returns a plain audio file, and sends
+ * `access-control-allow-origin: *`, which is the header that lets the waveform
+ * read the actual audio instead of miming to it.
+ *
+ * Apple also has the album art, which is square and drawn to be looked at. A
+ * video still cropped to a circle is not.
+ *
+ * The match is checked rather than trusted. Taking the first result on faith
+ * puts a covers-band recording, or an unrelated song that happens to share a
+ * word, behind a play button labelled with the real one. If no result folds
+ * down to the same title, the track keeps its video still and gets no preview,
+ * which the row already knows how to render.
+ */
+async function findPreview(
+  title: string,
+  artist: string
+): Promise<{ artwork: string; preview: string } | null> {
+  try {
+    const term = encodeURIComponent(`${artist} ${title}`);
+    const res = await fetch(
+      `https://itunes.apple.com/search?term=${term}&media=music&limit=3`,
+      // A song's clip and sleeve do not change. Only the playlist does.
+      { next: { revalidate: 86400 } }
+    );
+    if (!res.ok) return null;
+
+    const { results } = (await res.json()) as {
+      results?: {
+        trackName?: string;
+        previewUrl?: string;
+        artworkUrl100?: string;
+      }[];
+    };
+
+    const want = fold(title);
+    const hit = results?.find(
+      (r) => r.previewUrl && r.trackName && fold(r.trackName) === want
+    );
+    if (!hit?.previewUrl || !hit.artworkUrl100) return null;
+
+    return {
+      // The size sits in the filename, so a bigger sleeve is a string swap.
+      // 200 covers a 44px record at any pixel density worth serving.
+      artwork: hit.artworkUrl100.replace("100x100", "200x200"),
+      preview: hit.previewUrl,
+    };
+  } catch {
+    return null;
+  }
+}
+
 /**
  * The playlist, or nothing.
  *
@@ -125,23 +204,30 @@ export async function getPlaylist(): Promise<Track[]> {
     if (!res.ok) return [];
     const xml = await res.text();
 
-    return Array.from(xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)).flatMap(
-      ([, entry]) => {
+    const entries = Array.from(xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g))
+      .flatMap(([, entry]) => {
         const id = entry.match(/<yt:videoId>(.*?)<\/yt:videoId>/)?.[1];
         const rawTitle = entry.match(/<title>([\s\S]*?)<\/title>/)?.[1];
         const channel = entry.match(/<name>([\s\S]*?)<\/name>/)?.[1];
         if (!id || !rawTitle) return [];
+        return [{ id, ...parseTrack(decode(rawTitle), decode(channel ?? "")) }];
+      })
+      .slice(0, LIMIT);
 
-        const { title, artist } = parseTrack(decode(rawTitle), decode(channel ?? ""));
-        return [
-          {
-            title,
-            artist,
-            url: `https://www.youtube.com/watch?v=${id}`,
-            thumbnail: thumbnailFor(id),
-          },
-        ];
-      }
+    // Looked up together rather than one after another. Five sequential round
+    // trips to Apple would be five times the wait on a cold render, and they
+    // have nothing to say to one another.
+    return await Promise.all(
+      entries.map(async ({ id, title, artist }) => {
+        const found = await findPreview(title, artist);
+        return {
+          title,
+          artist,
+          url: `https://www.youtube.com/watch?v=${id}`,
+          artwork: found?.artwork || thumbnailFor(id),
+          preview: found?.preview ?? null,
+        };
+      })
     );
   } catch {
     return [];
