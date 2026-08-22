@@ -193,20 +193,37 @@ export default async function ShelfPage() {
             aria-hidden
             className="pointer-events-none absolute inset-x-0 bottom-0 w-full select-none object-cover opacity-[0.13] grayscale transition-opacity duration-med ease-out group-hover:opacity-[0.2] dark:opacity-[0.08] dark:group-hover:opacity-[0.14]"
           />
-          <div className="relative flex items-end justify-between gap-6 p-6 pt-16 md:p-8 md:pt-24">
+          {/* The top padding is what makes this card tall, and it is doing a
+              job: the backdrop is anchored to the bottom edge, so the type has
+              to start far enough down to leave the drawing somewhere to be. A
+              phone has nothing like the width that illustration needs, though,
+              so holding a desktop-sized gap there spends most of the screen on
+              a picture nobody can make out. The gap scales with the viewport
+              instead of jumping at one breakpoint. */}
+          <div className="relative flex items-end justify-between gap-4 p-5 pt-10 sm:gap-6 sm:p-6 sm:pt-16 md:p-8 md:pt-24">
             <div>
               <p className="font-mono text-2xs uppercase tracking-label text-subtle">
                 Longer version
               </p>
-              <p className="mt-2 text-xl font-semibold tracking-tight text-foreground">
+              {/* Steps down on a phone rather than holding `text-xl`. At 20px
+                  this headline wrapped to three lines on a narrow screen, and
+                  three lines of heading over two lines of description reads as
+                  a paragraph with a large first sentence. */}
+              <p className="mt-1.5 text-lg font-semibold tracking-tight text-foreground sm:mt-2 sm:text-xl">
                 How I got into coffee, and what I learnt
               </p>
-              <p className="mt-1.5 max-w-[46ch] text-sm text-muted-foreground">
-                Roast levels, grind size, portafilters, why a lever press works,
-                and why there is nothing wrong with instant.
+              {/* The last clause goes on wider screens only. It is the joke,
+                  and a joke is the first thing to cut when the card has to fit
+                  in a phone. */}
+              <p className="mt-1 max-w-[46ch] text-sm text-muted-foreground sm:mt-1.5">
+                Roast levels, grind size, portafilters, why a lever press works
+                <span className="hidden sm:inline">
+                  , and why there is nothing wrong with instant
+                </span>
+                .
               </p>
             </div>
-            <ArrowRight className="mb-1 h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-base ease-out group-hover:translate-x-0.5" />
+            <ArrowRight className="mb-0.5 h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-base ease-out group-hover:translate-x-0.5 sm:mb-1" />
           </div>
         </Link>
       </Container>
