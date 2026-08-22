@@ -11,6 +11,7 @@ import { baseUrl } from "@/app/sitemap";
 import { ogUrl, blogPostingLd, breadcrumbLd } from "@/lib/seo";
 import { Badge } from "@/components/ui/badge";
 import Container from "@/components/layout/Container";
+import CopyMarkdown from "@/components/common/CopyMarkdown";
 
 export async function generateStaticParams() {
   let posts = getBlogPosts();
@@ -144,6 +145,8 @@ export default function Blog({ params }: any) {
       <article className="prose">
         <CustomMDX source={post.content} />
       </article>
+
+      <CopyMarkdown slug={post.slug} />
 
       {/* Post neighbours. Rendered only when a neighbour exists, so at one post
           this emits nothing at all rather than an empty bordered block. It is
