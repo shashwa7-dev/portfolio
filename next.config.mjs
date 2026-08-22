@@ -12,6 +12,20 @@ const agentDiscoveryLinks = [
 ].join(", ");
 
 const nextConfig = {
+  images: {
+    /* YouTube thumbnails for the shelf's playlist section. Narrow on purpose:
+       one host, one path shape, https only. `remotePatterns` is an allow-list
+       for the optimizer, and anything it matches can be fetched and re-served
+       from this domain, so it should describe exactly what is wanted and
+       nothing adjacent to it. */
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "i.ytimg.com",
+        pathname: "/vi/**",
+      },
+    ],
+  },
   eslint: {
     // Lint runs as its own step (`npm run lint`); warnings must not fail the
     // production build / deployment.

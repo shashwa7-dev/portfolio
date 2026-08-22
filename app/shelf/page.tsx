@@ -308,20 +308,34 @@ export default async function ShelfPage() {
                   href={t.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex items-baseline justify-between gap-4 py-3"
+                  className="group flex items-center gap-3 py-3"
                 >
-                  <span className="min-w-0">
-                    <span className="font-medium text-foreground">
+                  {/* Greyscale until hover, the same treatment every image on
+                      the site gets. It earns its place twice here: it keeps a
+                      row of video stills from shouting on a page that is
+                      otherwise type on paper, and it means the thumbnails read
+                      as one set rather than as sixteen different colour
+                      schemes. */}
+                  <span className="relative block aspect-video w-16 shrink-0 overflow-hidden rounded bg-elevated ring-1 ring-border">
+                    <Image
+                      src={t.thumbnail}
+                      alt=""
+                      fill
+                      sizes="64px"
+                      className="object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
+                    />
+                  </span>
+
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-medium text-foreground">
                       {t.title}
                     </span>
-                    {/* The artist stays on the same line at width and wraps
-                        under the title on a phone, which is why it is an inline
-                        block with its own margin rather than a second row. */}
-                    <span className="ml-2 text-sm text-muted-foreground">
+                    <span className="block truncate text-sm text-muted-foreground">
                       {t.artist}
                     </span>
                   </span>
-                  <ArrowUpRight className="h-3.5 w-3.5 shrink-0 self-center text-subtle transition-transform duration-base ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+
+                  <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-subtle transition-transform duration-base ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                 </a>
               </li>
             ))}

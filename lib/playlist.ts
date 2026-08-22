@@ -29,7 +29,24 @@ export type Track = {
   title: string;
   artist: string;
   url: string;
+  thumbnail: string;
 };
+
+/**
+ * Built from the video id rather than taken from the feed, and the difference
+ * is visible.
+ *
+ * The feed's `media:thumbnail` points at `hqdefault.jpg`, which is 480x360.
+ * That is 4:3, and every 16:9 video is padded into it with black bars: the top
+ * row of that file reads (0,0,0) all the way across. Dropping it into a 16:9
+ * box would letterbox a letterbox.
+ *
+ * `mqdefault.jpg` is 320x180, genuinely 16:9, always present, and a third of
+ * the weight. `maxresdefault.jpg` is sharper at 1280x720 but is 191KB and is
+ * not generated for every video.
+ */
+const thumbnailFor = (id: string) =>
+  `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
 
 /** Entities, because the feed is XML and titles are full of `&amp;` and `&#39;`. */
 function decode(s: string): string {
@@ -116,7 +133,14 @@ export async function getPlaylist(): Promise<Track[]> {
         if (!id || !rawTitle) return [];
 
         const { title, artist } = parseTrack(decode(rawTitle), decode(channel ?? ""));
-        return [{ title, artist, url: `https://www.youtube.com/watch?v=${id}` }];
+        return [
+          {
+            title,
+            artist,
+            url: `https://www.youtube.com/watch?v=${id}`,
+            thumbnail: thumbnailFor(id),
+          },
+        ];
       }
     );
   } catch {
