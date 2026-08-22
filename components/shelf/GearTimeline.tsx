@@ -40,7 +40,7 @@ export default function GearTimeline() {
     <ol className="-mx-3">
       {gear.map((step) => (
         <li key={step.slug}>
-          <div className="flex items-start gap-3 rounded-lg px-3 py-3.5 transition-colors duration-base ease-out hover:bg-elevated sm:gap-4">
+          <div className="group flex items-start gap-3 rounded-lg px-3 py-3.5 transition-colors duration-base ease-out hover:bg-elevated sm:gap-4">
             {/* 56px, down from 96. The artwork is a product cut-out on a plain
                 field, and it carries nothing at 96 that it does not carry at
                 56, so the extra 40px was 200px of page across five rows. */}
@@ -51,7 +51,12 @@ export default function GearTimeline() {
                 width={220}
                 height={220}
                 sizes="56px"
-                className="h-full w-full object-contain grayscale transition-[filter] duration-base ease-out hover:grayscale-0"
+                /* `group-hover`, not `hover`. On its own hover the picture
+                   only found its colour when the cursor was directly over a
+                   56px square, so pointing anywhere else on the row tinted the
+                   row and left the image grey, which read as two things
+                   reacting to two different gestures. */
+                className="h-full w-full object-contain grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
               />
             </div>
 

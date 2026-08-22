@@ -46,9 +46,22 @@ export default function OnRepeat({ tracks }: { tracks: Track[] }) {
     setPlaying(null);
   }, []);
 
-  /* Nothing here survives the component. A preview still running after the
-     reader has navigated away is a browser tab that mysteriously sings. */
-  useEffect(() => stop, [stop]);
+  /* Nothing here survives the component.
+     A preview still running after the reader has navigated away is a browser
+     tab that mysteriously sings, and the context has to go with it: browsers
+     cap how many AudioContexts a page may hold open at once, somewhere around
+     half a dozen. Pausing alone leaks one per mount, so a reader who visits
+     this page, leaves, and comes back often enough would eventually find that
+     `new AudioContext()` throws and the previews had stopped working. */
+  useEffect(
+    () => () => {
+      stop();
+      ctxRef.current?.close().catch(() => {});
+      ctxRef.current = null;
+      analyserRef.current = null;
+    },
+    [stop]
+  );
 
   const draw = useCallback(() => {
     const analyser = analyserRef.current;
@@ -88,18 +101,24 @@ export default function OnRepeat({ tracks }: { tracks: Track[] }) {
           window.AudioContext ??
           (window as unknown as { webkitAudioContext?: typeof AudioContext })
             .webkitAudioContext;
-        if (Ctor) {
-          const ctx = new Ctor();
-          const analyser = ctx.createAnalyser();
-          // 64 bins is coarse, which is what five bars want. A finer transform
-          // would cost more and then be averaged away.
-          analyser.fftSize = 64;
-          // Without smoothing the bars strobe rather than move.
-          analyser.smoothingTimeConstant = 0.75;
-          ctx.createMediaElementSource(audio).connect(analyser);
-          analyser.connect(ctx.destination);
-          ctxRef.current = ctx;
-          analyserRef.current = analyser;
+        try {
+          if (Ctor) {
+            const ctx = new Ctor();
+            const analyser = ctx.createAnalyser();
+            // 64 bins is coarse, which is what five bars want. A finer
+            // transform would cost more and then be averaged away.
+            analyser.fftSize = 64;
+            // Without smoothing the bars strobe rather than move.
+            analyser.smoothingTimeConstant = 0.75;
+            ctx.createMediaElementSource(audio).connect(analyser);
+            analyser.connect(ctx.destination);
+            ctxRef.current = ctx;
+            analyserRef.current = analyser;
+          }
+        } catch {
+          /* The graph is the nice half, not the point. If the browser refuses
+             a context, the song should still play with flat bars rather than
+             the press doing nothing at all. */
         }
       }
       // Suspended is the normal state for a context built in a background tab.

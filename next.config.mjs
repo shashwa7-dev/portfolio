@@ -26,9 +26,16 @@ const nextConfig = {
       },
       // Album art for the same section. Reached first; the YouTube still above
       // is only the fallback for a track Apple has never heard of.
+      //
+      // Wildcarded because Apple shards this across `is1-ssl` through
+      // `is5-ssl` and hands back whichever it feels like. Every track I
+      // sampled came from `is1`, which is exactly how this would have shipped
+      // looking correct and then broken on some future song whose sleeve
+      // happened to live on `is3`. A single `*` is one subdomain label, so
+      // this still admits nothing outside mzstatic.com.
       {
         protocol: "https",
-        hostname: "is1-ssl.mzstatic.com",
+        hostname: "*.mzstatic.com",
         pathname: "/image/thumb/**",
       },
     ],
