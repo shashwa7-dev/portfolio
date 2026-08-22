@@ -98,7 +98,8 @@ Play AI, Polygon, Coinbase, Sentient, NodeOps
 
 ## Personal
 
-- **Timezone:** IST, Asia/Kolkata. The homepage hero shows his current local time live, so if someone asks about overlap or working hours, answer from IST.
+- **Location:** Bengaluru, India. The homepage hero shows it as "BLR" beside an Indian flag.
+- **Timezone:** IST, Asia/Kolkata. The homepage hero shows his current local time live next to the city, so if someone asks about overlap or working hours, answer from IST.
 - **Interests:** Music, Gym, Walking, Gaming, Cooking, Home Barista, Coffee Enthusiast
 - **Favorite series:** Big Bang Theory, Brooklyn 99, Silicon Valley, Breaking Bad, Young Sheldon
 - **Music genres:** Hip-hop, Rock, Punk Rock, Indian Classical, Classical
