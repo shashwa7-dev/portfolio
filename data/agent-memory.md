@@ -43,6 +43,7 @@ design-system package.
 
 | When | What |
 |---|---|
+| Jun 2026 | **Client review pipeline.** Rebuilt on top of the migrated Enterprise dashboard, adding approval and decline flows the iframe version never had. Now the review surface for **8 major enterprise accounts, including Celio, Bear House and Holy Drip**. |
 | Apr 2026 | **Enterprise dashboard in-app migration.** Pulled Enterprise UI out of a separate iframe-hosted repo into the main Next.js app. One auth layer, one design system, no cross-origin tax. |
 | May 2026 | **Canvas Builder for visual workflow authoring.** Drawer-based editor that lets non-engineers compose workflow templates without writing code. |
 | May 2026 | **Content-rich chat input.** Tiptap-based editor with slash commands, skill mentions, structured serialization. Replaced a fragile contenteditable. |
