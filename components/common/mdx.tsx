@@ -90,9 +90,27 @@ interface CodeProps extends React.HTMLAttributes<HTMLElement> {
   children: string;
 }
 
-function Code({ children, ...props }: CodeProps) {
+function Code({ children, className, ...props }: CodeProps) {
+  /* A fence marked `text` is a diagram, not code.
+     sugar-high tokenises whatever it is handed, so box-drawing characters and
+     arrows come out sprinkled with keyword and class colours, which reads as a
+     syntax error rather than a picture. There is no language to detect and no
+     highlighting worth doing, so those blocks pass through unhighlighted. */
+  if (className?.includes("language-text")) {
+    return (
+      <code className={className} {...props}>
+        {children}
+      </code>
+    );
+  }
   let codeHTML = highlight(children);
-  return <code dangerouslySetInnerHTML={{ __html: codeHTML }} {...props} />;
+  return (
+    <code
+      className={className}
+      dangerouslySetInnerHTML={{ __html: codeHTML }}
+      {...props}
+    />
+  );
 }
 
 interface HeadingProps {
