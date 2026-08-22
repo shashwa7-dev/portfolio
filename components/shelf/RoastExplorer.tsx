@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId, useState, type CSSProperties } from "react";
 import Image from "next/image";
 import { Check, Minus, TriangleAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -142,17 +142,52 @@ export default function RoastExplorer() {
 function RoastPanel({ stop }: { stop: RoastStop }) {
   return (
     <>
-      <div className="flex items-start gap-4">
+      {/* The group is this whole header row rather than the bean alone. The
+          bean is 56px on a phone, which is a small thing to ask someone to
+          find with a cursor, and the name and the roaster's description beside
+          it are describing that exact bean. Pointing anywhere at the three of
+          them is the same gesture. */}
+      <div className="group flex items-start gap-4">
         {/* The bean is the answer to "what does this look like in the bag",
             which is the question the words underneath cannot answer. */}
+        {/* Two filters composed, not one.
+
+            The roast filter is per-stop and belongs to the data, so it arrives
+            as a custom property. The theme filter is per-theme and belongs
+            here. Keeping the roast one inline as `filter` directly, as this
+            first did, made the two impossible to combine: an inline style beats
+            a class, so a `dark:` variant could never have got a word in.
+
+            The fallback is `brightness(1)` rather than nothing. A `var()` with
+            no value makes the whole `filter` declaration invalid at computed
+            value time, which would drop the theme half along with it, and
+            `none` cannot be composed with other filter functions at all.
+
+            Light mode is where the work is. Measured against the card each sits
+            on, these beans have plenty of luminance contrast on white (4.5:1 at
+            the lightest roast) and almost none on near-black. The problem in
+            light was never contrast: a mid-brown photograph on flat white reads
+            as a washed out sticker, while the same brown against dark reads as
+            an object with light falling on it. So light gets its saturation and
+            a little contrast back, and a soft shadow to sit it on the card
+            instead of floating on it. Dark is already doing that by itself and
+            is left alone. */}
         <Image
           src={stop.bean}
           alt={`A coffee bean roasted to ${stop.name.toLowerCase()}`}
           width={240}
           height={240}
           sizes="64px"
-          className="h-14 w-14 shrink-0 object-contain sm:h-16 sm:w-16"
-          style={{ filter: stop.beanFilter }}
+          /* Comes toward the reader on hover. The shadow is part of the same
+             `filter`, so it scales with the bean and the lift reads as
+             distance rather than as a bean that simply got bigger.
+
+             Transform only. Under `prefers-reduced-motion` the global rule
+             narrows `transition-property` to colour and opacity, so this
+             arrives instantly for anyone who asked for that, with no
+             `motion-reduce` variant needed here. */
+          className="h-14 w-14 shrink-0 object-contain transition-transform duration-base ease-out group-hover:scale-110 [filter:var(--roast)_saturate(1.25)_contrast(1.06)_drop-shadow(0_2px_3px_rgb(0_0_0/0.22))] dark:[filter:var(--roast)] sm:h-16 sm:w-16"
+          style={{ "--roast": stop.beanFilter ?? "brightness(1)" } as CSSProperties}
         />
         <div className="min-w-0">
           <p className="text-lg font-semibold tracking-tight text-foreground">
