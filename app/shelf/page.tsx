@@ -53,6 +53,15 @@ const BACKDROP_BEANS = [
   { src: "/coffee/beans/dark.webp", transform: "rotate(16deg) translateY(8px)", overlap: -18 },
 ];
 
+/**
+ * Bookmarks are parked while the list is rethought.
+ *
+ * A flag rather than a comment block or a deletion. Commented-out JSX stops
+ * being type-checked and quietly rots against every refactor around it, and
+ * deleting it means writing the section again. This keeps it compiling.
+ */
+const SHOW_BOOKMARKS = false;
+
 export default async function ShelfPage() {
   const tracks = await getPlaylist();
 
@@ -279,43 +288,12 @@ export default async function ShelfPage() {
         </ul>
       </Section>
 
-      <Section number="04" label="Bookmarks" title="Worth keeping" width="reading">
-        <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
-          Links I come back to. Every one carries a reason, or it does not go in.
-        </p>
-
-        {/* Plain text. A chip and a card around every link made three
-            bookmarks look like a product grid; the reason is the content, so
-            the reason gets the space. */}
-        {/* Twelve rows and thirteen rules, on a list whose every entry is a
-            bold link over a paragraph of prose. Whitespace was always doing
-            this job; the lines were just louder. */}
-        <ul className="space-y-6">
-          {bookmarks.map((b) => (
-            <li key={b.url}>
-              <a
-                href={b.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group inline-flex items-baseline gap-1.5 font-medium text-foreground underline decoration-border-strong underline-offset-4 transition-colors hover:decoration-foreground"
-              >
-                {b.title}
-                <ArrowUpRight className="h-3.5 w-3.5 shrink-0 self-center text-subtle transition-transform duration-base ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-              </a>
-              <p className="mt-1 max-w-[62ch] text-sm text-muted-foreground">
-                {b.why}
-              </p>
-            </li>
-          ))}
-        </ul>
-      </Section>
-
       {/* Rendered only when the feed returns something. YouTube is a third
           party, and a playlist that is unreachable, emptied or made private
           should take this section with it rather than leave a heading over
           nothing. */}
       {tracks.length > 0 && (
-        <Section number="05" label="Sound" title="On repeat" width="reading">
+        <Section number="04" label="Sound" title="On repeat" width="reading">
           <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
             What I have had on while working, cooking, or walking somewhere. It
             changes often. Press a sleeve for fifteen seconds of one.
@@ -332,6 +310,43 @@ export default async function ShelfPage() {
             The whole playlist
             <ArrowUpRight className="h-3 w-3" />
           </a>
+        </Section>
+      )}
+
+      {/* Parked, not deleted. Flip SHOW_BOOKMARKS at the top of this file to
+          bring it back. It sits last so that hiding it leaves 01 to 04 running
+          in order, and restoring it appends 05 rather than reopening a gap in
+          the middle of the page. */}
+      {SHOW_BOOKMARKS && (
+        <Section number="05" label="Bookmarks" title="Worth keeping" width="reading">
+          <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
+            Links I come back to. Every one carries a reason, or it does not go in.
+          </p>
+
+          {/* Plain text. A chip and a card around every link made three
+              bookmarks look like a product grid; the reason is the content, so
+              the reason gets the space. */}
+          {/* Twelve rows and thirteen rules, on a list whose every entry is a
+              bold link over a paragraph of prose. Whitespace was always doing
+              this job; the lines were just louder. */}
+          <ul className="space-y-6">
+            {bookmarks.map((b) => (
+              <li key={b.url}>
+                <a
+                  href={b.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group inline-flex items-baseline gap-1.5 font-medium text-foreground underline decoration-border-strong underline-offset-4 transition-colors hover:decoration-foreground"
+                >
+                  {b.title}
+                  <ArrowUpRight className="h-3.5 w-3.5 shrink-0 self-center text-subtle transition-transform duration-base ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                </a>
+                <p className="mt-1 max-w-[62ch] text-sm text-muted-foreground">
+                  {b.why}
+                </p>
+              </li>
+            ))}
+          </ul>
         </Section>
       )}
 
