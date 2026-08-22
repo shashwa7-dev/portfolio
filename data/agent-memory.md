@@ -98,7 +98,7 @@ Play AI, Polygon, Coinbase, Sentient, NodeOps
 
 ## Personal
 
-- **Location:** Bengaluru, India. The homepage hero shows it as "BLR" beside an Indian flag.
+- **Location:** Bengaluru, India. The homepage hero shows it as "BLR" beside an Indian flag, and the contact section repeats it in full next to the timezone.
 - **Timezone:** IST, Asia/Kolkata. The homepage hero shows his current local time live next to the city, so if someone asks about overlap or working hours, answer from IST.
 - **Interests:** Music, Gym, Walking, Gaming, Cooking, Home Barista, Coffee Enthusiast
 - **Favorite series:** Big Bang Theory, Brooklyn 99, Silicon Valley, Breaking Bad, Young Sheldon

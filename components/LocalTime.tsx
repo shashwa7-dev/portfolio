@@ -2,13 +2,11 @@
 
 import { useEffect, useState } from "react";
 import IndiaFlag from "@/components/common/IndiaFlag";
-
-/** Shashwat's timezone, not the visitor's. That is the whole point of showing it. */
-const TIME_ZONE = "Asia/Kolkata";
+import { location } from "@/lib/siteLinks";
 
 function format() {
   return new Intl.DateTimeFormat("en-US", {
-    timeZone: TIME_ZONE,
+    timeZone: location.timeZone,
     hour: "numeric",
     minute: "2-digit",
   }).format(new Date());
@@ -66,12 +64,12 @@ export default function LocalTime() {
         {/* "BLR" is an airport code. It reads instantly to anyone who would use
             it and as three letters to everyone else, so the full name goes to
             assistive tech rather than being spelled out on screen. */}
-        <span className="sr-only">Bengaluru, India. </span>
-        <span aria-hidden>BLR</span>
+        <span className="sr-only">{location.name}. </span>
+        <span aria-hidden>{location.code}</span>
       </span>
       <span aria-hidden>·</span>
       <span className={`tabular-nums ${time ? "" : "invisible"}`}>
-        {time ?? "12:00 AM"} IST
+        {time ?? "12:00 AM"} {location.tzLabel}
       </span>
     </span>
   );
