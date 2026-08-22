@@ -65,16 +65,70 @@ const FOOT = "4rem"; // 64px at a default root, the same as it ever was
 const DASH = 8;
 const GAP = 8;
 const PERFORATION = `repeating-linear-gradient(to right, hsl(var(--border-strong)) 0 ${DASH}px, transparent ${DASH}px ${DASH + GAP}px)`;
-const NOTCH_Y = `calc(${FOOT} - ${R - WAVE}px)`;
-const STUB_H = `calc(${FOOT} - ${R}px)`;
-const BODY_H = `calc(100% - ${FOOT} - ${WAVE * 2 + R}px)`;
+/**
+ * How far the notch row reaches past the bands above and below it.
+ *
+ * Mask layers composite source-over, not by summing alpha. Two bands that meet
+ * on an exact boundary therefore do not add up to opaque along it: when the
+ * boundary lands mid-pixel the browser antialiases both edges, and a row that
+ * is 0.3 covered by one band and 0.7 by the other resolves to
+ * 0.7 + 0.3 * (1 - 0.7) = 0.79, not 1. The missing fifth of a pixel row is a
+ * hairline of half-transparent sheet with the page and the drop-shadow showing
+ * through it, and it reads as a rule drawn across the paper.
+ *
+ * The notch row used to meet the body band at 85 and the stub band at 63,
+ * measured up from the sheet's bottom edge. The perforation paints at
+ * 10 + 64 = 74, which put one of those rules 11px above the tear line.
+ *
+ * Whether a boundary lands mid-pixel depends on the sheet's height, so it
+ * depends on the content, the root font size and the zoom. Hence sometimes.
+ *
+ * The notch row now laps LAP past both. Overlapping opaque coverage resolves
+ * to 1 under source-over, so there is no boundary left to antialias. The lap
+ * is plain fill added above and below the circle, where the box is solid at
+ * every x, so the bite itself is untouched: it still spans 63 to 85 and is
+ * still widest on 74.
+ *
+ * The wave bands are lapped into as well, but to WAVE_TROUGH rather than to
+ * this, for the reason set out on WAVE_LAP.
+ */
+const LAP = 2;
+const NOTCH_H = NOTCH + LAP * 2;
+const NOTCH_Y = `calc(${FOOT} - ${R + LAP - WAVE}px)`;
+/**
+ * How far the body and stub bands lap into the wave bands, and why it is this
+ * number and not half the band.
+ *
+ * Same defect as the one LAP fixes, at the sheet's two outer edges: the body
+ * band met the top wave on 10 and the stub band met the bottom wave on 10, and
+ * an exact boundary antialiases into a half-transparent hairline. Lapping is
+ * the same cure. Picking where to lap to is the part that has a wrong answer.
+ *
+ * `Q` followed by `T` reflects the control point, so the curve does not sit
+ * between its centre line and one peak: it swings symmetrically to both sides
+ * of it, 3 of the path box's 12 units each way. The band is therefore solid at
+ * every x only across the quarter nearest the sheet's interior, from
+ * WAVE * 3 / 4 inwards. Half the band is the centre line, not the far peak, so
+ * lapping to WAVE / 2 slices the back half off every trough and halves the
+ * visible wave. That is not a hypothetical: it is what an earlier attempt at
+ * this did, taking the wave from 5.00px to 2.50px.
+ *
+ * Half a pixel further in than the trough tips, because at exactly
+ * WAVE_TROUGH the band edge is tangent to them, and a tangent is a poor place
+ * to leave a boundary. That still leaves a 2px overlap inside solid paper.
+ */
+const WAVE_TROUGH = (WAVE * 3) / 4;
+const WAVE_LAP = WAVE_TROUGH + 0.5;
+
+const STUB_H = `calc(${FOOT} - ${R + WAVE_LAP - WAVE}px)`;
+const BODY_H = `calc(100% - ${FOOT} - ${WAVE + WAVE_LAP + R}px)`;
 
 const svg = (viewBox: string, d: string) =>
   `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='${viewBox}' preserveAspectRatio='none'%3E%3Cpath d='${d}' fill='%23000'/%3E%3C/svg%3E")`;
 
 const SOLID = "linear-gradient(#000, #000)";
 const WAVEBOX = "0 0 40 12";
-const NOTCHBOX = `0 0 ${NOTCH} ${NOTCH}`;
+const NOTCHBOX = `0 0 ${NOTCH} ${NOTCH_H}`;
 
 /**
  * Seven layers, because mask layers union rather than subtract.
@@ -96,17 +150,20 @@ const layers = [
   { image: svg(WAVEBOX, "M0 6 Q10 0 20 6 T40 6 L40 12 L0 12 Z"), size: `40px ${WAVE}px`, position: "top left", repeat: "repeat-x" },
   { image: svg(WAVEBOX, "M0 6 Q10 12 20 6 T40 6 L40 0 L0 0 Z"), size: `40px ${WAVE}px`, position: "bottom left", repeat: "repeat-x" },
   // The body, from under the top wave down to the top of the notch row.
-  { image: SOLID, size: `100% ${BODY_H}`, position: `left 0px top ${WAVE}px`, repeat: "no-repeat" },
-  // The notch row: a square with a semicircle carved out of its outer edge at
-  // each end, and plain fill spanning between them. The sweep flag is what
-  // carves it. It picks the side of the chord the arc bows to, and bowing the
-  // wrong way puts the bite outside the box, where mask-size clips it away and
-  // the edge comes out straight.
-  { image: svg(NOTCHBOX, `M0 0 H${NOTCH} V${NOTCH} H0 A${R} ${R} 0 0 0 0 0 Z`), size: `${NOTCH}px ${NOTCH}px`, position: `left 0px bottom ${NOTCH_Y}`, repeat: "no-repeat" },
-  { image: svg(NOTCHBOX, `M${NOTCH} 0 H0 V${NOTCH} H${NOTCH} A${R} ${R} 0 0 1 ${NOTCH} 0 Z`), size: `${NOTCH}px ${NOTCH}px`, position: `right 0px bottom ${NOTCH_Y}`, repeat: "no-repeat" },
-  { image: SOLID, size: `calc(100% - ${NOTCH * 2}px) ${NOTCH}px`, position: `left ${NOTCH}px bottom ${NOTCH_Y}`, repeat: "no-repeat" },
+  { image: SOLID, size: `100% ${BODY_H}`, position: `left 0px top ${WAVE_LAP}px`, repeat: "no-repeat" },
+  // The notch row: a box with a semicircle carved out of its outer edge at each
+  // end, and plain fill spanning between them. The sweep flag is what carves
+  // it. It picks the side of the chord the arc bows to, and bowing the wrong
+  // way puts the bite outside the box, where mask-size clips it away and the
+  // edge comes out straight.
+  // Taller than the notch by LAP at each end, and the fill wider by LAP at each
+  // side, so this row laps past its neighbours rather than meeting them. See
+  // the note on LAP.
+  { image: svg(NOTCHBOX, `M0 0 H${NOTCH} V${NOTCH_H} H0 L0 ${LAP + NOTCH} A${R} ${R} 0 0 0 0 ${LAP} Z`), size: `${NOTCH}px ${NOTCH_H}px`, position: `left 0px bottom ${NOTCH_Y}`, repeat: "no-repeat" },
+  { image: svg(NOTCHBOX, `M${NOTCH} 0 H0 V${NOTCH_H} H${NOTCH} L${NOTCH} ${LAP + NOTCH} A${R} ${R} 0 0 1 ${NOTCH} ${LAP} Z`), size: `${NOTCH}px ${NOTCH_H}px`, position: `right 0px bottom ${NOTCH_Y}`, repeat: "no-repeat" },
+  { image: SOLID, size: `calc(100% - ${(NOTCH - LAP) * 2}px) ${NOTCH_H}px`, position: `left ${NOTCH - LAP}px bottom ${NOTCH_Y}`, repeat: "no-repeat" },
   // The stub, from under the notch row down to the bottom wave.
-  { image: SOLID, size: `100% ${STUB_H}`, position: `left 0px bottom ${WAVE}px`, repeat: "no-repeat" },
+  { image: SOLID, size: `100% ${STUB_H}`, position: `left 0px bottom ${WAVE_LAP}px`, repeat: "no-repeat" },
 ];
 
 const join = (key: keyof (typeof layers)[number]) =>
