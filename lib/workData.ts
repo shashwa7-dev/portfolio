@@ -79,10 +79,14 @@ export const organizations: TOrganization[] = [
       web: "https://shopos.ai/",
       app: "https://app.shopos.ai/",
     },
+    // Ordered by what a reader who does not know the company can weigh. The
+    // review surface leads because it is the only one carrying named accounts
+    // and a count; the migration reads as internal plumbing to anyone outside,
+    // so it moves down and shares a line.
     highlights: [
-      "Migrated the Enterprise dashboard from a separate iframe-hosted repo into the main app.",
+      "Built the client review surface now used by 8 enterprise accounts, including Celio, Bear House and Holy Drip.",
       "Built Canvas Builder for visual workflow authoring and the content-rich tiptap chat input.",
-      "Shipped the media carousel for AI asset review and the Skills Library across two apps.",
+      "Migrated the Enterprise dashboard in-app off its iframe, and shipped the Skills Library across two apps.",
     ],
     projects: [],
   },
