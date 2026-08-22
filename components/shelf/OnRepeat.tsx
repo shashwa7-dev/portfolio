@@ -127,13 +127,21 @@ export default function OnRepeat({ tracks }: { tracks: Track[] }) {
           bars would sit at zero while the song plays perfectly well. */}
       <audio ref={audioRef} crossOrigin="anonymous" preload="none" hidden />
 
-      <ul className="border-t border-border">
-        {tracks.map((track, row) => {
+      {/* Rows on air, tinted on hover. See the note in GearTimeline: a rule
+          between every row separates things that were not running together,
+          and the tint only appears where it is useful. */}
+      <ul className="-mx-3">
+        {tracks.map((track) => {
           const isPlaying = playing === track.url;
           return (
             <li
               key={track.url}
-              className="flex items-center gap-3 border-b border-border py-3"
+              className={cn(
+                "flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors duration-base ease-out",
+                // The playing row keeps the tint whether or not anyone is
+                // pointing at it, since it is the row making the noise.
+                isPlaying ? "bg-elevated" : "hover:bg-elevated"
+              )}
             >
               {/* The sleeve is the play button when there is something to play,
                   and a plain picture when there is not. A control that does

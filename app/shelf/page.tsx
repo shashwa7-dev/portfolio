@@ -236,11 +236,11 @@ export default async function ShelfPage() {
         <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
           The rest of the desk. No shopping links on this one, on purpose.
         </p>
-        <ul className="border-t border-border">
+        <ul className="space-y-5">
           {setup.map((item) => (
             <li
               key={item.name}
-              className="flex flex-col gap-1 border-b border-border py-4 sm:flex-row sm:items-baseline sm:gap-6"
+              className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:gap-6"
             >
               <span className="font-mono text-2xs uppercase tracking-label text-subtle sm:w-24 sm:shrink-0">
                 {item.role}
@@ -262,9 +262,9 @@ export default async function ShelfPage() {
         <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
           Two, and I rotate between them. I am not a collector.
         </p>
-        <ul className="border-t border-border">
+        <ul className="space-y-5">
           {scents.map((s) => (
-            <li key={s.name} className="border-b border-border py-4">
+            <li key={s.name}>
               <p className="font-medium text-foreground">
                 {s.name}
                 <span className="ml-2 font-mono text-2xs uppercase tracking-label text-subtle">
@@ -287,9 +287,12 @@ export default async function ShelfPage() {
         {/* Plain text. A chip and a card around every link made three
             bookmarks look like a product grid; the reason is the content, so
             the reason gets the space. */}
-        <ul className="border-t border-border">
+        {/* Twelve rows and thirteen rules, on a list whose every entry is a
+            bold link over a paragraph of prose. Whitespace was always doing
+            this job; the lines were just louder. */}
+        <ul className="space-y-6">
           {bookmarks.map((b) => (
-            <li key={b.url} className="border-b border-border py-4">
+            <li key={b.url}>
               <a
                 href={b.url}
                 target="_blank"

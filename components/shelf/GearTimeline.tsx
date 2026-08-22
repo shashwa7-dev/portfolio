@@ -25,11 +25,22 @@ import { gear } from "@/lib/gear";
  * which is linked directly under this. The row carries `short` instead.
  */
 export default function GearTimeline() {
+  /* No rule between rows, and none around the list.
+     Each row already carries a picture, a name in medium, and a line of
+     description, which is more than enough to tell one from the next. The
+     rules were separating things that were not running together, and forty
+     five of them across this page turned a shelf into a spreadsheet.
+
+     What replaces them is a tint on hover. A rule is on all the time and says
+     nothing; the tint appears only when the reader is pointing at a row, which
+     is the one moment knowing its exact extent is useful. The negative margin
+     lets that tint reach past the text into the gutter, so it reads as a row
+     rather than as a highlighted paragraph. */
   return (
-    <ol className="border-t border-border">
+    <ol className="-mx-3">
       {gear.map((step) => (
-        <li key={step.slug} className="border-b border-border">
-          <div className="flex items-start gap-3 py-3 sm:gap-4">
+        <li key={step.slug}>
+          <div className="flex items-start gap-3 rounded-lg px-3 py-3.5 transition-colors duration-base ease-out hover:bg-elevated sm:gap-4">
             {/* 56px, down from 96. The artwork is a product cut-out on a plain
                 field, and it carries nothing at 96 that it does not carry at
                 56, so the extra 40px was 200px of page across five rows. */}
