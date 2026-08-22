@@ -6,6 +6,7 @@ import Section from "@/components/layout/Section";
 import RoasterPicker from "@/components/shelf/RoasterPicker";
 import GearTimeline from "@/components/shelf/GearTimeline";
 import { bookmarks } from "@/lib/bookmarks";
+import { getPlaylist, PLAYLIST_URL } from "@/lib/playlist";
 import { setup, scents } from "@/lib/everyday";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl, breadcrumbLd } from "@/lib/seo";
@@ -51,7 +52,9 @@ const BACKDROP_BEANS = [
   { src: "/coffee/beans/dark.webp", transform: "rotate(16deg) translateY(8px)", overlap: -18 },
 ];
 
-export default function ShelfPage() {
+export default async function ShelfPage() {
+  const tracks = await getPlaylist();
+
   return (
     <main className="py-8 md:py-12">
       <script
@@ -282,6 +285,59 @@ export default function ShelfPage() {
           ))}
         </ul>
       </Section>
+
+      {/* Rendered only when the feed returns something. YouTube is a third
+          party, and a playlist that is unreachable, emptied or made private
+          should take this section with it rather than leave a heading over
+          nothing. */}
+      {tracks.length > 0 && (
+        <Section number="06" label="Sound" title="On repeat" width="reading">
+          <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
+            Whatever is in heavy rotation right now. This reads a YouTube
+            playlist directly, so it changes when the playlist does and nobody
+            has to deploy anything.
+          </p>
+
+          {/* Text, like the bookmarks above. A grid of video thumbnails would
+              drag YouTube's own visual noise onto a page that is otherwise
+              type on paper, and the song is the content. */}
+          <ul className="border-t border-border">
+            {tracks.map((t) => (
+              <li key={t.url} className="border-b border-border">
+                <a
+                  href={t.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-baseline justify-between gap-4 py-3"
+                >
+                  <span className="min-w-0">
+                    <span className="font-medium text-foreground">
+                      {t.title}
+                    </span>
+                    {/* The artist stays on the same line at width and wraps
+                        under the title on a phone, which is why it is an inline
+                        block with its own margin rather than a second row. */}
+                    <span className="ml-2 text-sm text-muted-foreground">
+                      {t.artist}
+                    </span>
+                  </span>
+                  <ArrowUpRight className="h-3.5 w-3.5 shrink-0 self-center text-subtle transition-transform duration-base ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                </a>
+              </li>
+            ))}
+          </ul>
+
+          <a
+            href={PLAYLIST_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-flex items-center gap-1.5 font-mono text-2xs uppercase tracking-label text-subtle transition-colors duration-fast ease-out hover:text-foreground"
+          >
+            The whole playlist
+            <ArrowUpRight className="h-3 w-3" />
+          </a>
+        </Section>
+      )}
 
       <Container width="reading" className="pb-10">
         <Link
