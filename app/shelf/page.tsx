@@ -6,6 +6,8 @@ import Section from "@/components/layout/Section";
 import RoasterPicker from "@/components/shelf/RoasterPicker";
 import GearTimeline from "@/components/shelf/GearTimeline";
 import { bookmarks } from "@/lib/bookmarks";
+import { getPlaylist, PLAYLIST_URL } from "@/lib/playlist";
+import OnRepeat from "@/components/shelf/OnRepeat";
 import { setup, scents } from "@/lib/everyday";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl, breadcrumbLd } from "@/lib/seo";
@@ -51,7 +53,18 @@ const BACKDROP_BEANS = [
   { src: "/coffee/beans/dark.webp", transform: "rotate(16deg) translateY(8px)", overlap: -18 },
 ];
 
-export default function ShelfPage() {
+/**
+ * Bookmarks are parked while the list is rethought.
+ *
+ * A flag rather than a comment block or a deletion. Commented-out JSX stops
+ * being type-checked and quietly rots against every refactor around it, and
+ * deleting it means writing the section again. This keeps it compiling.
+ */
+const SHOW_BOOKMARKS = false;
+
+export default async function ShelfPage() {
+  const tracks = await getPlaylist();
+
   return (
     <main className="py-8 md:py-12">
       <script
@@ -76,7 +89,7 @@ export default function ShelfPage() {
         </p>
       </Container>
 
-      <Section number="01" label="Coffee" title="Roasters I buy from" width="reading">
+      <Section number="01" label="Coffee" title="What I drink" width="reading">
         {/* The taste note sits above the picker, not below it. Underneath, it
             moved every time someone switched to a roaster with a different
             number of beans, which is a layout shift caused by nothing the
@@ -161,62 +174,82 @@ export default function ShelfPage() {
             </span>
           </span>
         </Link>
-      </Section>
 
-      <Section number="02" label="Gear" title="Coffee gear" width="reading">
-        <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
-          How I got here. Each one solved the problem the last one left me with.
+        {/* A subheading rather than a section of its own. The roasters, the
+            gear and the long read are one subject, and giving each its own
+            numbered section spent three lots of section padding saying so. */}
+        <h3 className="mt-10 font-mono text-2xs uppercase tracking-label text-subtle">
+          Gear, in the order I bought it
+        </h3>
+        <p className="mb-4 mt-1.5 max-w-[62ch] text-sm text-muted-foreground">
+          Each one solved the problem the last one left me with.
         </p>
         <GearTimeline />
+
+        <div className="mt-8">
+          <Link
+            href="/coffee"
+            className="group relative block overflow-hidden rounded-2xl border border-border bg-card"
+          >
+            <Image
+              src="/shelf/coffee-backdrop.webp"
+              alt=""
+              width={1600}
+              height={1067}
+              /* Without `sizes`, next/image builds an x-descriptor srcset off the
+                 `width` prop, so a 1x screen downloads the 1600w variant for a
+                 slot that never exceeds the reading container's 712px. */
+              sizes="(max-width: 760px) 100vw, 712px"
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 bottom-0 w-full select-none object-cover opacity-[0.13] grayscale transition-opacity duration-med ease-out group-hover:opacity-[0.2] dark:opacity-[0.08] dark:group-hover:opacity-[0.14]"
+            />
+            {/* The top padding is what makes this card tall, and it is doing a
+                job: the backdrop is anchored to the bottom edge, so the type has
+                to start far enough down to leave the drawing somewhere to be. A
+                phone has nothing like the width that illustration needs, though,
+                so holding a desktop-sized gap there spends most of the screen on
+                a picture nobody can make out. The gap scales with the viewport
+                instead of jumping at one breakpoint. */}
+            <div className="relative flex items-end justify-between gap-4 p-5 pt-10 sm:gap-6 sm:p-6 sm:pt-16 md:p-8 md:pt-24">
+              <div>
+                <p className="font-mono text-2xs uppercase tracking-label text-subtle">
+                  Longer version
+                </p>
+                {/* Steps down on a phone rather than holding `text-xl`. At 20px
+                    this headline wrapped to three lines on a narrow screen, and
+                    three lines of heading over two lines of description reads as
+                    a paragraph with a large first sentence. */}
+                <p className="mt-1.5 text-lg font-semibold tracking-tight text-foreground sm:mt-2 sm:text-xl">
+                  How I got into coffee, and what I learnt
+                </p>
+                {/* The last clause goes on wider screens only. It is the joke,
+                    and a joke is the first thing to cut when the card has to fit
+                    in a phone. */}
+                <p className="mt-1 max-w-[46ch] text-sm text-muted-foreground sm:mt-1.5">
+                  Roast levels, grind size, portafilters, why a lever press works
+                  <span className="hidden sm:inline">
+                    , and why there is nothing wrong with instant
+                  </span>
+                  .
+                </p>
+              </div>
+              <ArrowRight className="mb-0.5 h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-base ease-out group-hover:translate-x-0.5 sm:mb-1" />
+            </div>
+          </Link>
+        </div>
       </Section>
 
-      {/* The one place on the site with a picture behind the type. It earns it
-          by being the doorway to the long read, and the illustration is drawn
-          rather than photographic, so it sits with the rest of the design. */}
-      <Container width="reading" className="py-10 md:py-14">
-        <Link
-          href="/coffee"
-          className="group relative block overflow-hidden rounded-2xl border border-border bg-card"
-        >
-          <Image
-            src="/shelf/coffee-backdrop.webp"
-            alt=""
-            width={1600}
-            height={1067}
-            /* Without `sizes`, next/image builds an x-descriptor srcset off the
-               `width` prop, so a 1x screen downloads the 1600w variant for a
-               slot that never exceeds the reading container's 712px. */
-            sizes="(max-width: 760px) 100vw, 712px"
-            aria-hidden
-            className="pointer-events-none absolute inset-x-0 bottom-0 w-full select-none object-cover opacity-[0.13] grayscale transition-opacity duration-med ease-out group-hover:opacity-[0.2] dark:opacity-[0.08] dark:group-hover:opacity-[0.14]"
-          />
-          <div className="relative flex items-end justify-between gap-6 p-6 pt-16 md:p-8 md:pt-24">
-            <div>
-              <p className="font-mono text-2xs uppercase tracking-label text-subtle">
-                Longer version
-              </p>
-              <p className="mt-2 text-xl font-semibold tracking-tight text-foreground">
-                How I got into coffee, and what I learnt
-              </p>
-              <p className="mt-1.5 max-w-[46ch] text-sm text-muted-foreground">
-                Roast levels, grind size, portafilters, why a lever press works,
-                and why there is nothing wrong with instant.
-              </p>
-            </div>
-            <ArrowRight className="mb-1 h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-base ease-out group-hover:translate-x-0.5" />
-          </div>
-        </Link>
-      </Container>
 
-      <Section number="03" label="Gear" title="Everyday setup" width="reading">
+
+      <Section number="02" label="Desk" title="Everyday setup" width="reading">
         <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
           The rest of the desk. No shopping links on this one, on purpose.
         </p>
-        <ul className="border-t border-border">
+        <ul className="space-y-5">
           {setup.map((item) => (
             <li
               key={item.name}
-              className="flex flex-col gap-1 border-b border-border py-4 sm:flex-row sm:items-baseline sm:gap-6"
+              className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:gap-6"
             >
               <span className="font-mono text-2xs uppercase tracking-label text-subtle sm:w-24 sm:shrink-0">
                 {item.role}
@@ -234,13 +267,13 @@ export default function ShelfPage() {
         </ul>
       </Section>
 
-      <Section number="04" label="Scent" title="What I wear" width="reading">
+      <Section number="03" label="Scent" title="What I wear" width="reading">
         <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
           Two, and I rotate between them. I am not a collector.
         </p>
-        <ul className="border-t border-border">
+        <ul className="space-y-5">
           {scents.map((s) => (
-            <li key={s.name} className="border-b border-border py-4">
+            <li key={s.name}>
               <p className="font-medium text-foreground">
                 {s.name}
                 <span className="ml-2 font-mono text-2xs uppercase tracking-label text-subtle">
@@ -255,33 +288,67 @@ export default function ShelfPage() {
         </ul>
       </Section>
 
-      <Section number="05" label="Bookmarks" title="Worth keeping" width="reading">
-        <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
-          Links I come back to. Every one carries a reason, or it does not go in.
-        </p>
+      {/* Rendered only when the feed returns something. YouTube is a third
+          party, and a playlist that is unreachable, emptied or made private
+          should take this section with it rather than leave a heading over
+          nothing. */}
+      {tracks.length > 0 && (
+        <Section number="04" label="Sound" title="On repeat" width="reading">
+          <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
+            What I have had on while working, cooking, or walking somewhere. It
+            changes often. Press a sleeve for fifteen seconds of one.
+          </p>
 
-        {/* Plain text. A chip and a card around every link made three
-            bookmarks look like a product grid; the reason is the content, so
-            the reason gets the space. */}
-        <ul className="border-t border-border">
-          {bookmarks.map((b) => (
-            <li key={b.url} className="border-b border-border py-4">
-              <a
-                href={b.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group inline-flex items-baseline gap-1.5 font-medium text-foreground underline decoration-border-strong underline-offset-4 transition-colors hover:decoration-foreground"
-              >
-                {b.title}
-                <ArrowUpRight className="h-3.5 w-3.5 shrink-0 self-center text-subtle transition-transform duration-base ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-              </a>
-              <p className="mt-1 max-w-[62ch] text-sm text-muted-foreground">
-                {b.why}
-              </p>
-            </li>
-          ))}
-        </ul>
-      </Section>
+          <OnRepeat tracks={tracks} />
+
+          <a
+            href={PLAYLIST_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-flex items-center gap-1.5 font-mono text-2xs uppercase tracking-label text-subtle transition-colors duration-fast ease-out hover:text-foreground"
+          >
+            The whole playlist
+            <ArrowUpRight className="h-3 w-3" />
+          </a>
+        </Section>
+      )}
+
+      {/* Parked, not deleted. Flip SHOW_BOOKMARKS at the top of this file to
+          bring it back. It sits last so that hiding it leaves 01 to 04 running
+          in order, and restoring it appends 05 rather than reopening a gap in
+          the middle of the page. */}
+      {SHOW_BOOKMARKS && (
+        <Section number="05" label="Bookmarks" title="Worth keeping" width="reading">
+          <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
+            Links I come back to. Every one carries a reason, or it does not go in.
+          </p>
+
+          {/* Plain text. A chip and a card around every link made three
+              bookmarks look like a product grid; the reason is the content, so
+              the reason gets the space. */}
+          {/* Twelve rows and thirteen rules, on a list whose every entry is a
+              bold link over a paragraph of prose. Whitespace was always doing
+              this job; the lines were just louder. */}
+          <ul className="space-y-6">
+            {bookmarks.map((b) => (
+              <li key={b.url}>
+                <a
+                  href={b.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group inline-flex items-baseline gap-1.5 font-medium text-foreground underline decoration-border-strong underline-offset-4 transition-colors hover:decoration-foreground"
+                >
+                  {b.title}
+                  <ArrowUpRight className="h-3.5 w-3.5 shrink-0 self-center text-subtle transition-transform duration-base ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                </a>
+                <p className="mt-1 max-w-[62ch] text-sm text-muted-foreground">
+                  {b.why}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </Section>
+      )}
 
       <Container width="reading" className="pb-10">
         <Link

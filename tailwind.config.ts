@@ -33,6 +33,12 @@ const config: Config = {
         // Applied through group-hover, so the class comes off on unhover and
         // the next hover replays it from the top rather than it running on.
         snip: "snip var(--duration-med) var(--ease-out)",
+        // The only loop in here, and the exception is deliberate: it reports
+        // that a preview is playing, it is started by a press, and it stops on
+        // its own after fifteen seconds. Reuses Tailwind's own `spin`
+        // keyframes at a speed a record actually turns at rather than the 1s
+        // default, which reads as a loading spinner.
+        "spin-record": "spin 4s linear infinite",
       },
       keyframes: {
         "loading-bar": {
