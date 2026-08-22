@@ -1,13 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-/** Shashwat's timezone, not the visitor's. That is the whole point of showing it. */
-const TIME_ZONE = "Asia/Kolkata";
+import IndiaFlag from "@/components/common/IndiaFlag";
+import { location } from "@/lib/siteLinks";
 
 function format() {
   return new Intl.DateTimeFormat("en-US", {
-    timeZone: TIME_ZONE,
+    timeZone: location.timeZone,
     hour: "numeric",
     minute: "2-digit",
   }).format(new Date());
@@ -20,7 +19,7 @@ function format() {
  * hours does this person overlap with mine" is a question a client actually has,
  * and a live clock answers it more concretely than naming a city does.
  *
- * Why it is a client component that renders nothing on the first pass: the
+ * Why the clock is a client component that renders nothing on the first pass: the
  * homepage is statically generated, so any time computed during render is baked
  * at build time and would be wrong forever after. Returning null until the mount
  * effect runs also avoids a hydration mismatch, which a server-rendered
@@ -39,36 +38,39 @@ export default function LocalTime() {
     return () => clearInterval(id);
   }, []);
 
-  // Before mount, reserve the box instead of rendering nothing.
+  // The place is static and the time is not, so only the time waits for mount.
   //
-  // Returning null meant this row went from zero height to a line of text once
-  // the effect ran, and because the identity block distributes its rows with
-  // `justify-between`, that reflowed everything above it. The delay is usually a
-  // single frame, but it is however long hydration takes, so on a slow connection
-  // it was a visible jump.
+  // Before, the whole row returned null until the effect ran, which took it from
+  // zero height to a line of text; because the identity block distributes its
+  // rows with `justify-between`, that reflowed everything above it. Now the flag
+  // and the city paint on the server and only the clock holds a reserved box.
   //
-  // The placeholder is the longest string this can ever produce, rendered
-  // invisible. In a monospace face every glyph is the same width, so twelve
-  // characters ("12:00 AM IST") is the widest case and the reserved box is exact
-  // rather than estimated. It is not a pulsing skeleton on purpose: an ambient
-  // loop for a one-frame gap would draw more attention than the gap does.
+  // That box is the longest string the clock can produce, rendered invisible. In
+  // a monospace face every glyph is the same width, so eight characters
+  // ("12:00 AM") is the widest case and the reservation is exact rather than
+  // estimated. `visibility: hidden` also keeps the placeholder out of the
+  // accessibility tree, so nothing announces a time that is not real. It is not
+  // a pulsing skeleton on purpose: an ambient loop for a one-frame gap would
+  // draw more attention than the gap does.
   //
-  // Server and first client render agree on this branch, so there is no hydration
-  // mismatch to suppress.
-  if (!time) {
-    return (
-      <span
-        aria-hidden
-        className="invisible font-mono text-2xs uppercase tracking-label text-subtle"
-      >
-        12:00 AM IST
-      </span>
-    );
-  }
-
+  // Server and first client render agree, so there is no hydration mismatch to
+  // suppress.
   return (
-    <span className="font-mono text-2xs uppercase tracking-label tabular-nums text-subtle">
-      {time} IST
+    <span className="inline-flex items-center gap-1.5 font-mono text-2xs uppercase tracking-label text-subtle">
+      {/* Decorative: the city beside it already carries the meaning, and a
+          screen reader announcing "flag" before it would only be noise. */}
+      <IndiaFlag aria-hidden className="h-2.5 w-[0.9375rem] shrink-0" />
+      <span>
+        {/* "BLR" is an airport code. It reads instantly to anyone who would use
+            it and as three letters to everyone else, so the full name goes to
+            assistive tech rather than being spelled out on screen. */}
+        <span className="sr-only">{location.name}. </span>
+        <span aria-hidden>{location.code}</span>
+      </span>
+      <span aria-hidden>·</span>
+      <span className={`tabular-nums ${time ? "" : "invisible"}`}>
+        {time ?? "12:00 AM"} {location.tzLabel}
+      </span>
     </span>
   );
 }

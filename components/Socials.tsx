@@ -2,7 +2,7 @@
 import React from "react";
 import { SVGS } from "./SVGS";
 import Section from "@/components/layout/Section";
-import { socialLinks, contactEmail } from "@/lib/siteLinks";
+import { socialLinks, contactEmail, location } from "@/lib/siteLinks";
 
 const ICONS = {
   GitHub: SVGS.Github,
@@ -21,6 +21,20 @@ const Socials = () => {
         >
           {contactEmail}
         </a>
+        {/* Where and when, in text rather than with the hero's flag.
+            This is the point in the page where someone decides to write, and
+            "will they overlap with my hours" is a live question right then. The
+            hero is a full scroll back by now, so it is not a repeat so much as
+            the answer arriving where it is needed.
+
+            No flag, deliberately. The palette is a restrained neutral and the
+            tricolour is the most saturated thing on the site, so it reads as a
+            deliberate accent at one instance and as a motif at two. The hero
+            keeps it; this says the same thing quietly. */}
+        <p className="font-mono text-2xs uppercase tracking-label text-subtle">
+          {location.name} · {location.tzLabel}
+        </p>
+
         <div className="flex gap-4 pt-2 text-sm text-muted-foreground">
           {socialLinks.map(({ name, href }) => {
             const Icon = ICONS[name];

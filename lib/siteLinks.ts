@@ -37,3 +37,24 @@ export const socialLinks: SocialLink[] = [
 ];
 
 export const contactEmail = "contact@shashwa7.in";
+
+/**
+ * Where Shashwat works from.
+ *
+ * Here rather than in whichever component happened to show it first, for the
+ * reason at the top of this file: the hero states it and so does the contact
+ * section, and two copies of a fact drift the moment one of them is edited.
+ *
+ * `data/cv.md` keeps its own copy on purpose. It is markdown read at build time
+ * and cannot import this, and it is the single source the PDF is generated
+ * from, so its contact line has to stay self-contained.
+ */
+export const location = {
+  /** IATA code. What the hero's compact row has room for. */
+  code: "BLR",
+  /** What prose surfaces show, and what assistive tech gets in place of the code. */
+  name: "Bengaluru, India",
+  /** Shashwat's zone, not the visitor's. That is the whole point of showing it. */
+  timeZone: "Asia/Kolkata",
+  tzLabel: "IST",
+};
