@@ -310,18 +310,23 @@ export default async function ShelfPage() {
                   rel="noopener noreferrer"
                   className="group flex items-center gap-3 py-3"
                 >
-                  {/* Greyscale until hover, the same treatment every image on
-                      the site gets. It earns its place twice here: it keeps a
-                      row of video stills from shouting on a page that is
-                      otherwise type on paper, and it means the thumbnails read
-                      as one set rather than as sixteen different colour
-                      schemes. */}
-                  <span className="relative block aspect-video w-16 shrink-0 overflow-hidden rounded bg-elevated ring-1 ring-border">
+                  {/* A circle, so a row of these reads as records rather than
+                      as a column of video stills. The source is 16:9, so
+                      `object-cover` takes the middle square and throws away the
+                      sides, which is the right crop here: a music thumbnail
+                      puts its subject in the centre.
+
+                      Greyscale until hover, the same treatment every image on
+                      the site gets. It earns its place twice here: it stops a
+                      row of stills shouting on a page that is otherwise type on
+                      paper, and it makes the set read as one thing rather than
+                      as fifteen different colour schemes. */}
+                  <span className="relative block h-11 w-11 shrink-0 overflow-hidden rounded-full bg-elevated ring-1 ring-border">
                     <Image
                       src={t.thumbnail}
                       alt=""
                       fill
-                      sizes="64px"
+                      sizes="44px"
                       className="object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
                     />
                   </span>
