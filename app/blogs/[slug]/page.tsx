@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { CustomMDX } from "@/components/common/mdx";
@@ -11,6 +12,7 @@ import { baseUrl } from "@/app/sitemap";
 import { ogUrl, blogPostingLd, breadcrumbLd } from "@/lib/seo";
 import { Badge } from "@/components/ui/badge";
 import Container from "@/components/layout/Container";
+import CopyMarkdown from "@/components/common/CopyMarkdown";
 
 export async function generateStaticParams() {
   let posts = getBlogPosts();
@@ -137,6 +139,39 @@ export default function Blog({ params }: any) {
           </Badge>
         ))}
       </div>
+
+      {/* The header image, on the same 16/9 box the blog index draws it in, so
+          a post shows the reader the same crop twice rather than two different
+          framings of one picture.
+
+          `fill` inside a fixed ratio rather than intrinsic width and height,
+          because those would have to be hardcoded here and every future post's
+          art would then have to match this one's dimensions.
+
+          `priority`: on a post that has one, this is the largest thing above
+          the fold, so it is the LCP element and should not wait for the lazy
+          observer.
+
+          `alt=""`: the picture illustrates the title it sits under and adds
+          nothing a screen reader needs, and the alternative is inventing
+          description for someone else's artwork. Decorative is the honest
+          value. */}
+      {post.metadata.image && (
+        <div className="relative mt-6 aspect-[16/9] w-full overflow-hidden rounded-lg border border-border bg-elevated">
+          <Image
+            src={post.metadata.image}
+            alt=""
+            fill
+            priority
+            /* The reading container is max-w-[760px] with px-6, so the real
+               content box is 712px, and below that breakpoint it is the
+               viewport less the same 48px of gutter. Overstating this makes
+               next/image serve the next bucket up for no benefit. */
+            sizes="(max-width: 760px) calc(100vw - 48px), 712px"
+            className="object-cover grayscale transition-[filter] duration-base ease-out hover:grayscale-0"
+          />
+        </div>
+      )}
       {/* Derived from the source rather than the DOM, so it is server
           rendered and costs no layout pass. It returns null on a post with no
           headings, which is why there is no guard here. */}
@@ -144,6 +179,8 @@ export default function Blog({ params }: any) {
       <article className="prose">
         <CustomMDX source={post.content} />
       </article>
+
+      <CopyMarkdown slug={post.slug} />
 
       {/* Post neighbours. Rendered only when a neighbour exists, so at one post
           this emits nothing at all rather than an empty bordered block. It is
