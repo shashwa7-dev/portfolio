@@ -80,7 +80,7 @@ export default async function ShelfPage() {
         </p>
       </Container>
 
-      <Section number="01" label="Coffee" title="Roasters I buy from" width="reading">
+      <Section number="01" label="Coffee" title="What I drink" width="reading">
         {/* The taste note sits above the picker, not below it. Underneath, it
             moved every time someone switched to a roaster with a different
             number of beans, which is a layout shift caused by nothing the
@@ -165,71 +165,74 @@ export default async function ShelfPage() {
             </span>
           </span>
         </Link>
-      </Section>
 
-      <Section number="02" label="Gear" title="Coffee gear" width="reading">
-        <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
-          How I got here. Each one solved the problem the last one left me with.
+        {/* A subheading rather than a section of its own. The roasters, the
+            gear and the long read are one subject, and giving each its own
+            numbered section spent three lots of section padding saying so. */}
+        <h3 className="mt-10 font-mono text-2xs uppercase tracking-label text-subtle">
+          Gear, in the order I bought it
+        </h3>
+        <p className="mb-4 mt-1.5 max-w-[62ch] text-sm text-muted-foreground">
+          Each one solved the problem the last one left me with.
         </p>
         <GearTimeline />
+
+        <div className="mt-8">
+          <Link
+            href="/coffee"
+            className="group relative block overflow-hidden rounded-2xl border border-border bg-card"
+          >
+            <Image
+              src="/shelf/coffee-backdrop.webp"
+              alt=""
+              width={1600}
+              height={1067}
+              /* Without `sizes`, next/image builds an x-descriptor srcset off the
+                 `width` prop, so a 1x screen downloads the 1600w variant for a
+                 slot that never exceeds the reading container's 712px. */
+              sizes="(max-width: 760px) 100vw, 712px"
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 bottom-0 w-full select-none object-cover opacity-[0.13] grayscale transition-opacity duration-med ease-out group-hover:opacity-[0.2] dark:opacity-[0.08] dark:group-hover:opacity-[0.14]"
+            />
+            {/* The top padding is what makes this card tall, and it is doing a
+                job: the backdrop is anchored to the bottom edge, so the type has
+                to start far enough down to leave the drawing somewhere to be. A
+                phone has nothing like the width that illustration needs, though,
+                so holding a desktop-sized gap there spends most of the screen on
+                a picture nobody can make out. The gap scales with the viewport
+                instead of jumping at one breakpoint. */}
+            <div className="relative flex items-end justify-between gap-4 p-5 pt-10 sm:gap-6 sm:p-6 sm:pt-16 md:p-8 md:pt-24">
+              <div>
+                <p className="font-mono text-2xs uppercase tracking-label text-subtle">
+                  Longer version
+                </p>
+                {/* Steps down on a phone rather than holding `text-xl`. At 20px
+                    this headline wrapped to three lines on a narrow screen, and
+                    three lines of heading over two lines of description reads as
+                    a paragraph with a large first sentence. */}
+                <p className="mt-1.5 text-lg font-semibold tracking-tight text-foreground sm:mt-2 sm:text-xl">
+                  How I got into coffee, and what I learnt
+                </p>
+                {/* The last clause goes on wider screens only. It is the joke,
+                    and a joke is the first thing to cut when the card has to fit
+                    in a phone. */}
+                <p className="mt-1 max-w-[46ch] text-sm text-muted-foreground sm:mt-1.5">
+                  Roast levels, grind size, portafilters, why a lever press works
+                  <span className="hidden sm:inline">
+                    , and why there is nothing wrong with instant
+                  </span>
+                  .
+                </p>
+              </div>
+              <ArrowRight className="mb-0.5 h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-base ease-out group-hover:translate-x-0.5 sm:mb-1" />
+            </div>
+          </Link>
+        </div>
       </Section>
 
-      {/* The one place on the site with a picture behind the type. It earns it
-          by being the doorway to the long read, and the illustration is drawn
-          rather than photographic, so it sits with the rest of the design. */}
-      <Container width="reading" className="py-10 md:py-14">
-        <Link
-          href="/coffee"
-          className="group relative block overflow-hidden rounded-2xl border border-border bg-card"
-        >
-          <Image
-            src="/shelf/coffee-backdrop.webp"
-            alt=""
-            width={1600}
-            height={1067}
-            /* Without `sizes`, next/image builds an x-descriptor srcset off the
-               `width` prop, so a 1x screen downloads the 1600w variant for a
-               slot that never exceeds the reading container's 712px. */
-            sizes="(max-width: 760px) 100vw, 712px"
-            aria-hidden
-            className="pointer-events-none absolute inset-x-0 bottom-0 w-full select-none object-cover opacity-[0.13] grayscale transition-opacity duration-med ease-out group-hover:opacity-[0.2] dark:opacity-[0.08] dark:group-hover:opacity-[0.14]"
-          />
-          {/* The top padding is what makes this card tall, and it is doing a
-              job: the backdrop is anchored to the bottom edge, so the type has
-              to start far enough down to leave the drawing somewhere to be. A
-              phone has nothing like the width that illustration needs, though,
-              so holding a desktop-sized gap there spends most of the screen on
-              a picture nobody can make out. The gap scales with the viewport
-              instead of jumping at one breakpoint. */}
-          <div className="relative flex items-end justify-between gap-4 p-5 pt-10 sm:gap-6 sm:p-6 sm:pt-16 md:p-8 md:pt-24">
-            <div>
-              <p className="font-mono text-2xs uppercase tracking-label text-subtle">
-                Longer version
-              </p>
-              {/* Steps down on a phone rather than holding `text-xl`. At 20px
-                  this headline wrapped to three lines on a narrow screen, and
-                  three lines of heading over two lines of description reads as
-                  a paragraph with a large first sentence. */}
-              <p className="mt-1.5 text-lg font-semibold tracking-tight text-foreground sm:mt-2 sm:text-xl">
-                How I got into coffee, and what I learnt
-              </p>
-              {/* The last clause goes on wider screens only. It is the joke,
-                  and a joke is the first thing to cut when the card has to fit
-                  in a phone. */}
-              <p className="mt-1 max-w-[46ch] text-sm text-muted-foreground sm:mt-1.5">
-                Roast levels, grind size, portafilters, why a lever press works
-                <span className="hidden sm:inline">
-                  , and why there is nothing wrong with instant
-                </span>
-                .
-              </p>
-            </div>
-            <ArrowRight className="mb-0.5 h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-base ease-out group-hover:translate-x-0.5 sm:mb-1" />
-          </div>
-        </Link>
-      </Container>
 
-      <Section number="03" label="Gear" title="Everyday setup" width="reading">
+
+      <Section number="02" label="Desk" title="Everyday setup" width="reading">
         <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
           The rest of the desk. No shopping links on this one, on purpose.
         </p>
@@ -255,7 +258,7 @@ export default async function ShelfPage() {
         </ul>
       </Section>
 
-      <Section number="04" label="Scent" title="What I wear" width="reading">
+      <Section number="03" label="Scent" title="What I wear" width="reading">
         <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
           Two, and I rotate between them. I am not a collector.
         </p>
@@ -276,7 +279,7 @@ export default async function ShelfPage() {
         </ul>
       </Section>
 
-      <Section number="05" label="Bookmarks" title="Worth keeping" width="reading">
+      <Section number="04" label="Bookmarks" title="Worth keeping" width="reading">
         <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
           Links I come back to. Every one carries a reason, or it does not go in.
         </p>
@@ -309,7 +312,7 @@ export default async function ShelfPage() {
           should take this section with it rather than leave a heading over
           nothing. */}
       {tracks.length > 0 && (
-        <Section number="06" label="Sound" title="On repeat" width="reading">
+        <Section number="05" label="Sound" title="On repeat" width="reading">
           <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
             What I have had on while working, cooking, or walking somewhere. It
             changes often. Press a sleeve for fifteen seconds of one.

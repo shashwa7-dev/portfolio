@@ -4,82 +4,92 @@ import { cn } from "@/lib/utils";
 import { gear } from "@/lib/gear";
 
 /**
- * The gear, drawn as a timeline rather than a grid of tiles.
+ * The gear, as a list of rows in the order it was bought.
  *
  * A grid says "here are five objects". The order is the actual content: each
- * piece exists because of a problem the one before it left behind, and a
- * timeline is the only layout that carries that.
+ * piece exists because of a problem the one before it left behind, so the
+ * sequence has to survive whatever shape this takes.
  *
- * The rail is drawn per step rather than as one border on the list, and only
- * between dots: it runs from this step's marker to the next one's, so the last
- * step ends on its dot instead of trailing a line down past the artwork and
- * the copy to the bottom of the list. A border on the <ol> cannot do that,
- * because it has no way to stop short of its own last child.
+ * It used to survive as a proper timeline, with a rail, a marker per step and
+ * the full note beside each. That ran about 1450px on a phone, roughly three
+ * screens, for five pieces of kitchen equipment sitting inside a section that
+ * also holds the roasters and a link to the long read. The order is worth
+ * carrying. Three screens is not what it is worth.
  *
- * The 11px is the marker's centre: `top-1.5` puts its top edge at 6, and it is
- * 10 tall. Running each rail from 11 to 11 past the item's bottom edge lands it
- * exactly on the next marker's centre, so the segments meet without a seam.
+ * So the rail is gone and the rows do the sequencing instead: they are stacked,
+ * numbered by position, and the `when` phrase on each ("Started here", "The
+ * real bottleneck") says where in the chain it sits. That was always the thing
+ * doing the work. The rail was drawing what the words already said.
+ *
+ * The long note stays in the data and is told properly in the `/coffee` read,
+ * which is linked directly under this. The row carries `short` instead.
  */
 export default function GearTimeline() {
   return (
-    <ol className="ml-[5px]">
-      {gear.map((step, i) => (
-        <li
-          key={step.slug}
-          className={cn("relative pl-8", i < gear.length - 1 && "pb-10")}
-        >
-          {i < gear.length - 1 && (
-            <span
-              aria-hidden
-              className="absolute left-0 top-[11px] -bottom-[11px] w-px bg-border"
-            />
-          )}
-          <span
-            aria-hidden
-            className={cn(
-              "absolute -left-[5px] top-1.5 h-2.5 w-2.5 rounded-full border",
-              step.current
-                ? "border-foreground bg-foreground"
-                : "border-border-strong bg-background"
-            )}
-          />
-          <p className="font-mono text-2xs uppercase tracking-label text-subtle">
-            {step.when}
-          </p>
-
-          <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:gap-6">
-            {/* A small square on every width, rather than a full-width 16:10
-                panel below `sm`. Stretched to the column it stood about 210px
-                tall, so five steps pushed most of the timeline off a phone
-                screen and the copy that explains each one sat below the fold.
-                The artwork is a product cut-out on a plain field; it carries
-                nothing at 210px that it does not carry at 96. */}
-            <div className="flex aspect-square w-24 shrink-0 items-center justify-center rounded-xl border border-border bg-card p-3 sm:w-28">
+    <ol className="border-t border-border">
+      {gear.map((step) => (
+        <li key={step.slug} className="border-b border-border">
+          <div className="flex items-start gap-3 py-3 sm:gap-4">
+            {/* 56px, down from 96. The artwork is a product cut-out on a plain
+                field, and it carries nothing at 96 that it does not carry at
+                56, so the extra 40px was 200px of page across five rows. */}
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg border border-border bg-card p-1.5">
               <Image
                 src={step.image}
                 alt={step.name}
                 width={220}
                 height={220}
-                sizes="112px"
+                sizes="56px"
                 className="h-full w-full object-contain grayscale transition-[filter] duration-base ease-out hover:grayscale-0"
               />
             </div>
 
-            <div className="min-w-0">
-              <p className="font-medium text-foreground">{step.name}</p>
-              <p className="mt-0.5 font-mono text-2xs uppercase tracking-label text-subtle">
-                {step.kind}
+            <div className="min-w-0 flex-1">
+              {/* Name and vendor share a line. The vendor was a third line of
+                  its own with 12px above it, which is a lot of page for the
+                  word "Wacaco". */}
+              <div className="flex items-baseline justify-between gap-3">
+                <p className="min-w-0 truncate font-medium text-foreground">
+                  {step.name}
+                </p>
+                <a
+                  href={step.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex shrink-0 items-center gap-1 font-mono text-2xs uppercase tracking-label text-subtle transition-colors duration-fast ease-out hover:text-foreground"
+                >
+                  {step.vendor}
+                  <ArrowUpRight className="h-3 w-3" />
+                </a>
+              </div>
+
+              {/* What it is and where in the chain it sits, on one line. The
+                  dot marking whatever is in use replaces the filled marker the
+                  rail used to carry. */}
+              <p className="mt-0.5 flex items-center gap-1.5 font-mono text-2xs uppercase tracking-label text-subtle">
+                {step.current && (
+                  <span
+                    aria-label="What I use most"
+                    className="h-1.5 w-1.5 shrink-0 rounded-full bg-foreground"
+                  />
+                )}
+                <span className="truncate">
+                  {step.kind}
+                  <span aria-hidden className="text-border-strong">
+                    {"  ·  "}
+                  </span>
+                  {step.when}
+                </span>
               </p>
-              <p className="mt-2 text-sm text-muted-foreground">{step.note}</p>
-              <a
-                href={step.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-3 inline-flex items-center gap-1 border-b border-border-strong pb-0.5 font-mono text-2xs uppercase tracking-label text-subtle transition-colors hover:text-foreground"
+
+              <p
+                className={cn(
+                  "mt-1.5 text-sm leading-snug text-muted-foreground",
+                  "max-w-[58ch]"
+                )}
               >
-                {step.vendor}
-                <ArrowUpRight className="h-3 w-3" />
-              </a>
+                {step.short}
+              </p>
             </div>
           </div>
         </li>
