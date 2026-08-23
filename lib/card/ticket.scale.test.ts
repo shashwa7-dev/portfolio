@@ -5,6 +5,43 @@ import { serialFrom } from "./seed";
 import type { CardData, IssueKey } from "./types";
 
 /**
+ * A mutable flag, shared between the vi.mock factory below and
+ * makeSpatialStubCtx's lineWidth setter, that is true only while a call
+ * originating inside drawSticker is on the stack. Declared through
+ * vi.hoisted so it exists by the time vi.mock's factory runs (vi.mock calls
+ * are hoisted above imports, so a plain `let` here would not yet be
+ * initialised when the factory first executes).
+ */
+const stickerState = vi.hoisted(() => ({ inside: false }));
+
+/**
+ * Partially mocks drawSticker so its own lineWidth assignments can be told
+ * apart from ticket.ts's, without changing what it actually draws. This is
+ * the one legitimate exclusion left in this file: drawSticker's hairline
+ * stroke clamps to Math.max(0.5, fontPx * 0.012), a minimum-visible-width
+ * floor that is legitimate, already-tested behaviour
+ * (lib/card/sticker.test.ts) and is not linear by design, so it would fail
+ * a strict scale check for a reason outside ticket.ts's control. Everything
+ * ticket.ts sets on lineWidth itself (the stamp frame strokes, the cancel's
+ * two rings, the tear line) has no such non-linearity and belongs in the
+ * scale check like every other spatial value.
+ */
+vi.mock("@/lib/card/sticker", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/card/sticker")>();
+  return {
+    ...actual,
+    drawSticker: (...args: Parameters<typeof actual.drawSticker>) => {
+      stickerState.inside = true;
+      try {
+        return actual.drawSticker(...args);
+      } finally {
+        stickerState.inside = false;
+      }
+    },
+  };
+});
+
+/**
  * The scale-invariance test for drawTicket. Every measurement in ticket.ts
  * is meant to be a fraction of w or h, which is the whole reason the same
  * function serves the on-screen preview, the 1200x1500 export and the
@@ -177,15 +214,23 @@ function makeSpatialStubCtx() {
     font: { get: () => font, set: (v: string) => { font = v; } },
   });
 
-  // lineWidth is a plain, untracked property, same as in every other card
+  // lineWidth IS tracked as a spatial value here, unlike every other card
   // stub in this repo (lib/card/engine/engine.test.ts,
-  // lib/card/sticker.test.ts). It is deliberately not part of `spatial`:
-  // drawSticker's hairline stroke clamps to Math.max(0.5, fontPx * 0.012),
-  // a minimum-visible-width floor that is legitimate, already-tested
-  // behaviour (lib/card/sticker.test.ts) and is not linear by design, so it
-  // would fail a strict scale check for a reason outside ticket.ts's
-  // control.
-  ctx.lineWidth = 0;
+  // lib/card/sticker.test.ts): ticket.ts sets six lineWidth values of its
+  // own (the stamp frame strokes, the cancel's two rings, the tear line),
+  // and a hardcoded pixel among those would otherwise be invisible to this
+  // test, exactly the kind of bug it exists to catch. Assignments made
+  // while a call is inside drawSticker are excluded, per the vi.mock above:
+  // that function's own hairline clamp is legitimate, tested, non-linear
+  // behaviour that this file does not own.
+  let lineWidthValue = 0;
+  Object.defineProperty(ctx, "lineWidth", {
+    get: () => lineWidthValue,
+    set: (v: number) => {
+      lineWidthValue = v;
+      if (!stickerState.inside) spatial.push({ method: "lineWidth", args: [v] });
+    },
+  });
 
   return { ctx: ctx as unknown as CanvasRenderingContext2D, spatial };
 }

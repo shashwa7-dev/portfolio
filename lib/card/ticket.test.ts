@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { drawTicket, CARD_W, CARD_H } from "./ticket";
+import { drawTicket, CARD_W, CARD_H, STOCK } from "./ticket";
 import { ISSUES } from "./issues";
 import { serialFrom } from "./seed";
 import type { CardData, IssueKey } from "./types";
@@ -16,6 +16,11 @@ import type { CardData, IssueKey } from "./types";
 function makeStubCtx() {
   const log: string[] = [];
   const calls: string[] = [];
+  // Parallel to `calls`, but keeps the actual text drawn (and its position)
+  // rather than dropping it in the numeric-only filter below. tracked()
+  // draws one character per fillText call, so a whole word is reconstructed
+  // by grouping the characters that share a y coordinate.
+  const texts: { text: string; x: number; y: number }[] = [];
   const rec = (name: string, args: unknown[] = []) => {
     log.push(name);
     calls.push(args.length ? `${name}(${args.join(",")})` : name);
@@ -39,7 +44,6 @@ function makeStubCtx() {
     shadowBlur: 0,
     shadowOffsetX: 0,
     shadowOffsetY: 0,
-    globalCompositeOperation: "source-over",
     filter: "none",
     beginPath: method("beginPath"),
     moveTo: method("moveTo"),
@@ -65,7 +69,10 @@ function makeStubCtx() {
     setLineDash: method("setLineDash"),
     drawImage: method("drawImage"),
     putImageData: method("putImageData"),
-    fillText: method("fillText"),
+    fillText: (text: string, x: number, y: number) => {
+      rec("fillText", [x, y]);
+      texts.push({ text, x, y });
+    },
     strokeText: method("strokeText"),
     createPattern: () => ({}),
     createLinearGradient: (...args: unknown[]) => {
@@ -79,6 +86,7 @@ function makeStubCtx() {
   let fillStyle = "";
   let strokeStyle = "";
   let font = "";
+  let globalCompositeOperation = "source-over";
   Object.defineProperties(ctx, {
     fillStyle: {
       get: () => fillStyle,
@@ -101,9 +109,25 @@ function makeStubCtx() {
         calls.push(`font=${v}`);
       },
     },
+    globalCompositeOperation: {
+      get: () => globalCompositeOperation,
+      set: (v: string) => {
+        globalCompositeOperation = v;
+        calls.push(`globalCompositeOperation=${v}`);
+      },
+    },
   });
 
-  return { ctx: ctx as unknown as CanvasRenderingContext2D, log, calls };
+  return { ctx: ctx as unknown as CanvasRenderingContext2D, log, calls, texts };
+}
+
+/** Joins the characters tracked() drew at a given y (within a tolerance for
+ *  float noise), in call order, to recover the word it spelled out. */
+function wordAt(texts: { text: string; x: number; y: number }[], y: number, tol = 0.01): string {
+  return texts
+    .filter((t) => Math.abs(t.y - y) < tol)
+    .map((t) => t.text)
+    .join("");
 }
 
 const FONTS = { hand: "cursive", sticker: "system-ui, sans-serif", mono: "ui-monospace, monospace" };
@@ -181,14 +205,11 @@ describe("drawTicket", () => {
     // is what makes this precise without depending on the engine's
     // internal fillStyle churn.
     //
-    // Inverted's stamp ("#f6f1e5") and Definitive's ("#fdfaf2") are not
-    // literally the same hex: this fix only ever touched DARK.stamp, and
-    // LIGHT.stamp was already a slightly different pale cream from
-    // LIGHT.stock by design (the two shades give the stamp paper a hair of
-    // contrast against the card stock even in light mode). "Agree" is
-    // checked as both being pale, not as a byte-for-byte match: a
-    // perceived-luminance floor cleanly separates this pair from both the
-    // dark stocks (~0.09) and the old, wrong DARK.stamp ("#201f24", ~0.12).
+    // Task 11 changed this from "both pale, but not byte-identical" to
+    // byte-identical: DARK.stamp now equals LIGHT.stamp exactly
+    // ("#fdfaf2"), since the stamp is its own sheet stuck onto whatever
+    // stock the card is made of, and every card in the set should carry
+    // the same paper regardless of the per-issue STOCK tint underneath it.
     const luminance = (hex: string) => {
       const n = parseInt(hex.slice(1), 16);
       const r = (n >> 16) & 0xff, g = (n >> 8) & 0xff, b = n & 0xff;
@@ -198,12 +219,13 @@ describe("drawTicket", () => {
     const inverted = makeStubCtx();
     drawTicket(inverted.ctx, cardFor("stamp-cream-inverted", "inverted"), CARD_W, CARD_H, FONTS);
     const invertedStamp = inverted.calls.filter((c) => c.startsWith("fillStyle="))[1];
-    expect(invertedStamp).toBe("fillStyle=#f6f1e5");
+    expect(invertedStamp).toBe("fillStyle=#fdfaf2");
 
     const definitive = makeStubCtx();
     drawTicket(definitive.ctx, cardFor("stamp-cream-definitive", "definitive"), CARD_W, CARD_H, FONTS);
     const definitiveStamp = definitive.calls.filter((c) => c.startsWith("fillStyle="))[1];
     expect(definitiveStamp).toBe("fillStyle=#fdfaf2");
+    expect(invertedStamp).toBe(definitiveStamp);
 
     const invertedLum = luminance(invertedStamp.slice("fillStyle=".length));
     const definitiveLum = luminance(definitiveStamp.slice("fillStyle=".length));
@@ -212,7 +234,7 @@ describe("drawTicket", () => {
     expect(Math.abs(invertedLum - definitiveLum)).toBeLessThan(0.05);
   });
 
-  it("keeps the stamp-foot lettering (shashwa7.in, one visit) legible on Inverted's cream stamp: this is the regression the stamp-colour fix could introduce", () => {
+  it("keeps the stamp-foot lettering (one visit) legible on Inverted's cream stamp: this is the regression the stamp-colour fix could introduce", () => {
     // The foot lettering sits on the stamp, not the stock, so it must stay
     // on a colour that reads against cream regardless of card mode. The
     // code already reaches for P.faint here rather than P.ink, and
@@ -220,10 +242,15 @@ describe("drawTicket", () => {
     // guard against a future edit routing it through P.ink instead, which
     // on Inverted (DARK.ink = pale "#e8e3d8") would be nearly invisible on
     // the now-cream stamp. Located by the foot text's y coordinate
-    // (sy + sh * 0.905), since fillText's leading string argument is
+    // (TOP + sy + sh * 0.905), since fillText's leading string argument is
     // stripped by this stub's numeric-only argument filter.
+    //
+    // Task 11 moved shashwa7.in out of the foot and up into the top brand
+    // row, and shifted the stamp (and everything below it) down by TOP, so
+    // this now checks only "one visit" and includes that offset.
     const h = CARD_H;
-    const footY = h * 0.101 + h * 0.507 * 0.905;
+    const TOP = h * 0.038;
+    const footY = TOP + h * 0.101 + h * 0.507 * 0.905;
 
     const { ctx, calls } = makeStubCtx();
     drawTicket(ctx, cardFor("stamp-foot-ink", "inverted"), CARD_W, CARD_H, FONTS);
@@ -247,11 +274,14 @@ describe("drawTicket", () => {
     expect(inkAtFoot).not.toBe("#e8e3d8");
   });
 
-  it("leaves every other issue off the dark stock colour", () => {
+  it("leaves every other issue off the dark stock colour, and on its own STOCK entry", () => {
+    // Superseded from a single shared "#f6f1e5 stock" by Task 11's per-issue
+    // STOCK table: only Definitive still uses that exact hex, so this now
+    // checks each issue against its own entry rather than one shared literal.
     for (const key of ["definitive", "commemorative", "firstDay", "misprint"] as IssueKey[]) {
       const { ctx, calls } = makeStubCtx();
       drawTicket(ctx, cardFor(`light-stock-${key}`, key), CARD_W, CARD_H, FONTS);
-      expect(calls).toContain("fillStyle=#f6f1e5");
+      expect(calls).toContain(`fillStyle=${STOCK[key]}`);
       expect(calls).not.toContain("fillStyle=#17161a");
     }
   });
@@ -276,5 +306,141 @@ describe("drawTicket", () => {
     drawTicket(b.ctx, data, CARD_W, CARD_H, FONTS);
 
     expect(b.calls).toEqual(a.calls);
+  });
+
+  // --- Task 11: make each issue collectible ---
+
+  it("fills each issue's own stock colour, and all five are distinct", () => {
+    const seen = new Set<string>();
+    for (const key of KEYS) {
+      const { ctx, calls } = makeStubCtx();
+      drawTicket(ctx, cardFor(`stock-${key}`, key), CARD_W, CARD_H, FONTS);
+      const firstFillStyle = calls.find((c) => c.startsWith("fillStyle="));
+      expect(firstFillStyle).toBe(`fillStyle=${STOCK[key]}`);
+      seen.add(STOCK[key]);
+    }
+    expect(seen.size).toBe(KEYS.length);
+  });
+
+  it("gives Misprint a composite-operation assignment for its offset ghosts; Definitive has none", () => {
+    const id = "composite-check";
+    const { ctx: misCtx, calls: misCalls } = makeStubCtx();
+    drawTicket(misCtx, cardFor(id, "misprint"), CARD_W, CARD_H, FONTS);
+    expect(misCalls.some((c) => c.startsWith("globalCompositeOperation="))).toBe(true);
+
+    const { ctx: defCtx, calls: defCalls } = makeStubCtx();
+    drawTicket(defCtx, cardFor(id, "definitive"), CARD_W, CARD_H, FONTS);
+    expect(defCalls.some((c) => c.startsWith("globalCompositeOperation="))).toBe(false);
+  });
+
+  it("fringes Misprint's frame rule and foot lettering in real cyan and magenta; Definitive has neither", () => {
+    // The portrait ghosts stay grey (the engine owns that ink, see the
+    // comment in ticket.ts), but the frame rule and the foot lettering are
+    // coloured directly by ticket.ts, so those fringe in the real process
+    // colours a misregistration separates.
+    const CYAN = "rgba(0,174,239,0.55)";
+    const MAGENTA = "rgba(236,0,140,0.5)";
+    const id = "misregistration-check";
+
+    const { ctx: misCtx, calls: misCalls } = makeStubCtx();
+    drawTicket(misCtx, cardFor(id, "misprint"), CARD_W, CARD_H, FONTS);
+    expect(
+      misCalls.some((c) => c === `strokeStyle=${CYAN}` || c === `fillStyle=${CYAN}`)
+    ).toBe(true);
+    expect(
+      misCalls.some((c) => c === `strokeStyle=${MAGENTA}` || c === `fillStyle=${MAGENTA}`)
+    ).toBe(true);
+
+    const { ctx: defCtx, calls: defCalls } = makeStubCtx();
+    drawTicket(defCtx, cardFor(id, "definitive"), CARD_W, CARD_H, FONTS);
+    expect(
+      defCalls.some((c) => c === `strokeStyle=${CYAN}` || c === `fillStyle=${CYAN}`)
+    ).toBe(false);
+    expect(
+      defCalls.some((c) => c === `strokeStyle=${MAGENTA}` || c === `fillStyle=${MAGENTA}`)
+    ).toBe(false);
+  });
+
+  it("prints First day's cachet in the deep teal; Definitive records none of it", () => {
+    const TEAL = "#1f6f78";
+    const { ctx: fdCtx, calls: fdCalls } = makeStubCtx();
+    drawTicket(fdCtx, cardFor("teal-firstday", "firstDay"), CARD_W, CARD_H, FONTS);
+    expect(
+      fdCalls.some((c) => c === `strokeStyle=${TEAL}` || c === `fillStyle=${TEAL}`)
+    ).toBe(true);
+
+    const { ctx: defCtx, calls: defCalls } = makeStubCtx();
+    drawTicket(defCtx, cardFor("teal-definitive", "definitive"), CARD_W, CARD_H, FONTS);
+    expect(
+      defCalls.some((c) => c === `strokeStyle=${TEAL}` || c === `fillStyle=${TEAL}`)
+    ).toBe(false);
+  });
+
+  it("draws the wordmark at the top of the card, and no longer at the stamp foot", () => {
+    const { ctx, texts } = makeStubCtx();
+    drawTicket(ctx, cardFor("wordmark-top", "definitive"), CARD_W, CARD_H, FONTS);
+
+    const h = CARD_H, w = CARD_W;
+    const markSize = w * 0.052;
+    const topY = h * 0.052 + markSize * 0.66;
+    expect(wordAt(texts, topY)).toBe("SHASHWA7.IN");
+
+    const TOP = h * 0.038;
+    const sy = TOP + h * 0.101, sh = h * 0.507;
+    const footY = sy + sh * 0.905;
+    expect(wordAt(texts, footY)).not.toContain("SHASHWA7.IN");
+  });
+
+  it("draws the mark image top left when provided, at the top-left position", () => {
+    const fakeMark = {} as HTMLImageElement;
+    const { ctx, log, calls } = makeStubCtx();
+    drawTicket(ctx, cardFor("with-mark", "definitive"), CARD_W, CARD_H, { ...FONTS, mark: fakeMark });
+    expect(log).toContain("drawImage");
+
+    const w = CARD_W;
+    const L = w * 0.097;
+    const markSize = w * 0.052;
+    const markY = CARD_H * 0.052;
+    expect(calls).toContain(`drawImage(${L},${markY},${markSize},${markSize})`);
+  });
+
+  it("still runs to completion with mark: null, drawing the wordmark and no image", () => {
+    const { ctx, log, texts } = makeStubCtx();
+    const withNullMark = { ...FONTS, mark: null };
+    expect(() =>
+      drawTicket(ctx, cardFor("no-mark", "definitive"), CARD_W, CARD_H, withNullMark)
+    ).not.toThrow();
+    expect(log).not.toContain("drawImage");
+
+    const h = CARD_H, w = CARD_W;
+    const markSize = w * 0.052;
+    const topY = h * 0.052 + markSize * 0.66;
+    expect(wordAt(texts, topY)).toBe("SHASHWA7.IN");
+  });
+
+  it("draws the rarity share at the larger of the two stub sizes", () => {
+    const { ctx, calls } = makeStubCtx();
+    drawTicket(ctx, cardFor("share-size", "definitive"), CARD_W, CARD_H, FONTS);
+
+    const smallFont = `${CARD_W * 0.018}px ${FONTS.mono}`;
+    const bigFont = `${CARD_W * 0.026}px ${FONTS.mono}`;
+
+    // Find the font assignment immediately preceding the share row's first
+    // fillText call. tracked() draws it character by character, so the
+    // first fillText after the last font= assignment before it is the one
+    // that matters; both origin/date and share are drawn back to back at
+    // the same y, so it is the *last* font= before the *last* run of
+    // fillText calls that is under test.
+    const lastFillTextIndex = calls.map((c) => c.startsWith("fillText(")).lastIndexOf(true);
+    let fontBeforeShare: string | undefined;
+    for (let i = lastFillTextIndex; i >= 0; i--) {
+      if (calls[i].startsWith("font=")) {
+        fontBeforeShare = calls[i].slice("font=".length);
+        break;
+      }
+    }
+    expect(fontBeforeShare).toBe(bigFont);
+    expect(bigFont).not.toBe(smallFont);
+    expect(CARD_W * 0.026).toBeGreaterThan(CARD_W * 0.018);
   });
 });
