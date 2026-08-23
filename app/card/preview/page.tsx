@@ -1,37 +1,44 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { createEngine } from "@/lib/card/engine/portrait-engine";
-import { drawSticker } from "@/lib/card/sticker";
 import { ISSUES } from "@/lib/card/issues";
-import { hashStr, mulberry32 } from "@/lib/card/seed";
+import { serialFrom } from "@/lib/card/seed";
+import { drawTicket } from "@/lib/card/ticket";
+import type { IssueKey } from "@/lib/card/types";
 
 /** Scratch only. Deleted in Task 7. */
-export default function PortraitPreview() {
+const KEYS: IssueKey[] = ["definitive", "commemorative", "firstDay", "misprint", "inverted"];
+const FONTS = { hand: "cursive", sticker: "system-ui, sans-serif", mono: "ui-monospace, monospace" };
+
+function One({ k }: { k: IssueKey }) {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const c = ref.current;
     if (!c) return;
     const dpr = window.devicePixelRatio || 1;
-    c.width = 960 * dpr;
-    c.height = 640 * dpr;
+    c.width = 268 * dpr;
+    c.height = 335 * dpr;
     const ctx = c.getContext("2d");
     if (!ctx) return;
     ctx.scale(dpr, dpr);
-    ctx.fillStyle = "#f6f1e5";
-    ctx.fillRect(0, 0, 960, 640);
-    const engine = createEngine(ctx);
-    const keys = ["commemorative", "firstDay", "misprint", "inverted"] as const;
-    for (let i = 0; i < 24; i++) {
-      engine.portrait(`specimen-${i}`, {
-        x: (i % 6) * 160, y: Math.floor(i / 6) * 160, w: 160, h: 160,
-      });
-      const issue = ISSUES[keys[i % 4]];
-      const R = mulberry32(hashStr(`specimen-${i}`));
-      drawSticker(ctx, issue.name, issue, R,
-        (i % 6) * 160 + 80, Math.floor(i / 6) * 160 + 140,
-        22, "system-ui, sans-serif", -0.12);
-    }
-  }, []);
-  return <canvas ref={ref} style={{ width: 960, height: 640 }} />;
+    const id = `specimen-${k}`;
+    drawTicket(ctx, {
+      visitorId: id,
+      name: "Visitor",
+      serial: serialFrom(id),
+      issue: ISSUES[k],
+      origin: "Bengaluru, IN",
+      city: "Bengaluru",
+      date: "23 Aug 2026",
+    }, 268, 335, FONTS);
+  }, [k]);
+  return <canvas ref={ref} style={{ width: 268, height: 335 }} />;
+}
+
+export default function CardPreview() {
+  return (
+    <div style={{ display: "flex", gap: 24, flexWrap: "wrap", padding: 24 }}>
+      {KEYS.map((k) => <One key={k} k={k} />)}
+    </div>
+  );
 }
