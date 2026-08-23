@@ -10,9 +10,25 @@ import type { Cast } from "./types";
  * into one: any method drawPortrait starts calling that is missing here will
  * throw "is not a function", which is exactly the failure this test wants to
  * see when the drawing code drifts.
+ *
+ * Two parallel records come out of every draw:
+ * - `log`: method names only, for the "did it draw at all" and
+ *   "save/restore balanced" assertions, where argument values do not matter.
+ * - `calls`: method name plus rounded numeric arguments, for the
+ *   differential assertions. Method-name sequence alone cannot tell a
+ *   correctly drawn trait from a deleted or mispositioned one, since the
+ *   face, brows, eyes, nose and mouth always draw regardless of which
+ *   branch a trait takes; the argument values are what actually fingerprint
+ *   a drawing. Rounded to 2dp so the pencil()-jitter noise floor does not
+ *   make every call unique by accident.
  */
 function makeStubCtx() {
   const log: string[] = [];
+  const calls: string[] = [];
+  const rec = (name: string, args: number[] = []) => {
+    log.push(name);
+    calls.push(args.length ? `${name}(${args.map((n) => n.toFixed(2)).join(",")})` : name);
+  };
   const ctx = {
     strokeStyle: "",
     fillStyle: "",
@@ -21,51 +37,51 @@ function makeStubCtx() {
     lineJoin: "miter",
     globalAlpha: 1,
     beginPath() {
-      log.push("beginPath");
+      rec("beginPath");
     },
-    moveTo(_x: number, _y: number) {
-      log.push("moveTo");
+    moveTo(x: number, y: number) {
+      rec("moveTo", [x, y]);
     },
-    lineTo(_x: number, _y: number) {
-      log.push("lineTo");
+    lineTo(x: number, y: number) {
+      rec("lineTo", [x, y]);
     },
-    quadraticCurveTo(_cpx: number, _cpy: number, _x: number, _y: number) {
-      log.push("quadraticCurveTo");
+    quadraticCurveTo(cpx: number, cpy: number, x: number, y: number) {
+      rec("quadraticCurveTo", [cpx, cpy, x, y]);
     },
-    arc(_x: number, _y: number, _r: number, _start: number, _end: number) {
-      log.push("arc");
+    arc(x: number, y: number, r: number, start: number, end: number) {
+      rec("arc", [x, y, r, start, end]);
     },
     ellipse(
-      _x: number,
-      _y: number,
-      _rx: number,
-      _ry: number,
-      _rotation: number,
-      _start: number,
-      _end: number
+      x: number,
+      y: number,
+      rx: number,
+      ry: number,
+      rotation: number,
+      start: number,
+      end: number
     ) {
-      log.push("ellipse");
+      rec("ellipse", [x, y, rx, ry, rotation, start, end]);
     },
     closePath() {
-      log.push("closePath");
+      rec("closePath");
     },
     stroke() {
-      log.push("stroke");
+      rec("stroke");
     },
     fill() {
-      log.push("fill");
+      rec("fill");
     },
     save() {
-      log.push("save");
+      rec("save");
     },
     restore() {
-      log.push("restore");
+      rec("restore");
     },
     clip() {
-      log.push("clip");
+      rec("clip");
     },
   };
-  return { ctx: ctx as unknown as CanvasRenderingContext2D, log };
+  return { ctx: ctx as unknown as CanvasRenderingContext2D, log, calls };
 }
 
 const HAIR: Cast["hair"][] = ["short", "long", "bob", "curls", "buzz", "topknot"];
@@ -147,5 +163,66 @@ describe("drawPortrait", () => {
     const restores = log.filter((n) => n === "restore").length;
     expect(saves).toBeGreaterThan(0);
     expect(restores).toBe(saves);
+  });
+});
+
+/**
+ * The tests above only prove "something drew and state did not leak". They
+ * cannot catch a broken trait branch: the face outline, brows, eyes, nose
+ * and mouth always stroke and fill regardless of which trait a cast carries,
+ * so deleting the glasses block entirely, or drawing headwear off-canvas,
+ * would still satisfy every assertion above. These tests fingerprint the
+ * full call sequence (method name plus rounded arguments) and assert that
+ * changing one trait, with every other trait held constant, changes the
+ * fingerprint. The hair test is the one that matters most: it is the one
+ * that catches three of six hair styles silently sharing one geometry.
+ */
+describe("drawPortrait — trait branches are actually distinct", () => {
+  const box = { x: 0, y: 0, w: 160, h: 160 };
+  const base: Cast = {
+    hair: "short",
+    glasses: "none",
+    headwear: "none",
+    brow: "flat",
+    mouth: "smile",
+    shade: 0.5,
+  };
+
+  function signature(cast: Cast): string {
+    const { ctx, calls } = makeStubCtx();
+    // Same fixed seed for every cast under comparison, so any difference in
+    // the fingerprint comes from the trait branch, not from a different
+    // random stream.
+    drawPortrait(ctx, cast, mulberry32(1), box, "#1f1d1a");
+    return calls.join("|");
+  }
+
+  it("gives all six hair styles distinct signatures, other traits held constant", () => {
+    const sigs = HAIR.map((hair) => signature({ ...base, hair }));
+    expect(new Set(sigs).size).toBe(HAIR.length);
+  });
+
+  it("draws round glasses differently from no glasses", () => {
+    expect(signature({ ...base, glasses: "round" })).not.toBe(
+      signature({ ...base, glasses: "none" })
+    );
+  });
+
+  it("draws square glasses differently from no glasses", () => {
+    expect(signature({ ...base, glasses: "square" })).not.toBe(
+      signature({ ...base, glasses: "none" })
+    );
+  });
+
+  it("draws a beanie differently from no headwear", () => {
+    expect(signature({ ...base, headwear: "beanie" })).not.toBe(
+      signature({ ...base, headwear: "none" })
+    );
+  });
+
+  it("draws a flat cap differently from no headwear", () => {
+    expect(signature({ ...base, headwear: "flatCap" })).not.toBe(
+      signature({ ...base, headwear: "none" })
+    );
   });
 });

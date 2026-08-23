@@ -93,20 +93,62 @@ export function drawPortrait(
   pencil(ctx, R, ellipsePts(cx - faceRx, cy, 6 * s, 10 * s, 20, Math.PI * 0.5, Math.PI * 1.5), 1.6 * s, ink);
   pencil(ctx, R, ellipsePts(cx + faceRx, cy, 6 * s, 10 * s, 20, Math.PI * 1.5, Math.PI * 2.5), 1.6 * s, ink);
 
-  // hair, back mass
+  // hair, back mass. "bob" gets its own tighter silhouette; every other
+  // non-buzz style (short, long, curls, topknot) shares this base mass,
+  // which is what "short" is: the baseline, undressed by anything else.
   const hairTop = cy - faceRy * 1.12;
   if (cast.hair !== "buzz") {
     ctx.save();
     ctx.globalAlpha = 0.85;
     ctx.fillStyle = ink;
     ctx.beginPath();
-    ctx.moveTo(cx - faceRx * 1.08, cy - faceRy * 0.25);
-    ctx.quadraticCurveTo(cx - faceRx * 1.15, hairTop, cx, hairTop);
-    ctx.quadraticCurveTo(cx + faceRx * 1.15, hairTop, cx + faceRx * 1.08, cy - faceRy * 0.25);
-    ctx.quadraticCurveTo(cx + faceRx * 0.6, cy - faceRy * 0.85, cx, cy - faceRy * 0.82);
-    ctx.quadraticCurveTo(cx - faceRx * 0.6, cy - faceRy * 0.85, cx - faceRx * 1.08, cy - faceRy * 0.25);
+    if (cast.hair === "bob") {
+      // Tighter to the head and shorter than the baseline mass: the top
+      // stays closer to the skull instead of rising to hairTop.
+      const bobTop = cy - faceRy * 1.0;
+      ctx.moveTo(cx - faceRx * 0.98, cy - faceRy * 0.15);
+      ctx.quadraticCurveTo(cx - faceRx * 1.02, bobTop, cx, bobTop);
+      ctx.quadraticCurveTo(cx + faceRx * 1.02, bobTop, cx + faceRx * 0.98, cy - faceRy * 0.15);
+      ctx.quadraticCurveTo(cx + faceRx * 0.55, cy - faceRy * 0.68, cx, cy - faceRy * 0.66);
+      ctx.quadraticCurveTo(cx - faceRx * 0.55, cy - faceRy * 0.68, cx - faceRx * 0.98, cy - faceRy * 0.15);
+    } else {
+      ctx.moveTo(cx - faceRx * 1.08, cy - faceRy * 0.25);
+      ctx.quadraticCurveTo(cx - faceRx * 1.15, hairTop, cx, hairTop);
+      ctx.quadraticCurveTo(cx + faceRx * 1.15, hairTop, cx + faceRx * 1.08, cy - faceRy * 0.25);
+      ctx.quadraticCurveTo(cx + faceRx * 0.6, cy - faceRy * 0.85, cx, cy - faceRy * 0.82);
+      ctx.quadraticCurveTo(cx - faceRx * 0.6, cy - faceRy * 0.85, cx - faceRx * 1.08, cy - faceRy * 0.25);
+    }
     ctx.fill();
     ctx.restore();
+  }
+
+  // bob sides end around jaw height, not sweeping past it like long hair does
+  if (cast.hair === "bob") {
+    for (const side of [-1, 1]) {
+      pencil(ctx, R, [
+        [cx + side * faceRx * 0.95, cy - faceRy * 0.15],
+        [cx + side * faceRx * 1.0, cy + faceRy * 0.08],
+        [cx + side * faceRx * 0.85, cy + faceRy * 0.32],
+      ], 1.8 * s, ink);
+    }
+  }
+
+  // topknot: the base mass plus a small knot centred above hairTop
+  if (cast.hair === "topknot") {
+    const knotCy = hairTop - 8 * s;
+    const knotR = 8 * s;
+    ctx.save();
+    ctx.globalAlpha = 0.85;
+    ctx.fillStyle = ink;
+    ctx.beginPath();
+    ctx.ellipse(cx, knotCy, knotR, knotR * 0.85, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+    pencil(ctx, R, ellipsePts(cx, knotCy, knotR, knotR * 0.85, 22), 1.4 * s, ink);
+    pencil(ctx, R, [
+      [cx - 3 * s, hairTop + 1 * s],
+      [cx + 3 * s, hairTop + 1 * s],
+    ], 1.3 * s, ink);
   }
 
   // long hair falls past the jaw
