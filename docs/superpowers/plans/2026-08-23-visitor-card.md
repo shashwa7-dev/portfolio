@@ -1053,22 +1053,35 @@ export function drawSticker(
 
 - [ ] **Step 2: Add stickers to the scratch harness**
 
-In `app/card/preview/page.tsx`, import `drawSticker` and `ISSUES`, and after each face draw a sticker labelled with a different issue, cycling through the four that have gradients:
+In `app/card/preview/page.tsx`, import `drawSticker`, `ISSUES` and the seed helpers, and after each face draw a sticker labelled with a different issue, cycling through the four that have gradients.
+
+Note the engine-based preview has no `R` in scope of its own, because the engine seeds itself internally. The sticker needs its own PRNG for the shine angle, so make one from the same specimen id:
 
 ```tsx
 import { drawSticker } from "@/lib/card/sticker";
 import { ISSUES } from "@/lib/card/issues";
+import { hashStr, mulberry32 } from "@/lib/card/seed";
+// ...inside the loop, after engine.portrait(...):
 const keys = ["commemorative", "firstDay", "misprint", "inverted"] as const;
 const issue = ISSUES[keys[i % 4]];
+const R = mulberry32(hashStr(`specimen-${i}`));
 drawSticker(ctx, issue.name, issue, R,
   (i % 6) * 160 + 80, Math.floor(i / 6) * 160 + 140,
   22, "system-ui, sans-serif", -0.12);
 ```
 
-- [ ] **Step 3: Look at it**
+- [ ] **Step 3: Write the smoke test**
 
-Run: `npm run dev`, open `http://localhost:3000/card/preview`.
-Expected: each face carries a sticker with a white die-cut edge, a visible gradient, a diagonal shine, and a shadow under it. The Inverted one has a near-black edge instead of white. Confirm the shine sits at a slightly different angle per sticker.
+Nobody in this pipeline can open a browser, and a sticker that throws or silently draws nothing would pass lint and build. Create `lib/card/sticker.test.ts` with the same recording-stub approach `lib/card/engine/engine.test.ts` uses. Reuse that stub's shape rather than inventing a second one; the sticker needs `createLinearGradient` returning `{ addColorStop() {} }`, `measureText` returning `{ width: 10 }`, `fillText`, `strokeText`, plus settable `font`, `textAlign`, `textBaseline`, `shadowColor`, `shadowBlur`, `shadowOffsetX`, `shadowOffsetY`, `lineWidth`, `lineJoin`, `miterLimit`, `fillStyle`, `strokeStyle`.
+
+Assert:
+
+1. Drawing a sticker for each of the four issues that have gradients does not throw.
+2. **Definitive draws nothing at all.** `ISSUES.definitive.sticker` is null, so `drawSticker` must return before issuing a single call. Assert the log is empty. Six in ten visitors get this card and a stray mark on it would be a visible bug.
+3. All four layers are present for a gradient issue: at least one `strokeText` (the die-cut edge) and more than one `fillText` (the edge fill, the foil, and the shine are separate passes).
+4. `save` and `restore` are balanced, including the inner save/restore around the shine.
+5. The Inverted issue uses a near-black edge rather than white. Assert the recorded `strokeStyle` assignments include the dark value and not `#ffffff`.
+6. The shine angle is seeded: two different PRNGs produce different recorded gradient coordinates. If they match, the angle is not actually varying and the seeded-shine claim is false.
 
 - [ ] **Step 4: Commit**
 
