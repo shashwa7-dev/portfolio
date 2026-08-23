@@ -601,4 +601,124 @@ describe("drawTicket", () => {
 
     expect(tearY - nameEntry!.y).toBeGreaterThanOrEqual(h * 0.05);
   });
+
+  // The two floors below (h * 0.065 ascent, h * 0.05 descent) are each
+  // calibrated against REF_NAME_PX, the un-clamped w * 0.1 size a name
+  // renders at when nothing constrains its height: h * 0.065 covers
+  // Caveat's ~0.8em ascent there, h * 0.05 covers its ~0.45em descent.
+  // Their sum (h * 0.115 = 172.5px) is bigger than the First day band
+  // (cachet rule to tear line, 130.5px): even with zero padding, Caveat's
+  // real metrics alone (1.25em at REF_NAME_PX = 150px) still don't fit
+  // that band. No baseline placement, at any font size, can make both
+  // raw gaps hit their full REF_NAME_PX floor simultaneously there: the
+  // two floors can only be required in proportion to whatever size the
+  // band actually allows, which is what shrinking the max size (rather
+  // than just re-anchoring the baseline) buys. These tests check that
+  // proportional guarantee: recover the px the name actually rendered at,
+  // and require each side's real gap to be at least that same fraction of
+  // its REF_NAME_PX floor. On every tier but First day the band is wide
+  // enough that the name renders at the full REF_NAME_PX anyway, so the
+  // fraction is 1 and this reduces to the plain floor.
+  function recoverNamePx(
+    calls: string[],
+    texts: { text: string; x: number; y: number }[],
+    name: string
+  ): number {
+    const entry = texts.find((t) => t.text === name)!;
+    const callString = `fillText(${entry.x},${entry.y})`;
+    const index = calls.indexOf(callString);
+    for (let i = index; i >= 0; i--) {
+      if (calls[i].startsWith("font=")) return parseFloat(calls[i].slice("font=".length));
+    }
+    throw new Error("no font= call found before the name's fillText");
+  }
+
+  it("keeps the ascender clearance above the First day cachet's rule proportional to the name's rendered size", () => {
+    // The mirror image of the descender test above. Pulling the baseline up
+    // to clear the tear line shrinks the gap on the OTHER side, to whatever
+    // sits above the name; on every tier but First day that's the stamp's
+    // own lower edge, with room to spare, but First day also draws the
+    // "FIRST DAY OF ISSUE" cachet and its rule below the stamp, which makes
+    // this the tight case worth asserting on directly rather than folding
+    // into the all-issues check below. Watched failing pre-fix at ~48px
+    // against the un-scaled floor of h * 0.065 = 97.5px (the old baseline
+    // formula always rendered at the full REF_NAME_PX, so the fraction was
+    // always 1 there too).
+    const h = CARD_H, w = CARD_W;
+    const REF_NAME_PX = w * 0.1;
+    const NAME_ASCENT_CLEARANCE = h * 0.065;
+
+    const { ctx, calls, texts } = makeStubCtx();
+    const data = cardFor("ascender-clearance", "firstDay");
+    drawTicket(ctx, data, CARD_W, h, FONTS);
+
+    const nameEntry = texts.find((t) => t.text === data.name);
+    expect(nameEntry).toBeDefined();
+    const namePx = recoverNamePx(calls, texts, data.name);
+
+    // The cachet's rule is drawn via moveTo(L, cachetRuleY); L (w * 0.097)
+    // is a distinctive enough x that no other moveTo call in the draw uses
+    // it, so this locates cachetRuleY without depending on any other
+    // formula in ticket.ts.
+    const L = CARD_W * 0.097;
+    const cachetCall = calls.find((c) => c.startsWith(`moveTo(${L},`));
+    expect(cachetCall).toBeDefined();
+    const cachetRuleY = Number(cachetCall!.slice(`moveTo(${L},`.length, -1));
+
+    const requiredAscent = NAME_ASCENT_CLEARANCE * (namePx / REF_NAME_PX);
+    expect(nameEntry!.y - cachetRuleY).toBeGreaterThanOrEqual(requiredAscent - 0.01);
+  });
+
+  it("clears both the ascender and descender sides at once, on every issue", () => {
+    // Descent is always measured against the tear line. Ascent is measured
+    // against whatever the band computation says sits above the name: the
+    // cachet's rule on First day, or the stamp's own lower edge (recovered
+    // from the stamp's fillRect(sx, sy, sw, sh), the only fillRect call
+    // ticket.ts itself makes) on every other issue.
+    const h = CARD_H, w = CARD_W;
+    const REF_NAME_PX = w * 0.1;
+    const NAME_ASCENT_CLEARANCE = h * 0.065;
+    const NAME_DESCENT_CLEARANCE = h * 0.05;
+
+    for (const key of KEYS) {
+      const { ctx, calls, texts } = makeStubCtx();
+      const data = cardFor(`both-clearances-${key}`, key);
+      drawTicket(ctx, data, CARD_W, h, FONTS);
+
+      const nameEntry = texts.find((t) => t.text === data.name);
+      expect(nameEntry, `issue ${key}: name text not found`).toBeDefined();
+      const namePx = recoverNamePx(calls, texts, data.name);
+
+      const tearCall = calls.find((c) => c.startsWith("moveTo(0,"));
+      expect(tearCall, `issue ${key}: tear line not found`).toBeDefined();
+      const tearY = Number(tearCall!.slice("moveTo(0,".length, -1));
+
+      let aboveBottom: number;
+      if (key === "firstDay") {
+        const L = CARD_W * 0.097;
+        const cachetCall = calls.find((c) => c.startsWith(`moveTo(${L},`));
+        expect(cachetCall, `issue ${key}: cachet rule not found`).toBeDefined();
+        aboveBottom = Number(cachetCall!.slice(`moveTo(${L},`.length, -1));
+      } else {
+        const stampCall = calls.find((c) => c.startsWith("fillRect("));
+        expect(stampCall, `issue ${key}: stamp fillRect not found`).toBeDefined();
+        const nums = stampCall!.slice("fillRect(".length, -1).split(",").map(Number);
+        const [, sy, , sh] = nums;
+        aboveBottom = sy + sh;
+      }
+
+      const requiredDescent = NAME_DESCENT_CLEARANCE * (namePx / REF_NAME_PX);
+      const requiredAscent = NAME_ASCENT_CLEARANCE * (namePx / REF_NAME_PX);
+      expect(tearY - nameEntry!.y, `issue ${key}: descent clearance`).toBeGreaterThanOrEqual(requiredDescent - 0.01);
+      expect(nameEntry!.y - aboveBottom, `issue ${key}: ascent clearance`).toBeGreaterThanOrEqual(requiredAscent - 0.01);
+
+      // On every tier but First day, the band is wide enough that the name
+      // renders at the full, un-clamped REF_NAME_PX: the scaled floor above
+      // reduces to the plain one, so this pins that down explicitly rather
+      // than letting the scaling silently mask a regression there.
+      if (key !== "firstDay") {
+        expect(namePx, `issue ${key}: expected the un-clamped reference size`).toBeCloseTo(REF_NAME_PX, 5);
+      }
+    }
+  });
 });

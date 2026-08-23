@@ -321,7 +321,10 @@ export function drawTicket(
 
   // first day covers carry a coloured cachet: the legend, a rule under it,
   // and (further down) the cancel's two rings all print in a deep teal
-  // rather than the card's ink.
+  // rather than the card's ink. cachetRuleY is hoisted (rather than inlined
+  // twice) because the name's vertical band, below, needs the same y to
+  // know what sits above it on this one tier.
+  const cachetRuleY = h * 0.645 + TOP + h * 0.012;
   if (data.issue.key === "firstDay") {
     ctx.fillStyle = TEAL;
     ctx.textAlign = "left";
@@ -332,8 +335,8 @@ export function drawTicket(
     ctx.strokeStyle = TEAL;
     ctx.lineWidth = w * 0.0016;
     ctx.beginPath();
-    ctx.moveTo(L, h * 0.645 + TOP + h * 0.012);
-    ctx.lineTo(L + w * 0.32, h * 0.645 + TOP + h * 0.012);
+    ctx.moveTo(L, cachetRuleY);
+    ctx.lineTo(L + w * 0.32, cachetRuleY);
     ctx.stroke();
     ctx.restore();
   }
@@ -363,23 +366,51 @@ export function drawTicket(
   // formula.
   const ty = h - h * 0.218;
 
-  // the name, in handwriting. Shrinks to fit the same way the issue name
-  // in the stub does, since a wide typed name runs past L/Rt at the base size.
+  // the name, in handwriting. fonts.hand (Caveat) is a script face with
+  // deep loops on g, y, j, p, q below the baseline and tall capitals/
+  // ascenders above it, so the name doesn't just need to fit a WIDTH, it
+  // needs to fit a vertical BAND: the space between whatever sits above it
+  // (the First day cachet's rule when present, otherwise the stamp's own
+  // lower edge) and the tear line below it.
+  //
+  // Caveat's ascenders and capitals commonly run 0.75-0.8 of an em above
+  // the baseline, and its descenders 0.35-0.45 of an em below it. At the
+  // REF_NAME_PX reference size (the size the name would render at with no
+  // band constraint at all) that is 90-96px of ascent and 42-54px of
+  // descent, so these two clearances cover both with headroom, and neither
+  // shrinks as a name gets narrower (a smaller font's real ink only ever
+  // needs less room than this, never more, so the fixed floor stays safe).
+  const REF_NAME_PX = w * 0.1;
+  const NAME_ASCENT_CLEARANCE = h * 0.065; // covers Caveat's ~0.8em ascent at REF_NAME_PX
+  const NAME_DESCENT_CLEARANCE = h * 0.05; // covers Caveat's ~0.45em descent at REF_NAME_PX
+
+  const aboveBottom = data.issue.key === "firstDay" ? cachetRuleY : sy + sh;
+  const band = ty - aboveBottom;
+  // The one tier that draws the cachet (First day) has a visibly smaller
+  // band than the other four, so its name simply renders smaller. That is
+  // expected, not a bug to special-case away: the band computation already
+  // sees the cachet through aboveBottom, and every other tier falls
+  // through to the stamp's lower edge instead.
+  const maxNamePx = Math.min(
+    REF_NAME_PX,
+    (band * REF_NAME_PX) / (NAME_ASCENT_CLEARANCE + NAME_DESCENT_CLEARANCE)
+  );
+
   ctx.fillStyle = P.ink;
   ctx.textAlign = "center";
   const name = data.name.trim() || "Visitor";
-  shrinkToFit(ctx, name, fonts.hand, w * 0.1, w * 0.04, w * 0.003, w * 0.8);
-  // fonts.hand (Caveat) is a script face with deep loops on g, y, j, p, q:
-  // descenders commonly run 35-45% of the em, which is 42-54px at the
-  // un-shrunk w * 0.1 (120px) starting size. shrinkToFit above only kicks in
-  // once a name's rendered width exceeds w * 0.8, so a SHORT name with a
-  // descender ("Guy", "Peggy", "Joy") never shrinks and always renders at
-  // the full size, tail and all, while a long name is safe because it
-  // already shrank down. Rather than trust the gap below the baseline, the
-  // baseline is pulled up to guarantee at least h * 0.05 of clearance above
-  // the tear line, comfortably past the deepest realistic descender,
-  // regardless of how big any given name renders.
-  const nameY = ty - h * 0.055;
+  // Shrinks to fit the same way the issue name in the stub does, since a
+  // wide typed name runs past L/Rt even at the height-derived max size.
+  // This is a second, independent guard on top of the band above it: one
+  // caps height, the other caps width, and a name can need both.
+  shrinkToFit(ctx, name, fonts.hand, maxNamePx, w * 0.04, w * 0.003, w * 0.8);
+
+  // Anchored off the tear line (rather than off aboveBottom, or centred in
+  // the band) so the descent clearance is exact; maxNamePx was sized so
+  // the ascent clearance above that point is always satisfied too, with
+  // any extra band room becoming slack above the name instead of below it.
+  const descentAtMax = (NAME_DESCENT_CLEARANCE * maxNamePx) / REF_NAME_PX;
+  const nameY = ty - descentAtMax;
   ctx.fillText(name, w / 2, nameY);
 
   // tear line, painted, with real holes bitten out of both edges
