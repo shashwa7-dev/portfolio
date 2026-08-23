@@ -2223,6 +2223,69 @@ Then re-run the scale test unchanged. It must still pass: every value introduced
 
 ---
 
+## Task 12: Four defects found on the first real visual pass
+
+Raised by the owner after seeing the rendered gallery. All in `lib/card/ticket.ts` and `lib/card/sticker.ts`.
+
+### Defect 1: the stub's bottom rows are clipped (regression from Task 11)
+
+`ticket.ts` draws the origin line and the share at `h * 0.958 + TOP`, where `TOP = h * 0.038`. That resolves to `0.996h`: six pixels above the card's bottom edge at 1500px. The text and its descenders are cut off. Task 11 introduced `TOP` to make room for the brand row and applied it to every y below, including rows that were already near the bottom.
+
+Fix, and do it structurally rather than by nudging a number: **anchor everything below the tear line to the card's BOTTOM edge instead of to the top.** The stub is a fixed block at the foot of the card, so its rows should be expressed as `h - <fraction>`, not `TOP + <fraction>`. Then no future change to the header can push them off.
+
+Suggested anchors, tune to taste but keep the relationships: share and origin baseline at `h - h * 0.042`, the serial and issue values at `h - h * 0.107`, their caps labels at `h - h * 0.152`, and the tear line at `h - h * 0.218`. Verify the block still sits below the name and does not collide with it.
+
+### Defect 2: the tear notches are painted, not cut
+
+`ticket.ts` fills the two edge notches with a hardcoded `notch` colour (`#e9e2d2` light, `#2a282c` dark) that guesses at the page background. That is why they read as pale circles sitting on the card rather than as bites taken out of it, and it breaks completely if the card is ever shown on a different background or saved and viewed on one.
+
+Fix: punch real holes. Replace the filled arcs with an erase:
+
+```ts
+ctx.save();
+ctx.globalCompositeOperation = "destination-out";
+ctx.beginPath(); ctx.arc(0, ty, w * 0.022, 0, Math.PI * 2); ctx.fill();
+ctx.beginPath(); ctx.arc(w, ty, w * 0.022, 0, Math.PI * 2); ctx.fill();
+ctx.restore();
+```
+
+This makes the notches genuinely transparent, so whatever is behind shows through, and the downloaded PNG carries real alpha there. It matches what `app/cv/page.tsx` does for the CV sheet, where the perforation is a true cut rather than a painted approximation. Read that file's comments around its `NOTCH` constant before you start: it documents why a painted mask was the wrong answer there too.
+
+Delete the now-unused `notch` entry from both palettes.
+
+Check the card's rounded corners still work: they already rely on the fill being a rounded path, so the area outside them is already transparent. The notches now behave the same way, which is the point.
+
+### Defect 3: the sticker does not sit on the card
+
+The sticker reads as printed rather than applied. It has a shadow pass but it is too tight to separate the sticker from the paper.
+
+In `lib/card/sticker.ts`, strengthen the lift: raise `shadowBlur` to about `fontPx * 0.16`, and the offsets to about `fontPx * 0.11` x and `fontPx * 0.13` y, with the shadow colour around `rgba(0,0,0,0.42)`. Keep all four layers and their order. The goal is a vinyl sticker resting on paper with a soft shadow under its lower right, not a hard drop shadow.
+
+### Defect 4: the Misprint looks cheap next to the Inverted
+
+The Inverted card reads as premium because it is restrained: two colours, high contrast, gold on black. The Misprint currently shows bright cyan and magenta frame rectangles at wide offsets, which read as stray coloured boxes rather than as a registration slip, and its pink stock is sickly against the others.
+
+Make it premium through restraint, not more colour:
+
+- Halve the fringe offsets, from `w * 0.0035` / `h * 0.0016` to about `w * 0.0018` / `h * 0.0008`, so the three impressions read as one slipped plate rather than three frames.
+- Deepen and calm the inks: cyan from `rgba(0,174,239,0.55)` to about `rgba(0,132,180,0.42)`, magenta from `rgba(236,0,140,0.5)` to about `rgba(190,30,120,0.38)`. Real process inks on absorbent paper are duller than screen primaries.
+- Change the Misprint stock in `STOCK` from `#f7efe8` to something closer to the base cream with only a hint of warmth, around `#f6f0e8`. The tint should be felt, not seen.
+- Apply the same treatment to the `ONE VISIT` fringe so the frame and the type agree.
+
+Do not add new colours and do not touch the sticker's rainbow gradient: that is the tier's identity and it is working.
+
+### Tests
+
+- The clipped-stub fix needs an assertion: every `fillText` and `tracked` baseline in the stub block must be at least `h * 0.02` above the card's bottom edge. Write it, watch it FAIL against the current code, then fix. This is the assertion that would have caught the regression Task 11 introduced.
+- The notch fix needs an assertion that `destination-out` is used and that the old `notch` fill colours appear nowhere in the recorded calls.
+- The Misprint colour change needs its existing colour assertions updated to the new values.
+- The scale test must still pass. Every new value is a fraction of `w` or `h`.
+
+- [ ] Run `npm test`, `npm run lint`, `npm run build`, `npx tsc --noEmit`, `bash scripts/verify-simplification.sh`. All clean.
+- [ ] Commit.
+
+---
+
 ## Manual checks before opening the PR
 
 These cannot be automated here and are named in the spec:
