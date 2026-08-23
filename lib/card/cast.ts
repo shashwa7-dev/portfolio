@@ -11,6 +11,9 @@ import type { Cast } from "@/lib/card/types";
  * the issue tiers is that some cards feel luckier than others.
  */
 export function castFrom(R: Rand): Cast {
+  // Order matters: the six picks are consumed in this sequence. Inserting a new
+  // trait between existing ones reorders the stream and silently changes every
+  // previously minted card. Always append new traits at the end.
   return {
     hair: weighted(R, [
       ["short", 26],

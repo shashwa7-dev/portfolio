@@ -7,6 +7,22 @@ describe("castFrom", () => {
     expect(castFrom(mulberry32(42))).toEqual(castFrom(mulberry32(42)));
   });
 
+  it("produces pinned golden value", () => {
+    // This value is frozen because the order of the picks is part of the card's
+    // permanent identity. If this test fails, the fix is almost always to revert
+    // the change to cast.ts, not to update the expected object. Adding a new
+    // trait means appending the pick at the END of castFrom, never inserting it
+    // among the existing ones.
+    expect(castFrom(mulberry32(2026))).toEqual({
+      hair: "long",
+      glasses: "none",
+      headwear: "none",
+      brow: "arched",
+      mouth: "smile",
+      shade: 0.38310598609969015,
+    });
+  });
+
   it("keeps shade inside 0 to 1", () => {
     for (let i = 0; i < 2000; i++) {
       const c = castFrom(mulberry32(i));
