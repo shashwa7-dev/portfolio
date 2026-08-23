@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Container from "@/components/layout/Container";
 import { cn } from "@/lib/utils";
-import Marker from "@/components/common/Marker";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl, breadcrumbLd } from "@/lib/seo";
 import { communities } from "@/lib/coffee";
@@ -501,7 +500,7 @@ export default function CoffeePage() {
         </P>
         <P>
           Which means crema mostly tells you about{" "}
-          <Marker>freshness, not quality</Marker>. The clearest evidence is
+          <Strong>freshness, not quality</Strong>. The clearest evidence is
           robusta: it reliably produces more crema than arabica, whatever the
           coffee tastes like. A very fresh bag gives a thick head, an old one
           barely any, and a beautifully crowned shot can still taste like
@@ -525,12 +524,12 @@ export default function CoffeePage() {
         <P>
           It took me a while to work out why pushing harder did nothing. The
           pressure does not really come from the lever.{" "}
-          <Strong>It comes from the coffee <Marker>getting in the way</Marker>.</Strong>{" "}
+          <Strong>It comes from the coffee getting in the way.</Strong>{" "}
           Grind too coarse and there is nothing in the way: the water finds a
           clear path straight through and is gone before it has picked up much
           flavour, however slowly and however carefully I pulled the arm.
           A fast, thin shot is almost never fixed at the lever. It is{" "}
-          <Marker>fixed at the grinder</Marker>.
+          <Strong>fixed at the grinder</Strong>.
         </P>
         <P>
           Except I could not fix it. My old grinder was already on its finest
@@ -794,8 +793,7 @@ export default function CoffeePage() {
           so it is worth thirty seconds.
         </P>
         <P>
-          When coffee people say <Strong>acidity</Strong>, <Marker>they mean
-          brightness</Marker>.
+          When coffee people say <Strong>acidity</Strong>, they mean brightness.
           The snap of a green apple, the lift of orange juice. It is a compliment.
           It is a thing people pay more for.
         </P>
@@ -937,8 +935,7 @@ export default function CoffeePage() {
         </P>
         <P>
           Which brings up the label you have definitely seen.{" "}
-          <Strong>&ldquo;100% arabica&rdquo; is <Marker>not a quality
-          claim</Marker>.</Strong> It
+          <Strong>&ldquo;100% arabica&rdquo; is not a quality claim.</Strong> It
           is a statement about species and nothing else, and there is an enormous
           amount of mediocre arabica in the world. It meant something when the
           alternative was cheap robusta padding out a supermarket tin. Notice
@@ -966,7 +963,7 @@ export default function CoffeePage() {
           <Def term="Honey, or pulped natural">
             The middle path. The skin comes off but the sticky layer underneath
             stays on to dry. Sweet, between the other two.{" "}
-            <Strong><Marker>There is no honey involved.</Marker></Strong> That sticky layer just
+            <Strong>There is no honey involved.</Strong> That sticky layer just
             looks and behaves like honey, and the name stuck.
           </Def>
         </dl>
@@ -979,7 +976,7 @@ export default function CoffeePage() {
 
         <H3>The date that matters</H3>
         <P>
-          Look for a <Marker>roast date</Marker>, not a best before date.
+          Look for a <Strong>roast date</Strong>, not a best before date.
         </P>
         <P>
           Coffee does not spoil the way milk does. It is shelf stable, so a best
@@ -992,7 +989,7 @@ export default function CoffeePage() {
           Fresh coffee is full of carbon dioxide, and that gas pushes water away
           from the grounds and gives you a sour, uneven cup. So a bag wants a
           few days between the roaster and you.{" "}
-          <Marker>Rest it before you judge it.</Marker>
+          <Strong>Rest it before you judge it.</Strong>
         </P>
         <P>
           How long depends on two things at once, which is why nobody agrees on
@@ -1075,7 +1072,7 @@ export default function CoffeePage() {
           The freezer, though, genuinely works, which surprises people who were
           told otherwise years ago. Frozen properly, coffee ages dramatically
           more slowly. The condition is moisture:{" "}
-          <Marker>freeze it in small sealed portions</Marker>, and let a portion
+          <Strong>freeze it in small sealed portions</Strong>, and let a portion
           come back to room temperature before you open it, or water condenses
           straight onto cold beans.
         </P>

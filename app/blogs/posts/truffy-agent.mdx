@@ -14,15 +14,13 @@ A chat box that can send email is a spam relay wearing a friendly face. Anyone w
 
 It runs on Next.js API routes, Google Gemini Pro, and NodeMailer, in TypeScript. Answers stream back token by token over Server-Sent Events, so you see the reply forming instead of watching a spinner.
 
-You need <Marker>basic familiarity with Next.js, TypeScript and API routes</Marker> to follow the code here.
+You need basic familiarity with Next.js, TypeScript and API routes to follow the code here.
 
 ## What happens when you type
 
 Every message hits one API route, which first decides what you are asking for.
 
 If it reads as a question, it goes to Gemini and streams back. If it reads as "email Shashwat," it enters a separate flow that collects an address, a subject and a message, checks all three, shows you a preview, and only then sends. Nothing leaves the server before you confirm.
-
-<Image src="/projects/project_truffy2.jpg" width="1280" height="720" alt="The assistant collecting an email address, subject and message step by step" />
 
 The steps run in this order:
 
@@ -40,7 +38,7 @@ Collecting one field at a time was not the first design. Asking for everything a
 
 ## Rate limiting
 
-<Marker>Three emails per hour</Marker>, counted per sender and per session. Both, because either one alone is trivial to walk around: a fresh session gets a new bucket, and a fresh address does too.
+**Three emails per hour**, counted per sender and per session. Both, because either one alone is trivial to walk around: a fresh session gets a new bucket, and a fresh address does too.
 
 ```typescript
 const RATE_LIMIT = {
@@ -102,7 +100,7 @@ const validateEmailContent = (subject: string, body: string): boolean => {
 };
 ```
 
-Blocking every URL is blunt, and it does reject legitimate messages that just wanted to share a link. I kept it because <Marker>the main reason a stranger sends automated mail is to get a link in front of someone</Marker>. Take the links away and most of the incentive goes with them.
+Blocking every URL is blunt, and it does reject legitimate messages that just wanted to share a link. I kept it because the main reason a stranger sends automated mail is to get a link in front of someone. Take the links away and most of the incentive goes with them.
 
 The length floors do more work than they look like they do. A body under ten characters is almost always a test, a probe, or someone bouncing off the interface.
 

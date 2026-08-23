@@ -1,6 +1,5 @@
 import Label from "@/components/layout/Label";
 import StackIcon from "@/components/common/StackIcon";
-import { withMarker } from "@/lib/markerHighlight";
 import type { TDiaryEntry } from "@/lib/diaryData";
 
 /**
@@ -34,7 +33,7 @@ export default function DiaryEntry({
       </header>
 
       <p className="text-base font-medium leading-relaxed text-foreground/90">
-        {withMarker(entry.summary, entry.summaryHighlight, "marker", 0.1)}
+        {entry.summary}
       </p>
 
       {entry.context && (
@@ -65,7 +64,7 @@ export default function DiaryEntry({
             Impact
           </div>
           <p className="mt-1 text-sm leading-relaxed text-foreground">
-            {withMarker(entry.impact, entry.impactHighlight, "line", 0.35)}
+            {entry.impact}
           </p>
         </div>
       )}

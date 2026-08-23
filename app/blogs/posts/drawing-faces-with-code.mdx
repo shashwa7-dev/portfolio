@@ -6,9 +6,7 @@ summary: "None of these faces are AI images or stored files. Each one is drawn a
 image: "/blogs/portraits/crowd-fabpot.webp"
 ---
 
-None of the faces below are photographs, AI images, or files sitting on a server. Each one is drawn when the page loads, by a browser following instructions, from nothing but a name.
-
-<Image src="/blogs/portraits/crowd-fabpot.webp" width="1800" height="1094" alt="A grid of 32 generated graphite portraits on cream paper, wearing hats, glasses and headphones" />
+None of the faces on this page are photographs, AI images, or files sitting on a server. Each one is drawn when the page loads, by a browser following instructions, from nothing but a name.
 
 The whole thing is one HTML file, 132 KB, with no libraries and no build step. Type a name and you get a person. Type the same name tomorrow on another machine and you get the same person.
 
@@ -29,7 +27,7 @@ Dead straight, identical thickness end to end, both ends cut square. Everyone re
 
 Watch what a pencil actually does. The line starts light because you have not committed yet. It thickens in the middle where your hand presses hardest. It thins again as you lift off. It wobbles, because your wrist is a hinge and not a rail. Graphite crumbs break off the sides. In patches, the tooth of the paper shows through and the line skips.
 
-So the trick is that <Marker>you do not draw a line at all</Marker>. You build a filled shape and vary its width along the path:
+So the trick is that **you do not draw a line at all**. You build a filled shape and vary its width along the path:
 
 ```javascript
 // walk the path, and at each step decide how wide the stroke is here
@@ -63,7 +61,7 @@ lift = chance(R, 0.035);
 
 Add those together and a shape stops looking computed. Take them away and you have a diagram. **The imperfection is doing the work.**
 
-<Marker>None of this code knows what a face is.</Marker> The same functions draw hats, sunglasses, a cowboy brim and the handwritten name under each portrait.
+None of this code knows what a face is. The same functions draw hats, sunglasses, a cowboy brim and the handwritten name under each portrait.
 
 ## The same name gives the same face
 
@@ -71,7 +69,7 @@ Add those together and a shape stops looking computed. Take them away and you ha
 
 Computers do not really produce random numbers. They take a starting number and run it through a formula that spits out values which look scattered. Feed in the same starting number and you get the same sequence every time.
 
-That property is usually an annoyance. <Marker>Here it is the entire feature.</Marker>
+That property is usually an annoyance. Here it is the entire feature.
 
 ```javascript
 // FNV-1a, then a mixing step so similar names land far apart
@@ -131,13 +129,13 @@ The first time was when I added a control for how the portrait presents, so that
 | masc | 19% | 44% |
 | fluid | 41% | 18% |
 
-The bias was working perfectly. The real fault was that <Marker>pale hair rendered too faint to see</Marker>, so long-haired portraits read as bald. I would have spent an evening rewriting the correct half.
+The bias was working perfectly. The real fault was that pale hair rendered too faint to see, so long-haired portraits read as bald. I would have spent an evening rewriting the correct half.
 
 ## A bigger drawing is not a zoomed drawing
 
 Scaling the portrait up looked coarse and flat. Blowing it up to card size gave me a heavy black mass of hair with no interior detail.
 
-Photocopy a postcard onto a poster and the lines get fat and clumsy. A drawing actually made at poster size has the same thin pencil lines the postcard had, because <Marker>the pencil tip never changed</Marker>. There are simply more of them, carrying more detail.
+Photocopy a postcard onto a poster and the lines get fat and clumsy. A drawing actually made at poster size has the same thin pencil lines the postcard had, because the pencil tip never changed. There are simply more of them, carrying more detail.
 
 So line weight and texture spacing needed a correction that runs against size:
 
@@ -155,7 +153,7 @@ hatchFill(R, pts, s * 0.045 * K, angle, 0.4, TW);  // tighter texture too
 
 A vending machine that works nineteen times out of twenty is a bad vending machine. The one time it eats your money is the round anyone remembers.
 
-Generated art has the same shape, and it is worse, because <Marker>failures hide</Marker>. Eight portraits appear, one is broken, you refresh and it is gone. I spent days chasing artefacts I could not reproduce, guessing at causes, and shipping fixes that changed nothing.
+Generated art has the same shape, and it is worse, because failures hide. Eight portraits appear, one is broken, you refresh and it is gone. I spent days chasing artefacts I could not reproduce, guessing at causes, and shipping fixes that changed nothing.
 
 What ended it was giving up on random samples and building contact sheets. One cell per hairstyle, traits pinned, nowhere for a lucky seed to hide:
 
@@ -180,10 +178,10 @@ Thirty-two portraits render in under a second, including browser startup. The fi
 
 ## If you want to try this
 
-Read someone else's rendering code first. A working generator answers questions that documentation never raises, because you can break it and watch what happens.
+**Read someone else's rendering code first.** A working generator answers questions that documentation never raises, because you can break it and watch what happens.
 
-<Marker>Keep deciding separate from drawing.</Marker> You get to measure what your generator does without rendering anything, and every fix stays local.
+**Keep deciding separate from drawing.** You get to measure what your generator does without rendering anything, and every fix stays local.
 
-<Marker>Build the contact sheet before you think you need it.</Marker> Every hour I spent staring at random output was an hour I could have spent looking at all the cases at once.
+**Build the contact sheet before you think you need it.** Every hour I spent staring at random output was an hour I could have spent looking at all the cases at once.
 
 Source and full credit: [github.com/kengocodes/cyber-crowd](https://github.com/kengocodes/cyber-crowd), MIT licensed, by [Kevin Ngo](https://x.com/kevin_t_ngo).
