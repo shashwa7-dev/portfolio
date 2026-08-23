@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import Container from "@/components/layout/Container";
 import CardMinter from "@/components/card/CardMinter";
+import IssueGallery from "@/components/card/IssueGallery";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl } from "@/lib/seo";
 
@@ -56,6 +57,7 @@ export default function CardPage() {
           Five issues exist. Most people get a Definitive.
         </p>
         <CardMinter origin={origin ?? null} city={city} />
+        <IssueGallery />
       </Container>
     </main>
   );
