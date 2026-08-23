@@ -6,7 +6,7 @@ import { serialFrom } from "@/lib/card/seed";
 import { drawTicket } from "@/lib/card/ticket";
 import type { IssueKey } from "@/lib/card/types";
 
-/** Scratch only. Deleted in Task 7. */
+/** Scratch only. Deleted in Task 9, once the issue gallery replaces this job. */
 const KEYS: IssueKey[] = ["definitive", "commemorative", "firstDay", "misprint", "inverted"];
 const FONTS = { hand: "cursive", sticker: "system-ui, sans-serif", mono: "ui-monospace, monospace" };
 
