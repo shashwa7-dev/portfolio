@@ -121,7 +121,7 @@ export default function IssueGallery() {
         does slip, and the Inverted portrait really is upside down.
       </p>
       {ready ? (
-        <ul className="mt-6 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5">
+        <ul className="mt-6 grid grid-cols-2 gap-5 md:grid-cols-3">
           {SPECIMENS.map((s) => (
             <Specimen key={s.key} spec={s} mark={markRef.current} />
           ))}
