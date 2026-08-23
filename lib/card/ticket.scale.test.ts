@@ -235,7 +235,12 @@ function makeSpatialStubCtx() {
   return { ctx: ctx as unknown as CanvasRenderingContext2D, spatial };
 }
 
-const FONTS = { hand: "cursive", sticker: "system-ui, sans-serif", mono: "ui-monospace, monospace" };
+const FONTS = {
+  hand: "cursive",
+  sticker: "system-ui, sans-serif",
+  mono: "ui-monospace, monospace",
+  mark: {} as unknown as HTMLImageElement,
+};
 
 function cardFor(id: string, key: IssueKey): CardData {
   return {
