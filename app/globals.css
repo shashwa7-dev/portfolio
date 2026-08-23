@@ -213,6 +213,12 @@
      input, and a sheen travelling across a surface is not responding to
      anything. At 300ms the same sweep reads as a flicker. */
   --duration-sweep: 700ms;
+
+  /* The visitor card's printing reveal (CardMinter). Its own scale, not the
+     sub-300ms UI budget above: it is a one-time flourish on mint, not a
+     response to input, the same reasoning that puts --duration-sweep
+     outside that budget. */
+  --duration-print: 900ms;
 }
 
 /* Link hover effect */
