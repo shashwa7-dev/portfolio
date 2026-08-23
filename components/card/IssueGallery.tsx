@@ -39,7 +39,6 @@ function Specimen({
     const cssH = (cssW * CARD_H) / CARD_W;
     c.width = Math.round(cssW * dpr);
     c.height = Math.round(cssH * dpr);
-    c.style.height = `${cssH}px`;
     const ctx = c.getContext("2d");
     if (!ctx) return;
     ctx.scale(dpr, dpr);
@@ -67,7 +66,7 @@ function Specimen({
     <li>
       <canvas
         ref={ref}
-        className="w-full rounded-md"
+        className="w-full aspect-[4/5] rounded-md"
         role="img"
         aria-label={`Example of a ${issue.name} card`}
       />

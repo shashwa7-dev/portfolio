@@ -82,7 +82,7 @@ export default function CardMinter({
     if (!visitorId) return null;
     return {
       visitorId,
-      name: name.trim() || "Visitor",
+      name,
       serial: serialFrom(visitorId),
       issue: ISSUES[issueFrom(visitorId)],
       origin,
@@ -101,7 +101,6 @@ export default function CardMinter({
     const cssH = (cssW * CARD_H) / CARD_W;
     c.width = Math.round(cssW * dpr);
     c.height = Math.round(cssH * dpr);
-    c.style.height = `${cssH}px`;
     const ctx = c.getContext("2d");
     if (!ctx) return;
     ctx.scale(dpr, dpr);
@@ -146,7 +145,7 @@ export default function CardMinter({
         <div className="max-w-[420px]">
           <canvas
             ref={canvasRef}
-            className="w-full rounded-lg"
+            className="w-full aspect-[4/5] rounded-lg"
             role="img"
             aria-label={
               data

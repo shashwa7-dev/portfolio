@@ -42,7 +42,14 @@ export default function CardPage() {
   const h = headers();
   const country = h.get("x-vercel-ip-country");
   const rawCity = h.get("x-vercel-ip-city");
-  const city = rawCity ? decodeURIComponent(rawCity) : null;
+  let city = rawCity;
+  if (rawCity) {
+    try {
+      city = decodeURIComponent(rawCity);
+    } catch {
+      city = rawCity;
+    }
+  }
   const origin = city && country ? `${city}, ${country}` : country;
 
   return (

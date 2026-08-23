@@ -80,7 +80,15 @@ function makeStubCtx() {
       return { addColorStop() {} };
     },
     createRadialGradient: () => ({ addColorStop() {} }),
-    measureText: () => ({ width: 10 }),
+    // A width proportional to the text length and the current font size
+    // (parsed off ctx.font), not a constant. A constant width would let the
+    // shrink-to-fit loop, tracked()'s centring maths and the sticker's
+    // width-dependent gradient run without any assertion in this file ever
+    // exercising them.
+    measureText: (text: string) => {
+      const px = parseFloat(font) || 0;
+      return { width: Array.from(text).length * px * 0.56 };
+    },
   };
 
   let fillStyle = "";
@@ -442,5 +450,39 @@ describe("drawTicket", () => {
     expect(fontBeforeShare).toBe(bigFont);
     expect(bigFont).not.toBe(smallFont);
     expect(CARD_W * 0.026).toBeGreaterThan(CARD_W * 0.018);
+  });
+
+  it("shrinks a long name to stay within the card's horizontal margins", () => {
+    // 18 wide characters: the exact length the "Name on the card" input in
+    // CardMinter allows (maxLength=18), and wide enough that at the base
+    // font size (w * 0.1) it would run past both margins with no shrink.
+    const longName = "WWWWWWWWWWWWWWWWWW";
+    const { ctx, texts, calls } = makeStubCtx();
+    drawTicket(ctx, { ...cardFor("long-name", "definitive"), name: longName }, CARD_W, CARD_H, FONTS);
+
+    const nameEntry = texts.find((t) => t.text === longName);
+    expect(nameEntry).toBeDefined();
+
+    // Recover the font size drawTicket had settled on right before drawing
+    // the name, the same way the share-row test above does.
+    const nameCallString = `fillText(${nameEntry!.x},${nameEntry!.y})`;
+    const nameIndex = calls.indexOf(nameCallString);
+    let nameFont: string | undefined;
+    for (let i = nameIndex; i >= 0; i--) {
+      if (calls[i].startsWith("font=")) {
+        nameFont = calls[i].slice("font=".length);
+        break;
+      }
+    }
+    expect(nameFont).toBeDefined();
+    const namePx = parseFloat(nameFont!);
+    const nameWidth = Array.from(longName).length * namePx * 0.56;
+
+    const L = CARD_W * 0.097;
+    const Rt = CARD_W * 0.903;
+    const leftEdge = nameEntry!.x - nameWidth / 2;
+    const rightEdge = nameEntry!.x + nameWidth / 2;
+    expect(leftEdge).toBeGreaterThanOrEqual(L);
+    expect(rightEdge).toBeLessThanOrEqual(Rt);
   });
 });

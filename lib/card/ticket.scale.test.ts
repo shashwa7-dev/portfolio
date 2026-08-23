@@ -256,10 +256,11 @@ function cardFor(id: string, key: IssueKey): CardData {
 
 const KEYS: IssueKey[] = ["definitive", "commemorative", "firstDay", "misprint", "inverted"];
 
-// 268x335 is the harness thumbnail size from app/card/preview/page.tsx.
-// 1200x1500 is CARD_W x CARD_H, the export size. Both share the 4:5 aspect
-// ratio, so a single scalar covers every measurement regardless of whether
-// it was written against w or h: 1200/268 and 1500/335 are the same number.
+// 268x335 is an arbitrary small thumbnail size, chosen only to be far from
+// the export size below. 1200x1500 is CARD_W x CARD_H, the export size. Both
+// share the 4:5 aspect ratio, so a single scalar covers every measurement
+// regardless of whether it was written against w or h: 1200/268 and 1500/335
+// are the same number.
 const SMALL_W = 268, SMALL_H = 335;
 const SCALE = CARD_W / SMALL_W;
 

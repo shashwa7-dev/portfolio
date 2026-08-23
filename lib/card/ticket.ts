@@ -87,6 +87,32 @@ function perforate(
   }
 }
 
+/**
+ * Reduce font size in steps until `text` fits `maxWidth`, or the size bottoms
+ * out at `minPx`. Leaves `ctx.font` set to whatever size it settled on, so the
+ * caller can fillText right after calling this. Used anywhere a value on the
+ * card is long enough to run past its column: the issue name in the stub and
+ * the visitor's name across the middle of the card share this one loop
+ * instead of each growing its own.
+ */
+function shrinkToFit(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  fontFamily: string,
+  startPx: number,
+  minPx: number,
+  stepPx: number,
+  maxWidth: number
+): number {
+  let px = startPx;
+  ctx.font = `${px}px ${fontFamily}`;
+  while (ctx.measureText(text).width > maxWidth && px > minPx) {
+    px -= stepPx;
+    ctx.font = `${px}px ${fontFamily}`;
+  }
+  return px;
+}
+
 /** Letter-spaced fill, since canvas has no tracking. */
 function tracked(
   ctx: CanvasRenderingContext2D, text: string, x: number, y: number, spacing: number,
@@ -326,11 +352,13 @@ export function drawTicket(
   ctx.fillText(data.date.slice(-4), ccx, ccy + cr * 0.48);
   ctx.restore();
 
-  // the name, in handwriting
+  // the name, in handwriting. Shrinks to fit the same way the issue name
+  // in the stub does, since a wide typed name runs past L/Rt at the base size.
   ctx.fillStyle = P.ink;
   ctx.textAlign = "center";
-  ctx.font = `${w * 0.1}px ${fonts.hand}`;
-  ctx.fillText(data.name || "Visitor", w / 2, h * 0.716 + TOP);
+  const name = data.name.trim() || "Visitor";
+  shrinkToFit(ctx, name, fonts.hand, w * 0.1, w * 0.04, w * 0.003, w * 0.8);
+  ctx.fillText(name, w / 2, h * 0.716 + TOP);
 
   // tear line, painted, with notches bitten out of both edges
   const ty = h * 0.782 + TOP;
@@ -359,13 +387,8 @@ export function drawTicket(
 
   // "Commemorative" overflows the column, so shrink to fit rather than truncate
   ctx.textAlign = "right";
-  let issuePx = w * 0.0448;
-  ctx.font = `${issuePx}px ${fonts.mono}`;
   const maxIssue = w * 0.36;
-  while (ctx.measureText(data.issue.name).width > maxIssue && issuePx > w * 0.02) {
-    issuePx -= w * 0.0015;
-    ctx.font = `${issuePx}px ${fonts.mono}`;
-  }
+  shrinkToFit(ctx, data.issue.name, fonts.mono, w * 0.0448, w * 0.02, w * 0.0015, maxIssue);
   ctx.fillStyle = data.issue.inverted ? P.cancel : P.ink;
   ctx.fillText(data.issue.name, Rt, h * 0.893 + TOP);
 

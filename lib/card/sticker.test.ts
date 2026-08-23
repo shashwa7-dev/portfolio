@@ -104,7 +104,10 @@ describe("drawSticker", () => {
 
     const strokes = log.filter((n) => n === "strokeText").length;
     const fills = log.filter((n) => n === "fillText").length;
-    expect(strokes).toBeGreaterThanOrEqual(1);
+    // Two strokeText sources exist: the die-cut vinyl edge and the hairline
+    // pass. >= 1 would stay green even if the die-cut edge were deleted
+    // entirely, so this checks for both.
+    expect(strokes).toBeGreaterThanOrEqual(2);
     expect(fills).toBeGreaterThan(1);
   });
 
