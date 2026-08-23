@@ -20,7 +20,13 @@ const LIGHT = {
 
 const DARK = {
   stock: "#17161a",
-  stamp: "#201f24",
+  // Cream, not black. The vendored engine only ever draws dark ink on cream
+  // paper (it has no pale-on-dark mode), so a stamp printed on the card's
+  // own stock colour would put a cream portrait on near-black with nothing
+  // framing it: the perforation and the stamp rectangle both vanish, and
+  // the rarest card in the set stops reading as a stamp. A real inverted
+  // cover is a normal stamp stuck to a dark envelope, which is this.
+  stamp: "#f6f1e5",
   ink: "#e8e3d8",
   faint: "#8a8175",
   veryFaint: "#6f6a63",
@@ -107,7 +113,14 @@ export function drawTicket(
   perforate(ctx, sx, sy, sw, sh, w * 0.0112, P.stock);
 
   // inner rule. Commemorative gets a second one, Misprint prints it twice off-register.
-  ctx.strokeStyle = P.ink;
+  //
+  // The stamp itself is always cream (LIGHT.stamp and DARK.stamp are the
+  // same pale colour), because the engine only draws dark portraits on
+  // light paper. Anything drawn on top of the stamp has to use the dark,
+  // LIGHT-mode ink to stay legible against that cream, even on an Inverted
+  // card whose stock and P.ink are otherwise dark and pale. P.ink is only
+  // right for what sits on the card stock beyond the stamp's edge.
+  ctx.strokeStyle = LIGHT.ink;
   if (data.issue.key === "misprint") {
     ctx.globalAlpha = 0.22;
     ctx.lineWidth = w * 0.0034;
