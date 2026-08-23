@@ -330,15 +330,19 @@ describe("drawTicket", () => {
     expect(seen.size).toBe(KEYS.length);
   });
 
-  it("gives Misprint a composite-operation assignment for its offset ghosts; Definitive has none", () => {
+  it("gives Misprint a multiply composite-operation for its offset ghosts; Definitive has none", () => {
+    // globalCompositeOperation=destination-out is no longer a clean signal
+    // for "this is Misprint": Task 12 made the tear-line notches real cuts
+    // via destination-out on every card. "multiply" is still Misprint-only,
+    // since only its portrait ghosts blend that way.
     const id = "composite-check";
     const { ctx: misCtx, calls: misCalls } = makeStubCtx();
     drawTicket(misCtx, cardFor(id, "misprint"), CARD_W, CARD_H, FONTS);
-    expect(misCalls.some((c) => c.startsWith("globalCompositeOperation="))).toBe(true);
+    expect(misCalls).toContain("globalCompositeOperation=multiply");
 
     const { ctx: defCtx, calls: defCalls } = makeStubCtx();
     drawTicket(defCtx, cardFor(id, "definitive"), CARD_W, CARD_H, FONTS);
-    expect(defCalls.some((c) => c.startsWith("globalCompositeOperation="))).toBe(false);
+    expect(defCalls).not.toContain("globalCompositeOperation=multiply");
   });
 
   it("fringes Misprint's frame rule and foot lettering in real cyan and magenta; Definitive has neither", () => {
@@ -346,8 +350,8 @@ describe("drawTicket", () => {
     // comment in ticket.ts), but the frame rule and the foot lettering are
     // coloured directly by ticket.ts, so those fringe in the real process
     // colours a misregistration separates.
-    const CYAN = "rgba(0,174,239,0.55)";
-    const MAGENTA = "rgba(236,0,140,0.5)";
+    const CYAN = "rgba(0,132,180,0.42)";
+    const MAGENTA = "rgba(190,30,120,0.38)";
     const id = "misregistration-check";
 
     const { ctx: misCtx, calls: misCalls } = makeStubCtx();
@@ -484,5 +488,43 @@ describe("drawTicket", () => {
     const rightEdge = nameEntry!.x + nameWidth / 2;
     expect(leftEdge).toBeGreaterThanOrEqual(L);
     expect(rightEdge).toBeLessThanOrEqual(Rt);
+  });
+
+  // --- Task 12: the stub's bottom rows were clipping ---
+
+  it("keeps every stub-block text baseline at least h * 0.02 above the card's bottom edge", () => {
+    // The stub is everything at or after the tear line: the SERIAL/ISSUE
+    // caps labels, the serial and issue values, the origin/date line and
+    // the rarity share. h * 0.8 sits below the name (h * 0.716 + TOP) and
+    // the first-day cachet (h * 0.645 + TOP) in both the pre-fix and
+    // post-fix layout, so it cleanly isolates stub text from everything
+    // else drawn on the card without hardcoding either layout's y values.
+    const h = CARD_H;
+    const { ctx, texts } = makeStubCtx();
+    drawTicket(ctx, cardFor("clip-check", "definitive"), CARD_W, h, FONTS);
+
+    const stubTexts = texts.filter((t) => t.y > h * 0.8);
+    expect(stubTexts.length).toBeGreaterThan(0);
+
+    const limit = h - h * 0.02;
+    for (const t of stubTexts) {
+      expect(t.y, `"${t.text}" baseline at y=${t.y} must be <= ${limit}`).toBeLessThanOrEqual(limit);
+    }
+  });
+
+  it("cuts the tear-line notches with destination-out instead of painting them a guessed background colour", () => {
+    // A painted notch (the old #e9e2d2 / #2a282c colours) only ever
+    // approximates one background and is wrong on every other one, so the
+    // fix erases real alpha there instead. Both the light and dark palette's
+    // old literals must be gone from the recorded calls, and a
+    // globalCompositeOperation=destination-out assignment must be present.
+    for (const key of ["definitive", "inverted"] as IssueKey[]) {
+      const { ctx, calls } = makeStubCtx();
+      drawTicket(ctx, cardFor(`notch-cut-${key}`, key), CARD_W, CARD_H, FONTS);
+
+      expect(calls).toContain("globalCompositeOperation=destination-out");
+      expect(calls).not.toContain("fillStyle=#e9e2d2");
+      expect(calls).not.toContain("fillStyle=#2a282c");
+    }
   });
 });

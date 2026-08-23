@@ -39,10 +39,10 @@ export function drawSticker(
 
   // 1. lift
   ctx.save();
-  ctx.shadowColor = "rgba(0,0,0,0.5)";
-  ctx.shadowBlur = fontPx * 0.05;
-  ctx.shadowOffsetX = fontPx * 0.07;
-  ctx.shadowOffsetY = fontPx * 0.08;
+  ctx.shadowColor = "rgba(0,0,0,0.42)";
+  ctx.shadowBlur = fontPx * 0.16;
+  ctx.shadowOffsetX = fontPx * 0.11;
+  ctx.shadowOffsetY = fontPx * 0.13;
   ctx.fillStyle = edge;
   ctx.fillText(text, 0, 0);
   ctx.restore();

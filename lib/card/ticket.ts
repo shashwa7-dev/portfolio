@@ -27,7 +27,7 @@ export const STOCK: Record<IssueKey, string> = {
   definitive: "#f6f1e5", // the base cream, unchanged
   commemorative: "#f4eede", // a touch deeper, a warmer batch
   firstDay: "#eef1ef", // barely cool, the way first day covers lean
-  misprint: "#f7efe8", // barely pink, an over-inked run
+  misprint: "#f6f0e8", // a hair warmer than the base cream, felt rather than seen
   inverted: "#17161a", // unchanged
 };
 
@@ -39,7 +39,6 @@ const LIGHT = {
   faint: "#8a8175",
   veryFaint: "#bdb4a4",
   cancel: "#1f1d1a",
-  notch: "#e9e2d2",
 };
 
 const DARK = {
@@ -57,7 +56,6 @@ const DARK = {
   faint: "#8a8175",
   veryFaint: "#6f6a63",
   cancel: "#c9a227",
-  notch: "#2a282c",
 };
 
 function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
@@ -154,10 +152,17 @@ export function drawTicket(
   ctx.save();
   ctx.clearRect(0, 0, w, h);
 
-  // The stamp and everything below it moved down by TOP to make room for
-  // the brand row. Every one of those y coordinates is `TOP + <its old
-  // fraction of h>`, so this single constant is the only thing that ever
-  // needs to change if the band grows or shrinks.
+  // The stamp and the body content between it and the tear line moved down
+  // by TOP to make room for the brand row. Every one of those y coordinates
+  // is `TOP + <its old fraction of h>`, so this single constant is the only
+  // thing that ever needs to change if the band grows or shrinks.
+  //
+  // The stub (the tear line and everything below it) is a fixed block at
+  // the foot of the card instead, anchored to the BOTTOM edge as
+  // `h - <fraction>`. A block measured from the top drifts toward the
+  // bottom edge as the header above it grows, which is exactly what
+  // clipped its text once TOP existed; a block measured from the bottom
+  // cannot be pushed off by anything that happens above it.
   const TOP = h * 0.038;
   const L = w * 0.097, Rt = w * 0.903;
 
@@ -201,16 +206,16 @@ export function drawTicket(
     // rather than the portrait's grey. See the note above the portrait
     // ghosts for why the portrait can't do the same.
     ctx.globalAlpha = 1;
-    ctx.strokeStyle = "rgba(0,174,239,0.55)";
+    ctx.strokeStyle = "rgba(0,132,180,0.42)";
     ctx.lineWidth = w * 0.0034;
     ctx.save();
-    ctx.translate(-w * 0.0035, -h * 0.0016);
+    ctx.translate(-w * 0.0018, -h * 0.0008);
     ctx.strokeRect(sx + w * 0.039, sy + h * 0.029, sw - w * 0.06, sh - h * 0.047);
     ctx.restore();
 
-    ctx.strokeStyle = "rgba(236,0,140,0.5)";
+    ctx.strokeStyle = "rgba(190,30,120,0.38)";
     ctx.save();
-    ctx.translate(w * 0.0035, h * 0.0016);
+    ctx.translate(w * 0.0018, h * 0.0008);
     ctx.strokeRect(sx + w * 0.039, sy + h * 0.029, sw - w * 0.06, sh - h * 0.047);
     ctx.restore();
 
@@ -271,14 +276,14 @@ export function drawTicket(
     ctx.save();
     ctx.globalAlpha = 0.22;
     ctx.globalCompositeOperation = "multiply";
-    ctx.translate(-w * 0.0035, -h * 0.0016);
+    ctx.translate(-w * 0.0018, -h * 0.0008);
     engine.portrait(data.visitorId, pBox);
     ctx.restore();
 
     ctx.save();
     ctx.globalAlpha = 0.22;
     ctx.globalCompositeOperation = "multiply";
-    ctx.translate(w * 0.0035, h * 0.0016);
+    ctx.translate(w * 0.0018, h * 0.0008);
     engine.portrait(data.visitorId, pBox);
     ctx.restore();
   }
@@ -298,13 +303,13 @@ export function drawTicket(
     ctx.textBaseline = "alphabetic";
     ctx.textAlign = "left";
     ctx.font = `${w * 0.0194}px ${fonts.mono}`;
-    ctx.fillStyle = "rgba(0,174,239,0.55)";
+    ctx.fillStyle = "rgba(0,132,180,0.42)";
     tracked(
-      ctx, "ONE VISIT", sx + sw / 2 - w * 0.0035, sy + sh * 0.905 - h * 0.0016, w * 0.0028, "center"
+      ctx, "ONE VISIT", sx + sw / 2 - w * 0.0018, sy + sh * 0.905 - h * 0.0008, w * 0.0028, "center"
     );
-    ctx.fillStyle = "rgba(236,0,140,0.5)";
+    ctx.fillStyle = "rgba(190,30,120,0.38)";
     tracked(
-      ctx, "ONE VISIT", sx + sw / 2 + w * 0.0035, sy + sh * 0.905 + h * 0.0016, w * 0.0028, "center"
+      ctx, "ONE VISIT", sx + sw / 2 + w * 0.0018, sy + sh * 0.905 + h * 0.0008, w * 0.0028, "center"
     );
     ctx.restore();
   }
@@ -360,8 +365,8 @@ export function drawTicket(
   shrinkToFit(ctx, name, fonts.hand, w * 0.1, w * 0.04, w * 0.003, w * 0.8);
   ctx.fillText(name, w / 2, h * 0.716 + TOP);
 
-  // tear line, painted, with notches bitten out of both edges
-  const ty = h * 0.782 + TOP;
+  // tear line, painted, with real holes bitten out of both edges
+  const ty = h - h * 0.218;
   ctx.save();
   ctx.globalAlpha = 0.42;
   ctx.strokeStyle = P.ink;
@@ -369,42 +374,52 @@ export function drawTicket(
   ctx.setLineDash([w * 0.015, w * 0.019]);
   ctx.beginPath(); ctx.moveTo(0, ty); ctx.lineTo(w, ty); ctx.stroke();
   ctx.restore();
-  ctx.fillStyle = P.notch;
+  // Genuine cuts, not a painted guess at the page background: erasing with
+  // destination-out leaves real alpha there, so whatever the card is placed
+  // over (or the downloaded PNG's own transparency) shows through. Matches
+  // the true cut app/cv/page.tsx makes at its NOTCH, for the same reason
+  // documented at length in that file: a filled colour only ever
+  // approximates one background and is wrong on every other one.
+  ctx.save();
+  ctx.globalCompositeOperation = "destination-out";
   ctx.beginPath(); ctx.arc(0, ty, w * 0.022, 0, Math.PI * 2); ctx.fill();
   ctx.beginPath(); ctx.arc(w, ty, w * 0.022, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
 
-  // the stub: four values on two aligned columns
+  // the stub: four values on two aligned columns, anchored to the card's
+  // bottom edge rather than measured down from the top. See the note above
+  // TOP for why.
   ctx.fillStyle = P.veryFaint;
   ctx.font = `${w * 0.018}px ${fonts.mono}`;
   ctx.textAlign = "left";
-  tracked(ctx, "SERIAL", L, h * 0.848 + TOP, w * 0.0028);
-  tracked(ctx, "ISSUE", Rt, h * 0.848 + TOP, w * 0.0028, "right");
+  tracked(ctx, "SERIAL", L, h - h * 0.152, w * 0.0028);
+  tracked(ctx, "ISSUE", Rt, h - h * 0.152, w * 0.0028, "right");
 
   ctx.fillStyle = P.ink;
   ctx.font = `${w * 0.0448}px ${fonts.mono}`;
   ctx.textAlign = "left";
-  ctx.fillText(data.serial, L, h * 0.893 + TOP);
+  ctx.fillText(data.serial, L, h - h * 0.107);
 
   // "Commemorative" overflows the column, so shrink to fit rather than truncate
   ctx.textAlign = "right";
   const maxIssue = w * 0.36;
   shrinkToFit(ctx, data.issue.name, fonts.mono, w * 0.0448, w * 0.02, w * 0.0015, maxIssue);
   ctx.fillStyle = data.issue.inverted ? P.cancel : P.ink;
-  ctx.fillText(data.issue.name, Rt, h * 0.893 + TOP);
+  ctx.fillText(data.issue.name, Rt, h - h * 0.107);
 
   ctx.fillStyle = P.veryFaint;
   ctx.font = `${w * 0.018}px ${fonts.mono}`;
   ctx.textAlign = "left";
   if (data.origin) {
-    tracked(ctx, `${data.origin} · ${data.date}`.toUpperCase(), L, h * 0.958 + TOP, w * 0.0028);
+    tracked(ctx, `${data.origin} · ${data.date}`.toUpperCase(), L, h - h * 0.042, w * 0.0028);
   } else {
-    tracked(ctx, data.date.toUpperCase(), L, h * 0.958 + TOP, w * 0.0028);
+    tracked(ctx, data.date.toUpperCase(), L, h - h * 0.042, w * 0.0028);
   }
 
   // the rarity share: the single most interesting fact on the card, so it
   // gets a hairline rule of its own and a size that actually reads, rather
   // than the footnote-sized veryFaint line every other stub value uses.
-  const shareY = h * 0.958 + TOP;
+  const shareY = h - h * 0.042;
   ctx.save();
   ctx.globalAlpha = 0.35;
   ctx.strokeStyle = P.ink;
