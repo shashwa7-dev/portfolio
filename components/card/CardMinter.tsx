@@ -5,7 +5,7 @@ import { ISSUES, issueFrom } from "@/lib/card/issues";
 import { serialFrom } from "@/lib/card/seed";
 import { drawTicket, CARD_W, CARD_H } from "@/lib/card/ticket";
 import { CARD_FONTS } from "@/lib/card/fonts";
-import { startPrintReveal, parsePrintDuration } from "@/lib/card/reveal";
+import { startPrintReveal, parsePrintDuration, prefersReducedMotion } from "@/lib/card/reveal";
 import type { CardData } from "@/lib/card/types";
 
 const KEY = "shashwa7:visitor-id";
@@ -141,7 +141,7 @@ export default function CardMinter({
     offCtx.scale(dpr, dpr);
     drawTicket(offCtx, data, cssW, cssH, { ...CARD_FONTS, mark: markRef.current });
 
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reducedMotion = prefersReducedMotion(window);
     const durationMs = parsePrintDuration(
       getComputedStyle(document.documentElement).getPropertyValue("--duration-print")
     );

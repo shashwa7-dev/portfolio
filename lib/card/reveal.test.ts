@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { startPrintReveal, parsePrintDuration, DEFAULT_PRINT_DURATION_MS } from "./reveal";
+import { startPrintReveal, parsePrintDuration, prefersReducedMotion, DEFAULT_PRINT_DURATION_MS } from "./reveal";
 import type { RevealCtx } from "./reveal";
 
 /**
@@ -56,6 +56,32 @@ describe("parsePrintDuration", () => {
 
   it("honours a caller-supplied fallback", () => {
     expect(parsePrintDuration(undefined, 250)).toBe(250);
+  });
+});
+
+describe("prefersReducedMotion", () => {
+  it("returns true when matchMedia reports the preference", () => {
+    const win = {
+      matchMedia: (query: string) => ({ matches: query.includes("reduce") }),
+    } as unknown as Window;
+    expect(prefersReducedMotion(win)).toBe(true);
+  });
+
+  it("returns false when matchMedia reports no preference", () => {
+    const win = {
+      matchMedia: () => ({ matches: false }),
+    } as unknown as Window;
+    expect(prefersReducedMotion(win)).toBe(false);
+  });
+
+  it("returns false, not a throw, when matchMedia is entirely absent", () => {
+    const win = {} as unknown as Window;
+    expect(() => prefersReducedMotion(win)).not.toThrow();
+    expect(prefersReducedMotion(win)).toBe(false);
+  });
+
+  it("returns false when window itself is undefined", () => {
+    expect(prefersReducedMotion(undefined)).toBe(false);
   });
 });
 

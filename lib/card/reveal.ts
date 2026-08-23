@@ -52,6 +52,21 @@ export function parsePrintDuration(
   return match[2] === "s" ? value * 1000 : value;
 }
 
+/**
+ * Resolves `(prefers-reduced-motion: reduce)` against a given window,
+ * defaulting to `false` (motion allowed) when `matchMedia` itself is
+ * missing. That default matters: a visitor whose browser cannot report the
+ * preference should get the same reveal everyone already gets today, not a
+ * card that fails to draw because a feature-detection branch was skipped.
+ * Takes `window` as a parameter, the same reason the rest of this file
+ * takes its browser primitives as parameters, so the resolution itself is
+ * unit testable without a DOM.
+ */
+export function prefersReducedMotion(win: Window | undefined): boolean {
+  if (!win || typeof win.matchMedia !== "function") return false;
+  return win.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
 export interface PrintRevealOptions {
   /** The visible canvas's own context. Cleared and redrawn every frame. */
   ctx: RevealCtx;
