@@ -321,15 +321,24 @@ export function drawTicket(
 
   // first day covers carry a coloured cachet: the legend, a rule under it,
   // and (further down) the cancel's two rings all print in a deep teal
-  // rather than the card's ink. cachetRuleY is hoisted (rather than inlined
-  // twice) because the name's vertical band, below, needs the same y to
-  // know what sits above it on this one tier.
-  const cachetRuleY = h * 0.645 + TOP + h * 0.012;
+  // rather than the card's ink. Sits tight beneath the stamp (was
+  // h * 0.645, a 55.5px gap that read as a floating, unrelated line of
+  // type; now h * 0.615, a 10.5px gap) rather than floating halfway to the
+  // name: "FIRST DAY OF ISSUE" is a legend about the stamp, so it belongs
+  // visually attached to it. That move isn't just cosmetic: it also frees
+  // the band the name needs below (see aboveBottom, further down), which
+  // is the whole reason this sat as far down as it did in the first place.
+  // cachetLegendY/cachetRuleY are hoisted (rather than inlined at each use)
+  // because the name's vertical band needs the same two y's to know what
+  // sits above it on this one tier, and because the legend and its rule
+  // must move together, keeping their h * 0.012 relative spacing.
+  const cachetLegendY = h * 0.615 + TOP;
+  const cachetRuleY = cachetLegendY + h * 0.012;
   if (data.issue.key === "firstDay") {
     ctx.fillStyle = TEAL;
     ctx.textAlign = "left";
     ctx.font = `${w * 0.0194}px ${fonts.mono}`;
-    tracked(ctx, "FIRST DAY OF ISSUE", L, h * 0.645 + TOP, w * 0.0028);
+    tracked(ctx, "FIRST DAY OF ISSUE", L, cachetLegendY, w * 0.0028);
     ctx.save();
     ctx.globalAlpha = 0.5;
     ctx.strokeStyle = TEAL;
@@ -386,11 +395,17 @@ export function drawTicket(
 
   const aboveBottom = data.issue.key === "firstDay" ? cachetRuleY : sy + sh;
   const band = ty - aboveBottom;
-  // The one tier that draws the cachet (First day) has a visibly smaller
-  // band than the other four, so its name simply renders smaller. That is
-  // expected, not a bug to special-case away: the band computation already
-  // sees the cachet through aboveBottom, and every other tier falls
-  // through to the stamp's lower edge instead.
+  // At REF_NAME_PX, every tier's band now comfortably clears
+  // NAME_ASCENT_CLEARANCE + NAME_DESCENT_CLEARANCE (h * 0.115): First day's
+  // used to fall 42px short of that before the cachet moved up to sit tight
+  // beneath the stamp, above, which is what actually fixed the collision.
+  // The Math.min below is a SAFETY NET, not the normal case any more: on
+  // all five tiers today it clamps to REF_NAME_PX and does nothing. It
+  // stays because it is cheap insurance against a future layout change
+  // squeezing some tier's band again (a taller cachet, a lower tear line),
+  // in which case the name shrinks instead of colliding, the same way it
+  // does here today for a hypothetically tighter band. Do not read its
+  // presence as meaning any tier is currently constrained by it.
   const maxNamePx = Math.min(
     REF_NAME_PX,
     (band * REF_NAME_PX) / (NAME_ASCENT_CLEARANCE + NAME_DESCENT_CLEARANCE)
