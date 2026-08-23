@@ -200,7 +200,7 @@ export default function ExperienceWork() {
                 <div className="mt-5">
                   <Link
                     href={`/work/${org.slug}`}
-                    className="group inline-flex items-baseline gap-1.5 text-sm text-foreground"
+                    className="group inline-flex items-baseline gap-1.5 text-sm text-foreground underline decoration-border-strong underline-offset-4 transition-colors hover:decoration-foreground"
                   >
                     <span>See what I built at {org.name}</span>
                     <ArrowRight className="h-3.5 w-3.5 self-center transition-transform duration-base ease-out group-hover:translate-x-0.5" />
