@@ -2286,6 +2286,83 @@ Do not add new colours and do not touch the sticker's rainbow gradient: that is 
 
 ---
 
+## Task 14: Discovery, and the printing reveal
+
+Two additions the owner asked for after the branch was otherwise finished.
+
+### Part A: a footer link, footer only
+
+`/card` is currently reachable only from the command palette and the sitemap, so effectively nobody finds it.
+
+**Do not add it to `navLinks` in `lib/siteLinks.ts`.** That array is deliberately shared by the header and the footer (the file's own comment explains why), so adding it there would put the card in the navbar as well. The owner asked for the footer only.
+
+Add a separate small export beside `navLinks`:
+
+```ts
+/**
+ * Footer only, deliberately not in `navLinks`.
+ *
+ * `navLinks` is shared with the header so the two cannot drift. The visitor
+ * card does not belong in the header: it is a toy, and the header is for the
+ * work. But an unlinked route is an undiscovered one, so the footer carries it.
+ */
+export const footerOnlyLinks: NavLink[] = [
+  { label: "Visitor card", href: "/card", match: "/card" },
+];
+```
+
+Render it in `components/Footer.tsx` alongside the existing mapped `navLinks` list, in the same visual treatment, so it reads as one list rather than a bolted-on extra.
+
+### Part B: the printing reveal
+
+Pressing Mint currently swaps straight to a finished card. That throws away the one moment the whole rarity system exists for: the reveal. Make the card print.
+
+**Approach, and do not deviate without saying why:** render the finished card to an offscreen canvas ONCE, then reveal it top to bottom onto the visible canvas over time. This touches no drawing code at all, so `drawTicket`, the scale test and the determinism guarantees are all untouched. It is pure compositing in `CardMinter`.
+
+```
+1. On mint, draw the full card to an offscreen canvas at the display size.
+2. Animate t from 0 to 1 with requestAnimationFrame.
+3. Each frame: clear the visible canvas, then drawImage the offscreen's
+   top t*height slice into the same position.
+4. Draw a thin bright line at the reveal edge, the print head, which fades
+   out as t approaches 1.
+5. On completion, draw the final frame once and stop.
+```
+
+Add a duration token rather than a literal. In `app/globals.css` alongside the existing durations (`--duration-fast: 150ms` through `--duration-sweep: 700ms`), add:
+
+```css
+--duration-print: 900ms;
+```
+
+Read it in the component via `getComputedStyle(document.documentElement).getPropertyValue("--duration-print")`, parsed to a number, with a sane fallback if it is missing. Do not hardcode 900 in the TypeScript.
+
+**Reduced motion is mandatory and the global CSS rule does NOT cover this.** `app/globals.css` line 231 kills CSS animation, but this is a JS requestAnimationFrame loop and sails straight past it. Check it explicitly:
+
+```ts
+const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+```
+
+When true, skip the animation entirely and draw the finished card in one frame. Not a faster animation: none.
+
+Also handle these, all of which are real:
+
+- **The name field.** Redraws while the reveal is still running must not fight it. Either disable the field until the reveal finishes, or let a redraw cancel the animation and jump to the finished state. Pick one and say which.
+- **Unmount mid-animation.** Cancel the rAF in the effect's cleanup or you leak a loop and write to a detached canvas.
+- **The download button** must produce the same PNG whether pressed during or after the reveal. It renders its own offscreen canvas at 1200x1500, so it should already be independent. Confirm that.
+- **The gallery does not animate.** Five specimens printing on load would be noise. `IssueGallery` keeps drawing in one pass.
+
+### Tests
+
+- Assert the reveal is skipped under reduced motion: with `matchMedia` stubbed to report a preference, the card must be fully drawn after a single frame.
+- Assert the rAF loop is cancelled on unmount.
+- The existing 67 tests must all still pass. The card's pixels are unchanged; only when they appear changes.
+
+- [ ] Run `npm test`, `npm run lint`, `npm run build`, `npx tsc --noEmit`, `bash scripts/verify-simplification.sh`. All clean.
+- [ ] Commit.
+
+---
+
 ## Manual checks before opening the PR
 
 These cannot be automated here and are named in the spec:
