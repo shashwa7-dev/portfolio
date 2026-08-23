@@ -58,6 +58,8 @@ Concrete triggers that REQUIRE a memory-file update:
 - **Design tokens (color, type, spacing)** are documented in `docs/design-system.md`; reusable Claude Code skill at `.claude/skills/design-system/SKILL.md`.
 - **Type scale** comes from `tailwind.config.ts`: sizes `text-2xs` through `text-4xl`, tracking from `tracking-label` / `tracking-tight` / `tracking-tighter`. Arbitrary `text-[Npx]` is forbidden: use the scale instead.
 - **`scripts/verify-simplification.sh`** is the mechanical gate for the simplification pass (typography, motion, deleted surfaces, palette). It must exit 0 before any change to `app/`, `components/`, or `lib/` is considered done.
+- **All visitor-card drawing** goes through `lib/card/`. The pure modules (`seed`, `issues`, `cast`) carry vitest tests and must stay free of DOM access; the drawing modules (`portrait`, `sticker`, `ticket`) take a canvas context as a parameter and must never hold module-level mutable state, because the issue gallery renders six canvases on one page. `drawTicket` draws every size: preview, export and thumbnail. Never add a second drawing routine.
+- **Two vendored licence notices ship with the card feature**: `lib/card/engine/LICENSE-cyber-crowd.md` (the portrait engine derives from Kevin Ngo's cyber-crowd, MIT) and `lib/card/LICENSE-fonts.md` (Caveat and Alegreya Sans SC, SIL OFL 1.1). Keep both; do not strip them as unused files.
 
 ---
 
@@ -67,9 +69,8 @@ Concrete triggers that REQUIRE a memory-file update:
 npm run dev      # next dev (port 3000 by default; this repo uses 3001 in practice)
 npm run build    # next build
 npm run lint     # next lint
+npm test         # vitest run (lib/card's pure modules: seed, issues, cast)
 ```
-
-(There is no test script yet.)
 
 ---
 
