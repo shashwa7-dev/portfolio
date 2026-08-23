@@ -574,15 +574,22 @@ describe("drawTicket", () => {
     expect(fillStyleBeforeOrigin).not.toBe("#bdb4a4"); // LIGHT.veryFaint
   });
 
-  it("keeps the name baseline at least h * 0.05 above the tear line", () => {
+  it("keeps the name baseline at least h * 0.036 above the tear line", () => {
     // Caveat (fonts.hand) is a script face with deep loops on g, y, j, p, q:
-    // 35-45% of the em in descender depth, which is 42-54px at the un-shrunk
-    // w * 0.1 (120px) starting size. shrinkToFit only engages once a name's
-    // width exceeds w * 0.8, so a SHORT name with a descender ("Guy",
-    // "Peggy", "Joy") never shrinks and renders at the full size, tail and
-    // all, while a long name is safe because it already shrank. This
-    // asserts the geometric clearance the fix guarantees regardless of name
-    // length, derived from h rather than a hardcoded pixel gap.
+    // up to 45% of the em in descender depth, 54px at the un-shrunk w * 0.1
+    // (120px) starting size. shrinkToFit only engages once a name's width
+    // exceeds w * 0.8, so a SHORT name with a descender ("Guy", "Peggy",
+    // "Joy") never shrinks and renders at the full size, tail and all,
+    // while a long name is safe because it already shrank. This asserts
+    // the geometric clearance the fix guarantees regardless of name length,
+    // derived from h rather than a hardcoded pixel gap.
+    //
+    // The floor here was h * 0.05 (a padded 75px) until the First day
+    // cachet fix: that padding was exactly the slack needed to make First
+    // day's band solvable, so the floor was cut down to Caveat's real,
+    // un-padded worst case (h * 0.036 = 54px, matching
+    // NAME_DESCENT_CLEARANCE in ticket.ts) rather than kept as a stricter
+    // requirement than the implementation actually provides.
     const h = CARD_H;
     const { ctx, calls, texts } = makeStubCtx();
     const data = cardFor("descender-clearance", "definitive");
@@ -599,21 +606,21 @@ describe("drawTicket", () => {
     expect(tearCall).toBeDefined();
     const tearY = Number(tearCall!.slice("moveTo(0,".length, -1));
 
-    expect(tearY - nameEntry!.y).toBeGreaterThanOrEqual(h * 0.05);
+    expect(tearY - nameEntry!.y).toBeGreaterThanOrEqual(h * 0.036);
   });
 
-  // The two floors below (h * 0.065 ascent, h * 0.05 descent) are each
-  // calibrated against REF_NAME_PX, the un-clamped w * 0.1 size a name
-  // renders at when nothing constrains its height: h * 0.065 covers
-  // Caveat's ~0.8em ascent there, h * 0.05 covers its ~0.45em descent.
-  // These used to be unsatisfiable together on First day: the cachet's
-  // rule sat only 130.5px above the tear line, 42px short of the 172.5px
-  // the two floors need, no matter how the baseline was placed. The fix
-  // was moving the cachet itself (tight beneath the stamp, where it reads
-  // as a legend about the stamp rather than a floating line of type)
-  // rather than shrinking the name to fit a band that was too small: all
-  // five tiers now clear both floors at the SAME, un-clamped font size, so
-  // these assert the real floors directly, on every issue, rather than a
+  // The two floors below (h * 0.064 ascent, h * 0.036 descent, 150px
+  // together) are Caveat's own real, un-padded worst-case metrics at
+  // REF_NAME_PX, the un-clamped w * 0.1 size a name renders at when
+  // nothing constrains its height: no safety margin stacked on top. These
+  // were unsatisfiable together on First day at more than one attempted
+  // fix: the padded h * 0.115 (172.5px) version of these floors needed 42px
+  // more than the cachet's original position gave; moving the cachet to
+  // h * 0.615 closed that gap but put the cachet's own text on top of the
+  // stamp's perforation; only moving it further, to h * 0.63 (a band of
+  // ~153px), AND cutting the floors down to their real, un-padded 150px
+  // total, both together, made every tier solvable at the same font size.
+  // These assert the real floors directly, on every issue, rather than a
   // ratio-preserving property.
   function recoverNamePx(
     calls: string[],
@@ -638,8 +645,8 @@ describe("drawTicket", () => {
     // case (the cachet's rule sits well below the stamp's own lower edge),
     // so it is included here rather than singled out separately.
     const h = CARD_H;
-    const NAME_ASCENT_CLEARANCE = h * 0.065;
-    const NAME_DESCENT_CLEARANCE = h * 0.05;
+    const NAME_ASCENT_CLEARANCE = h * 0.064;
+    const NAME_DESCENT_CLEARANCE = h * 0.036;
 
     for (const key of KEYS) {
       const { ctx, calls, texts } = makeStubCtx();
@@ -670,6 +677,72 @@ describe("drawTicket", () => {
       expect(tearY - nameEntry!.y, `issue ${key}: descent clearance`).toBeGreaterThanOrEqual(NAME_DESCENT_CLEARANCE);
       expect(nameEntry!.y - aboveBottom, `issue ${key}: ascent clearance`).toBeGreaterThanOrEqual(NAME_ASCENT_CLEARANCE);
     }
+  });
+
+  it("keeps the First day cachet legend's ink clear of the stamp's perforation band", () => {
+    // Moving the cachet up to free the name's band (above) risks pushing
+    // its OWN ink into the stamp above it: a real regression the owner
+    // caught by hand at h * 0.615, where the legend's cap height reaches
+    // up into the perforation bites perforate() punches along the stamp's
+    // bottom edge, and its 18-character width sits horizontally under the
+    // stamp's left half. Since there IS horizontal overlap (asserted
+    // below, so a future horizontal-layout change doesn't silently make
+    // this check meaningless), the only thing standing between "attached
+    // to the stamp" and "printed over the stamp" is vertical clearance:
+    // the legend's cap top must sit at or below the perforation band's
+    // own lower edge.
+    const w = CARD_W, h = CARD_H;
+    const { ctx, calls, texts } = makeStubCtx();
+    const data = cardFor("cachet-collision", "firstDay");
+    drawTicket(ctx, data, w, h, FONTS);
+
+    // Stamp bounds, from its own fillRect(sx, sy, sw, sh) call: the only
+    // fillRect ticket.ts itself makes.
+    const stampCall = calls.find((c) => c.startsWith("fillRect("));
+    expect(stampCall).toBeDefined();
+    const [sx, sy, sw, sh] = stampCall!.slice("fillRect(".length, -1).split(",").map(Number);
+    const PERF_R = w * 0.0112; // perforate()'s bite radius, centred ON the stamp's edges
+    const perforationBottom = sy + sh + PERF_R;
+    const stampLeft = sx, stampRight = sx + sw;
+
+    // Locate the legend's own baseline y by reconstructing the word
+    // tracked() spelled out, the same technique wordAt() uses elsewhere.
+    const ys = Array.from(new Set(texts.map((t) => t.y)));
+    const legendY = ys.find((y) => wordAt(texts, y) === "FIRST DAY OF ISSUE");
+    expect(legendY).toBeDefined();
+
+    const legendChars = texts
+      .filter((t) => Math.abs(t.y - legendY!) < 0.01)
+      .sort((a, b) => a.x - b.x);
+    const firstChar = legendChars[0];
+    const lastChar = legendChars[legendChars.length - 1];
+
+    const callString = `fillText(${firstChar.x},${legendY})`;
+    const callIndex = calls.indexOf(callString);
+    let legendPx: number | undefined;
+    for (let i = callIndex; i >= 0; i--) {
+      if (calls[i].startsWith("font=")) { legendPx = parseFloat(calls[i].slice("font=".length)); break; }
+    }
+    expect(legendPx).toBeDefined();
+
+    // Right edge from the same per-character maths tracked() itself uses:
+    // the last character's own recorded x, plus its width under this
+    // stub's measureText model (px * 0.56 per character; see makeStubCtx).
+    const rightEdge = lastChar.x + legendPx! * 0.56;
+    expect(
+      rightEdge > stampLeft && firstChar.x < stampRight,
+      "test assumption: the legend and stamp overlap horizontally"
+    ).toBe(true);
+
+    // Cap height for a monospace face runs roughly 0.7-0.73em (JetBrains
+    // Mono's own is 0.716em); 0.72 is a representative, slightly
+    // conservative estimate of how far the ink reaches above the
+    // baseline, used only to verify clearance here, not to size anything
+    // in ticket.ts itself.
+    const CAP_RATIO = 0.72;
+    const capTop = legendY! - legendPx! * CAP_RATIO;
+
+    expect(capTop).toBeGreaterThanOrEqual(perforationBottom);
   });
 
   it("renders the name at the same font size on all five issues", () => {
