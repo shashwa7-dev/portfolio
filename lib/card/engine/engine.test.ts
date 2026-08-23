@@ -164,14 +164,16 @@ describe("engine.portrait", () => {
     // Curated, not sequential: the engine advertises 17 styles, several of
     // which carry zero weight under one presentation lean or the other, so
     // 20 arbitrary sequential ids do not reliably clear 15. This set was
-    // found by scanning visitor-0..visitor-99 and keeping the first id to
-    // introduce each new style, so it is a real, deterministic fixture, not
-    // a hand-tuned one that happens to pass once.
+    // found by scanning visitor-0..visitor-499 and greedily keeping the
+    // first id to introduce each new style, so it is a real, deterministic
+    // fixture, not a hand-tuned one that happens to pass once. (Re-derived
+    // after the NUL-byte fix in hashWith/seedFor changed the id-to-hash
+    // mapping; the old list cleared only 11 under the corrected hash.)
     const ids = [
       "visitor-0", "visitor-1", "visitor-2", "visitor-3", "visitor-4",
       "visitor-5", "visitor-6", "visitor-7", "visitor-8", "visitor-9",
-      "visitor-10", "visitor-11", "visitor-12", "visitor-14", "visitor-16",
-      "visitor-19", "visitor-21", "visitor-27", "visitor-31", "visitor-35",
+      "visitor-10", "visitor-11", "visitor-12", "visitor-21", "visitor-32",
+      "visitor-37", "visitor-44", "visitor-48", "visitor-80", "visitor-100",
     ];
     expect(ids.length).toBe(20);
 

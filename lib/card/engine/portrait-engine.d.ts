@@ -1,7 +1,7 @@
 export type Traits = Record<string, unknown> & {
   hairStyle: string;
-  glasses: string;
-  headwear: string;
+  glasses: string | null;
+  headwear: string | null;
   present: string;
 };
 
