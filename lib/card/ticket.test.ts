@@ -574,7 +574,7 @@ describe("drawTicket", () => {
     expect(fillStyleBeforeOrigin).not.toBe("#bdb4a4"); // LIGHT.veryFaint
   });
 
-  it("keeps the name baseline at least h * 0.036 above the tear line", () => {
+  it("keeps the name baseline at least h * 0.05 above the tear line", () => {
     // Caveat (fonts.hand) is a script face with deep loops on g, y, j, p, q:
     // up to 45% of the em in descender depth, 54px at the un-shrunk w * 0.1
     // (120px) starting size. shrinkToFit only engages once a name's width
@@ -584,12 +584,12 @@ describe("drawTicket", () => {
     // the geometric clearance the fix guarantees regardless of name length,
     // derived from h rather than a hardcoded pixel gap.
     //
-    // The floor here was h * 0.05 (a padded 75px) until the First day
-    // cachet fix: that padding was exactly the slack needed to make First
-    // day's band solvable, so the floor was cut down to Caveat's real,
-    // un-padded worst case (h * 0.036 = 54px, matching
-    // NAME_DESCENT_CLEARANCE in ticket.ts) rather than kept as a stricter
-    // requirement than the implementation actually provides.
+    // This floor was briefly cut to the bare h * 0.036 metric (54px, zero
+    // padding) for one round, when a separate First day cachet legend made
+    // the band too tight to afford any padding. Moving that legend onto
+    // the stamp's own foot removed the squeeze entirely, so the padded
+    // h * 0.05 (75px, deliberate headroom over the true 54px, matching
+    // NAME_DESCENT_CLEARANCE in ticket.ts) is back.
     const h = CARD_H;
     const { ctx, calls, texts } = makeStubCtx();
     const data = cardFor("descender-clearance", "definitive");
@@ -606,22 +606,19 @@ describe("drawTicket", () => {
     expect(tearCall).toBeDefined();
     const tearY = Number(tearCall!.slice("moveTo(0,".length, -1));
 
-    expect(tearY - nameEntry!.y).toBeGreaterThanOrEqual(h * 0.036);
+    expect(tearY - nameEntry!.y).toBeGreaterThanOrEqual(h * 0.05);
   });
 
-  // The two floors below (h * 0.064 ascent, h * 0.036 descent, 150px
-  // together) are Caveat's own real, un-padded worst-case metrics at
+  // The two floors below (h * 0.08 ascent, h * 0.05 descent, 195px
+  // together) are Caveat's real metrics PLUS deliberate padding, at
   // REF_NAME_PX, the un-clamped w * 0.1 size a name renders at when
-  // nothing constrains its height: no safety margin stacked on top. These
-  // were unsatisfiable together on First day at more than one attempted
-  // fix: the padded h * 0.115 (172.5px) version of these floors needed 42px
-  // more than the cachet's original position gave; moving the cachet to
-  // h * 0.615 closed that gap but put the cachet's own text on top of the
-  // stamp's perforation; only moving it further, to h * 0.63 (a band of
-  // ~153px), AND cutting the floors down to their real, un-padded 150px
-  // total, both together, made every tier solvable at the same font size.
-  // These assert the real floors directly, on every issue, rather than a
-  // ratio-preserving property.
+  // nothing constrains its height. A separate First day cachet legend used
+  // to make this unsatisfiable there at any padding: moving the legend
+  // onto the stamp's own foot instead removed the contested space
+  // entirely, so every tier now shares one identical, generous band
+  // (stamp bottom to tear line, ~204px) with room to spare over these
+  // floors. These assert the real floors directly, on every issue, rather
+  // than a ratio-preserving property.
   function recoverNamePx(
     calls: string[],
     texts: { text: string; x: number; y: number }[],
@@ -638,15 +635,13 @@ describe("drawTicket", () => {
 
   it("clears both the ascender and descender floors at once, on every issue", () => {
     // Descent is always measured against the tear line. Ascent is measured
-    // against whatever the band computation says sits above the name: the
-    // cachet's rule on First day, or the stamp's own lower edge (recovered
-    // from the stamp's fillRect(sx, sy, sw, sh), the only fillRect call
-    // ticket.ts itself makes) on every other issue. First day is the tight
-    // case (the cachet's rule sits well below the stamp's own lower edge),
-    // so it is included here rather than singled out separately.
+    // against the stamp's own lower edge (recovered from the stamp's
+    // fillRect(sx, sy, sw, sh), the only fillRect call ticket.ts itself
+    // makes), which is now what sits above the name on all five tiers:
+    // First day no longer special-cases a separate cachet in this band.
     const h = CARD_H;
-    const NAME_ASCENT_CLEARANCE = h * 0.064;
-    const NAME_DESCENT_CLEARANCE = h * 0.036;
+    const NAME_ASCENT_CLEARANCE = h * 0.08;
+    const NAME_DESCENT_CLEARANCE = h * 0.05;
 
     for (const key of KEYS) {
       const { ctx, calls, texts } = makeStubCtx();
@@ -660,19 +655,11 @@ describe("drawTicket", () => {
       expect(tearCall, `issue ${key}: tear line not found`).toBeDefined();
       const tearY = Number(tearCall!.slice("moveTo(0,".length, -1));
 
-      let aboveBottom: number;
-      if (key === "firstDay") {
-        const L = CARD_W * 0.097;
-        const cachetCall = calls.find((c) => c.startsWith(`moveTo(${L},`));
-        expect(cachetCall, `issue ${key}: cachet rule not found`).toBeDefined();
-        aboveBottom = Number(cachetCall!.slice(`moveTo(${L},`.length, -1));
-      } else {
-        const stampCall = calls.find((c) => c.startsWith("fillRect("));
-        expect(stampCall, `issue ${key}: stamp fillRect not found`).toBeDefined();
-        const nums = stampCall!.slice("fillRect(".length, -1).split(",").map(Number);
-        const [, sy, , sh] = nums;
-        aboveBottom = sy + sh;
-      }
+      const stampCall = calls.find((c) => c.startsWith("fillRect("));
+      expect(stampCall, `issue ${key}: stamp fillRect not found`).toBeDefined();
+      const nums = stampCall!.slice("fillRect(".length, -1).split(",").map(Number);
+      const [, sy, , sh] = nums;
+      const aboveBottom = sy + sh;
 
       expect(tearY - nameEntry!.y, `issue ${key}: descent clearance`).toBeGreaterThanOrEqual(NAME_DESCENT_CLEARANCE);
       expect(nameEntry!.y - aboveBottom, `issue ${key}: ascent clearance`).toBeGreaterThanOrEqual(NAME_ASCENT_CLEARANCE);
@@ -680,17 +667,21 @@ describe("drawTicket", () => {
   });
 
   it("keeps the First day cachet legend's ink clear of the stamp's perforation band", () => {
-    // Moving the cachet up to free the name's band (above) risks pushing
-    // its OWN ink into the stamp above it: a real regression the owner
-    // caught by hand at h * 0.615, where the legend's cap height reaches
-    // up into the perforation bites perforate() punches along the stamp's
-    // bottom edge, and its 18-character width sits horizontally under the
-    // stamp's left half. Since there IS horizontal overlap (asserted
-    // below, so a future horizontal-layout change doesn't silently make
-    // this check meaningless), the only thing standing between "attached
-    // to the stamp" and "printed over the stamp" is vertical clearance:
-    // the legend's cap top must sit at or below the perforation band's
-    // own lower edge.
+    // A real regression the owner caught by hand: an earlier attempt at
+    // positioning a SEPARATE legend line below the stamp (at h * 0.615)
+    // put the legend's own cap height inside the perforation bites
+    // perforate() punches along the stamp's bottom edge, painting teal
+    // type over the stamp's perforated edge. The structural fix moved
+    // "FIRST DAY OF ISSUE" onto the stamp's own foot instead (see the
+    // stamp-foot test below), where it now sits well inside the stamp,
+    // nowhere near the perforation band, which is why the coordinator
+    // expected this to become trivially true. It stays as a general,
+    // direction-agnostic overlap check (does the text's vertical extent,
+    // cap top to baseline, intersect the perforation band at all) rather
+    // than the old fixed inequality tied to one specific past position,
+    // so it still catches anyone reintroducing a separate below-stamp
+    // legend that drifts back into the perforation, not just the exact
+    // h * 0.615 regression that was found by hand.
     const w = CARD_W, h = CARD_H;
     const { ctx, calls, texts } = makeStubCtx();
     const data = cardFor("cachet-collision", "firstDay");
@@ -702,6 +693,7 @@ describe("drawTicket", () => {
     expect(stampCall).toBeDefined();
     const [sx, sy, sw, sh] = stampCall!.slice("fillRect(".length, -1).split(",").map(Number);
     const PERF_R = w * 0.0112; // perforate()'s bite radius, centred ON the stamp's edges
+    const perforationTop = sy + sh - PERF_R;
     const perforationBottom = sy + sh + PERF_R;
     const stampLeft = sx, stampRight = sx + sw;
 
@@ -731,18 +723,45 @@ describe("drawTicket", () => {
     const rightEdge = lastChar.x + legendPx! * 0.56;
     expect(
       rightEdge > stampLeft && firstChar.x < stampRight,
-      "test assumption: the legend and stamp overlap horizontally"
+      "test assumption: the legend and stamp overlap horizontally (it now draws INSIDE the stamp)"
     ).toBe(true);
 
     // Cap height for a monospace face runs roughly 0.7-0.73em (JetBrains
     // Mono's own is 0.716em); 0.72 is a representative, slightly
     // conservative estimate of how far the ink reaches above the
     // baseline, used only to verify clearance here, not to size anything
-    // in ticket.ts itself.
+    // in ticket.ts itself. All-caps text has no descenders, so the
+    // baseline itself is the ink's lowest point.
     const CAP_RATIO = 0.72;
-    const capTop = legendY! - legendPx! * CAP_RATIO;
+    const textTop = legendY! - legendPx! * CAP_RATIO;
+    const textBottom = legendY!;
 
-    expect(capTop).toBeGreaterThanOrEqual(perforationBottom);
+    const intersectsPerforation = textTop <= perforationBottom && textBottom >= perforationTop;
+    expect(intersectsPerforation).toBe(false);
+  });
+
+  it("draws FIRST DAY OF ISSUE on the stamp foot for First day, and ONE VISIT there for every other issue", () => {
+    // The stamp foot is where the legend now lives (see the comment above
+    // "the stamp says the denomination" in ticket.ts): First day trades
+    // its denomination line for the legend outright rather than carrying
+    // both, and must never show both or neither.
+    for (const key of KEYS) {
+      const { ctx, texts } = makeStubCtx();
+      const data = cardFor(`foot-text-${key}`, key);
+      drawTicket(ctx, data, CARD_W, CARD_H, FONTS);
+
+      const ys = Array.from(new Set(texts.map((t) => t.y)));
+      const hasFirstDayText = ys.some((y) => wordAt(texts, y) === "FIRST DAY OF ISSUE");
+      const hasOneVisitText = ys.some((y) => wordAt(texts, y) === "ONE VISIT");
+
+      if (key === "firstDay") {
+        expect(hasFirstDayText, `issue ${key}: expected FIRST DAY OF ISSUE`).toBe(true);
+        expect(hasOneVisitText, `issue ${key}: did not expect ONE VISIT`).toBe(false);
+      } else {
+        expect(hasOneVisitText, `issue ${key}: expected ONE VISIT`).toBe(true);
+        expect(hasFirstDayText, `issue ${key}: did not expect FIRST DAY OF ISSUE`).toBe(false);
+      }
+    }
   });
 
   it("renders the name at the same font size on all five issues", () => {

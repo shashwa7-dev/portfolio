@@ -290,14 +290,30 @@ export function drawTicket(
   engine.portrait(data.visitorId, pBox);
   ctx.restore();
 
-  // the stamp says the denomination, like a real one. shashwa7.in now lives
-  // in the brand row at the top, so the foot keeps only "one visit", centred.
+  // the stamp says the denomination, like a real one, on every tier but
+  // First day. shashwa7.in now lives in the brand row at the top, so the
+  // foot otherwise keeps only "one visit", centred.
+  //
+  // First day used to carry a separate legend and rule below the stamp
+  // instead. That line collided with the stamp's own perforation when
+  // moved close enough to free the name's vertical band, and read as an
+  // unrelated floating line of type when moved further away: no position
+  // satisfied both. The structural fix is to stop trying to fit a second
+  // line of type into the gap at all: "FIRST DAY OF ISSUE" now replaces
+  // "ONE VISIT" ON the stamp foot itself, in the same TEAL the cachet used
+  // (so the tier keeps its colour signature; the cancel's two rings, further
+  // down, stay teal for the same reason). That removes the squeeze
+  // entirely rather than surviving it on a few px of margin: there is
+  // nowhere left below the stamp for anything to collide with, and the
+  // name's vertical band is identical to every other tier again.
   //
   // Misprint fringes this type the same way it fringes the frame rule
   // above: two colour copies, offset up-left (cyan) and down-right
   // (magenta) by the same amount as the portrait ghosts, drawn under the
   // true one. ticket.ts sets this colour itself, so there is no engine ink
-  // to fight the way there is for the portrait.
+  // to fight the way there is for the portrait. Misprint and First day are
+  // different tiers (a card is always exactly one issue), so this never
+  // has to fringe "FIRST DAY OF ISSUE".
   if (data.issue.key === "misprint") {
     ctx.save();
     ctx.textBaseline = "alphabetic";
@@ -313,56 +329,21 @@ export function drawTicket(
     );
     ctx.restore();
   }
-  ctx.fillStyle = P.faint;
+  const isFirstDay = data.issue.key === "firstDay";
+  const footText = isFirstDay ? "FIRST DAY OF ISSUE" : "ONE VISIT";
+  ctx.fillStyle = isFirstDay ? TEAL : P.faint;
   ctx.textBaseline = "alphabetic";
   ctx.textAlign = "left";
-  ctx.font = `${w * 0.0194}px ${fonts.mono}`;
-  tracked(ctx, "ONE VISIT", sx + sw / 2, sy + sh * 0.905, w * 0.0028, "center");
-
-  // first day covers carry a coloured cachet: the legend, a rule under it,
-  // and (further down) the cancel's two rings all print in a deep teal
-  // rather than the card's ink. Sits close beneath the stamp (was
-  // h * 0.645, a 55.5px gap that read as a floating, unrelated line of
-  // type) rather than floating halfway to the name: "FIRST DAY OF ISSUE"
-  // is a legend about the stamp, so it belongs visually attached to it.
-  // That move also frees the band the name needs below (see aboveBottom,
-  // further down), which is the whole reason this sat as far down as it
-  // did in the first place.
-  //
-  // h * 0.615 (a 10.5px gap) was tried first and is wrong: the legend's
-  // own ink reaches UP from its baseline, and at that size (w * 0.0194,
-  // cap height ~0.72em on a typical monospace face) its cap top lands
-  // around y = 962.7, well inside the stamp's perforation band (the bites
-  // perforate() punches, radius w * 0.0112, centred on the stamp's own
-  // bottom edge, so the band's lower edge sits at stampBottom + that
-  // radius = ~982.4). The legend also runs wide enough (18 characters) to
-  // sit under the stamp's left half horizontally, so that vertical
-  // overlap is a real collision: teal cachet type painted over the
-  // stamp's perforated edge, not just a tight gap.
-  //
-  // h * 0.630 (a 33px gap) clears it: cap top lands around y = 985.2,
-  // about 2.8px below the perforation band's lower edge. cachetLegendY/
-  // cachetRuleY are hoisted (rather than inlined at each use) because the
-  // name's vertical band needs the same two y's to know what sits above
-  // it on this one tier, and because the legend and its rule must move
-  // together, keeping their h * 0.012 relative spacing.
-  const cachetLegendY = h * 0.63 + TOP;
-  const cachetRuleY = cachetLegendY + h * 0.012;
-  if (data.issue.key === "firstDay") {
-    ctx.fillStyle = TEAL;
-    ctx.textAlign = "left";
-    ctx.font = `${w * 0.0194}px ${fonts.mono}`;
-    tracked(ctx, "FIRST DAY OF ISSUE", L, cachetLegendY, w * 0.0028);
-    ctx.save();
-    ctx.globalAlpha = 0.5;
-    ctx.strokeStyle = TEAL;
-    ctx.lineWidth = w * 0.0016;
-    ctx.beginPath();
-    ctx.moveTo(L, cachetRuleY);
-    ctx.lineTo(L + w * 0.32, cachetRuleY);
-    ctx.stroke();
-    ctx.restore();
-  }
+  // Shrinks to fit the stamp's own inner frame width (sw - w * 0.06, the
+  // same inset the frame rule below draws at) rather than assuming
+  // "FIRST DAY OF ISSUE" always fits at the base size: at w * 0.0194 it
+  // comfortably does today (measured well under half the inner width), but
+  // a future longer legend should not be able to run past the stamp's own
+  // edge the way an un-shrunk name or issue value could elsewhere on the
+  // card. "ONE VISIT" is short enough that this never engages for it, so
+  // the other four tiers render byte-identically to before.
+  shrinkToFit(ctx, footText, fonts.mono, w * 0.0194, w * 0.012, w * 0.0006, sw - w * 0.06);
+  tracked(ctx, footText, sx + sw / 2, sy + sh * 0.905, w * 0.0028, "center");
 
   // the cancel
   const ccx = w * 0.724, ccy = h * 0.531 + TOP, cr = w * 0.101;
@@ -392,43 +373,43 @@ export function drawTicket(
   // the name, in handwriting. fonts.hand (Caveat) is a script face with
   // deep loops on g, y, j, p, q below the baseline and tall capitals/
   // ascenders above it, so the name doesn't just need to fit a WIDTH, it
-  // needs to fit a vertical BAND: the space between whatever sits above it
-  // (the First day cachet's rule when present, otherwise the stamp's own
-  // lower edge) and the tear line below it.
+  // needs to fit a vertical BAND: the space between the stamp's own lower
+  // edge and the tear line below it. That space used to be contested on
+  // First day, when a separate cachet legend sat between the stamp and the
+  // name; now that the legend lives on the stamp's own foot instead (see
+  // above), nothing tier-specific sits in this band on any of the five
+  // issues, and it no longer needs to special-case one.
   //
   // Caveat's ascenders and capitals run up to about 0.8 of an em above the
-  // baseline, and its descenders up to about 0.45 of an em below it: these
-  // are the face's real, worst-case metrics, not a padded safety margin on
-  // top of them (an earlier version of this comment used 0.75-0.8 ascent
-  // and a padded 0.05h descent floor; the padding turned out to be exactly
-  // what made First day's band unsatisfiable, so it was cut). At the
-  // REF_NAME_PX reference size that is 96px of ascent and 54px of descent,
-  // 150px together, and since both fractions below are derived from
-  // REF_NAME_PX algebraically (h * 0.064 = 0.8 * w * 0.1, h * 0.036 =
-  // 0.45 * w * 0.1, given h = 1.25w on this card's fixed aspect ratio)
-  // that 150px total holds at any canvas size, not just 1200x1500. Neither
+  // baseline, and its descenders up to about 0.45 of an em below it: that
+  // is 96px of ascent and 54px of descent at the REF_NAME_PX reference
+  // size. The two clearances below pad both of those on purpose rather
+  // than cutting it to the bare metric: NAME_DESCENT_CLEARANCE (h * 0.05,
+  // 75px) is deliberate headroom over the true 54px, not a tighter
+  // measurement of it, the same padding this card used before the First
+  // day squeeze forced it down to the bare 0.45em for one round. With the
+  // band uncontested again there is no reason to cut either margin close,
+  // so NAME_ASCENT_CLEARANCE gets a full em of headroom (h * 0.08, which
+  // equals REF_NAME_PX itself on this card's fixed aspect ratio) rather
+  // than the roughly 0.8em minimum that just barely fits. Neither
   // clearance shrinks as a name gets narrower (a smaller font's real ink
   // only ever needs less room than this, never more, so the floor stays
-  // safe), but there is no more headroom above the real metric: a name
-  // that somehow rendered taller than Caveat's own worst case would not
-  // be covered.
+  // safe).
   const REF_NAME_PX = w * 0.1;
-  const NAME_ASCENT_CLEARANCE = h * 0.064; // Caveat's ~0.8em ascent at REF_NAME_PX, no padding
-  const NAME_DESCENT_CLEARANCE = h * 0.036; // Caveat's ~0.45em descent at REF_NAME_PX, no padding
+  const NAME_ASCENT_CLEARANCE = h * 0.08; // a full em of headroom above Caveat's real ~0.8em ascent
+  const NAME_DESCENT_CLEARANCE = h * 0.05; // deliberate headroom over Caveat's real ~0.45em descent
 
-  const aboveBottom = data.issue.key === "firstDay" ? cachetRuleY : sy + sh;
+  const aboveBottom = sy + sh;
   const band = ty - aboveBottom;
-  // At REF_NAME_PX, every tier's band now clears NAME_ASCENT_CLEARANCE +
-  // NAME_DESCENT_CLEARANCE (h * 0.1 = 150px): First day's is the tightest,
-  // at ~153px (cachetRuleY sits close beneath the stamp specifically so
-  // this holds), the other four have room to spare from the stamp's own
-  // lower edge. The Math.min below is a SAFETY NET, not the normal case:
-  // on all five tiers today it clamps to REF_NAME_PX and does nothing. It
-  // stays because it is cheap insurance against a future layout change
-  // squeezing some tier's band again (a taller cachet, a lower tear line),
-  // in which case the name shrinks instead of colliding, the same way it
-  // would here today for a hypothetically tighter band. Do not read its
-  // presence as meaning any tier is currently constrained by it.
+  // NAME_ASCENT_CLEARANCE + NAME_DESCENT_CLEARANCE is h * 0.13 (195px),
+  // comfortably inside every tier's identical ~204px band (stamp bottom to
+  // tear line), so the Math.min below is a SAFETY NET rather than the
+  // normal case: on all five tiers today it clamps to REF_NAME_PX and does
+  // nothing. It stays because it is cheap insurance against a future
+  // layout change squeezing the band again (a taller stamp, a lower tear
+  // line), in which case the name shrinks instead of colliding, the same
+  // way it would here today for a hypothetically tighter band. Do not read
+  // its presence as meaning any tier is currently constrained by it.
   const maxNamePx = Math.min(
     REF_NAME_PX,
     (band * REF_NAME_PX) / (NAME_ASCENT_CLEARANCE + NAME_DESCENT_CLEARANCE)
