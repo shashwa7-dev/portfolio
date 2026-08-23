@@ -17,12 +17,42 @@ Status: design approved 2026-08-23 after seven rounds in the visual companion
 [cyber-crowd](https://github.com/kengocodes/cyber-crowd) (MIT) and written up in
 `app/blogs/posts/drawing-faces-with-code.mdx`.
 
-**We are not porting it.** It is the reference for how the ink should feel. We
-write a smaller renderer of our own here. Two techniques are worth
-reimplementing because they are the right answers and not novel to that file:
-FNV-1a hashing into a `mulberry32` PRNG, and a salted `hashWith(str, salt)` so
-one input drives several independent streams. Nothing is copied verbatim; if any
-block ever is, it carries the cyber-crowd MIT notice with it.
+**We vendor it.** This reverses an earlier decision and the reversal is recorded
+here rather than hidden, because the earlier one was wrong.
+
+The first attempt wrote a lean renderer of our own: one head-shape family, six
+hair styles, a handful of features. It was built, reviewed and rejected on
+sight. Two numbers explain why. The engine casts **17 hair styles** weighted by
+presentation pool, against our six. It returns roughly **50 trait keys** (skin
+and hair colour, hair tone, freckles, stubble, blush, glasses, hats with
+texture, headphones, earbuds, studs, halos, bandages, face marks, head turn, jaw
+and chin geometry, eye type and scale, lashes, brow weight) against our six. A
+card whose whole appeal is "this face was drawn for you" cannot be served by the
+smaller of those two.
+
+The port is also far cheaper than the design phase estimated. Lines 60 to 1578
+of `portrait.html` contain exactly one DOM reference, and it is the demo page
+grabbing its own canvas, outside the drawing code. Everything else is pure
+canvas 2D. The 202 bare `ctx.` references need **no edits at all** when the
+whole renderer is wrapped in a `createEngine(ctx)` factory, because `ctx`
+becomes a closure variable and the mutable registers (`CUR_INK`, `INK_BOOST`,
+`DETAIL`) become closure locals. This is mechanical wrapping, not rewriting.
+
+Entry point: `portrait(name, cell, opts)` seeds itself, casts internally, draws,
+and returns the trait object.
+
+**Licensing.** Vendoring makes this a genuine derivative of cyber-crowd where
+"inspiration" was not. The MIT notice ships in the repo beside the vendored
+module, not only in the blog post.
+
+**What we keep of our own:** `lib/card/seed.ts` still drives the serial and the
+issue roll, and `lib/card/issues.ts` still owns the five tiers. The engine keeps
+its own internal hashing for the face. Two hashers, two concerns, one clean
+boundary.
+
+**Honest limit:** neither author will line-review 1,500 lines of drawing code.
+It arrives as a proven black box with a smoke harness around it and a human
+visual pass at the end, which is the same footing the demo page has run on.
 
 The sticker treatment is adapted from Stephanie Eckles' "CSS Sticker" pen
 (`codepen.io/5t3ph/pen/mdVZYpr`). Her version is CSS; ours is the same four
@@ -170,9 +200,12 @@ Download filename: `shashwa7-visitor-A-7A4E-C1.png`.
 - **`lib/card/seed.ts`** — pure, no DOM. `hashStr`, `hashWith`, `mulberry32`,
   `rr`/`ri`/`chance`/`pick`/`weighted`, `serialFrom`, `issueFrom`. Same input,
   same output, always. That is the whole contract.
-- **`lib/card/portrait.ts`** — the lean cast: one head-shape family, ~6 hair
-  styles, a few eye/brow/mouth sets, optional glasses and headwear, luminance
-  hatching. 350-450 lines. Every function takes `(ctx, R, box)`.
+- **`lib/card/engine/`** — the vendored Ink Folio renderer, sections 1 to 7 of
+  `portrait.html`, wrapped in `createEngine(ctx)` which returns `{ portrait,
+  handwrite }`. Carries the cyber-crowd MIT notice. Sections 8 and 9 (crowd
+  view, variant picker, audit mode, hit testing, keyboard shortcuts) are demo
+  UI and are not vendored. The embedded base64 Caveat is stripped; the family
+  name is passed in from `next/font` instead.
 - **`lib/card/sticker.ts`** — the four-layer canvas sticker, plus the tier
   gradient table.
 - **`lib/card/ticket.ts`** — `drawTicket(ctx, data, w, h)`. Composes stock,
@@ -184,6 +217,17 @@ Download filename: `shashwa7-visitor-A-7A4E-C1.png`.
 (`ctx`, `mode`, `variant`, `CUR_INK`, `INK_BOOST`, `W`, `H`) are exactly what
 breaks under React StrictMode's double render and with two canvases on one page,
 and the gallery puts six canvases on this one.
+
+The `createEngine(ctx)` factory is how the vendored code satisfies that without
+touching its 202 drawing calls: `ctx` and the mutable registers become locals of
+the factory closure, so each engine instance owns its own state and two
+instances cannot see each other. Every caller makes its own instance. A single
+shared module-level engine would reintroduce the exact bug the factory exists to
+prevent, so there is no default export and no singleton.
+
+The engine casts its own traits from the id it is given, so `CardData` carries
+no `cast` field. Where the card needs a trait (the issue's per-tier flourishes),
+it uses the object `portrait()` returns.
 
 **One function draws every size.** The preview, the 1200x1500 export and the
 gallery thumbnails are all `drawTicket` at different scales. Never two drawings

@@ -522,6 +522,8 @@ git commit -m "Five issues, named from philately, with their odds pinned"
 
 ## Task 3: Casting a face
 
+> **SUPERSEDED by Task 10 (2026-08-23).** The lean cast was built, reviewed and rejected on sight: six hair styles against the vendored engine's seventeen, six traits against its fifty. Its output is deleted in Task 10. Kept here as the record of what was tried. Do not implement.
+
 **Files:**
 - Create: `lib/card/cast.ts`
 - Create: `lib/card/cast.test.ts`
@@ -656,6 +658,8 @@ git commit -m "Cast a face from a seed, weighted so some rolls feel lucky"
 
 ## Task 4: Drawing the portrait
 
+> **SUPERSEDED by Task 10 (2026-08-23).** Replaced by the vendored Ink Folio engine. Its output is deleted in Task 10. Kept here as the record of what was tried. Do not implement.
+
 **Files:**
 - Create: `lib/card/portrait.ts`
 - Create: `app/card/preview/page.tsx` (temporary scratch harness, deleted in Task 7)
@@ -676,7 +680,7 @@ Create `app/card/preview/page.tsx`:
 import { useEffect, useRef } from "react";
 import { mulberry32 } from "@/lib/card/seed";
 import { castFrom } from "@/lib/card/cast";
-import { drawPortrait } from "@/lib/card/portrait";
+import { createEngine } from "@/lib/card/engine/portrait-engine";
 
 /** Scratch only. Deleted in Task 7. Renders 24 faces so a change to the
  *  drawing code shows up as a visible diff instead of a silent one. */
@@ -1054,7 +1058,6 @@ In `app/card/preview/page.tsx`, import `drawSticker` and `ISSUES`, and after eac
 ```tsx
 import { drawSticker } from "@/lib/card/sticker";
 import { ISSUES } from "@/lib/card/issues";
-// ...inside the loop, after drawPortrait:
 const keys = ["commemorative", "firstDay", "misprint", "inverted"] as const;
 const issue = ISSUES[keys[i % 4]];
 drawSticker(ctx, issue.name, issue, R,
@@ -1094,7 +1097,7 @@ Create `lib/card/ticket.ts`:
 
 ```ts
 import { hashWith, mulberry32, rr } from "@/lib/card/seed";
-import { drawPortrait } from "@/lib/card/portrait";
+import { createEngine } from "@/lib/card/engine/portrait-engine";
 import { drawSticker } from "@/lib/card/sticker";
 import type { CardData } from "@/lib/card/types";
 
@@ -1186,6 +1189,12 @@ export function drawTicket(
   const P = data.issue.inverted ? DARK : LIGHT;
   const R = mulberry32(hashWith(data.visitorId, "paper"));
 
+  /* One engine per call, never a shared module-level instance. The vendored
+     renderer keeps its ink registers in the factory closure, so two cards drawn
+     from one engine would tread on each other's state. The issue gallery draws
+     six cards, so this is not hypothetical. */
+  const engine = createEngine(ctx, { hand: fonts.hand });
+
   ctx.save();
   ctx.clearRect(0, 0, w, h);
 
@@ -1219,7 +1228,10 @@ export function drawTicket(
   ctx.globalAlpha = 1;
 
   // portrait. Inverted prints the plate upside down, which is the joke the name makes.
-  const faceR = mulberry32(hashWith(data.visitorId, "face"));
+  //
+  // The engine seeds itself from the id and casts its own traits, so there is
+  // no cast to pass in and no PRNG to thread through. Drawing the same id twice
+  // gives the same face, which is what the Misprint double strike relies on.
   const pBox = { x: sx + sw * 0.12, y: sy + sh * 0.06, w: sw * 0.76, h: sh * 0.72 };
   ctx.save();
   if (data.issue.inverted) {
@@ -1231,10 +1243,10 @@ export function drawTicket(
     ctx.save();
     ctx.globalAlpha = 0.2;
     ctx.translate(w * 0.0021, h * 0.0017);
-    drawPortrait(ctx, data.cast, mulberry32(hashWith(data.visitorId, "face")), pBox, P.ink);
+    engine.portrait(data.visitorId, pBox);
     ctx.restore();
   }
-  drawPortrait(ctx, data.cast, faceR, pBox, P.ink);
+  const traits = engine.portrait(data.visitorId, pBox);
   ctx.restore();
 
   // the stamp says the country and the denomination, like a real one
@@ -1345,7 +1357,6 @@ Replace the whole body of `app/card/preview/page.tsx`:
 
 import { useEffect, useRef } from "react";
 import { ISSUES } from "@/lib/card/issues";
-import { castForVisitor } from "@/lib/card/cast";
 import { serialFrom } from "@/lib/card/seed";
 import { drawTicket } from "@/lib/card/ticket";
 import type { IssueKey } from "@/lib/card/types";
@@ -1371,7 +1382,6 @@ function One({ k }: { k: IssueKey }) {
       name: "Visitor",
       serial: serialFrom(id),
       issue: ISSUES[k],
-      cast: castForVisitor(id),
       origin: "Bengaluru, IN",
       city: "Bengaluru",
       date: "23 Aug 2026",
@@ -1421,7 +1431,7 @@ git commit -m "Compose the card once, at any size"
 - Modify: `app/layout.tsx` (font imports)
 
 **Interfaces:**
-- Consumes: `drawTicket`, `CARD_W`, `CARD_H`, `ISSUES`, `issueFrom`, `castForVisitor`, `serialFrom`.
+- Consumes: `drawTicket`, `CARD_W`, `CARD_H`, `ISSUES`, `issueFrom`, `serialFrom`.
 - Produces: the `/card` route.
 
 - [ ] **Step 1: Add the two fonts**
@@ -1532,7 +1542,6 @@ Create `components/card/CardMinter.tsx`. It owns:
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ISSUES, issueFrom } from "@/lib/card/issues";
-import { castForVisitor } from "@/lib/card/cast";
 import { serialFrom } from "@/lib/card/seed";
 import { drawTicket, CARD_W, CARD_H } from "@/lib/card/ticket";
 import type { CardData } from "@/lib/card/types";
@@ -1586,7 +1595,6 @@ export default function CardMinter({
       name: name.trim() || "Visitor",
       serial: serialFrom(visitorId),
       issue: ISSUES[issueFrom(visitorId)],
-      cast: castForVisitor(visitorId),
       origin,
       city,
       date: today(),
@@ -1709,7 +1717,7 @@ git commit -m "Mint, name, and download a visitor card"
 - Modify: `app/card/page.tsx` (mount the gallery)
 
 **Interfaces:**
-- Consumes: `drawTicket`, `ISSUES`, `castForVisitor`, `serialFrom`.
+- Consumes: `drawTicket`, `ISSUES`, `serialFrom`.
 - Produces: `<IssueGallery />`.
 
 Five thumbnails from fixed demo ids, drawn by the same `drawTicket`, so the gallery can never advertise a card the generator does not actually produce. It doubles as the determinism check named in the spec.
@@ -1723,7 +1731,6 @@ Create `components/card/IssueGallery.tsx`:
 
 import { useEffect, useRef } from "react";
 import { ISSUES } from "@/lib/card/issues";
-import { castForVisitor } from "@/lib/card/cast";
 import { serialFrom } from "@/lib/card/seed";
 import { drawTicket, CARD_W, CARD_H } from "@/lib/card/ticket";
 import type { IssueKey } from "@/lib/card/types";
@@ -1765,7 +1772,6 @@ function Specimen({ spec }: { spec: (typeof SPECIMENS)[number] }) {
         serial: serialFrom(spec.id),
         // The specimen shows its issue, not the one its id happens to roll.
         issue: ISSUES[spec.key],
-        cast: castForVisitor(spec.id),
         origin: spec.origin,
         city: spec.city,
         date: "23 Aug 2026",
@@ -1918,6 +1924,196 @@ Expected: all four clean, the script exiting 0.
 ```bash
 git add lib/commandData.ts app/sitemap.ts data/agent-memory.md CLAUDE.md
 git commit -m "Wire the card into the palette, the sitemap and Truffy's memory"
+```
+
+---
+
+## Task 10: Vendor the Ink Folio engine, retire the lean generator
+
+**Supersedes Tasks 3 and 4.** Runs before Task 5. Their output is deleted here.
+
+**Files:**
+- Create: `lib/card/engine/portrait-engine.js`
+- Create: `lib/card/engine/portrait-engine.d.ts`
+- Create: `lib/card/engine/LICENSE-cyber-crowd.md`
+- Create: `lib/card/engine/engine.test.ts`
+- Delete: `lib/card/cast.ts`, `lib/card/cast.test.ts`, `lib/card/portrait.ts`, `lib/card/portrait.test.ts`
+- Modify: `lib/card/types.ts` (drop the `Cast` type and `CardData.cast`)
+- Modify: `app/card/preview/page.tsx` (draw via the engine)
+
+**Source:** `/Users/shashwa7/Desktop/personal/inkfolio/portrait.html`, lines 60 to 1578 inclusive. That range is sections 1 through 7: seeding, palette, geometry, the hand, casting, the portrait, lettering. Sections 8 and 9 (lines 1579 to end) are demo UI and are NOT vendored.
+
+**Interfaces:**
+- Produces: `createEngine(ctx: CanvasRenderingContext2D, opts?: { hand?: string }): Engine`, where `Engine` is `{ portrait(name: string, cell: {x,y,w,h}, opts?: PortraitOpts): Traits; handwrite(R, text, cx, cy, size, o?): number }`. `PortraitOpts` is `{ present?: "any"|"femme"|"masc"|"fluid"; variant?: number; scale?: number; force?: Partial<Traits> }`.
+- Task 6 consumes `createEngine` and calls `.portrait()`.
+
+- [ ] **Step 1: Extract the source range verbatim**
+
+```bash
+sed -n '60,1578p' /Users/shashwa7/Desktop/personal/inkfolio/portrait.html > /tmp/engine-raw.js
+wc -l /tmp/engine-raw.js
+```
+
+Expected: about 1519 lines. Read the first and last 20 lines to confirm you have whole statements at both ends, not a fragment. Line 60 is `const canvas = document.getElementById('c');` and the range should end inside or just after section 7 (lettering).
+
+- [ ] **Step 2: Wrap it in the factory**
+
+Create `lib/card/engine/portrait-engine.js`. Structure:
+
+```js
+/**
+ * Vendored from Ink Folio (portrait.html), the generative portrait engine
+ * behind app/blogs/posts/drawing-faces-with-code.mdx.
+ *
+ * Section 4, "the hand", derives from cyber-crowd by Kevin Ngo, MIT licensed.
+ * See LICENSE-cyber-crowd.md beside this file. Do not strip that notice.
+ *
+ * Wrapped rather than rewritten. The renderer's 202 canvas calls reference a
+ * bare `ctx`, and its ink registers (CUR_INK, INK_BOOST, DETAIL) are mutated
+ * mid-render. Making those locals of this closure gives every instance its own
+ * state without editing a single drawing call, which is why this file is a
+ * faithful copy and not a port. Two engines on one page cannot see each other,
+ * which the issue gallery depends on.
+ *
+ * There is deliberately no singleton and no default instance. Each caller
+ * creates its own.
+ */
+export function createEngine(ctx, opts = {}) {
+  let CUR_INK, INK_BOOST, DETAIL;   // hoisted out of the vendored body
+
+  // ---- BEGIN VENDORED SOURCE (portrait.html lines 60-1578) ----
+  // ... the extracted body, with the edits listed in Step 3 ...
+  // ---- END VENDORED SOURCE ----
+
+  return { portrait, handwrite, castTraits };
+}
+```
+
+- [ ] **Step 3: Make exactly these edits to the vendored body, and no others**
+
+1. **Delete** the three lines that reach for the DOM and page state:
+   `const canvas = document.getElementById('c');`, `let ctx = canvas.getContext('2d');`, and `let W, H, DPR, bg, wear;`.
+   `ctx` now comes from the factory parameter.
+2. **Delete** `let cells = [], cols, rows, cw, ch;`, `let mode = 'one';`, `let hovered = null;`. These belong to the demo UI in sections 8 and 9, which are not vendored.
+3. **Change** `let CUR_INK = INK;` to `CUR_INK = INK;`, `let INK_BOOST = 1;` to `INK_BOOST = 1;`, and `let DETAIL = 1;` to `DETAIL = 1;`. They are declared at the top of the factory instead, so each instance owns them.
+4. **Replace** the `HANDS` array so the caller's font wins:
+   `const HANDS = [opts.hand, 'Caveat', '"Bradley Hand"', '"Segoe Print"', 'cursive'].filter(Boolean);`
+5. If any function in the range references a symbol that only exists in sections 8 or 9, delete that function. Run Step 5's typecheck to find them; do not go hunting by eye.
+
+**Change nothing else.** Not formatting, not variable names, not a single number. This file's value is that it is the code that already works. If you find something you believe is a bug, leave it and note it in your report.
+
+- [ ] **Step 4: Add the type declarations and the licence**
+
+Create `lib/card/engine/portrait-engine.d.ts`:
+
+```ts
+export type Traits = Record<string, unknown> & {
+  hairStyle: string;
+  glasses: string;
+  headwear: string;
+  present: string;
+};
+
+export type PortraitOpts = {
+  present?: "any" | "femme" | "masc" | "fluid";
+  variant?: number;
+  scale?: number;
+  force?: Partial<Traits>;
+};
+
+export type Engine = {
+  portrait(name: string, cell: { x: number; y: number; w: number; h: number }, opts?: PortraitOpts): Traits;
+  handwrite(R: () => number, text: string, cx: number, cy: number, size: number, o?: Record<string, unknown>): number;
+  castTraits(R: () => number, present?: string): Traits;
+};
+
+export function createEngine(
+  ctx: CanvasRenderingContext2D,
+  opts?: { hand?: string }
+): Engine;
+```
+
+Create `lib/card/engine/LICENSE-cyber-crowd.md` containing the standard MIT licence text, `Copyright (c) Kevin Ngo`, with a line above it saying the portrait engine's stroke and texture routines derive from https://github.com/kengocodes/cyber-crowd, and that the notice ships with the code as MIT requires.
+
+- [ ] **Step 5: Delete the lean generator and its type**
+
+```bash
+git rm lib/card/cast.ts lib/card/cast.test.ts lib/card/portrait.ts lib/card/portrait.test.ts
+```
+
+In `lib/card/types.ts`, delete the `Cast` type entirely and delete the `cast: Cast;` field from `CardData`. The engine casts its own traits from the id it is handed, so nothing outside the engine needs that type.
+
+Then confirm nothing still refers to them:
+
+```bash
+npx tsc --noEmit
+grep -rn "castForVisitor\|castFrom\|drawPortrait\|from \"@/lib/card/cast\"" app components lib || echo "clean"
+```
+
+- [ ] **Step 6: Rewire the scratch preview**
+
+Replace `app/card/preview/page.tsx` so it renders 24 portraits through the engine:
+
+```tsx
+"use client";
+
+import { useEffect, useRef } from "react";
+import { createEngine } from "@/lib/card/engine/portrait-engine";
+
+/** Scratch only. Deleted in Task 7. */
+export default function PortraitPreview() {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const c = ref.current;
+    if (!c) return;
+    const dpr = window.devicePixelRatio || 1;
+    c.width = 960 * dpr;
+    c.height = 640 * dpr;
+    const ctx = c.getContext("2d");
+    if (!ctx) return;
+    ctx.scale(dpr, dpr);
+    ctx.fillStyle = "#f6f1e5";
+    ctx.fillRect(0, 0, 960, 640);
+    const engine = createEngine(ctx);
+    for (let i = 0; i < 24; i++) {
+      engine.portrait(`specimen-${i}`, {
+        x: (i % 6) * 160, y: Math.floor(i / 6) * 160, w: 160, h: 160,
+      });
+    }
+  }, []);
+  return <canvas ref={ref} style={{ width: 960, height: 640 }} />;
+}
+```
+
+- [ ] **Step 7: Write the smoke test**
+
+Create `lib/card/engine/engine.test.ts`. The same headless recording-stub approach the deleted `portrait.test.ts` used, now aimed at the engine. It must assert:
+
+1. `createEngine(stub)` does not throw and returns an object with `portrait`, `handwrite`, `castTraits`.
+2. `engine.portrait("visitor-1", {x:0,y:0,w:160,h:160})` does not throw, returns a traits object, and issued both `stroke` and `fill` calls.
+3. `save` and `restore` counts are equal after a portrait. An imbalance leaks clip and transform state into the postmark and the lettering, which draw next.
+4. **Instance isolation.** Two engines built over two different stubs, drawn in an interleaved order, produce the same call log as when each is drawn alone. This is the assertion that proves the factory actually fixed the shared-globals problem, so write it carefully and do not settle for a weaker version.
+5. **Determinism.** The same id drawn twice produces identical call logs.
+6. **Variety.** Twenty different ids produce at least fifteen distinct `hairStyle` values across the returned traits. The engine advertises 17 styles; this catches a casting path that collapsed during extraction.
+
+The stub needs a wider surface than the old one: add `createLinearGradient`, `createRadialGradient` (each returning `{ addColorStop() {} }`), `measureText` returning `{ width: 10 }`, `setLineDash`, `arcTo`, `bezierCurveTo`, `rect`, `fillText`, `strokeText`, `translate`, `rotate`, `scale`, `drawImage`, `putImageData`, `createPattern`, and settable `font`, `textAlign`, `textBaseline`, `shadowColor`, `shadowBlur`, `shadowOffsetX`, `shadowOffsetY`, `globalCompositeOperation`, `filter`. If the engine calls something you did not stub, the test will throw and tell you what to add. That is the test working, not failing.
+
+- [ ] **Step 8: Run every gate**
+
+```bash
+npm test
+npm run lint
+npm run build
+npx tsc --noEmit
+```
+
+All four clean.
+
+- [ ] **Step 9: Commit**
+
+```bash
+git add lib/card/engine app/card/preview/page.tsx lib/card/types.ts
+git commit -m "Vendor the Ink Folio engine, and retire the lean generator"
 ```
 
 ---
