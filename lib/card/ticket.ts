@@ -357,16 +357,32 @@ export function drawTicket(
   ctx.fillText(data.date.slice(-4), ccx, ccy + cr * 0.48);
   ctx.restore();
 
+  // tear line's y, needed above to place the name against it. Declared here
+  // (rather than immediately before it is drawn, further down) so the name
+  // baseline can be derived from it directly instead of duplicating the
+  // formula.
+  const ty = h - h * 0.218;
+
   // the name, in handwriting. Shrinks to fit the same way the issue name
   // in the stub does, since a wide typed name runs past L/Rt at the base size.
   ctx.fillStyle = P.ink;
   ctx.textAlign = "center";
   const name = data.name.trim() || "Visitor";
   shrinkToFit(ctx, name, fonts.hand, w * 0.1, w * 0.04, w * 0.003, w * 0.8);
-  ctx.fillText(name, w / 2, h * 0.716 + TOP);
+  // fonts.hand (Caveat) is a script face with deep loops on g, y, j, p, q:
+  // descenders commonly run 35-45% of the em, which is 42-54px at the
+  // un-shrunk w * 0.1 (120px) starting size. shrinkToFit above only kicks in
+  // once a name's rendered width exceeds w * 0.8, so a SHORT name with a
+  // descender ("Guy", "Peggy", "Joy") never shrinks and always renders at
+  // the full size, tail and all, while a long name is safe because it
+  // already shrank down. Rather than trust the gap below the baseline, the
+  // baseline is pulled up to guarantee at least h * 0.05 of clearance above
+  // the tear line, comfortably past the deepest realistic descender,
+  // regardless of how big any given name renders.
+  const nameY = ty - h * 0.055;
+  ctx.fillText(name, w / 2, nameY);
 
   // tear line, painted, with real holes bitten out of both edges
-  const ty = h - h * 0.218;
   ctx.save();
   ctx.globalAlpha = 0.42;
   ctx.strokeStyle = P.ink;
@@ -407,8 +423,16 @@ export function drawTicket(
   ctx.fillStyle = data.issue.inverted ? P.cancel : P.ink;
   ctx.fillText(data.issue.name, Rt, h - h * 0.107);
 
-  ctx.fillStyle = P.veryFaint;
-  ctx.font = `${w * 0.018}px ${fonts.mono}`;
+  // Was w * 0.018 in P.veryFaint, the palest tone on the card: the place a
+  // visitor is minting from read as an afterthought next to the share
+  // figure beside it, which is w * 0.026 in P.ink. Bumped one size and one
+  // tone up so it is clearly legible, while staying a step below the
+  // serial/issue values above it so it does not compete with them. At the
+  // longest realistic origin ("BENGALURU, IN · 23 AUG 2026", 27 characters)
+  // this still ends well short of the share row's reserved width (maxIssue,
+  // below), so no shrink-to-fit is needed here.
+  ctx.fillStyle = P.faint;
+  ctx.font = `${w * 0.022}px ${fonts.mono}`;
   ctx.textAlign = "left";
   if (data.origin) {
     tracked(ctx, `${data.origin} · ${data.date}`.toUpperCase(), L, h - h * 0.042, w * 0.0028);

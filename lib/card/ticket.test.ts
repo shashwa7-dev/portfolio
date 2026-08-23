@@ -527,4 +527,78 @@ describe("drawTicket", () => {
       expect(calls).not.toContain("fillStyle=#2a282c");
     }
   });
+
+  // --- Task 13: two visual-pass fixes ---
+
+  it("draws the origin/date stub line at the larger size and in the faint tone, not veryFaint", () => {
+    // Mirrors "draws the rarity share at the larger of the two stub sizes"
+    // above: the origin line used to sit at the small w * 0.018 size in
+    // P.veryFaint, the palest tone on the card, while the share beside it
+    // read at w * 0.026 in P.ink. The fix brings origin up to w * 0.022 in
+    // P.faint, a step below the serial/issue values but clearly legible,
+    // without matching the share's own size exactly.
+    const { ctx, calls } = makeStubCtx();
+    drawTicket(ctx, cardFor("origin-size", "definitive"), CARD_W, CARD_H, FONTS);
+
+    const bigFont = `${CARD_W * 0.022}px ${FONTS.mono}`;
+    const smallFont = `${CARD_W * 0.018}px ${FONTS.mono}`;
+
+    // Instead of guessing an index for the origin/date run, walk backwards
+    // from the origin text itself: find the fillText whose y matches the
+    // origin/date row's known y (h - h * 0.042), same technique the
+    // stamp-foot-ink test above uses.
+    const h = CARD_H;
+    const originY = h - h * 0.042;
+    const originTextIndex = calls.findIndex((c) => {
+      if (!c.startsWith("fillText(")) return false;
+      const nums = c.slice("fillText(".length, -1).split(",").map(Number);
+      return Math.abs(nums[nums.length - 1] - originY) < 0.01;
+    });
+    expect(originTextIndex).toBeGreaterThan(-1);
+
+    let fontBeforeOrigin: string | undefined;
+    let fillStyleBeforeOrigin: string | undefined;
+    for (let i = originTextIndex; i >= 0; i--) {
+      if (fontBeforeOrigin === undefined && calls[i].startsWith("font=")) {
+        fontBeforeOrigin = calls[i].slice("font=".length);
+      }
+      if (fillStyleBeforeOrigin === undefined && calls[i].startsWith("fillStyle=")) {
+        fillStyleBeforeOrigin = calls[i].slice("fillStyle=".length);
+      }
+      if (fontBeforeOrigin !== undefined && fillStyleBeforeOrigin !== undefined) break;
+    }
+
+    expect(fontBeforeOrigin).toBe(bigFont);
+    expect(fontBeforeOrigin).not.toBe(smallFont);
+    expect(fillStyleBeforeOrigin).toBe("#8a8175"); // LIGHT.faint
+    expect(fillStyleBeforeOrigin).not.toBe("#bdb4a4"); // LIGHT.veryFaint
+  });
+
+  it("keeps the name baseline at least h * 0.05 above the tear line", () => {
+    // Caveat (fonts.hand) is a script face with deep loops on g, y, j, p, q:
+    // 35-45% of the em in descender depth, which is 42-54px at the un-shrunk
+    // w * 0.1 (120px) starting size. shrinkToFit only engages once a name's
+    // width exceeds w * 0.8, so a SHORT name with a descender ("Guy",
+    // "Peggy", "Joy") never shrinks and renders at the full size, tail and
+    // all, while a long name is safe because it already shrank. This
+    // asserts the geometric clearance the fix guarantees regardless of name
+    // length, derived from h rather than a hardcoded pixel gap.
+    const h = CARD_H;
+    const { ctx, calls, texts } = makeStubCtx();
+    const data = cardFor("descender-clearance", "definitive");
+    drawTicket(ctx, data, CARD_W, h, FONTS);
+
+    const nameEntry = texts.find((t) => t.text === data.name);
+    expect(nameEntry).toBeDefined();
+
+    // The tear line's `moveTo(0, ty)` is the only moveTo call in the whole
+    // draw whose first argument is exactly 0 (roundRect's moveTo always
+    // offsets by the corner radius), so it uniquely locates ty without
+    // depending on any other formula in ticket.ts.
+    const tearCall = calls.find((c) => c.startsWith("moveTo(0,"));
+    expect(tearCall).toBeDefined();
+    const tearY = Number(tearCall!.slice("moveTo(0,".length, -1));
+
+    expect(tearY - nameEntry!.y).toBeGreaterThanOrEqual(h * 0.05);
+  });
 });
