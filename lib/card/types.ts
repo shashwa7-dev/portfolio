@@ -17,23 +17,12 @@ export type Issue = {
   inverted: boolean;
 };
 
-export type Cast = {
-  hair: "short" | "long" | "bob" | "curls" | "buzz" | "topknot";
-  glasses: "none" | "round" | "square";
-  headwear: "none" | "flatCap" | "beanie";
-  brow: "flat" | "arched" | "worried";
-  mouth: "smile" | "line" | "open";
-  /** 0 to 1, drives how heavily the face is hatched. */
-  shade: number;
-};
-
 export type CardData = {
   visitorId: string;
   /** What the visitor typed, or "Visitor". */
   name: string;
   serial: string;
   issue: Issue;
-  cast: Cast;
   /** "Bengaluru, IN" or null when the headers were absent. */
   origin: string | null;
   /** City alone for the cancel, or null. */
