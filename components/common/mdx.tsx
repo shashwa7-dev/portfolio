@@ -3,7 +3,6 @@ import Image, { ImageProps } from "next/image";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { highlight } from "sugar-high";
 import remarkGfm from "remark-gfm";
-import Marker from "@/components/common/Marker";
 import React from "react";
 import { slugify } from "@/lib/toc";
 
@@ -158,16 +157,6 @@ const components = {
     </div>
   ),
   Table,
-  /**
-   * The drawn underline, available to posts as `<Marker>phrase</Marker>`.
-   *
-   * Prose needs a way to point at the one phrase that carries a paragraph.
-   * Bold is the obvious reach and the wrong one here: scattered through a long
-   * article it stops meaning "this matters" and becomes texture. The underline
-   * is the site's own emphasis device, it is already used in the hero copy, and
-   * being expensive to type keeps it rare.
-   */
-  Marker,
 };
 
 interface CustomMDXProps {

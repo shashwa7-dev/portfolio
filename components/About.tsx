@@ -167,7 +167,7 @@ export default function About() {
             Across 9+ production products with top AI and Web3 teams, I turn
             complex ideas into fast, polished, accessible UIs. Reach me at{" "}
             <a href="mailto:contact@shashwa7.in" className="text-foreground">
-              <Marker variant="marker">contact@shashwa7.in</Marker>
+              <Marker>contact@shashwa7.in</Marker>
             </a>
             .
           </p>

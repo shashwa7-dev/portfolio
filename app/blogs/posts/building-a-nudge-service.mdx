@@ -232,7 +232,7 @@ create table nudge_state (
 );
 ```
 
-Notice what is missing. There is no row saying "show this user a low-credit nudge". <Marker>Nothing queues a nudge.</Marker> The nudge is worked out fresh on every request, and the only thing on disk is what the user has already done about it.
+Notice what is missing. There is no row saying "show this user a low-credit nudge". **Nothing queues a nudge.** The nudge is worked out fresh on every request, and the only thing on disk is what the user has already done about it.
 
 ## And on the frontend
 
@@ -274,7 +274,7 @@ My first shape was named after the page it appeared on. Then we wanted that same
 | `placement` | which slot does it sit in | `top_banner`, `bottom_toast`, `floating`, `center` |
 | `routes` | which pages may show it | blank for anywhere, or a list |
 
-Rule of thumb: if a shape name contains a place, or a slot name contains a page, it will be <Marker>wrong within a month</Marker>.
+Rule of thumb: if a shape name contains a place, or a slot name contains a page, it will be wrong within a month.
 
 Two small choices that saved me later. **Send the icon's name, not the icon,** so the payload says `"zap"` and a new icon needs no frontend change. **Make the payload a union on shape,** so TypeScript complains when someone adds a shape and forgets to say what goes inside it.
 
@@ -286,7 +286,7 @@ On the hardcoded version, "dismissed" was component state. It forgot the moment 
 
 That table is what makes the rules mean anything. **Quiet for a week** after a dismiss. **Stop after three views.** **Done forever** once they upgrade.
 
-One rule I would set on day one: <Marker>one slot, one nudge</Marker>. Never stack them. Two banners in the same corner is how a helpful app turns into an annoying one.
+One rule I would set on day one: **one slot, one nudge**. Never stack them. Two banners in the same corner is how a helpful app turns into an annoying one.
 
 ### 3. The user had six tabs open
 
@@ -304,13 +304,13 @@ From the user's side that is not a helpful product. That is being nagged.
 
 The frontend was trying to hold the line on its own, with quiet gaps and a per-visit limit, and it could not. Every tab paced itself separately, none of them survived a refresh, and the backend cheerfully kept handing over more.
 
-**The fix:** pacing belongs in <Marker>the orchestrator</Marker>, not the browser. The backend now owns a **quiet window** after any dismiss and a **daily cap** per user. It simply does not hand you a second nudge straight after you closed the first, no matter how many tabs you have open or how many times you refresh.
+**The fix:** pacing belongs in the orchestrator, not the browser. The backend now owns a **quiet window** after any dismiss and a **daily cap** per user. It simply does not hand you a second nudge straight after you closed the first, no matter how many tabs you have open or how many times you refresh.
 
 The frontend kept exactly one thing, because it is genuinely a display concern: a **minimum display time**, so a nudge that appears and instantly stops qualifying does not flicker.
 
 Everything else went in the bin, including some `BroadcastChannel` code I was quite proud of. Tabs already agree, because they all ask the same server and the server counts properly.
 
-The lesson: if the client keeps its own copy of something the server already knows, you have <Marker>two truths</Marker> and a bug waiting.
+The lesson: if the client keeps its own copy of something the server already knows, you have two truths and a bug waiting.
 
 ### 5. I polled far too fast
 

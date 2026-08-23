@@ -4,22 +4,16 @@ export type TDiaryEntry = {
   id: string;
   title: string;
   summary: string;
-  /** Exact substring of `summary` to underline with the Marker SVG. Keep short — 3-6 words. */
-  summaryHighlight?: string;
   date: string;
   context?: string;
   contributions: string[];
   impact?: string;
-  /** Exact substring of `impact` to underline. */
-  impactHighlight?: string;
   stack?: StackName[];
 };
 
 export type TOrgDiary = {
   org: string;
   overview?: string;
-  /** Optional substring of `overview` to underline. */
-  overviewHighlight?: string;
   featured: TDiaryEntry[];
   other?: { title: string; summary: string; date?: string }[];
 };
@@ -29,14 +23,12 @@ export const diaries: TOrgDiary[] = [
     org: "shopos",
     overview:
       "Frontend engineer at ShopOS, an AI-native commerce platform. I own merchant-facing surfaces across the AI agents, workflow authoring, and chat experience used to create, manage, market, and sell. I work across the main app, the admin console, and the shared design-system package.",
-    overviewHighlight: "AI-native commerce platform",
     featured: [
       {
         id: "enterprise-migration",
         title: "Enterprise dashboard in-app migration",
         summary:
           "Brought the Enterprise UI out of a separate iframe-hosted repo and into the main app as native routes.",
-        summaryHighlight: "into the main app as native routes",
         date: "Apr 2026",
         context:
           "The Enterprise dashboard was a standalone project served inside the main product through an iframe. That meant separate auth, separate theme, separate deploy cadence, and a cross-origin wall that blocked any deeper UX integration.",
@@ -48,7 +40,6 @@ export const diaries: TOrgDiary[] = [
         ],
         impact:
           "One auth layer, one design system, no cross-origin tax. Faster loads and a real path to deeper UX for enterprise clients.",
-        impactHighlight: "no cross-origin tax",
         stack: ["next", "react", "typescript", "tailwind", "reactQuery"],
       },
       {
@@ -56,7 +47,6 @@ export const diaries: TOrgDiary[] = [
         title: "Canvas Builder for visual workflow authoring",
         summary:
           "Drawer-based visual editor that lets non-engineers compose workflow templates without writing code.",
-        summaryHighlight: "without writing code",
         date: "May 2026",
         context:
           "Workflow templates power large chunks of the product, but authoring them was an engineering-only task. Canvas Builder turns that into a visual surface.",
@@ -67,7 +57,6 @@ export const diaries: TOrgDiary[] = [
         ],
         impact:
           "Non-engineers can author and iterate on workflow templates directly. Unified schema removed a class of drift between the canvas and the form editor.",
-        impactHighlight: "Non-engineers can author and iterate",
         stack: ["next", "react", "typescript", "tailwind", "zustand"],
       },
       {
@@ -75,7 +64,6 @@ export const diaries: TOrgDiary[] = [
         title: "Content-rich chat input",
         summary:
           "Rebuilt the chat input on tiptap with slash commands, skill mentions, and structured serialization.",
-        summaryHighlight: "slash commands, skill mentions",
         date: "May 2026",
         context:
           "The previous chat input was a fragile contenteditable that could not express anything richer than plain text. New flows (skills, structured commands, mentions) demanded a real editor.",
@@ -86,7 +74,6 @@ export const diaries: TOrgDiary[] = [
         ],
         impact:
           "Agent invocations and skill workflows are now first-class inside chat. Replaced a fragile editor with a structured one the team can extend.",
-        impactHighlight: "first-class inside chat",
         stack: ["react", "typescript", "tailwind"],
       },
       {
@@ -94,7 +81,6 @@ export const diaries: TOrgDiary[] = [
         title: "Media carousel for AI asset review",
         summary:
           "Editing and reconciliation surface for AI-generated images, with a refine modal and hash-routed deep-linking.",
-        summaryHighlight: "hash-routed deep-linking",
         date: "Jan 2026",
         context:
           "Merchants review and refine AI-generated assets every day. The surface had to support comments, refinements, and shareable deep links into a specific asset.",
@@ -105,7 +91,6 @@ export const diaries: TOrgDiary[] = [
         ],
         impact:
           "Core to the review-and-publish loop merchants run daily. Stable deep-linking made the surface easy to share and embed in other flows.",
-        impactHighlight: "merchants run daily",
         stack: ["react", "typescript", "tailwind"],
       },
       {
@@ -113,7 +98,6 @@ export const diaries: TOrgDiary[] = [
         title: "Skills Library across two apps",
         summary:
           "End-to-end Skills Library in both the main app and the admin console.",
-        summaryHighlight: "End-to-end Skills Library",
         date: "May 2026",
         context:
           "Skills extend agent capability. The product needed an authenticated surface to upload, preview, manage, and toggle skill packs in both the merchant app and the admin tooling, sharing as much as possible.",
@@ -125,7 +109,6 @@ export const diaries: TOrgDiary[] = [
         ],
         impact:
           "A new product capability surface delivered end-to-end across two apps in one pass. Users can extend agent capability through uploaded skill packs.",
-        impactHighlight: "across two apps in one pass",
         stack: ["next", "react", "typescript", "tailwind", "reactQuery"],
       },
     ],

@@ -7,7 +7,6 @@ import Section from "@/components/layout/Section";
 import ProjectPreviewCard from "@/components/ProjectPreviewCard";
 import ClientStrip from "@/components/common/ClientStrip";
 import { workProjectToCard } from "@/lib/projectCards";
-import MarkerLink from "@/components/common/MarkerLink";
 import { EmploymentTag, OrgLinkChip, Tag } from "@/components/common/OrgChips";
 
 export default function ExperienceWork() {
@@ -199,13 +198,13 @@ export default function ExperienceWork() {
                     line of text for every org rather than only for those with no
                     projects. */}
                 <div className="mt-5">
-                  <MarkerLink
+                  <Link
                     href={`/work/${org.slug}`}
-                    size="sm"
-                    tone="foreground"
+                    className="group inline-flex items-baseline gap-1.5 text-sm text-foreground"
                   >
-                    See what I built at {org.name}
-                  </MarkerLink>
+                    <span>See what I built at {org.name}</span>
+                    <ArrowRight className="h-3.5 w-3.5 self-center transition-transform duration-base ease-out group-hover:translate-x-0.5" />
+                  </Link>
                 </div>
 
                 {/* The rail's bottom terminator. Its left border picks up

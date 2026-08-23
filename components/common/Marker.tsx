@@ -2,27 +2,23 @@ import { cn } from "@/lib/utils";
 
 type Props = {
   children: React.ReactNode;
-  /** "marker" = rough brush stroke, "line" = thin clean line */
-  variant?: "marker" | "line";
-  /** No-op. Kept for caller compatibility (lib/markerHighlight.tsx, MarkerLink.tsx) now that the draw-on animation is gone. */
-  delay?: number;
   className?: string;
 };
 
-// Slightly rough hand-drawn stroke vs. a clean straight line.
-const PATHS = {
-  marker: "M2 7 C 70 3, 150 9, 230 5 S 340 8, 398 4",
-  line: "M0 5 L 400 5",
-} as const;
+// Slightly rough, so it reads as drawn rather than as a text-decoration rule.
+const PATH = "M2 7 C 70 3, 150 9, 230 5 S 340 8, 398 4";
 
-const STROKE_WIDTH = { marker: 5, line: 2 } as const;
-
-/** Inline text with a static underline wash. Points at the contact address in the hero lede. */
-export default function Marker({
-  children,
-  variant = "marker",
-  className,
-}: Props) {
+/**
+ * Inline text with a static underline wash. Decoration, not emphasis, and it
+ * has exactly one caller: the contact address in the About hero.
+ *
+ * It is deliberately not available for highlighting prose. The SVG is
+ * absolutely positioned across the span's full width, so a phrase that wraps
+ * gets one flat rule spanning the whole paragraph instead of a stroke under
+ * each line. The contact address is a single unbreakable token, which is why
+ * it is safe here and nowhere else. Prose emphasis is `<strong>`.
+ */
+export default function Marker({ children, className }: Props) {
   return (
     <span className={cn("relative inline-block", className)}>
       {children}
@@ -33,10 +29,10 @@ export default function Marker({
         className="pointer-events-none absolute -bottom-[0.06em] left-0 h-[0.42em] w-full overflow-visible"
       >
         <path
-          d={PATHS[variant]}
+          d={PATH}
           fill="none"
           stroke="hsl(var(--foreground))"
-          strokeWidth={STROKE_WIDTH[variant]}
+          strokeWidth={5}
           strokeLinecap="round"
         />
       </svg>
