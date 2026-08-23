@@ -1440,7 +1440,7 @@ git commit -m "Compose the card once, at any size"
 **Files:**
 - Create: `app/card/page.tsx`
 - Create: `components/card/CardMinter.tsx`
-- Delete: `app/card/preview/page.tsx`
+- (preview page is NOT deleted here, see Step 4)
 - Modify: `app/layout.tsx` (font imports)
 
 **Interfaces:**
@@ -1703,11 +1703,13 @@ export default function CardMinter({
 }
 ```
 
-- [ ] **Step 4: Delete the scratch harness**
+- [ ] **Step 4: Leave the scratch harness in place**
 
-```bash
-rm -rf app/card/preview
-```
+Do NOT delete `app/card/preview` in this task, despite what the Files list above says.
+
+It is the only surface showing all five issues side by side, and the owner is using it for visual passes while this branch is built. Task 8's issue gallery replaces that job properly. Deleting the preview here would leave a window with no way to compare the five cards at a glance, in the exact stretch where design feedback is most likely.
+
+Task 9 deletes it, once the gallery exists.
 
 - [ ] **Step 5: Check the whole flow**
 
@@ -1858,6 +1860,17 @@ git commit -m "Show all five issues, drawn by the same code that mints them"
 - Modify: `app/sitemap.ts`
 - Modify: `data/agent-memory.md`
 - Modify: `CLAUDE.md`
+- Delete: `app/card/preview/` (the scratch harness, carried this far on purpose)
+
+- [ ] **Step 0: Delete the scratch harness**
+
+```bash
+git rm -r app/card/preview
+```
+
+Task 4 originally scheduled this for Task 7. It was deferred to here because the preview was the only surface showing all five issues side by side, and the owner used it for visual passes throughout the build. Task 8's issue gallery now does that job on a real page, so the scratch route has nothing left to offer.
+
+Confirm nothing references it: `grep -rn "card/preview" app components lib || echo clean`
 
 - [ ] **Step 1: Add the route to the command palette**
 
@@ -2128,6 +2141,85 @@ All four clean.
 git add lib/card/engine app/card/preview/page.tsx lib/card/types.ts
 git commit -m "Vendor the Ink Folio engine, and retire the lean generator"
 ```
+
+---
+
+## Task 11: Make each issue collectible
+
+Raised by the owner after seeing the five real cards side by side. Four changes, all in `lib/card/ticket.ts` unless stated.
+
+**Files:**
+- Modify: `lib/card/ticket.ts`, `lib/card/ticket.test.ts`
+- Modify: `components/card/CardMinter.tsx` and `components/card/IssueGallery.tsx` if they exist yet (Tasks 7 and 8); if not, Task 7 must load the mark, see change 4.
+
+### Change 1: a subtle stock per issue
+
+The five cards currently differ only by their sticker. Give each its own paper, kept low enough in chroma that it reads as a different batch of stock rather than a coloured card:
+
+```ts
+const STOCK: Record<IssueKey, string> = {
+  definitive:    "#f6f1e5",  // the base cream, unchanged
+  commemorative: "#f4eede",  // a touch deeper, a warmer batch
+  firstDay:      "#eef1ef",  // barely cool, the way first day covers lean
+  misprint:      "#f7efe8",  // barely pink, an over-inked run
+  inverted:      "#17161a",  // unchanged
+};
+```
+
+Replace `LIGHT.stock` usage with a lookup on `data.issue.key`. Everything else in `LIGHT` stays shared.
+
+While here, fix an inconsistency the Task 6 fix round surfaced: `LIGHT.stamp` is `#fdfaf2` but `DARK.stamp` was set to `#f6f1e5`, so the Inverted card's stamp is a slightly different paper from every other card's. The stamp is its own sheet, stuck onto whatever the card is made of, so it should be the same paper on all five. Set `DARK.stamp` to `#fdfaf2` and leave `LIGHT.stamp` alone. The per-issue tint in `STOCK` above applies to the CARD, never to the stamp.
+
+### Change 2: the Misprint actually misregisters in colour
+
+This is the one that makes the card worth showing someone. A real plate misregistration separates the colour channels, which is why misprints are collectible in the first place. The card currently double-strikes in mono at 0.2 alpha, which just looks blurry.
+
+Replace that with two offset ghosts in process colours, drawn UNDER the true portrait:
+
+```ts
+// cyan ghost, up and left
+ctx.save();
+ctx.globalAlpha = 0.22;
+ctx.globalCompositeOperation = "multiply";
+ctx.translate(-w * 0.0035, -h * 0.0016);
+engine.portrait(data.visitorId, pBox);   // engine paints its own ink; the tint comes from the layer below
+ctx.restore();
+```
+
+The engine paints in its own near-black ink, so a straight translate gives a grey ghost, not a cyan one. To tint it, draw each ghost into the same context with a composite fill on top of it, clipped to the stamp: after drawing the ghost, `ctx.save()`, clip to the stamp rect, set `globalCompositeOperation = "source-atop"`, fill the stamp rect with `rgba(0,174,239,0.18)` for cyan, `restore()`. Repeat for a magenta ghost offset down and right with `rgba(236,0,140,0.16)`.
+
+If `source-atop` proves unworkable against the stub in tests, fall back to drawing the ghosts at low alpha and accept grey, and say so in the report rather than shipping something that looks wrong. Do not invent a third approach without saying so.
+
+### Change 3: the First day cachet
+
+Real first day covers carry a coloured cachet. Draw the `FIRST DAY OF ISSUE` legend and the cancel's two rings in a deep teal `#1f6f78` instead of `P.ink`, and rule a thin teal line under the legend. Nothing else changes colour. On the Inverted card this does not apply, since Inverted and First day are different issues and cannot co-occur.
+
+### Change 4: branding at the top, and the rarity made legible
+
+The card has a bare band above the stamp. The owner objected to that band earlier when it held nothing; it now gets the brand mark, which is what it was missing.
+
+- Add an optional `mark: HTMLImageElement | null` to the assets parameter `drawTicket` already takes for fonts. When present, draw it at the top left at `w * 0.052` square, with `SHASHWA7.IN` beside it in the mono face, tracked, at `w * 0.019`, in `P.faint`. When null, draw the wordmark alone. **Keep `drawTicket` synchronous**: the caller loads the image and passes it in. Do not add an `await` inside the draw path, because the scale test and the gallery both depend on it staying synchronous.
+- Shift the stamp and everything below it down by `h * 0.038` to make room. Every offset is already a fraction of `h`, so this is one constant if the values are expressed relative to a single `TOP` origin. Introduce that origin rather than editing a dozen numbers by hand.
+- Remove `shashwa7.in` from the stamp's foot, since it now appears at the top. Keep `one visit` there, centred.
+- **The rarity share is currently unreadable**: `w * 0.018` in `veryFaint`. It is the single most interesting fact on the card. Render it at `w * 0.026` in `P.ink`, with a hairline rule above it spanning the right column, so it reads as a figure rather than a footnote.
+
+Callers (`CardMinter`, `IssueGallery`) load the mark once with `new Image()`, set `src = "/brand-mark.png"`, and draw only after `decode()` resolves, alongside the existing font wait.
+
+### Tests
+
+Extend `lib/card/ticket.test.ts`:
+
+1. Each of the five issues fills its own stock colour: assert the first recorded `fillStyle` matches the `STOCK` entry for that issue, and that the five values are distinct.
+2. Misprint issues strictly more drawing calls than Definitive for the same id, and records at least one composite-operation assignment. Definitive records none.
+3. First day records the teal value in its recorded `strokeStyle` or `fillStyle` assignments; Definitive records none.
+4. The wordmark is drawn: `SHASHWA7.IN` appears in recorded `fillText` calls at the top of the card, and does NOT appear in the stamp-foot position any more.
+5. `drawTicket` still runs to completion with `mark: null`, drawing the wordmark and no image.
+6. The share text is drawn at the larger size: assert the recorded `font` assignment preceding the share `fillText` is the larger of the two stub sizes.
+
+Then re-run the scale test unchanged. It must still pass: every value introduced here is a fraction of `w` or `h`. If it fails, a literal pixel crept in.
+
+- [ ] Run `npm test`, `npm run lint`, `npm run build`, `npx tsc --noEmit`. All clean.
+- [ ] Commit.
 
 ---
 
