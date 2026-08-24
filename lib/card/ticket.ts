@@ -1,6 +1,7 @@
 import { hashWith, mulberry32, rr } from "@/lib/card/seed";
 import { createEngine } from "@/lib/card/engine/portrait-engine";
 import { drawSticker } from "@/lib/card/sticker";
+import { pipTotal } from "@/lib/card/dice";
 import type { CardData, IssueKey } from "@/lib/card/types";
 
 export const CARD_W = 1200;
@@ -473,22 +474,34 @@ export function drawTicket(
   ctx.fillStyle = data.issue.inverted ? P.cancel : P.ink;
   ctx.fillText(data.issue.name, Rt, h - h * 0.107);
 
-  // Was w * 0.018 in P.veryFaint, the palest tone on the card: the place a
-  // visitor is minting from read as an afterthought next to the share
-  // figure beside it, which is w * 0.026 in P.ink. Bumped one size and one
-  // tone up so it is clearly legible, while staying a step below the
-  // serial/issue values above it so it does not compete with them. At the
-  // longest realistic origin ("BENGALURU, IN · 23 AUG 2026", 27 characters)
-  // this still ends well short of the share row's reserved width (maxIssue,
-  // below), so no shrink-to-fit is needed here.
+  // The place a visitor is minting from, and the roll that decided their
+  // issue, on one row.
+  //
+  // The date used to sit on this line too. It left when the roll arrived:
+  // the postmark cancel directly above already prints day, month and year,
+  // so it was a duplicate, and keeping all three ran the row to 39
+  // characters, which shrank it well below the size the neighbouring stub
+  // values read at. The no-origin branch keeps it, because on that card
+  // nothing else on this row would carry a date.
+  //
+  // shrinkToFit is a guard, not the normal case: at a typical origin this
+  // settles at the full w * 0.022 and never engages. It exists because city
+  // names have no length limit and this row now has a right-hand neighbour
+  // (the odds column) it must not run under.
   ctx.fillStyle = P.faint;
-  ctx.font = `${w * 0.022}px ${fonts.mono}`;
   ctx.textAlign = "left";
-  if (data.origin) {
-    tracked(ctx, `${data.origin} · ${data.date}`.toUpperCase(), L, h - h * 0.042, w * 0.0028);
-  } else {
-    tracked(ctx, data.date.toUpperCase(), L, h - h * 0.042, w * 0.0028);
-  }
+  const stubLine = (
+    data.origin ? `${data.origin} · ROLLED ${pipTotal(data.roll)}`
+                : `${data.date} · ROLLED ${pipTotal(data.roll)}`
+  ).toUpperCase();
+  // tracked() adds its spacing outside measureText, so the budget handed to
+  // shrinkToFit has to have that spacing taken out of it first or the line
+  // fits on paper and overruns on screen.
+  const stubSpacing = w * 0.0028;
+  const stubBudget =
+    Rt - maxIssue - L - w * 0.02 - Array.from(stubLine).length * stubSpacing;
+  shrinkToFit(ctx, stubLine, fonts.mono, w * 0.022, w * 0.014, w * 0.0006, stubBudget);
+  tracked(ctx, stubLine, L, h - h * 0.042, stubSpacing);
 
   // the odds: the single most interesting fact on the card, so it gets a
   // hairline rule of its own and a size that actually reads, rather than

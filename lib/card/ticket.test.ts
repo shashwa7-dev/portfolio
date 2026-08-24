@@ -822,5 +822,87 @@ describe("drawTicket", () => {
       expect(sizes[i], `issue ${KEYS[i]} vs ${KEYS[0]}`).toBeCloseTo(sizes[0], 5);
     }
   });
+
+  it("prints the roll total on the origin line", () => {
+    const { ctx, texts } = makeStubCtx();
+    const data = { ...cardFor("roll-line", "definitive"), roll: FIXTURE_ROLL };
+    drawTicket(ctx, data, CARD_W, CARD_H, FONTS);
+
+    const row = wordAt(texts, CARD_H - CARD_H * 0.042);
+    expect(row).toContain("BENGALURU, IN");
+    expect(row).toContain("ROLLED 21");
+  });
+
+  it("drops the date from the origin line, since the postmark above already prints it", () => {
+    const { ctx, texts } = makeStubCtx();
+    drawTicket(ctx, cardFor("roll-nodate", "definitive"), CARD_W, CARD_H, FONTS);
+
+    const row = wordAt(texts, CARD_H - CARD_H * 0.042);
+    expect(row).toContain("BENGALURU, IN");
+    expect(row).not.toContain("23 AUG 2026");
+  });
+
+  it("keeps the date on the origin line when there is no origin to print", () => {
+    const { ctx, texts } = makeStubCtx();
+    const data = { ...cardFor("roll-noorigin", "definitive"), origin: null };
+    drawTicket(ctx, data, CARD_W, CARD_H, FONTS);
+
+    const row = wordAt(texts, CARD_H - CARD_H * 0.042);
+    expect(row).toContain("23 AUG 2026");
+    expect(row).toContain("ROLLED 21");
+  });
+
+  it("prints the real total, not the fixture's", () => {
+    const { ctx, texts } = makeStubCtx();
+    const sixes: RollSet = [
+      [6, 6],
+      [6, 6],
+      [6, 6],
+    ];
+    drawTicket(
+      ctx,
+      { ...cardFor("roll-perfect", "inverted"), roll: sixes },
+      CARD_W,
+      CARD_H,
+      FONTS
+    );
+
+    expect(wordAt(texts, CARD_H - CARD_H * 0.042)).toContain("ROLLED 36");
+  });
+
+  it("shrinks the origin line rather than running it under the odds column", () => {
+    // A long city plus the roll suffix is the case that overruns. The
+    // hairline rule above the odds row starts at Rt - maxIssue, so the
+    // origin line must end before that.
+    const { ctx, texts, calls } = makeStubCtx();
+    const data = { ...cardFor("roll-long", "definitive"), origin: "Sankt-Peterburg, RU" };
+    drawTicket(ctx, data, CARD_W, CARD_H, FONTS);
+
+    const y = CARD_H - CARD_H * 0.042;
+    const originChars = texts.filter((t) => Math.abs(t.y - y) < 0.01 && t.x < CARD_W * 0.5);
+    expect(originChars.length).toBeGreaterThan(0);
+
+    // Recover the font size settled on before the origin run, the same way
+    // the share-row and long-name tests above do.
+    const firstCall = `fillText(${originChars[0].x},${originChars[0].y})`;
+    const index = calls.indexOf(firstCall);
+    let originFont: string | undefined;
+    for (let i = index; i >= 0; i--) {
+      if (calls[i].startsWith("font=")) {
+        originFont = calls[i].slice("font=".length);
+        break;
+      }
+    }
+    expect(originFont).toBeDefined();
+    const px = parseFloat(originFont!);
+
+    // The stub models measureText as chars * px * 0.56; tracked() adds
+    // w * 0.0028 of spacing per character on top of that.
+    const text = "SANKT-PETERBURG, RU · ROLLED 21";
+    const width = Array.from(text).length * (px * 0.56 + CARD_W * 0.0028);
+    const L = CARD_W * 0.097;
+    const oddsColumnLeft = CARD_W * 0.903 - CARD_W * 0.36;
+    expect(L + width).toBeLessThanOrEqual(oddsColumnLeft);
+  });
 });
 
