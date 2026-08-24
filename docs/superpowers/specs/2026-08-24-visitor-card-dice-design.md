@@ -78,12 +78,16 @@ outcomes.
 ### 3.2 The perfect roll
 
 A clean 36, double-six three times running, is 1 in 46,656. It unlocks Inverted like
-any other 34 or above, and additionally prints a `PERFECT` overprint that no other
-black card carries.
+any other 34 or above.
 
 It is deliberately not the only door to Inverted. At roughly four seconds a set, 1 in
 46,656 is about fifty hours of clicking, and a black card no real visitor can reach
 is dead content in the gallery.
+
+**It gets no special card treatment in v1.** `isPerfect()` exists in `dice.ts` and is
+tested, and the reveal announcement says so out loud, but the printed card is an
+ordinary Inverted. Building a bespoke plate for an outcome nobody reaches is effort
+spent where it cannot be seen. See section 13.
 
 ## 4. Odds are stated per roll, never as a share of cards
 
@@ -205,12 +209,15 @@ and in mono. The card records it; this announces it.
 A visitor grinding for 34 or better would otherwise sit through 1.7 seconds of
 backdrop every attempt.
 
+One rule, no exceptions:
+
 - **First completed set of a session:** full sequence.
 - **Every re-roll after that:** short reveal. No backdrop, no blur, no spring. The
   print reveal, the 40ms beat, then the issue stamp. 1,160ms.
-- **Exception:** a result of `T >= 26` (First day or better) always earns the full
-  sequence, on any roll. Roughly one roll in seven, which is the frequency worth a
-  moment.
+
+A tempting second rule ("but a rare result always earns the full ceremony") is
+deliberately not in v1. It is one more branch to hold, and the short reveal is not a
+punishment.
 
 This follows the reasoning already in `CardMinter.tsx`, where redraws after the first
 reveal skip to the finished frame because reprinting on every keystroke "would be
@@ -250,21 +257,38 @@ the brand row).
 | Issue name | already drawn in the stub |
 | Origin and date | already drawn |
 | Odds line | already drawn, **reworded** to per roll |
-| **The roll** | **new** |
-| **`PERFECT` overprint** | **new**, only on a clean 36 |
+| **The roll** | **new**, as text on the origin line |
 
 ### 7.1 Printing the roll
 
-Three pairs of pips drawn as circles, then the total. Circles rather than glyphs, for
-the same font-portability reason as the UI dice.
+The roll rides on the origin line that already exists in the stub:
 
-It goes in the band between the tear line (`y = h - 0.218h`) and the `SERIAL` label
-(`y = h - 0.152h`), which is about 99px of clear height at export size and is
-currently empty. Left-aligned to `L`, so it shares the serial's column edge.
+```
+BENGALURU, IN · 24 AUG 2026 · ROLLED 27
+```
 
-Constraints: it must not collide with the tear line above or the stub label below, and
-it must pass through `shrinkToFit` like every other value on the card rather than
-assuming it fits.
+**This is the single most important simplification in the spec.** `ticket.ts` tests
+assert positionally against a recording stub context, indexing draw calls by ordinal
+("the Nth `fillStyle` assignment"). Adding drawn pips would insert calls mid-routine
+and shift every index after them across ~1,100 lines of assertions. Changing the text
+inside an existing `tracked()` call shifts nothing.
+
+So `ticket.ts` changes in exactly two places, both of them strings:
+
+1. the origin line gains ` · ROLLED {total}`
+2. `{share}% OF CARDS` becomes `{odds} PER ROLL`
+
+**Width risk.** The source comment on that line reasons that at the longest realistic
+origin, "BENGALURU, IN · 23 AUG 2026" at 27 characters, it "still ends well short of
+the share row's reserved width". The suffix adds up to 12 characters and that headroom
+was never measured against 39. The line must therefore be routed through
+`shrinkToFit` against the share row's reserved width (`maxIssue`), which is what every
+other value on the card that can overflow already does. If a shrink turns out to be
+visible at realistic origins, drop the date from this line instead: the postmark
+directly above already prints it.
+
+Pips drawn as circles are the better artefact and are deferred, not rejected. See
+section 13.
 
 ### 7.2 The framing line does not print on the card
 
@@ -356,7 +380,7 @@ No em-dashes in any of it, per CLAUDE.md.
 | `components/card/CardMinter.tsx` | Mint button becomes `<DiceRoller>`. `buildData()` sources the issue from the roll. Owns the reveal choreography. Fonts, mark, download untouched. |
 | `lib/card/issues.ts` | delete `issueFrom`. retire `share`, see below. add the total range per issue. |
 | `lib/card/types.ts` | `CardData` gains the roll. `Issue` swaps `share` for `chance`, `odds` and `range`. |
-| `lib/card/ticket.ts` | print the roll, the `PERFECT` overprint, reword the odds line. |
+| `lib/card/ticket.ts` | two string edits only: the origin line gains the roll, the odds line is reworded. No new draw calls. |
 | `lib/motionVariants.ts` | new tokens per section 8. |
 | `app/globals.css` | `--duration-throw` with its own justification comment. |
 | `components/card/IssueGallery.tsx` | per-roll odds and the total range per specimen. |
@@ -373,15 +397,27 @@ No em-dashes in any of it, per CLAUDE.md.
 - **`lib/card/revealSequence.test.ts`** asserts both timelines total under 2,000ms and
   that no stage starts before the one it depends on.
 - `issues.test.ts` updated for the removal of `issueFrom`.
-- `ticket.test.ts` and `ticket.scale.test.ts` updated for the roll row, the `PERFECT`
-  overprint, and the reworded odds line. These assert positionally against a recording
-  stub context ("the Nth `fillStyle` assignment"), so inserting draw calls mid-routine
-  shifts indices. This is the largest single chunk of work in the change.
+- `ticket.test.ts` and `ticket.scale.test.ts` updated for the two changed strings, plus
+  a new case covering the shrink-to-fit on a long origin. Because no draw calls are
+  added, no positional index moves, and every other assertion in those files stands
+  unchanged. Verify that claim by running them before touching anything else.
 - Gates: `npm test`, `npm run build`, `npm run lint`, and
   `./scripts/verify-simplification.sh` exiting 0.
 - No browser or dev-server visual checks. Those are verified by the owner.
 
-## 13. Out of scope
+## 13. Deferred to a second pass
+
+Cut from v1 to keep the first rollout small. Each is a real improvement, and each was
+cut because its cost lands mostly in `ticket.ts`'s positional test suite while its
+value lands where few people look.
+
+| Deferred | Why it can wait |
+|---|---|
+| The roll drawn as pips rather than text | The artefact is nicer, but it is the one change that shifts every canvas assertion index. Worth doing on its own, not bundled with the feature that introduces it. |
+| The `PERFECT` overprint on a clean 36 | 1 in 46,656. `isPerfect()` ships and is tested, so the data is there the day the plate is drawn. |
+| A rare result always earning the full ceremony | One more branch in the reveal for a rule nobody asked to have explained to them. |
+
+## 14. Out of scope
 
 - Capping the number of rolls. Rolls are unlimited by decision, and the odds wording
   changes to stay honest about it.
