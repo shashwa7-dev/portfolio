@@ -9,8 +9,16 @@ export type Issue = {
   key: IssueKey;
   /** Shown on the card and in the gallery. */
   name: string;
-  /** Percentage of all cards. The five sum to 100. */
-  share: number;
+  /**
+   * Exact per-roll probability as a percentage, e.g. 12.495713. Comes from
+   * DICE_BANDS and is asserted against an exhaustive enumeration of every
+   * possible roll. Tested, never displayed: render `label` instead.
+   */
+  chance: number;
+  /** The rounded string that renders, e.g. "12.5%". */
+  label: string;
+  /** The inclusive pip-total band that produces this issue. */
+  range: readonly [number, number];
   /** Five gradient stops for the sticker, or null for the issue that has none. */
   sticker: readonly string[] | null;
   /** Only the rarest issue flips the stock. */
@@ -29,6 +37,12 @@ export type CardData = {
   city: string | null;
   /** "23 Aug 2026" */
   date: string;
+  /**
+   * The three throws that produced this issue. Printed on the card so a
+   * downloaded PNG records how it was earned and can be checked against
+   * the ladder. Not persisted anywhere: a re-roll produces a new set.
+   */
+  roll: RollSet;
 };
 
 /** One face of one die. */

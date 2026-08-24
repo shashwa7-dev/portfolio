@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { drawTicket, CARD_W, CARD_H, STOCK } from "./ticket";
 import { ISSUES } from "./issues";
 import { serialFrom } from "./seed";
-import type { CardData, IssueKey } from "./types";
+import type { CardData, IssueKey, RollSet } from "./types";
 
 /**
  * Same recording-stub shape as lib/card/engine/engine.test.ts and
@@ -140,6 +140,16 @@ function wordAt(texts: { text: string; x: number; y: number }[], y: number, tol 
 
 const FONTS = { hand: "cursive", sticker: "system-ui, sans-serif", mono: "ui-monospace, monospace" };
 
+/* A fixture roll totalling 21. Deliberately independent of the issue key
+   the factory is asked for: drawTicket never derives the issue from the
+   roll, it prints both, so a fixture is free to pair any roll with any
+   issue. The gallery specimens do the same thing for the same reason. */
+const FIXTURE_ROLL: RollSet = [
+  [3, 4],
+  [5, 2],
+  [6, 1],
+];
+
 function cardFor(id: string, key: IssueKey): CardData {
   return {
     visitorId: id,
@@ -149,12 +159,39 @@ function cardFor(id: string, key: IssueKey): CardData {
     origin: "Bengaluru, IN",
     city: "Bengaluru",
     date: "23 Aug 2026",
+    roll: FIXTURE_ROLL,
   };
 }
 
 const KEYS: IssueKey[] = ["definitive", "commemorative", "firstDay", "misprint", "inverted"];
 
 describe("drawTicket", () => {
+  it("prints the odds per roll, not as a share of cards", () => {
+    const { ctx, texts } = makeStubCtx();
+    drawTicket(ctx, cardFor("odds-line", "firstDay"), CARD_W, CARD_H, FONTS);
+
+    // The origin line and the odds line are drawn at the same y, left and
+    // right aligned, so wordAt() returns both concatenated in x order.
+    const row = wordAt(texts, CARD_H - CARD_H * 0.042);
+    expect(row).toContain("12.5% PER ROLL");
+    expect(row).not.toContain("OF CARDS");
+  });
+
+  it("keeps the odds line inside the column reserved for it", () => {
+    // "0.06% PER ROLL" is the longest of the five. maxIssue (w * 0.36) is
+    // the reserved width, and the hairline rule above the row is drawn
+    // from exactly Rt - maxIssue, so overrunning it would visibly cross
+    // the rule's left end.
+    const { ctx, texts } = makeStubCtx();
+    drawTicket(ctx, cardFor("odds-width", "inverted"), CARD_W, CARD_H, FONTS);
+
+    const y = CARD_H - CARD_H * 0.042;
+    const oddsChars = texts.filter((t) => Math.abs(t.y - y) < 0.01 && t.x > CARD_W * 0.5);
+    expect(oddsChars.length).toBeGreaterThan(0);
+    const leftmost = Math.min(...oddsChars.map((t) => t.x));
+    expect(leftmost).toBeGreaterThanOrEqual(CARD_W * 0.903 - CARD_W * 0.36);
+  });
+
   it("draws every issue without throwing", () => {
     for (const key of KEYS) {
       const { ctx } = makeStubCtx();

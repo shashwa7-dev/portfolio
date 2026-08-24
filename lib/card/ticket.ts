@@ -490,9 +490,13 @@ export function drawTicket(
     tracked(ctx, data.date.toUpperCase(), L, h - h * 0.042, w * 0.0028);
   }
 
-  // the rarity share: the single most interesting fact on the card, so it
-  // gets a hairline rule of its own and a size that actually reads, rather
-  // than the footnote-sized veryFaint line every other stub value uses.
+  // the odds: the single most interesting fact on the card, so it gets a
+  // hairline rule of its own and a size that actually reads, rather than
+  // the footnote-sized veryFaint line every other stub value uses.
+  //
+  // Stated per roll, not as a share of all cards. Rolls are unlimited, so
+  // "0.06% of cards" would be false: it is the chance of any one roll
+  // landing here, and a patient visitor can hold a black card eventually.
   const shareY = h - h * 0.042;
   ctx.save();
   ctx.globalAlpha = 0.35;
@@ -506,7 +510,7 @@ export function drawTicket(
   ctx.fillStyle = P.ink;
   ctx.font = `${w * 0.026}px ${fonts.mono}`;
   ctx.textAlign = "right";
-  tracked(ctx, `${data.issue.share}% OF CARDS`, Rt, shareY, w * 0.0028, "right");
+  tracked(ctx, `${data.issue.label} PER ROLL`, Rt, shareY, w * 0.0028, "right");
 
   // the sticker, applied last so it sits over the stamp
   drawSticker(

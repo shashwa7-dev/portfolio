@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { drawTicket, CARD_W, CARD_H } from "./ticket";
 import { ISSUES } from "./issues";
 import { serialFrom } from "./seed";
-import type { CardData, IssueKey } from "./types";
+import type { CardData, IssueKey, RollSet } from "./types";
 
 /**
  * A mutable flag, shared between the vi.mock factory below and
@@ -242,6 +242,16 @@ const FONTS = {
   mark: {} as unknown as HTMLImageElement,
 };
 
+/* A fixture roll totalling 21. Deliberately independent of the issue key
+   the factory is asked for: drawTicket never derives the issue from the
+   roll, it prints both, so a fixture is free to pair any roll with any
+   issue. The gallery specimens do the same thing for the same reason. */
+const FIXTURE_ROLL: RollSet = [
+  [3, 4],
+  [5, 2],
+  [6, 1],
+];
+
 function cardFor(id: string, key: IssueKey): CardData {
   return {
     visitorId: id,
@@ -251,6 +261,7 @@ function cardFor(id: string, key: IssueKey): CardData {
     origin: "Bengaluru, IN",
     city: "Bengaluru",
     date: "23 Aug 2026",
+    roll: FIXTURE_ROLL,
   };
 }
 

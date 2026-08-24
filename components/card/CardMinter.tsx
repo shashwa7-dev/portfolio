@@ -1,12 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ISSUES, issueFrom } from "@/lib/card/issues";
+import { ISSUES } from "@/lib/card/issues";
+import { issueFromTotal, pipTotal, rollPair } from "@/lib/card/dice";
 import { serialFrom } from "@/lib/card/seed";
 import { drawTicket, CARD_W, CARD_H } from "@/lib/card/ticket";
 import { CARD_FONTS } from "@/lib/card/fonts";
 import { startPrintReveal, parsePrintDuration, prefersReducedMotion } from "@/lib/card/reveal";
-import type { CardData } from "@/lib/card/types";
+import type { CardData, RollSet } from "@/lib/card/types";
 
 const KEY = "shashwa7:visitor-id";
 const MARK_SRC = "/brand-mark.png";
@@ -35,6 +36,14 @@ export default function CardMinter({
   // (see the note above the <input> below) can disable itself for that
   // stretch instead of racing a redraw against the reveal.
   const [revealing, setRevealing] = useState(false);
+  /* INTERIM (Task 5 replaces this with <DiceRoller>): one silent set of
+     three throws made on mount, so the card still renders while the dice UI
+     is being built. Nothing about this is user-visible yet. */
+  const [roll] = useState<RollSet>(() => [
+    rollPair(Math.random),
+    rollPair(Math.random),
+    rollPair(Math.random),
+  ]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const markRef = useRef<HTMLImageElement | null>(null);
   // The reveal plays once, on the first draw after mint. Edits to the name
@@ -92,12 +101,13 @@ export default function CardMinter({
       visitorId,
       name,
       serial: serialFrom(visitorId),
-      issue: ISSUES[issueFrom(visitorId)],
+      issue: ISSUES[issueFromTotal(pipTotal(roll))],
+      roll,
       origin,
       city,
       date: today(),
     };
-  }, [visitorId, name, origin, city]);
+  }, [visitorId, name, origin, city, roll]);
 
   /* The one moment the rarity system exists for: on the first draw after
      mint, the finished card is composited onto the visible canvas top to

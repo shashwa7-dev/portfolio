@@ -5,7 +5,7 @@ import { ISSUES } from "@/lib/card/issues";
 import { serialFrom } from "@/lib/card/seed";
 import { drawTicket, CARD_W, CARD_H } from "@/lib/card/ticket";
 import { CARD_FONTS } from "@/lib/card/fonts";
-import type { IssueKey } from "@/lib/card/types";
+import type { IssueKey, RollSet } from "@/lib/card/types";
 
 const MARK_SRC = "/brand-mark.png";
 
@@ -14,6 +14,15 @@ const MARK_SRC = "/brand-mark.png";
    This is the same drawTicket the mint button calls: there is no separate
    thumbnail routine, so the gallery cannot advertise a card the generator
    does not actually produce. */
+/* One fixed roll for every specimen. The gallery is showing what each issue
+   looks like, not how it was won, and a random roll here would make the six
+   cards differ between visitors for no reason. */
+const SPECIMEN_ROLL: RollSet = [
+  [3, 4],
+  [5, 2],
+  [6, 1],
+];
+
 const SPECIMENS: { key: IssueKey; id: string; name: string; city: string; origin: string }[] = [
   { key: "definitive", id: "specimen-definitive", name: "Maya", city: "Lisbon", origin: "Lisbon, PT" },
   { key: "commemorative", id: "specimen-commemorative", name: "Jonas", city: "Berlin", origin: "Berlin, DE" },
@@ -49,8 +58,11 @@ function Specimen({
         name: spec.name,
         serial: serialFrom(spec.id),
         // The specimen shows its own issue, not the one its id happens to
-        // roll: ISSUES[spec.key], never issueFrom(spec.id).
+        // roll: ISSUES[spec.key], never issueFromTotal(...). The roll below
+        // is a fixed prop for the same reason, so the six specimens are
+        // identical for every visitor.
         issue: ISSUES[spec.key],
+        roll: SPECIMEN_ROLL,
         origin: spec.origin,
         city: spec.city,
         date: "23 Aug 2026",
@@ -74,7 +86,7 @@ function Specimen({
         {issue.name}
       </p>
       <p className="font-mono text-2xs uppercase tracking-label text-subtle">
-        {issue.share}% of cards
+        {issue.label} per roll
       </p>
     </li>
   );

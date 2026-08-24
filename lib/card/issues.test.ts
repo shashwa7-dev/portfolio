@@ -1,10 +1,32 @@
 import { describe, it, expect } from "vitest";
-import { ISSUES, issueFrom, type IssueKey } from "./issues";
+import { ISSUES } from "./issues";
+import { DICE_BANDS } from "./dice";
+import type { IssueKey } from "./types";
+
+const KEYS: IssueKey[] = ["definitive", "commemorative", "firstDay", "misprint", "inverted"];
 
 describe("ISSUES", () => {
-  it("shares sum to 100", () => {
-    const total = Object.values(ISSUES).reduce((n, i) => n + i.share, 0);
-    expect(total).toBeCloseTo(100, 6);
+  it("chances sum to 100", () => {
+    const total = Object.values(ISSUES).reduce((n, i) => n + i.chance, 0);
+    expect(total).toBeCloseTo(100, 5);
+  });
+
+  it("takes chance, label and range from the dice bands, not its own copy", () => {
+    /* The point of this test is that there is exactly one place a rarity
+       number can be wrong. If someone hand-edits a percentage into
+       issues.ts, this fails. */
+    for (const key of KEYS) {
+      const band = DICE_BANDS.find((b) => b.key === key)!;
+      expect(ISSUES[key].chance, key).toBe(band.chance);
+      expect(ISSUES[key].label, key).toBe(band.label);
+      expect(ISSUES[key].range, key).toEqual([band.min, band.max]);
+    }
+  });
+
+  it("no longer carries a share of cards, which stopped being true when rolls became unlimited", () => {
+    for (const issue of Object.values(ISSUES)) {
+      expect(issue).not.toHaveProperty("share");
+    }
   });
 
   it("gives every issue but Definitive a five stop gradient", () => {
@@ -19,42 +41,17 @@ describe("ISSUES", () => {
     expect(inverting).toEqual(["inverted"]);
   });
 
-  it("has no em-dash in any display name", () => {
+  it("has no em-dash in any display name or label", () => {
     for (const issue of Object.values(ISSUES)) {
       expect(issue.name).not.toContain("—");
+      expect(issue.label).not.toContain("—");
     }
   });
-});
 
-describe("issueFrom", () => {
-  it("is stable for the same id", () => {
-    expect(issueFrom("abc-123")).toBe(issueFrom("abc-123"));
-  });
-
-  it("lands within a point of the declared shares over 100k ids", () => {
-    const counts: Record<string, number> = {
-      definitive: 0, commemorative: 0, firstDay: 0, misprint: 0, inverted: 0,
-    };
-    const N = 100_000;
-    for (let i = 0; i < N; i++) counts[issueFrom(`visitor-${i}`)]++;
-
-    expect((counts.definitive / N) * 100).toBeGreaterThan(59);
-    expect((counts.definitive / N) * 100).toBeLessThan(61);
-    expect((counts.commemorative / N) * 100).toBeGreaterThan(26);
-    expect((counts.commemorative / N) * 100).toBeLessThan(28);
-    expect((counts.firstDay / N) * 100).toBeGreaterThan(11);
-    expect((counts.firstDay / N) * 100).toBeLessThan(13);
-    // 1% of 100k is 1000, 0.1% is 100. Wide bands: this is checking the
-    // bands are wired to the right issues, not that the PRNG is perfect.
-    expect(counts.misprint).toBeGreaterThan(700);
-    expect(counts.misprint).toBeLessThan(1300);
-    expect(counts.inverted).toBeGreaterThan(50);
-    expect(counts.inverted).toBeLessThan(170);
-  });
-
-  it("can actually reach the rarest issue", () => {
-    const seen = new Set<IssueKey>();
-    for (let i = 0; i < 100_000; i++) seen.add(issueFrom(`v${i}`));
-    expect(seen.size).toBe(5);
+  it("orders the ranges so a higher total is never a commoner issue", () => {
+    const byMin = [...Object.values(ISSUES)].sort((a, b) => a.range[0] - b.range[0]);
+    for (let i = 1; i < byMin.length; i++) {
+      expect(byMin[i].chance).toBeLessThan(byMin[i - 1].chance);
+    }
   });
 });
