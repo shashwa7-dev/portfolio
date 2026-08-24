@@ -78,26 +78,32 @@ export default function DiceRoller({
     const result = rollPair(Math.random);
     const reduced = prefersReducedMotion(window);
 
-    if (!reduced) {
-      /* The faces churn while the dice are in the air so the result cannot
-         be read mid-flight. It is cosmetic: `result` was decided before the
-         animation started and nothing here can change it. Wrapped in
-         try/finally: if `controls.start` ever rejects instead of resolving,
-         the interval must still clear and the button must still re-enable,
-         or a single failed throw wedges it shut for good. */
-      flickerRef.current = setInterval(() => setFace([randomDie(), randomDie()]), 60);
-      try {
-        await controls.start("airborne");
-      } finally {
-        if (flickerRef.current) clearInterval(flickerRef.current);
-        flickerRef.current = null;
-        controls.set("rest");
+    try {
+      if (!reduced) {
+        /* The faces churn while the dice are in the air so the result cannot
+           be read mid-flight. It is cosmetic: `result` was decided before
+           the animation started and nothing here can change it. */
+        flickerRef.current = setInterval(() => setFace([randomDie(), randomDie()]), 60);
+        try {
+          await controls.start("airborne");
+        } catch {
+          /* A failed tumble must not cost the visitor their roll: the pair
+             was decided before the animation started, so fall through and
+             record it unanimated rather than dropping it. */
+        } finally {
+          if (flickerRef.current) clearInterval(flickerRef.current);
+          flickerRef.current = null;
+          controls.set("rest");
+        }
       }
-    }
 
-    setFace(result);
-    setRolls((prev) => [...prev, result]);
-    setThrowing(false);
+      setFace(result);
+      setRolls((prev) => [...prev, result]);
+    } finally {
+      /* Unconditional: a throw anywhere above must never leave the button
+         disabled, since `throwing` is what gates it. */
+      setThrowing(false);
+    }
   }, [controls, rolls.length, throwing]);
 
   /* The handoff waits for a separate commit, and then a beat.
