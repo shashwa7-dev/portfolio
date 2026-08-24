@@ -212,3 +212,38 @@ export function diceThrowVariants(
 
 export const hoverLiftRotate = { scale: 1.02 } as const;
 export const tapPress = { scale: 0.97 } as const;
+
+// ──────────────────────────────────────────────────────────────────────
+// Dice toss (TossDice) — the reference "toss" skin. Its arc runs on the
+// Web Animations API (element.animate), not Framer Motion: per-keyframe
+// easing is the point, since a single curve cannot express a die rising
+// slower than it falls. lib/card/toss.ts turns these into keyframes; these
+// are just the tokens, kept here with every other easing/duration so a
+// component never pastes a literal cubic-bezier or interval number.
+// ──────────────────────────────────────────────────────────────────────
+
+/** `ease.out` in the string form the Web Animations API takes, since it
+ *  can't accept the array form Framer Motion wants. Used for the toss
+ *  button's press squash, which is ordinary UI feedback and gets the
+ *  app's one UI curve rather than a bespoke one. */
+function cssEase(curve: readonly [number, number, number, number]): string {
+  return `cubic-bezier(${curve.join(", ")})`;
+}
+
+export const TOSS_EASE = {
+  /** Eased out: leaves the dock fast, slows toward the apex. */
+  rise: "cubic-bezier(0.22, 0.9, 0.3, 1)",
+  /**
+   * Eased in: hangs, then drops hard. Deliberately not `ease.throw` above,
+   * which is a single symmetric curve for the cube's up-and-back bounce;
+   * this arc is asymmetric on purpose (rise and fall read differently),
+   * which is a shape one curve cannot hold, hence a second easing pair
+   * rather than reuse.
+   */
+  fall: "cubic-bezier(0.5, 0, 0.75, 0.4)",
+  /** The button's press squash. */
+  press: cssEase(ease.out),
+} as const;
+
+/** How often the shown faces shuffle while a die is airborne. */
+export const TOSS_SHUFFLE_MS = 55;
