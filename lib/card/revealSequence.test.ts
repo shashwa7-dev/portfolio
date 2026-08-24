@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   FULL_REVEAL,
   REVEAL_BUDGET_MS,
+  SETTLE_MS,
   SHORT_REVEAL,
   timelineTotal,
   type RevealTimeline,
@@ -75,5 +76,12 @@ describe("the short timeline is the cheap one", () => {
 
   it("finishes sooner than the full sequence", () => {
     expect(timelineTotal(SHORT_REVEAL)).toBeLessThan(timelineTotal(FULL_REVEAL));
+  });
+});
+
+describe("the settle before the reveal", () => {
+  it("holds the finished set long enough to read, without being part of the reveal budget", () => {
+    expect(SETTLE_MS).toBeGreaterThan(0);
+    expect(SETTLE_MS).toBeLessThan(REVEAL_BUDGET_MS);
   });
 });

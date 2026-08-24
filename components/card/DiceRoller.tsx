@@ -3,8 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useAnimationControls } from "motion/react";
 import { diceThrowVariants, tapPress } from "@/lib/motionVariants";
-import { pipTotal, rollPair } from "@/lib/card/dice";
+import { rollPair } from "@/lib/card/dice";
 import { prefersReducedMotion } from "@/lib/card/reveal";
+import { SETTLE_MS } from "@/lib/card/revealSequence";
 import type { Die, Roll, RollSet } from "@/lib/card/types";
 
 /** Pip layout per face, on a 3x3 grid indexed 0 to 8. */
@@ -80,21 +81,36 @@ export default function DiceRoller({
     if (!reduced) {
       /* The faces churn while the dice are in the air so the result cannot
          be read mid-flight. It is cosmetic: `result` was decided before the
-         animation started and nothing here can change it. */
+         animation started and nothing here can change it. Wrapped in
+         try/finally: if `controls.start` ever rejects instead of resolving,
+         the interval must still clear and the button must still re-enable,
+         or a single failed throw wedges it shut for good. */
       flickerRef.current = setInterval(() => setFace([randomDie(), randomDie()]), 60);
-      await controls.start("airborne");
-      if (flickerRef.current) clearInterval(flickerRef.current);
-      flickerRef.current = null;
-      controls.set("rest");
+      try {
+        await controls.start("airborne");
+      } finally {
+        if (flickerRef.current) clearInterval(flickerRef.current);
+        flickerRef.current = null;
+        controls.set("rest");
+      }
     }
 
     setFace(result);
-    const next = [...rolls, result];
-    setRolls(next);
+    setRolls((prev) => [...prev, result]);
     setThrowing(false);
+  }, [controls, rolls.length, throwing]);
 
-    if (next.length === 3) onComplete(next as unknown as RollSet);
-  }, [controls, onComplete, rolls, throwing]);
+  /* The handoff waits for a separate commit, and then a beat.
+     onComplete is the parent's setRoll: calling it inline batched the third
+     slot filling and this component unmounting into one React 18 commit, so
+     the finished set never painted and the total was never announced. */
+  useEffect(() => {
+    if (rolls.length !== 3) return;
+    const settle = setTimeout(() => {
+      onComplete([rolls[0], rolls[1], rolls[2]] as const);
+    }, SETTLE_MS);
+    return () => clearTimeout(settle);
+  }, [rolls, onComplete]);
 
   const runningTotal = rolls.reduce((n, [a, b]) => n + a + b, 0);
   const nextThrow = Math.min(rolls.length + 1, 3);

@@ -37,6 +37,20 @@ export type RevealTimeline = {
 /** The ceiling the whole sequence is designed against. */
 export const REVEAL_BUDGET_MS = 2000;
 
+/**
+ * How long the finished set stays on screen before the card takes over.
+ *
+ * The handoff cannot be immediate. onComplete is the parent's state setter,
+ * so calling it in the same tick as the third roll's own state updates lets
+ * React batch them into one commit: the filled third slot and the announced
+ * total are dropped without ever painting. This beat gives the landed dice
+ * a commit of their own and long enough to read.
+ *
+ * Like the 700ms throw, it sits before t = 0 and is outside REVEAL_BUDGET_MS,
+ * which measures the reveal from the dice coming to rest.
+ */
+export const SETTLE_MS = 500;
+
 /** How long the print reveal itself takes. Mirrors --duration-print. */
 const PRINT_MS = 900;
 
