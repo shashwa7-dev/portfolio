@@ -1241,7 +1241,7 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 
 **Interfaces:**
 - Consumes: `rollPair`, `pipTotal`, `issueFromTotal`, `isPerfect` from Task 1; `RollSet`, `Roll` from `types.ts`.
-- Produces: `<DiceRoller onComplete={(set: RollSet) => void} />`; motion tokens `duration.throw`, `ease.throw`, `spring.card`, `diceThrowVariants`, `cardForwardVariants`, `issueStampVariants`.
+- Produces: `<DiceRoller onComplete={(set: RollSet) => void} />`; motion tokens `duration.throw`, `ease.throw`, `diceThrowVariants`, and the `--duration-throw` custom property. The spring and the two reveal variants are Task 6's, not this task's.
 
 `DiceRoller` owns only the throwing. It unmounts the moment the third roll completes, so it needs no reset path of its own: "Roll again" lives in `CardMinter` beside the download, clears the roll, and mounts a fresh `DiceRoller`.
 
@@ -1276,26 +1276,7 @@ In the `duration` object:
   throw: 0.7,
 ```
 
-Add a springs block after `stagger`:
-
-```ts
-/**
- * The one spring in the codebase.
- *
- * Everything else here is a duration plus ease.out, because everything else
- * is a state changing. The card arriving after a roll is an object with
- * mass coming to rest, which is the one thing an ease-out cannot express:
- * it has no settle. Confined to that single movement. In particular the
- * issue stamp deliberately does not use it, because a stamp that bounces
- * reads as cartoonish, and that moment is meant to feel like something
- * being certified.
- */
-export const spring = {
-  card: { type: "spring", stiffness: 260, damping: 26 } as const,
-} as const;
-```
-
-And the three variants at the end of the variants section:
+And the throw variant at the end of the variants section:
 
 ```ts
 /** Two dice leaving a button, tumbling, and landing back on it. */
@@ -1309,24 +1290,9 @@ export const diceThrowVariants: Variants = {
     transition: { duration: duration.throw, ease: ease.throw, times: [0, 0.45, 0.85, 1] },
   },
 };
-
-/** The finished card arriving. The only consumer of `spring.card`. */
-export const cardForwardVariants: Variants = {
-  hidden: { opacity: 0, scale: 0.94, rotate: -1.5 },
-  visible: { opacity: 1, scale: 1, rotate: 0, transition: spring.card },
-};
-
-/** The issue name pressed on, like a rubber stamp. Lands and stops. */
-export const issueStampVariants: Variants = {
-  hidden: { opacity: 0, scale: 1.08, rotate: -3 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    rotate: 0,
-    transition: { duration: 0.22, ease: ease.out },
-  },
-};
 ```
+
+Add nothing else to this file in this task. The spring and the two reveal variants belong to Task 6, which is where they are consumed; adding them here would leave three exported tokens with no caller for the length of a commit.
 
 - [ ] **Step 2: Mirror the duration in `app/globals.css`**
 
@@ -1354,7 +1320,7 @@ Expected: green. `verify-simplification.sh` checks C05 (`no transition-all`) and
 ```tsx
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useAnimationControls } from "motion/react";
 import { diceThrowVariants, tapPress } from "@/lib/motionVariants";
 import { pipTotal, rollPair } from "@/lib/card/dice";
@@ -1413,6 +1379,16 @@ export default function DiceRoller({
   const [throwing, setThrowing] = useState(false);
   const controls = useAnimationControls();
   const flickerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  /* The flicker interval outlives a fast unmount otherwise: this component
+     is replaced by the card the moment the third roll lands, and a visitor
+     navigating away mid-throw would leave it running. */
+  useEffect(
+    () => () => {
+      if (flickerRef.current) clearInterval(flickerRef.current);
+    },
+    []
+  );
 
   const throwDice = useCallback(async () => {
     if (throwing || rolls.length >= 3) return;
@@ -1531,7 +1507,7 @@ Delete the interim `useState<RollSet>` from Task 2 Step 9 and its comment. Repla
   }, [visitorId, name, origin, city, roll]);
 ```
 
-Replace `minted` with the roll itself: the card exists exactly when `roll` is non-null. Change the render's first branch from the Mint button to:
+Replace `minted` with the roll itself: the card exists exactly when `roll` is non-null. **Delete the `const [minted, setMinted] = useState(false);` declaration entirely**, not just its readers, along with every remaining reference to `setMinted`. Change the render's first branch from the Mint button to:
 
 ```tsx
       {!roll ? (
@@ -1607,23 +1583,67 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 ### Task 6: The reveal choreography
 
 **Files:**
+- Modify: `lib/motionVariants.ts` (the spring and the two reveal variants)
 - Modify: `components/card/CardMinter.tsx`
 
 **Interfaces:**
-- Consumes: `FULL_REVEAL`, `SHORT_REVEAL`, `RevealTimeline` from Task 4; `cardForwardVariants`, `issueStampVariants`, `backdropFadeVariants` from `lib/motionVariants.ts`; `startPrintReveal`, `prefersReducedMotion` from `lib/card/reveal.ts`.
-- Produces: nothing consumed elsewhere.
+- Consumes: `FULL_REVEAL`, `SHORT_REVEAL` from Task 4; `backdropFadeVariants` (already in the file); `startPrintReveal`, `prefersReducedMotion` from `lib/card/reveal.ts`.
+- Produces: `spring.card`, `cardForwardVariants`, `issueStampVariants`.
 
-- [ ] **Step 1: Add the reveal state**
+- [ ] **Step 1: Add the spring and the two reveal variants to `lib/motionVariants.ts`**
 
-In `CardMinter`, alongside the existing state:
+They live here rather than in Task 5 because this is the task that consumes them.
+
+A springs block after `stagger`:
 
 ```ts
-  /* Which timeline this reveal runs on. The full ceremony plays once per
+/**
+ * The one spring in the codebase.
+ *
+ * Everything else here is a duration plus ease.out, because everything else
+ * is a state changing. The card arriving after a roll is an object with
+ * mass coming to rest, which is the one thing an ease-out cannot express:
+ * it has no settle. Confined to that single movement. In particular the
+ * issue stamp deliberately does not use it, because a stamp that bounces
+ * reads as cartoonish, and that moment is meant to feel like something
+ * being certified.
+ */
+export const spring = {
+  card: { type: "spring", stiffness: 260, damping: 26 } as const,
+} as const;
+```
+
+And two variants at the end of the variants section:
+
+```ts
+/** The finished card arriving. The only consumer of `spring.card`. */
+export const cardForwardVariants: Variants = {
+  hidden: { opacity: 0, scale: 0.94, rotate: -1.5 },
+  visible: { opacity: 1, scale: 1, rotate: 0, transition: spring.card },
+};
+
+/** The issue name pressed on, like a rubber stamp. Lands and stops. */
+export const issueStampVariants: Variants = {
+  hidden: { opacity: 0, scale: 1.08, rotate: -3 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    rotate: 0,
+    transition: { duration: 0.22, ease: ease.out },
+  },
+};
+```
+
+- [ ] **Step 2: Add the reveal state to `CardMinter`**
+
+Alongside the existing state. Note there is deliberately no state holding the active timeline: the effect below picks it into a local and the render never needs it.
+
+```ts
+  /* Which timeline a reveal runs on. The full ceremony plays once per
      session, on the first completed set. Every re-roll after that gets the
      short one: a visitor throwing repeatedly for a rare issue should not
      sit through the backdrop each attempt. */
   const hasRevealedRef = useRef(false);
-  const [timeline, setTimeline] = useState<RevealTimeline>(FULL_REVEAL);
   const [backdrop, setBackdrop] = useState(false);
   const [stamped, setStamped] = useState(false);
 ```
@@ -1632,7 +1652,7 @@ with the imports:
 
 ```ts
 import { motion, AnimatePresence } from "motion/react";
-import { FULL_REVEAL, SHORT_REVEAL, type RevealTimeline } from "@/lib/card/revealSequence";
+import { FULL_REVEAL, SHORT_REVEAL } from "@/lib/card/revealSequence";
 import {
   backdropFadeVariants,
   cardForwardVariants,
@@ -1640,14 +1660,13 @@ import {
 } from "@/lib/motionVariants";
 ```
 
-- [ ] **Step 2: Drive the sequence from the timeline**
+- [ ] **Step 3: Drive the sequence from the timeline**
 
 Replace the body of the existing draw effect's reveal section. The effect already builds the offscreen canvas; this schedules the stages around `startPrintReveal` instead of calling it immediately.
 
 ```ts
     const reducedMotion = prefersReducedMotion(window);
     const active = hasRevealedRef.current ? SHORT_REVEAL : FULL_REVEAL;
-    setTimeline(active);
     setStamped(false);
 
     /* Reduced motion collapses the whole sequence to a crossfade: no
@@ -1708,7 +1727,7 @@ Replace the body of the existing draw effect's reveal section. The effect alread
     };
 ```
 
-- [ ] **Step 3: Render the backdrop and lift the card**
+- [ ] **Step 4: Render the backdrop and lift the card**
 
 Wrap the card block. The backdrop is deliberately not a dialog: it traps nothing, blocks nothing, and releases itself, so it gets no `role`, no focus trap and no escape handler.
 
@@ -1736,7 +1755,7 @@ Wrap the card block. The backdrop is deliberately not a dialog: it traps nothing
       </motion.div>
 ```
 
-- [ ] **Step 4: Add the issue announcement**
+- [ ] **Step 5: Add the issue announcement**
 
 Directly under the canvas, inside the lifted wrapper:
 
@@ -1761,13 +1780,13 @@ Directly under the canvas, inside the lifted wrapper:
 
 with `isPerfect` added to the `@/lib/card/dice` import.
 
-- [ ] **Step 5: Run the gates**
+- [ ] **Step 6: Run the gates**
 
 ```bash
 npm test && npm run lint && npm run build && ./scripts/verify-simplification.sh
 ```
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 7: Commit**
 
 ```bash
 git add components/card/CardMinter.tsx
