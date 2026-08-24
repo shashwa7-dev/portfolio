@@ -19,17 +19,14 @@ import type { Roll, RollSet } from "@/lib/card/types";
 
 /**
  * A skin's animation. Receives the already-decided pair so it can land on
- * it, plus a callback a skin may use to report interim faces of its own
- * choosing while airborne (the hook itself has no display to update with
- * them: `status` below only speaks once a throw settles). Resolving means
- * the animation finished; rejecting or throwing means it did not, which
- * must never cost the visitor their roll — see `throwDice`'s inner
+ * it. A skin owns its own displayed faces entirely (whatever "a face"
+ * means for that skin's rendering) and keeps that as its own state; the
+ * hook has no display to update and doesn't take a seam for one. Resolving
+ * means the animation finished; rejecting or throwing means it did not,
+ * which must never cost the visitor their roll — see `throwDice`'s inner
  * try/catch.
  */
-export type Animate = (
-  result: Roll,
-  showFaces: (faces: Roll) => void
-) => Promise<void>;
+export type Animate = (result: Roll) => Promise<void>;
 
 export type DiceRollState = {
   /** Throws recorded so far, 0 to 3. */
@@ -102,17 +99,10 @@ export function useDiceRoll(onComplete: (set: RollSet) => void): DiceRollState {
          chooses a result, it only receives one. */
       const result = rollPair(Math.random);
 
-      /* A skin may report interim faces here while it shuffles for its own
-         display; the hook has nothing to show with them itself, and
-         turning every shuffle tick into hook state would re-render every
-         consumer of this hook on each tick. A skin that wants a live face
-         display (TossDice) keeps that state itself. */
-      const showFaces = (_faces: Roll) => {};
-
       void (async () => {
         try {
           try {
-            await animate(result, showFaces);
+            await animate(result);
           } catch {
             /* Fix 3 of 3, second half: a failed or rejected animation must
                not cost the visitor their roll. `result` was decided above,

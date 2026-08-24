@@ -4,6 +4,7 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { ARCS, tossKeyframes } from "@/lib/card/toss";
 import { duration, TOSS_EASE, TOSS_SHUFFLE_MS } from "@/lib/motionVariants";
 import { useDiceRoll, type Animate } from "@/components/card/dice/useDiceRoll";
+import Pips from "@/components/card/dice/Pips";
 import type { Die, Roll, RollSet } from "@/lib/card/types";
 
 /**
@@ -83,37 +84,6 @@ function Die({
           return <circle key={slot} cx={cx} cy={cy} r="8" fill={`url(#${pipGradId})`} />;
         })}
       </g>
-    </svg>
-  );
-}
-
-/** Small static icon for the results row, matching CubeDice's so the two
- *  skins report the same completed throws identically. */
-function ResultPip({ value }: { value: Die }) {
-  const rowPips: Record<Die, readonly number[]> = {
-    1: [4],
-    2: [0, 8],
-    3: [0, 4, 8],
-    4: [0, 2, 6, 8],
-    5: [0, 2, 4, 6, 8],
-    6: [0, 2, 3, 5, 6, 8],
-  };
-  return (
-    <svg viewBox="0 0 30 30" className="h-5 w-5" aria-hidden="true">
-      <rect
-        x="1.5" y="1.5" width="27" height="27" rx="6"
-        className="fill-[var(--dice-stock)] stroke-[var(--dice-ink)]"
-        strokeWidth="2"
-      />
-      {rowPips[value].map((slot) => (
-        <circle
-          key={slot}
-          cx={8 + (slot % 3) * 7}
-          cy={8 + Math.floor(slot / 3) * 7}
-          r="2.1"
-          className="fill-[var(--dice-ink)]"
-        />
-      ))}
     </svg>
   );
 }
@@ -221,12 +191,16 @@ export default function TossDice({
   );
 
   const handleClick = useCallback(() => {
-    buttonRef.current?.animate(
-      [{ transform: "scale(1)" }, { transform: "scale(.96)" }, { transform: "scale(1)" }],
-      { duration: duration.fast * 1000, easing: TOSS_EASE.press }
-    );
+    // Both skins honour reduced motion; the squash is otherwise pure
+    // decoration on top of a click that already works without it.
+    if (!reducedMotion) {
+      buttonRef.current?.animate(
+        [{ transform: "scale(1)" }, { transform: "scale(.96)" }, { transform: "scale(1)" }],
+        { duration: duration.fast * 1000, easing: TOSS_EASE.press }
+      );
+    }
     throwDice(animate);
-  }, [throwDice, animate]);
+  }, [reducedMotion, throwDice, animate]);
 
   return (
     <div className="mt-8">
@@ -288,8 +262,8 @@ export default function TossDice({
             {rolls.map((roll, i) => (
               <li key={i} className="flex items-center gap-1.5">
                 <span className="flex gap-0.5">
-                  <ResultPip value={roll[0]} />
-                  <ResultPip value={roll[1]} />
+                  <Pips value={roll[0]} className="h-5 w-5" />
+                  <Pips value={roll[1]} className="h-5 w-5" />
                 </span>
                 <span className="font-mono text-2xs text-subtle">{roll[0] + roll[1]}</span>
               </li>
