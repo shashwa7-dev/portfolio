@@ -30,3 +30,15 @@ export type CardData = {
   /** "23 Aug 2026" */
   date: string;
 };
+
+/** One face of one die. */
+export type Die = 1 | 2 | 3 | 4 | 5 | 6;
+
+/** One throw of two dice. */
+export type Roll = readonly [Die, Die];
+
+/**
+ * Three throws, which is the whole set a visitor makes before their card
+ * prints. Six dice in total, so the pip total runs 6 to 36.
+ */
+export type RollSet = readonly [Roll, Roll, Roll];
