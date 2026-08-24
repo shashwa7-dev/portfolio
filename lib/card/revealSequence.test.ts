@@ -51,7 +51,6 @@ describe("the stages are ordered", () => {
   it("starts every stage at or after zero and gives each a real duration", () => {
     for (const [name, timeline] of TIMELINES) {
       for (const [stage, value] of Object.entries(timeline)) {
-        if (stage === "total") continue;
         const s = value as { at: number; duration: number };
         expect(s.at, `${name}.${stage}.at`).toBeGreaterThanOrEqual(0);
         expect(s.duration, `${name}.${stage}.duration`).toBeGreaterThan(0);
@@ -61,8 +60,17 @@ describe("the stages are ordered", () => {
 });
 
 describe("the short timeline is the cheap one", () => {
-  it("skips the backdrop entirely", () => {
-    expect(SHORT_REVEAL.backdropIn.duration).toBe(0.000001);
+  it("declares a backdrop that does not meaningfully play", () => {
+    // Not zero: both timelines declare every stage so they share one shape
+    // and the consumer never branches on it, and "every stage has a real
+    // duration" stays an invariant without an exception carved into it.
+    // What matters here is that the stage is imperceptible, not what exact
+    // sentinel expresses that, so this asserts the property rather than
+    // the constant.
+    expect(SHORT_REVEAL.backdropIn.duration).toBeLessThan(0.01);
+    expect(SHORT_REVEAL.backdropIn.duration).toBeGreaterThan(0);
+    expect(SHORT_REVEAL.backdropOut.duration).toBeLessThan(0.01);
+    expect(SHORT_REVEAL.backdropOut.duration).toBeGreaterThan(0);
   });
 
   it("finishes sooner than the full sequence", () => {
