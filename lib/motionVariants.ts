@@ -1,4 +1,5 @@
 import type { Variants } from "motion/react";
+import type { Die } from "@/lib/card/types";
 
 // ──────────────────────────────────────────────────────────────────────
 // Tokens
@@ -131,17 +132,77 @@ export const blurSwapVariants: Variants = {
   },
 };
 
-/** Two dice leaving a button, tumbling, and landing back on it. */
-export const diceThrowVariants: Variants = {
-  rest: { y: 0, x: 0, rotate: 0, scaleX: 1, scaleY: 1 },
-  airborne: {
-    y: [0, -90, 0],
-    x: [0, 10, 18],
-    scaleX: [1, 1, 1.15, 1],
-    scaleY: [1, 1, 0.85, 1],
-    transition: { duration: duration.throw, ease: ease.throw, times: [0, 0.45, 0.85, 1] },
-  },
+// ──────────────────────────────────────────────────────────────────────
+// Dice cube (DiceRoller) — a real `preserve-3d` cube rather than a flat
+// SVG face flickering through random values. `duration.throw` and
+// `ease.throw` above are its tokens.
+// ──────────────────────────────────────────────────────────────────────
+
+/**
+ * Cube rotation, in degrees, that puts a given face toward the viewer. The
+ * inverse of each face's placement transform in DiceRoller.tsx. Stated once
+ * here so both the resting pose and the throw's landing target read it
+ * rather than recomputing it inline.
+ */
+export const FACE_ROTATION: Record<Die, { x: number; y: number }> = {
+  1: { x: 0, y: 0 },
+  2: { x: 0, y: -90 },
+  3: { x: -90, y: 0 },
+  4: { x: 90, y: 0 },
+  5: { x: 0, y: 90 },
+  6: { x: 0, y: 180 },
 };
+
+/** "Thrown roughly 40px up and back", per the brief. */
+const THROW_ARC_PX = 40;
+
+/** How far apart the two dice land. Not a UI transition, so it isn't one
+ *  of the sub-300ms tokens above; it is the throw's own physics. */
+const LANDING_STAGGER_S = 0.04;
+
+type CubePose = {
+  rotateX: number;
+  rotateY: number;
+  y: number | number[];
+  transition?: { duration: number; ease: typeof ease.throw; delay?: number };
+};
+
+/**
+ * The pose pair for one die in one throw: where it rests showing `face`,
+ * and the animation that spins it there. `dieIndex` only decides which way
+ * it spins (the two dice always turn opposite ways) and whether it lands
+ * first or `LANDING_STAGGER_S` later.
+ *
+ * The landing rotation is `FACE_ROTATION[face]` plus whole 360deg turns,
+ * and a whole turn is the identity: the extra spin makes the face unreadable
+ * in flight without changing where the cube ends up. `face` must already be
+ * the decided result when this is called, never a placeholder swapped in
+ * after the fact, or the one guarantee this component has to keep (the roll
+ * can't be read from, or changed by, the animation) breaks.
+ */
+export function diceThrowVariants(
+  face: Die,
+  dieIndex: 0 | 1
+): { rest: CubePose; airborne: CubePose } {
+  const target = FACE_ROTATION[face];
+  const direction = dieIndex === 0 ? 1 : -1;
+  const turns = 2 + Math.round(Math.random()); // 2 or 3 full spins
+  const spin = direction * 360 * turns;
+
+  return {
+    rest: { rotateX: target.x, rotateY: target.y, y: 0 },
+    airborne: {
+      rotateX: target.x + spin,
+      rotateY: target.y + spin,
+      y: [0, -THROW_ARC_PX, 0],
+      transition: {
+        duration: duration.throw,
+        ease: ease.throw,
+        delay: dieIndex === 0 ? 0 : LANDING_STAGGER_S,
+      },
+    },
+  };
+}
 
 // ──────────────────────────────────────────────────────────────────────
 // Hover / tap targets — use with `whileHover` / `whileTap`

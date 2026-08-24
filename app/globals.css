@@ -228,6 +228,16 @@
   --duration-throw: 700ms;
 }
 
+/* The dice on /card. The dice are made of the card's own paper. These
+   mirror STOCK.definitive and LIGHT.ink in lib/card/ticket.ts, which cannot
+   be read from here: canvas cannot resolve CSS custom properties, so the
+   drawing code keeps its own literals and these two are the deliberate
+   mirror. Fixed regardless of light/dark theme, like the card itself. */
+:root {
+  --dice-stock: #f6f1e5;
+  --dice-ink: #1f1d1a;
+}
+
 /* Link hover effect */
 a {
   transition: opacity var(--duration-fast) var(--ease-out);
