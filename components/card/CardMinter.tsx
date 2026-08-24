@@ -2,11 +2,12 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ISSUES } from "@/lib/card/issues";
-import { issueFromTotal, pipTotal, rollPair } from "@/lib/card/dice";
+import { issueFromTotal, pipTotal } from "@/lib/card/dice";
 import { serialFrom } from "@/lib/card/seed";
 import { drawTicket, CARD_W, CARD_H } from "@/lib/card/ticket";
 import { CARD_FONTS } from "@/lib/card/fonts";
 import { startPrintReveal, parsePrintDuration, prefersReducedMotion } from "@/lib/card/reveal";
+import DiceRoller from "@/components/card/DiceRoller";
 import type { CardData, RollSet } from "@/lib/card/types";
 
 const KEY = "shashwa7:visitor-id";
@@ -28,7 +29,6 @@ export default function CardMinter({
   city: string | null;
 }) {
   const [visitorId, setVisitorId] = useState<string | null>(null);
-  const [minted, setMinted] = useState(false);
   const [name, setName] = useState("Visitor");
   const [fontsReady, setFontsReady] = useState(false);
   const [markReady, setMarkReady] = useState(false);
@@ -36,14 +36,7 @@ export default function CardMinter({
   // (see the note above the <input> below) can disable itself for that
   // stretch instead of racing a redraw against the reveal.
   const [revealing, setRevealing] = useState(false);
-  /* INTERIM (Task 5 replaces this with <DiceRoller>): one silent set of
-     three throws made on mount, so the card still renders while the dice UI
-     is being built. Nothing about this is user-visible yet. */
-  const [roll] = useState<RollSet>(() => [
-    rollPair(Math.random),
-    rollPair(Math.random),
-    rollPair(Math.random),
-  ]);
+  const [roll, setRoll] = useState<RollSet | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const markRef = useRef<HTMLImageElement | null>(null);
   // The reveal plays once, on the first draw after mint. Edits to the name
@@ -96,7 +89,7 @@ export default function CardMinter({
   const ready = fontsReady && markReady;
 
   const buildData = useCallback((): CardData | null => {
-    if (!visitorId) return null;
+    if (!visitorId || !roll) return null;
     return {
       visitorId,
       name,
@@ -122,7 +115,7 @@ export default function CardMinter({
      again) skip straight to the finished frame: printing again on every
      keystroke would be noise, not a moment. */
   useEffect(() => {
-    if (!minted || !ready) return;
+    if (!roll || !ready) return;
     const c = canvasRef.current;
     const data = buildData();
     if (!c || !data) return;
@@ -170,7 +163,7 @@ export default function CardMinter({
         setRevealing(false);
       },
     });
-  }, [minted, ready, buildData]);
+  }, [roll, ready, buildData]);
 
   const download = useCallback(() => {
     const data = buildData();
@@ -196,14 +189,8 @@ export default function CardMinter({
 
   return (
     <div className="mt-8">
-      {!minted ? (
-        <button
-          onClick={() => setMinted(true)}
-          disabled={!visitorId}
-          className="rounded-lg bg-accent px-5 py-3 text-base font-medium text-accent-foreground transition-colors duration-base ease-out hover:bg-accent-hover disabled:opacity-50"
-        >
-          Mint my card
-        </button>
+      {!roll ? (
+        <DiceRoller onComplete={setRoll} />
       ) : !ready ? (
         <p className="text-sm text-subtle">Drawing your card...</p>
       ) : (
@@ -214,7 +201,7 @@ export default function CardMinter({
             role="img"
             aria-label={
               data
-                ? `A ${data.issue.name} visitor card, serial ${data.serial}, issued to ${data.name}.`
+                ? `A ${data.issue.name} visitor card, serial ${data.serial}, issued to ${data.name}, from a roll of ${pipTotal(data.roll)}.`
                 : "A visitor card"
             }
           />
@@ -240,6 +227,16 @@ export default function CardMinter({
             className="mt-3 w-full rounded-lg bg-accent px-4 py-2.5 text-base font-medium text-accent-foreground transition-colors duration-base ease-out hover:bg-accent-hover"
           >
             Download PNG
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              revealedOnceRef.current = false;
+              setRoll(null);
+            }}
+            className="mt-3 w-full rounded-lg border border-border px-4 py-2.5 text-base text-foreground transition-colors duration-base ease-out hover:bg-secondary"
+          >
+            Roll again
           </button>
           <p className="mt-3 text-sm text-subtle">
             Drawn from a random id kept in this browser. We read your country to

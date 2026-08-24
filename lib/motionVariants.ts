@@ -10,6 +10,12 @@ import type { Variants } from "motion/react";
 export const ease = {
   /** Emil Kowalski's published strong ease-out. The single UI curve. */
   out: [0.23, 1, 0.32, 1] as const,
+  /**
+   * A thrown object: leaves fast, hangs, drops back hard. Not a UI curve
+   * and must not be used as one. The only reason a second easing exists in
+   * this file is that no ease-out can describe an arc that comes back down.
+   */
+  throw: [0.33, 0.02, 0.62, 1] as const,
 } as const;
 
 export const duration = {
@@ -20,6 +26,15 @@ export const duration = {
   slow: 0.24,
   /** 404 page sequence only. The one sanctioned exception. */
   hero: 0.5,
+  /**
+   * The dice throw. Outside the sub-300ms UI budget, and unlike
+   * --duration-sweep and --duration-print it cannot claim to be "not a
+   * response to input", because it plainly is one. The justification is
+   * different: this duration is the physics rather than a transition. A die
+   * that completes its arc in 300ms does not read as a thrown object at
+   * all, it reads as a glyph being swapped.
+   */
+  throw: 0.7,
 } as const;
 
 /** Per-item stagger offsets (seconds). Use instead of literal `i * 0.05`. */
@@ -113,6 +128,18 @@ export const blurSwapVariants: Variants = {
     filter: "blur(4px)",
     y: -2,
     transition: { duration: duration.fast, ease: ease.out },
+  },
+};
+
+/** Two dice leaving a button, tumbling, and landing back on it. */
+export const diceThrowVariants: Variants = {
+  rest: { y: 0, x: 0, rotate: 0, scaleX: 1, scaleY: 1 },
+  airborne: {
+    y: [0, -90, 0],
+    x: [0, 10, 18],
+    scaleX: [1, 1, 1.15, 1],
+    scaleY: [1, 1, 0.85, 1],
+    transition: { duration: duration.throw, ease: ease.throw, times: [0, 0.45, 0.85, 1] },
   },
 };
 

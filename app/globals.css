@@ -219,6 +219,13 @@
      response to input, the same reasoning that puts --duration-sweep
      outside that budget. */
   --duration-print: 900ms;
+
+  /* The dice throw on /card. Outside the sub-300ms UI budget, and unlike
+     the two above it cannot claim to be "not a response to input": it is
+     one. The justification is that the duration is the physics, not a
+     transition. A die that finishes its arc in 300ms reads as a glyph being
+     swapped rather than an object being thrown. */
+  --duration-throw: 700ms;
 }
 
 /* Link hover effect */
