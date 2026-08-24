@@ -64,13 +64,16 @@ Three throws of 2d6 is six dice. The 6d6 bell curve lands almost exactly on the 
 shares the site already advertises, which is why this mapping was chosen over an
 invented combination table. The rarity ladder is not being redesigned, only exposed.
 
-| Total `T` | Issue | Chance per roll | Odds | Previously stated |
-|---|---|---|---|---|
-| 34 to 36 | Inverted | 0.060% | 1 in 1,666 | 0.1% |
-| 30 to 33 | Misprint | 1.908% | 1 in 52 | 1% |
-| 26 to 29 | First day | 12.496% | 1 in 8 | 11.9% |
-| 22 to 25 | Commemorative | 30.894% | 1 in 3 | 27% |
-| 6 to 21 | Definitive | 54.642% | 1 in 2 | 60% |
+| Total `T` | Issue | Sets | Chance per roll | Label | Previously stated |
+|---|---|---|---|---|---|
+| 34 to 36 | Inverted | 28 | 0.060014% | `0.06%` | 0.1% |
+| 30 to 33 | Misprint | 890 | 1.907579% | `1.9%` | 1% |
+| 26 to 29 | First day | 5,830 | 12.495713% | `12.5%` | 11.9% |
+| 22 to 25 | Commemorative | 14,414 | 30.894204% | `30.9%` | 27% |
+| 6 to 21 | Definitive | 25,494 | 54.642490% | `54.6%` | 60% |
+
+The "Sets" column is the exact count of the 46,656 outcomes falling in each band, and
+is what `dice.test.ts` asserts against.
 
 The five sum to exactly 100.000%, verified by enumerating all `6^6 = 46,656`
 outcomes.
@@ -97,8 +100,8 @@ changes wording:
 
 | Surface | Was | Becomes |
 |---|---|---|
-| `IssueGallery.tsx`, under each specimen | `0.1% of cards` | `1 in 1,666 per roll` |
-| **The card face**, `ticket.ts` stub | `0.1% OF CARDS` | `1 IN 1666 PER ROLL` |
+| `IssueGallery.tsx`, under each specimen | `0.1% of cards` | `0.06% per roll`, plus `Totals 34 to 36` |
+| **The card face**, `ticket.ts` stub | `0.1% OF CARDS` | `0.06% PER ROLL` |
 | `app/card/page.tsx` lede | "Most people get a Definitive" | rewritten, see section 9 |
 
 The card-face string is described in its own source comment as "the single most
@@ -115,15 +118,25 @@ can see they are rolling for 34 or better.
 longer a percentage, so it is replaced rather than renamed:
 
 ```ts
-chance: number;   // 12.496, the true per-roll probability. tested, not displayed.
-odds:   string;   // "1 in 8", what the card and the gallery print.
+chance: number;   // 12.495713, exact. tested, never displayed.
+label:  string;   // "12.5%", what the card and the gallery print.
 range:  readonly [min: number, max: number];   // [26, 29]
 ```
 
 `chance` exists so `dice.test.ts` can assert the enumerated distribution against a
-number rather than parsing a display string. `odds` is the only one that renders.
+number rather than parsing a display string. `label` is the only one that renders.
 Keeping them separate is what stops a copy edit from silently changing a claim the
 tests believe they are still checking.
+
+**Percentages throughout, not "1 in N".** The rare tiers read beautifully that way
+(1 in 1,666), but the common ones do not: Commemorative is 1 in 3.24 and Definitive is
+1 in 1.83. Rounding those to "1 in 3" and "1 in 2" overstates how common they are, and
+carrying two formats on one page so the rare tiers can have the better phrasing is
+worse than carrying one honest format everywhere.
+
+This also removes the width risk from the card face: "0.06% PER ROLL" is one character
+longer than the "0.1% OF CARDS" it replaces, where "1 IN 1666 PER ROLL" would have
+been five longer than the reserved column.
 
 ## 5. The roll interaction
 
@@ -198,7 +211,7 @@ It renders as a DOM line directly under the card:
 
 ```
 First day
-1 in 8 per roll   ·   You rolled 27
+12.5% per roll   ·   You rolled 27
 ```
 
 This does not duplicate the card's own stub, which prints the same issue name small
@@ -276,7 +289,7 @@ inside an existing `tracked()` call shifts nothing.
 So `ticket.ts` changes in exactly two places, both of them strings:
 
 1. the origin line gains ` · ROLLED {total}`
-2. `{share}% OF CARDS` becomes `{odds} PER ROLL`
+2. `{share}% OF CARDS` becomes `{label} PER ROLL`
 
 **Width risk.** The source comment on that line reasons that at the longest realistic
 origin, "BENGALURU, IN · 23 AUG 2026" at 27 characters, it "still ends well short of
@@ -361,8 +374,8 @@ No em-dashes in any of it, per CLAUDE.md.
 
 - The result line is `aria-live="polite"` and announces each throw: "Roll two of
   three: five and three, eight. Running total nineteen."
-- The final announcement names the outcome: "Total twenty-seven. First day, one in
-  eight per roll."
+- The final announcement names the outcome: "Total twenty-seven. First day, twelve
+  point five percent per roll."
 - The button labels which throw is next, so a screen reader user knows where they are
   in the set of three.
 - Dice SVGs are `aria-hidden`. The text carries all meaning.
@@ -379,7 +392,7 @@ No em-dashes in any of it, per CLAUDE.md.
 | `components/card/DiceRoller.tsx` | **new.** pill, two SVG dice, three slots, running total. |
 | `components/card/CardMinter.tsx` | Mint button becomes `<DiceRoller>`. `buildData()` sources the issue from the roll. Owns the reveal choreography. Fonts, mark, download untouched. |
 | `lib/card/issues.ts` | delete `issueFrom`. retire `share`, see below. add the total range per issue. |
-| `lib/card/types.ts` | `CardData` gains the roll. `Issue` swaps `share` for `chance`, `odds` and `range`. |
+| `lib/card/types.ts` | `CardData` gains the roll. `Issue` swaps `share` for `chance`, `label` and `range`. |
 | `lib/card/ticket.ts` | two string edits only: the origin line gains the roll, the odds line is reworded. No new draw calls. |
 | `lib/motionVariants.ts` | new tokens per section 8. |
 | `app/globals.css` | `--duration-throw` with its own justification comment. |
