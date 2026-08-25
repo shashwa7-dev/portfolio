@@ -52,17 +52,33 @@ const COPY_CONFIRM_MS = 1400;
  *  costing any layout width. That shrink is what made room for a fifth
  *  control (share): at the previous `h-8 w-8` (32px) size, five buttons plus
  *  the roll history ran to roughly 280px against the ~272px a 320px viewport
- *  leaves. Worked out in full (five buttons, `gap-1.5`, the group's own
- *  `p-1`, against the roll history at three pairs):
+ *  leaves. Worked out in full (five buttons, the group's own `p-1`, the
+ *  roll history at three pairs, and the row's own `gap-2` between the two
+ *  groups):
  *
- *    5 × 28px buttons        = 140px
- *    4 × 6px gaps (gap-1.5)  =  24px
- *    group padding (p-1)     =   8px
+ *    5 × 28px buttons          = 140px
+ *    4 × 4px gaps (gap-1)      =  16px
+ *    group padding (p-1)      =   8px
  *    ---------------------------------
- *    button group             172px
- *    roll history (below)     100px
+ *    button group                164px
+ *    roll history (below)        100px
+ *    wrapper gap (gap-2, the
+ *      two groups' own row)        8px
  *    ---------------------------------
- *    total                    272px
+ *    total                       272px
+ *
+ *  That wrapper gap is the one line an earlier pass at this comment left
+ *  out: the row is `justify-between` (see the band below), and at an exact
+ *  fit `justify-between` has no free space left to fold the gap into, so
+ *  the declared `gap-2` is a mandatory 8px between the two groups rather
+ *  than a maximum. Pricing the row at 172 + 100 = 272px, as that earlier
+ *  version did, was really 172 + 100 + 8 = 280px, an 8px overflow it never
+ *  showed on screen only because it was never rendered at exactly this
+ *  width in review. The fix pays the 8px out of the button group's own
+ *  gaps, `gap-1.5` (6px) down to `gap-1` (4px) across the four gaps
+ *  between five buttons, rather than off the wrapper gap itself: with zero
+ *  free space in a `justify-between` row, deleting that gap would leave
+ *  the roll history and the button group flush against each other.
  *
  *  The roll history itself lost 8px the same way: three pairs of `h-3 w-3`
  *  pips (28px a pair) at `gap-1` between the two pips of a pair is unchanged,
@@ -184,6 +200,13 @@ export default function CardMinter({
   // ExitTimeline's doc in revealSequence.ts for why the order matters) does
   // it null `roll`, which is what actually starts the card sinking away.
   const exitTurnTimerRef = useRef(0);
+  // The COPY_CONFIRM_MS timer that closes the share menu after "Copied":
+  // see copyShareText. Held in a ref (rather than a bare local) so
+  // handleShareOpenChange below can cancel it if the menu closes some other
+  // way (Escape, a click outside, or a fresh share tap) before it fires;
+  // left to run, a stale timer would close a menu the visitor had already
+  // reopened inside that window.
+  const copyConfirmTimerRef = useRef(0);
 
   useEffect(() => {
     let id = window.localStorage.getItem(KEY);
@@ -236,6 +259,10 @@ export default function CardMinter({
   // navigates away mid-exit: nothing outlives the component to write to a
   // detached ref.
   useEffect(() => () => window.clearTimeout(exitTurnTimerRef.current), []);
+
+  // Same, for the copy confirmation's own timer: nothing outlives the
+  // component to close a menu, or flip `copied` back, that no longer exists.
+  useEffect(() => () => window.clearTimeout(copyConfirmTimerRef.current), []);
 
   // Focuses (and selects) the name field the moment it opens, so tapping
   // Edit is enough to start typing without a second tap into the field.
@@ -433,6 +460,36 @@ export default function CardMinter({
     if (!handled) setShareOpen(true);
   }, [shareViaWebShare]);
 
+  /* The one path that actually closes the share menu: cancels
+     copyShareText's pending COPY_CONFIRM_MS timer and resets `copied`
+     before closing, so a timer left over from an earlier copy can never
+     fire into whatever the menu is doing next. Without this, closing the
+     menu by any route other than that timer's own completion (Escape, a
+     click outside, tapping X or WhatsApp, or re-triggering share) would
+     leave the timer armed; if the visitor reopened the menu inside that
+     1400ms window, the stale timer would still fire and close the menu
+     they had just reopened, or flash a stale "Copied" on a fast reopen. */
+  const closeShareMenu = useCallback(() => {
+    window.clearTimeout(copyConfirmTimerRef.current);
+    setCopied(false);
+    setShareOpen(false);
+  }, []);
+
+  /* The Popover's own onOpenChange: opening is a plain setShareOpen(true)
+     (nothing to clean up), closing goes through closeShareMenu above so
+     Escape and click-outside get the same cleanup shareToX, shareToWhatsApp
+     and copyShareText's own timeout already need. */
+  const handleShareOpenChange = useCallback(
+    (open: boolean) => {
+      if (open) {
+        setShareOpen(true);
+      } else {
+        closeShareMenu();
+      }
+    },
+    [closeShareMenu],
+  );
+
   /* X and WhatsApp are both link intents: neither can attach a file, so
      both get the same words-plus-link buildShareText already builds
      (unchanged from before this menu existed). WhatsApp's wa.me takes the
@@ -440,30 +497,36 @@ export default function CardMinter({
      takes `text` and `url` as two separate params, which is why the same
      cardUrl also gets appended there even though it already sits inside
      `text` (twitter.com/intent/tweet has always taken it this way, from
-     before this menu existed). */
+     before this menu existed). Both close via closeShareMenu rather than
+     setShareOpen(false) directly, since either can be tapped while a copy
+     confirmation from moments earlier is still pending its own timer. */
   const shareToX = useCallback(() => {
     const data = buildData();
     if (!data) return;
     const text = buildShareText(data, cardUrl);
     const intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(cardUrl)}`;
     window.open(intent, "_blank", "noopener,noreferrer");
-    setShareOpen(false);
-  }, [buildData, cardUrl]);
+    closeShareMenu();
+  }, [buildData, cardUrl, closeShareMenu]);
 
   const shareToWhatsApp = useCallback(() => {
     const data = buildData();
     if (!data) return;
     const text = buildShareText(data, cardUrl);
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank", "noopener,noreferrer");
-    setShareOpen(false);
-  }, [buildData, cardUrl]);
+    closeShareMenu();
+  }, [buildData, cardUrl, closeShareMenu]);
 
   /* Confirms, then closes itself: COPY_CONFIRM_MS gives the "Copied" swap
      time to be read before the menu goes away on its own, rather than
-     vanishing the instant the clipboard write resolves. A clipboard
-     rejection (permissions, an insecure context) has no other affordance to
-     fall back to here, so it stays a silent no-op, the same posture
-     shareViaWebShare takes for a dismissed native sheet. */
+     vanishing the instant the clipboard write resolves. The timer id lands
+     in copyConfirmTimerRef rather than a local, so closeShareMenu above can
+     cancel it if the menu closes some other way first; any earlier pending
+     timer is cleared before this one is armed too, in case copy is somehow
+     pressed twice in one open. A clipboard rejection (permissions, an
+     insecure context) has no other affordance to fall back to here, so it
+     stays a silent no-op, the same posture shareViaWebShare takes for a
+     dismissed native sheet. */
   const copyShareText = useCallback(async () => {
     const data = buildData();
     if (!data) return;
@@ -471,7 +534,8 @@ export default function CardMinter({
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
-      window.setTimeout(() => {
+      window.clearTimeout(copyConfirmTimerRef.current);
+      copyConfirmTimerRef.current = window.setTimeout(() => {
         setCopied(false);
         setShareOpen(false);
       }, COPY_CONFIRM_MS);
@@ -602,7 +666,7 @@ export default function CardMinter({
               control (share, moved up from a text link under the pill) join
               at all. `bg-elevated` gives the group its own surface (the same
               token Navbar's own control cluster uses) so the tight
-              `gap-1.5` reads as one deliberate control rather than five
+              `gap-1` reads as one deliberate control rather than five
               cramped ones, and `TOOLBAR_BUTTON` shrinks each button's own
               box to 28px visually while keeping the 44px tap target WCAG
               2.5.5 wants via an invisible `before:-inset-2` expansion: see
@@ -621,7 +685,7 @@ export default function CardMinter({
               since its trigger still needs one on the devices where it
               opens a menu rather than the native sheet. */}
           {!editingName && (
-            <div className="flex shrink-0 items-center gap-1.5 rounded-md bg-elevated p-1">
+            <div className="flex shrink-0 items-center gap-1 rounded-md bg-elevated p-1">
               {roll && (
                 <>
                   <Tooltip>
@@ -668,7 +732,7 @@ export default function CardMinter({
                     </TooltipTrigger>
                     <TooltipContent>Download PNG</TooltipContent>
                   </Tooltip>
-                  <Popover open={shareOpen} onOpenChange={setShareOpen}>
+                  <Popover open={shareOpen} onOpenChange={handleShareOpenChange}>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <PopoverTrigger
