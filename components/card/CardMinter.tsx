@@ -360,95 +360,118 @@ export default function CardMinter({
 
   return (
     <div className="mt-8">
-      {/* The stage: a bounded control surface, not the page itself. Fixed
-          height so the card's slot is reserved from the first paint and
-          nothing shifts when a roll finishes. A control surface, not text
-          to select mid-tap. */}
-      <div
-        className="relative mx-auto flex w-full max-w-[420px] select-none flex-col items-center justify-between rounded-[30px] border border-border bg-elevated px-6 pb-10 pt-12"
-        style={{ height: 630 }}
-      >
-        {/* The roll history: a chip per throw recorded so far, reading
-            straight from useDiceRoll's own `rolls` (handed up through
-            DiceRoller's onRollsChange) rather than a second count kept
-            here. Absolutely positioned and its own fixed height, occupied
-            whether or not it has chips in it, so nothing below ever moves
-            as they appear. Decorative duplicate of what the aria-live
-            status already announces inside the skin, hence aria-hidden and
-            pointer-events-none: it must never sit in front of the actions
-            in the corner beside it. */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-4 flex h-8 items-center justify-center gap-2"
-        >
-          {rolls.map(([a, b], i) => (
-            <motion.div
-              key={i}
-              variants={itemVariants}
-              initial={reducedMotion ? false : "hidden"}
-              animate="visible"
-              className="flex items-center gap-1.5 rounded-full border border-border bg-card px-2.5 py-1"
-            >
-              <span className="font-mono text-2xs text-subtle">{i + 1}</span>
-              <Pips value={a} className="h-3.5 w-3.5" />
-              <Pips value={b} className="h-3.5 w-3.5" />
-            </motion.div>
-          ))}
+      {/* The stage: the card, the header band and the pill sit directly on
+          the page now, no boxed panel around them. Still `position:
+          relative` so the header band below can anchor to it, and still
+          `select-none`: a control surface, not text to select mid-tap. */}
+      <div className="relative mx-auto flex w-full max-w-[420px] select-none flex-col items-center">
+        {/* The header band: the roll history on the left, edit/download (or
+            the name field) on the right, in one `justify-between` row so
+            the two groups can never overlap at any width, structurally
+            rather than by a padding value tuned to one viewport. Absolutely
+            positioned with its own fixed height, occupied whether or not
+            the history has any pips in it yet, so nothing below ever moves.
+            The card slot's own top margin (below) is what actually reserves
+            the clearance for this band, since an absolutely positioned
+            element claims no flow height of its own. */}
+        <div className="absolute inset-x-0 top-0 flex h-8 items-center justify-between gap-2">
+          {/* The roll history: a muted pair of pips per throw recorded so
+              far, reading straight from useDiceRoll's own `rolls` (handed up
+              through DiceRoller's onRollsChange) rather than a second count
+              kept here. No box, no border, no index number: the order
+              already says which roll is which, and the aria-live status
+              already announces the totals out loud, which is also why this
+              is aria-hidden and pointer-events-none. Small and tightly
+              spaced so three pairs plus both actions fit well inside a
+              320px viewport; see the task report for the arithmetic. */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none flex shrink-0 items-center gap-3 opacity-60"
+          >
+            {rolls.map(([a, b], i) => (
+              <motion.div
+                key={i}
+                variants={itemVariants}
+                initial={reducedMotion ? false : "hidden"}
+                animate="visible"
+                className="flex items-center gap-1"
+              >
+                <Pips value={a} className="h-3 w-3" />
+                <Pips value={b} className="h-3 w-3" />
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Edit and download: actions on the card rather than a form
+              stacked beneath it, so opening either costs no layout.
+              Rendered (not merely hidden) only once a card exists, which
+              keeps them out of the tab order before then. Plain glyphs, no
+              circular fill or border, so the band stays quiet against the
+              bare page; muted until hovered or focused, same as every other
+              icon-only control in this app. The 44px hit target and the
+              focus ring are the one thing kept non-negotiable. */}
+          {roll && !editingName && (
+            <div className="flex shrink-0 items-center gap-2">
+              <button
+                type="button"
+                onClick={openEditName}
+                aria-label="Edit the name on the card"
+                className="flex h-11 w-11 items-center justify-center rounded-full text-subtle transition-colors duration-base ease-out hover:text-foreground focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <Pencil className="h-4 w-4" aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                onClick={download}
+                aria-label="Download the card as a PNG"
+                className="flex h-11 w-11 items-center justify-center rounded-full text-subtle transition-colors duration-base ease-out hover:text-foreground focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <Download className="h-4 w-4" aria-hidden="true" />
+              </button>
+            </div>
+          )}
+
+          {roll && editingName && (
+            // min-w-0 lets this shrink below its content's natural width
+            // instead of forcing the row to overflow; max-w-[160px] stops
+            // it stretching further than a name needs once the history
+            // group is small (0 or 1 pair). It still shrinks with the
+            // history at three pairs, which is exactly the width the row
+            // has to spare at that moment: see the task report.
+            <div className="min-w-0 max-w-[160px] flex-1">
+              {/* Disabled for the ~900ms the print reveal is running, rather
+                  than letting a redraw cancel and jump ahead: the reveal only
+                  ever plays once per card, right after it prints, so the
+                  field is unusable for less than a second and never fights
+                  the animation for the canvas. */}
+              <input
+                ref={nameInputRef}
+                value={name}
+                maxLength={18}
+                disabled={revealing}
+                aria-label="Name on the card"
+                onChange={(e) => setName(e.target.value)}
+                onBlur={commitEditName}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.currentTarget.blur();
+                  } else if (e.key === "Escape") {
+                    cancelEditName();
+                  }
+                }}
+                className="w-full rounded-full border border-border bg-elevated px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
+              />
+            </div>
+          )}
         </div>
 
-        {/* Edit and download: actions on the card rather than a form
-            stacked beneath it, so opening either costs no layout. Rendered
-            (not merely hidden) only once a card exists, which keeps them
-            out of the tab order before then. */}
-        {roll && !editingName && (
-          <div className="absolute right-4 top-4 flex items-center gap-2">
-            <button
-              type="button"
-              onClick={openEditName}
-              aria-label="Edit the name on the card"
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-elevated text-foreground transition-colors duration-base ease-out hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-elevated"
-            >
-              <Pencil className="h-4 w-4" aria-hidden="true" />
-            </button>
-            <button
-              type="button"
-              onClick={download}
-              aria-label="Download the card as a PNG"
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-elevated text-foreground transition-colors duration-base ease-out hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-elevated"
-            >
-              <Download className="h-4 w-4" aria-hidden="true" />
-            </button>
-          </div>
-        )}
-
-        {roll && editingName && (
-          <div className="absolute right-4 top-4">
-            {/* Disabled for the ~900ms the print reveal is running, rather
-                than letting a redraw cancel and jump ahead: the reveal only
-                ever plays once per card, right after it prints, so the
-                field is unusable for less than a second and never fights
-                the animation for the canvas. */}
-            <input
-              ref={nameInputRef}
-              value={name}
-              maxLength={18}
-              disabled={revealing}
-              aria-label="Name on the card"
-              onChange={(e) => setName(e.target.value)}
-              onBlur={commitEditName}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.currentTarget.blur();
-                } else if (e.key === "Escape") {
-                  cancelEditName();
-                }
-              }}
-              className="w-40 rounded-full border border-border bg-elevated px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
-            />
-          </div>
-        )}
-
-        <div className="relative flex h-[380px] w-full items-center justify-center">
+        {/* mt-12 clears the header band (its 32px, plus room to breathe)
+            without needing the band to claim any flow height itself. Below
+            this, the gap to the pill is now whatever DiceRoller's own
+            `mt-8` gives it in natural flow, not a `justify-between` spread
+            across a fixed-height panel: that used to leave roughly 150px of
+            dead air between the card and the pill. */}
+        <div className="relative mt-12 flex h-[380px] w-full items-center justify-center">
           {/* The deck: two idle cards, always present, so the slot never
               looks empty before a roll. Plain bordered rectangles at the
               card's own aspect ratio, offset and rotated per the reference. */}
