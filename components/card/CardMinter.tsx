@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { Download, Pencil, RefreshCw, Volume2, VolumeX } from "lucide-react";
 import { ISSUES } from "@/lib/card/issues";
 import { isPerfect, issueFromTotal, pipTotal } from "@/lib/card/dice";
@@ -9,16 +9,13 @@ import { serialFrom } from "@/lib/card/seed";
 import { drawTicket, CARD_W, CARD_H } from "@/lib/card/ticket";
 import { CARD_FONTS } from "@/lib/card/fonts";
 import { prefersReducedMotion } from "@/lib/card/reveal";
-import { FULL_REVEAL, SHORT_REVEAL, type RevealTimeline } from "@/lib/card/revealSequence";
+import { EXIT_REVEAL, FULL_REVEAL } from "@/lib/card/revealSequence";
 import {
-  CARD_FADE_EASE,
   CARD_FLIP_EASE,
   CARD_FLIP_PERSPECTIVE,
-  CARD_RISE_EASE,
-  CARD_RISE_FROM,
-  CARD_RISE_TO,
   DECK_OFFSET_BACK,
   DECK_OFFSET_FRONT,
+  cardRiseVariants,
   itemVariants,
 } from "@/lib/motionVariants";
 import DiceRoller from "@/components/card/DiceRoller";
@@ -82,34 +79,13 @@ export default function CardMinter({
   // instead of racing a redraw against the reveal.
   const [revealing, setRevealing] = useState(false);
   const [roll, setRoll] = useState<RollSet | null>(null);
-  // Controls the card's CSS rise out of the deck. Independent of `roll`:
-  // rolling again drops this to false first, and `roll` itself only clears
-  // once `riseMs` has elapsed (see handleRollAgain below). On the visitor's
-  // first card riseMs is FULL_REVEAL's real 500ms, so the old card visibly
-  // slides back into the deck before the slot goes blank. On every re-roll
-  // after that riseMs is SHORT_REVEAL's near-instant duration (see the note
-  // below), so there is no transition to see: the card simply disappears
-  // and the slot is blank on the next frame.
-  const [cardShown, setCardShown] = useState(false);
-  // The rise's actual CSS transition duration, read from whichever variant
-  // is currently in play (see the reveal effect below). Not a flat
-  // constant: SHORT_REVEAL's cardRise.duration is near-instant on purpose,
-  // and hard-coding FULL_REVEAL's 500ms here would always play the full
-  // rise regardless of variant, leaving the turn underway (and, on
-  // SHORT_REVEAL, well past its own start) while the card was still moving.
-  // This number does double duty (both "how long to wait before touching
-  // the canvas" and "the CSS transition's own duration"), which is why
-  // SHORT_REVEAL's ABSENT placeholder has to be a hair above zero rather
-  // than exactly zero: see revealSequence.ts.
-  const [riseMs, setRiseMs] = useState<number>(FULL_REVEAL.cardRise.duration);
-  // The turn's own CSS transition duration, the same reasoning as riseMs
-  // above: read from whichever variant is currently in play, since
-  // SHORT_REVEAL's turn plays at full length even though its rise doesn't.
-  const [flipMs, setFlipMs] = useState<number>(FULL_REVEAL.flip.duration);
   // Drives the card's `rotateY`: false shows its back (face-down, per the
   // deck it rose from), true shows its printed front. Starts false so a
   // freshly risen card always shows its back first; the reveal effect below
-  // flips it once the rise has settled.
+  // flips it once the rise has settled. handleRollAgain drops it back to
+  // false to turn the card away again before it leaves; that direction is
+  // also how the flip's own CSS transition (in the JSX below) picks its
+  // duration, FULL_REVEAL's entering or EXIT_REVEAL's leaving.
   const [flipped, setFlipped] = useState(false);
   // RollPill's caption once the turn has finished. Also doubles as the
   // "has a card been revealed" flag the pill's label reads: null means
@@ -139,11 +115,11 @@ export default function CardMinter({
   // straight to the finished frame: see the effect below. Reset to false
   // when rolling again, so the next card gets its own reveal.
   const revealedOnceRef = useRef(false);
-  // Unlike revealedOnceRef, this never resets: it is what picks FULL_REVEAL
-  // for a visitor's first completed set ever and SHORT_REVEAL for every
-  // re-roll after that, per lib/card/revealSequence.ts.
-  const hasEverRevealedRef = useRef(false);
-  const rollAgainTimerRef = useRef(0);
+  // Sequences the exit: handleRollAgain turns the card back to blank first,
+  // and only once that has played out (see this ref's own use there, and
+  // ExitTimeline's doc in revealSequence.ts for why the order matters) does
+  // it null `roll`, which is what actually starts the card sinking away.
+  const exitTurnTimerRef = useRef(0);
 
   useEffect(() => {
     let id = window.localStorage.getItem(KEY);
@@ -188,13 +164,14 @@ export default function CardMinter({
     };
   }, []);
 
-  // Cancels a pending roll-again clear if the visitor navigates away mid
-  // slide-out: nothing outlives the component to write to a detached ref.
-  useEffect(() => () => window.clearTimeout(rollAgainTimerRef.current), []);
-
   useEffect(() => {
     setReducedMotion(prefersReducedMotion(window));
   }, []);
+
+  // Cancels a pending exit's turn-then-sink handoff if the visitor
+  // navigates away mid-exit: nothing outlives the component to write to a
+  // detached ref.
+  useEffect(() => () => window.clearTimeout(exitTurnTimerRef.current), []);
 
   // Focuses (and selects) the name field the moment it opens, so tapping
   // Edit is enough to start typing without a second tap into the field.
@@ -221,27 +198,23 @@ export default function CardMinter({
     };
   }, [visitorId, name, origin, city, roll]);
 
-  /* The one moment the rarity system exists for: on the first draw after a
-     roll, the finished card rises off the deck showing its back, then turns
-     to face the visitor. Unlike the printing reveal this replaced, the
-     finished card is drawn straight to the VISIBLE canvas the instant the
-     roll lands: drawing it early is safe now because the card's own back
-     face is what keeps it hidden (see the JSX below, CARD_FLIP_EASE and
-     backface-visibility: hidden on both faces), not the timing of when
-     pixels are painted. `drawTicket` itself never learns any of this; it is
-     the same call the gallery and the download button use.
+  /* On every roll landing, the finished card rises off the deck showing its
+     back, then turns to face the visitor. The finished card is drawn
+     straight to the VISIBLE canvas the instant the roll lands: drawing it
+     early is safe because the card's own back face is what keeps it hidden
+     (see the JSX below, CARD_FLIP_EASE and backface-visibility: hidden on
+     both faces), not the timing of when pixels are painted. `drawTicket`
+     itself never learns any of this; it is the same call the gallery and
+     the download button use.
 
-     Redraws after that first reveal (the name field, once it is editable
-     again) skip straight past all of it: printing again on every keystroke
-     would be noise, not a moment. */
+     Redraws after the reveal (the name field, once it is editable again)
+     skip straight past all of it: printing again on every keystroke would
+     be noise, not a moment. The card's own mount and unmount (see the JSX
+     below, `roll && ready` inside an `AnimatePresence`) is what gives every
+     roll, first or re-, the same full entry: there is no shortened variant
+     any more, so this effect never branches on which one it got. */
   useEffect(() => {
     if (!roll || !ready) return;
-    // A fresh roll landing supersedes any pending roll-again clear: nothing
-    // couples SETTLE_MS and FULL_REVEAL.cardRise.duration, so a future
-    // change to either could otherwise let a stale timer null out this
-    // new roll's state moments after it arrives. Enforced here rather than
-    // left to the coincidence that they currently happen to both be 500.
-    window.clearTimeout(rollAgainTimerRef.current);
     const c = canvasRef.current;
     const data = buildData();
     if (!c || !data) return;
@@ -266,40 +239,25 @@ export default function CardMinter({
     }
 
     const reducedMotion = prefersReducedMotion(window);
-    // FULL_REVEAL plays once, on this visitor's first completed set; every
-    // re-roll after that gets SHORT_REVEAL, so rolling repeatedly for a
-    // rare issue doesn't mean sitting through the card's rise every time.
-    // The turn itself still plays either way: see revealSequence.ts.
-    const variant: RevealTimeline = hasEverRevealedRef.current ? SHORT_REVEAL : FULL_REVEAL;
-    // The component, not the constants, decides how long the rise's and
-    // the turn's own CSS transitions run: see the states' docs above.
-    setRiseMs(variant.cardRise.duration);
-    setFlipMs(variant.flip.duration);
 
     if (reducedMotion) {
-      // No rise, no turn: the card appears face-up in place.
-      setCardShown(true);
+      // No rise, no turn: the card appears face-up in place. `motion`'s own
+      // `MotionConfig reducedMotion="user"` (app/layout.tsx) already collapses
+      // the rise's mount to instant; this only has to do the same for the
+      // turn, which is plain CSS and outside MotionConfig's reach.
       setFlipped(true);
       revealedOnceRef.current = true;
-      hasEverRevealedRef.current = true;
       setIssueCaption(buildIssueCaption(data));
       return;
     }
 
     // Back-side-out, whatever it was left at by a previous roll (see
-    // handleRollAgain: the old card sinks away still showing its front,
-    // never un-turning, so this is what actually resets it for the new
-    // one). Invisible either way while cardShown is still false below.
+    // handleRollAgain: the old card turns away before it sinks, so this is
+    // defensive, not load-bearing). The mount itself (the JSX below) is what
+    // starts the rise; no manual "paint hidden, then show" step is needed
+    // here the way a raw CSS transition would have required, since `motion`
+    // animates from its own `hidden` variant on mount.
     setFlipped(false);
-
-    // Mounted (or left) hidden, shown on a later frame, so the browser
-    // actually paints the "before" state and the rise's own transition
-    // runs instead of the card appearing already at rest.
-    let raf1 = 0;
-    let raf2 = 0;
-    raf1 = requestAnimationFrame(() => {
-      raf2 = requestAnimationFrame(() => setCardShown(true));
-    });
 
     let flipTimer = 0;
     let flipDoneTimer = 0;
@@ -310,19 +268,16 @@ export default function CardMinter({
       setFlipped(true);
       flipDoneTimer = window.setTimeout(() => {
         revealedOnceRef.current = true;
-        hasEverRevealedRef.current = true;
         setRevealing(false);
         const beat = Math.max(
           0,
-          variant.issueLine.at - (variant.flip.at + variant.flip.duration)
+          FULL_REVEAL.issueLine.at - (FULL_REVEAL.flip.at + FULL_REVEAL.flip.duration)
         );
         captionTimer = window.setTimeout(() => setIssueCaption(buildIssueCaption(data)), beat);
-      }, variant.flip.duration);
-    }, variant.flip.at);
+      }, FULL_REVEAL.flip.duration);
+    }, FULL_REVEAL.flip.at);
 
     return () => {
-      cancelAnimationFrame(raf1);
-      cancelAnimationFrame(raf2);
       window.clearTimeout(flipTimer);
       window.clearTimeout(flipDoneTimer);
       window.clearTimeout(captionTimer);
@@ -368,34 +323,42 @@ export default function CardMinter({
     setVisitorId(id);
   }, []);
 
-  /* Rolling again: cardShown flips to false and the pill's fill drains via
-     useDiceRoll's `reset`. Nothing is rolled on the visitor's behalf.
-     `roll` itself waits riseMs before clearing, so the old (already-seen)
-     card is never cleared out from under a transition that is still
-     playing. On the visitor's first card that wait is FULL_REVEAL's real
-     500ms and the card visibly slides back into the deck first, still
-     showing its printed front (nothing un-turns it; the next roll's own
-     effect resets `flipped` to false before it rises); on every re-roll
-     after that riseMs is SHORT_REVEAL's near-instant duration, so the card
-     just disappears with nothing to see, rather than repeating the slide. */
+  /* Rolling again: the pill's fill drains via useDiceRoll's `reset`.
+     Nothing is rolled on the visitor's behalf. `flipped` drops to false
+     immediately, turning the card back to blank while it is still fully
+     mounted (`roll` is untouched here on purpose, see below); only once
+     that turn has actually finished does `roll` go null, which is what
+     flips the AnimatePresence condition in the JSX below and starts the
+     card sinking back into the deck.
+
+     The two can't happen in the same tick. AnimatePresence freezes an
+     exiting element's props at whatever they were on the last render before
+     it started leaving; nulling `roll` in the same update as `setFlipped`
+     would mean that last render still had `flipped` true, and the card
+     would sink away still showing its printed front. Waiting out
+     EXIT_REVEAL.flip.duration is not a guess: it is the exact duration the
+     turn's own CSS transition below was just given, so this fires the
+     instant that turn is actually done, never before or meaningfully after.
+
+     Reduced motion skips the wait entirely: there is no turn to see either
+     way (the transition is "none"), and the card has no `exit` variant to
+     play (see the JSX below), so nulling `roll` immediately just removes it
+     on the next frame. */
   const handleRollAgain = useCallback(() => {
     setIssueCaption(null);
-    setCardShown(false);
     setEditingName(false);
-    window.clearTimeout(rollAgainTimerRef.current);
-    rollAgainTimerRef.current = window.setTimeout(() => {
-      const c = canvasRef.current;
-      const ctx = c?.getContext("2d");
-      if (c && ctx) ctx.clearRect(0, 0, c.width, c.height);
+    setFlipped(false);
+    window.clearTimeout(exitTurnTimerRef.current);
+    if (prefersReducedMotion(window)) {
       revealedOnceRef.current = false;
       setRoll(null);
-      // `riseMs` here, not a flat constant: this clear always tracks
-      // whichever rise actually just played (FULL_REVEAL's 500ms on the
-      // first card, SHORT_REVEAL's near-instant one on every re-roll
-      // after), so the stage never sits with a dismissed card for longer
-      // than the rise that dismissed it took.
-    }, riseMs);
-  }, [riseMs]);
+      return;
+    }
+    exitTurnTimerRef.current = window.setTimeout(() => {
+      revealedOnceRef.current = false;
+      setRoll(null);
+    }, EXIT_REVEAL.flip.duration);
+  }, []);
 
   const data = buildData();
 
@@ -629,103 +592,126 @@ export default function CardMinter({
             <PlaceholderCard width={SLOT_CARD_W} height={SLOT_CARD_H} />
           </div>
           {/* The card itself: rises off the deck, then turns from its back
-              to its printed front. The rise (translate/scale/opacity) and
-              the turn (rotateY) are two nested transforms with two separate
-              transitions rather than one combined transform list, because
-              `perspective` has to sit on an ancestor of the element that
-              actually rotates (the next div in), not on the element being
-              translated and scaled here. */}
-          <div
-            className="relative"
-            style={{
-              width: SLOT_CARD_W,
-              height: SLOT_CARD_H,
-              opacity: cardShown ? 1 : 0,
-              transform: cardShown ? CARD_RISE_TO : CARD_RISE_FROM,
-              transition: reducedMotion
-                ? "none"
-                : `opacity ${riseMs}ms ${CARD_FADE_EASE}, transform ${riseMs}ms ${CARD_RISE_EASE}`,
-            }}
-          >
-            {/* The perspective housing: establishes the 3D space the turn
-                below happens in. Sized to fill the rise wrapper exactly, so
-                it never affects layout of its own. */}
-            <div className="h-full w-full" style={{ perspective: CARD_FLIP_PERSPECTIVE }}>
-              {/* The element that actually rotates. `preserve-3d` is what
-                  lets its two children (the faces below) each occupy their
-                  own plane in that 3D space instead of being flattened into
-                  one; without it `backface-visibility: hidden` on the faces
-                  would have nothing to hide behind. */}
-              <div
-                className="relative h-full w-full"
-                style={{
-                  transformStyle: "preserve-3d",
-                  transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
-                  transition: reducedMotion ? "none" : `transform ${flipMs}ms ${CARD_FLIP_EASE}`,
-                }}
+              to its printed front, and reverses both on the way out.
+              `AnimatePresence` owns the mount and unmount (keyed on
+              `roll && ready`, the same gate the reveal effect above already
+              uses), so the exit actually gets to play before the element
+              leaves rather than being cut off by an unmount racing its own
+              transition. `cardRiseVariants` (lib/motionVariants.ts) drives
+              the rise itself: opacity, translate and scale, nothing 3D.
+
+              The turn (rotateY) stays a separate, plain CSS transition
+              rather than joining the `motion` variant above it: that keeps
+              `preserve-3d` and `backface-visibility: hidden` working exactly
+              as verified in a real browser, with no risk from moving a 3D
+              transform onto `motion`'s own transform pipeline. `perspective`
+              sits on the housing div below (an ancestor of the element that
+              actually rotates), not on the rise wrapper itself.
+
+              `initial={false}` and dropping `exit` under reduced motion,
+              rather than trusting the app's global `MotionConfig
+              reducedMotion="user"` (app/layout.tsx) alone: that config only
+              zeroes transform-driven values (x, y, scale, rotate), not
+              opacity, so the rise's own fade would still visibly play on
+              its full duration otherwise. This is the same local
+              `prefersReducedMotion(window)` read the turn below already
+              uses, not a second mechanism. */}
+          <AnimatePresence>
+            {roll && ready && (
+              <motion.div
+                className="relative"
+                style={{ width: SLOT_CARD_W, height: SLOT_CARD_H }}
+                variants={cardRiseVariants}
+                initial={reducedMotion ? false : "hidden"}
+                animate="visible"
+                exit={reducedMotion ? undefined : "exit"}
               >
-                {/* The back: the card face-down. Same stock, border and
-                    radius as the two deck cards above, so it reads as the
-                    same object seen from behind, not a new design; the
-                    brand mark at low opacity is the only thing on it, since
-                    a face-down card knows nothing about the roll yet.
-                    `backfaceVisibility: hidden` (with the -webkit- prefix
-                    Safari still needs) is what makes this invisible once
-                    the turn passes 90deg, the same property the front face
-                    below relies on to stay invisible until then. */}
-                <div
-                  aria-hidden="true"
-                  className="absolute inset-0 flex items-center justify-center rounded-2xl border border-border bg-card"
-                  style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
-                >
-                  <span
-                    className="block h-8 w-8 bg-foreground opacity-15"
+                {/* The perspective housing: establishes the 3D space the turn
+                    below happens in. Sized to fill the rise wrapper exactly, so
+                    it never affects layout of its own. */}
+                <div className="h-full w-full" style={{ perspective: CARD_FLIP_PERSPECTIVE }}>
+                  {/* The element that actually rotates. `preserve-3d` is what
+                      lets its two children (the faces below) each occupy their
+                      own plane in that 3D space instead of being flattened into
+                      one; without it `backface-visibility: hidden` on the faces
+                      would have nothing to hide behind. Its transition duration
+                      follows `flipped`'s own direction: FULL_REVEAL's entering
+                      the front, EXIT_REVEAL's turning back away, since those are
+                      the only two times this value ever changes. */}
+                  <div
+                    className="relative h-full w-full"
                     style={{
-                      WebkitMaskImage: "url(/brand-mark.png)",
-                      maskImage: "url(/brand-mark.png)",
-                      WebkitMaskSize: "contain",
-                      maskSize: "contain",
-                      WebkitMaskRepeat: "no-repeat",
-                      maskRepeat: "no-repeat",
-                      WebkitMaskPosition: "center",
-                      maskPosition: "center",
+                      transformStyle: "preserve-3d",
+                      transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
+                      transition: reducedMotion
+                        ? "none"
+                        : `transform ${flipped ? FULL_REVEAL.flip.duration : EXIT_REVEAL.flip.duration}ms ${CARD_FLIP_EASE}`,
                     }}
-                  />
+                  >
+                    {/* The back: the card face-down. Same stock, border and
+                        radius as the two deck cards above, so it reads as the
+                        same object seen from behind, not a new design; the
+                        brand mark at low opacity is the only thing on it, since
+                        a face-down card knows nothing about the roll yet.
+                        `backfaceVisibility: hidden` (with the -webkit- prefix
+                        Safari still needs) is what makes this invisible once
+                        the turn passes 90deg, the same property the front face
+                        below relies on to stay invisible until then. */}
+                    <div
+                      aria-hidden="true"
+                      className="absolute inset-0 flex items-center justify-center rounded-2xl border border-border bg-card"
+                      style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
+                    >
+                      <span
+                        className="block h-8 w-8 bg-foreground opacity-15"
+                        style={{
+                          WebkitMaskImage: "url(/brand-mark.png)",
+                          maskImage: "url(/brand-mark.png)",
+                          WebkitMaskSize: "contain",
+                          maskSize: "contain",
+                          WebkitMaskRepeat: "no-repeat",
+                          maskRepeat: "no-repeat",
+                          WebkitMaskPosition: "center",
+                          maskPosition: "center",
+                        }}
+                      />
+                    </div>
+                    {/* The front: the finished card, drawn to the canvas the
+                        instant a roll lands (see the reveal effect above).
+                        Rotated 180deg on its own, so the parent's own 180deg
+                        turn above lands it facing the viewer the right way
+                        round rather than mirrored: two rotations of the same
+                        180deg cancel out. Transparent where the tear-line holes
+                        are cut with destination-out, so the deck's own back
+                        card (rendered above, further back in the DOM) shows
+                        through those cuts once this face is up: the back face
+                        just above is never painted at all once its own
+                        backface-visibility hides it, so nothing else in this
+                        stack sits behind the holes. */}
+                    <div
+                      className="absolute inset-0"
+                      style={{
+                        backfaceVisibility: "hidden",
+                        WebkitBackfaceVisibility: "hidden",
+                        transform: "rotateY(180deg)",
+                      }}
+                    >
+                      <canvas
+                        ref={canvasRef}
+                        className="h-full w-full rounded-2xl"
+                        role="img"
+                        aria-label={
+                          data
+                            ? `A ${data.issue.name} visitor card, serial ${data.serial}, issued to ${data.name}, from a roll of ${pipTotal(data.roll)}.`
+                            : "The card's reserved space. It rises here once you roll three times."
+                        }
+                      />
+                    </div>
+                  </div>
                 </div>
-                {/* The front: the finished card, drawn to the canvas the
-                    instant a roll lands (see the reveal effect above).
-                    Rotated 180deg on its own, so the parent's own 180deg
-                    turn above lands it facing the viewer the right way
-                    round rather than mirrored: two rotations of the same
-                    180deg cancel out. Transparent where the tear-line holes
-                    are cut with destination-out, so the deck's own back
-                    card (rendered above, further back in the DOM) shows
-                    through those cuts once this face is up: the back face
-                    just above is never painted at all once its own
-                    backface-visibility hides it, so nothing else in this
-                    stack sits behind the holes. */}
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    backfaceVisibility: "hidden",
-                    WebkitBackfaceVisibility: "hidden",
-                    transform: "rotateY(180deg)",
-                  }}
-                >
-                  <canvas
-                    ref={canvasRef}
-                    className="h-full w-full rounded-2xl"
-                    role="img"
-                    aria-label={
-                      data
-                        ? `A ${data.issue.name} visitor card, serial ${data.serial}, issued to ${data.name}, from a roll of ${pipTotal(data.roll)}.`
-                        : "The card's reserved space. It rises here once you roll three times."
-                    }
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         <DiceRoller
