@@ -5,6 +5,7 @@ import { useWebHaptics } from "web-haptics/react";
 import { rollPair } from "@/lib/card/dice";
 import { prefersReducedMotion } from "@/lib/card/reveal";
 import { SETTLE_MS } from "@/lib/card/revealSequence";
+import { playTick } from "@/components/card/dice/diceSound";
 import type { Roll, RollSet } from "@/lib/card/types";
 
 /**
@@ -30,6 +31,13 @@ type Trigger = ReturnType<typeof useWebHaptics>["trigger"];
  *  mirrored here rather than imported, purely to keep the two landing taps
  *  reading like the same throw the visuals already depict. */
 const HAPTIC_LANDING_STAGGER_MS = 40;
+
+/** The settle tick fires this long after a landing, whether or not that
+ *  landing completed the set: the owner's reference timing for the third
+ *  voice in the original click() helper, restored verbatim. Sound-only:
+ *  there is no haptic equivalent to keep in step with, unlike the landing
+ *  taps above. */
+const SETTLE_TICK_MS = 70;
 
 /**
  * Wraps a `web-haptics` trigger the way the old hand-rolled `buzz()`
@@ -200,13 +208,23 @@ export function useDiceRoll(
           // The landing: both dice have now settled, whether or not the
           // skin's own animation finished cleanly. The third roll gets the
           // heavier `success` preset instead of the usual two light taps,
-          // since it is the moment the set actually completes.
+          // since it is the moment the set actually completes; it gets the
+          // same "land" sound voice too rather than a fourth one invented
+          // just for this branch.
           if (completesSet) {
             safeHaptic(trigger, "success");
+            playTick("land");
           } else {
             safeHaptic(trigger, "light");
-            window.setTimeout(() => safeHaptic(trigger, "light"), HAPTIC_LANDING_STAGGER_MS);
+            playTick("land");
+            window.setTimeout(() => {
+              safeHaptic(trigger, "light");
+              playTick("land");
+            }, HAPTIC_LANDING_STAGGER_MS);
           }
+          // The settle tick: sound only, 70ms after this landing regardless
+          // of which branch above just ran.
+          window.setTimeout(() => playTick("settle"), SETTLE_TICK_MS);
           setRolls((prev) => [...prev, result]);
         } finally {
           /* Fix 2 of 3: unconditional, so nothing above (including the
@@ -240,6 +258,7 @@ export function useDiceRoll(
       // "light" preset used for a die's own landing below) so a throw
       // reads as three distinct weights rather than one repeated buzz.
       safeHaptic(trigger, "selection");
+      playTick("press");
       if (revealed) {
         reset();
         onRollAgain();

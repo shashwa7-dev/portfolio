@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
-import { Download, Pencil } from "lucide-react";
+import { Download, Pencil, Volume2, VolumeX } from "lucide-react";
 import { ISSUES } from "@/lib/card/issues";
 import { isPerfect, issueFromTotal, pipTotal } from "@/lib/card/dice";
 import { serialFrom } from "@/lib/card/seed";
@@ -21,6 +21,7 @@ import {
 } from "@/lib/motionVariants";
 import DiceRoller from "@/components/card/DiceRoller";
 import Pips from "@/components/card/dice/Pips";
+import { useSoundPreference } from "@/components/card/dice/soundPreference";
 import type { CardData, Roll, RollSet } from "@/lib/card/types";
 
 const KEY = "shashwa7:visitor-id";
@@ -58,6 +59,7 @@ export default function CardMinter({
   origin: string | null;
   city: string | null;
 }) {
+  const { muted, toggle: toggleMuted } = useSoundPreference();
   const [visitorId, setVisitorId] = useState<string | null>(null);
   const [name, setName] = useState("Visitor");
   const [fontsReady, setFontsReady] = useState(false);
@@ -413,32 +415,54 @@ export default function CardMinter({
             ))}
           </div>
 
-          {/* Edit and download: actions on the card rather than a form
-              stacked beneath it, so opening either costs no layout.
-              Rendered (not merely hidden) only once a card exists, which
-              keeps them out of the tab order before then. `rounded-md`,
-              the same radius every other control in the app uses
-              (components/ui/button.tsx), and the hover/focus fill is that
-              file's `ghost` variant verbatim: without it the radius has no
-              background to round. The 44px hit target and the focus ring
-              are the one thing kept non-negotiable. */}
-          {roll && !editingName && (
+          {/* Edit, download and mute: actions on the card rather than a
+              form stacked beneath it, so opening any of them costs no
+              layout. Edit and download are rendered (not merely hidden)
+              only once a card exists, which keeps them out of the tab
+              order before then; mute is not card-gated, since the dice
+              (and their sound) are there from the start. Hidden as a group
+              only while the name field below is open, the same way edit
+              and download already were, so the field gets the row to
+              itself rather than squeezing past a third button too.
+              `rounded-md`, the same radius every other control in the app
+              uses (components/ui/button.tsx), and the hover/focus fill is
+              that file's `ghost` variant verbatim: without it the radius
+              has no background to round. The 44px hit target and the
+              focus ring are the one thing kept non-negotiable. */}
+          {!editingName && (
             <div className="flex shrink-0 items-center gap-2">
+              {roll && (
+                <>
+                  <button
+                    type="button"
+                    onClick={openEditName}
+                    aria-label="Edit the name on the card"
+                    className="flex h-11 w-11 items-center justify-center rounded-md text-subtle transition-colors duration-base ease-out hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <Pencil className="h-4 w-4" aria-hidden="true" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={download}
+                    aria-label="Download the card as a PNG"
+                    className="flex h-11 w-11 items-center justify-center rounded-md text-subtle transition-colors duration-base ease-out hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <Download className="h-4 w-4" aria-hidden="true" />
+                  </button>
+                </>
+              )}
               <button
                 type="button"
-                onClick={openEditName}
-                aria-label="Edit the name on the card"
+                onClick={toggleMuted}
+                aria-label={muted ? "Unmute the dice" : "Mute the dice"}
+                aria-pressed={muted}
                 className="flex h-11 w-11 items-center justify-center rounded-md text-subtle transition-colors duration-base ease-out hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <Pencil className="h-4 w-4" aria-hidden="true" />
-              </button>
-              <button
-                type="button"
-                onClick={download}
-                aria-label="Download the card as a PNG"
-                className="flex h-11 w-11 items-center justify-center rounded-md text-subtle transition-colors duration-base ease-out hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                <Download className="h-4 w-4" aria-hidden="true" />
+                {muted ? (
+                  <VolumeX className="h-4 w-4" aria-hidden="true" />
+                ) : (
+                  <Volume2 className="h-4 w-4" aria-hidden="true" />
+                )}
               </button>
             </div>
           )}
