@@ -62,14 +62,16 @@ const RollPill = forwardRef<HTMLButtonElement, RollPillProps>(function RollPill(
         disabled={disabled}
         aria-label={`${label}. ${caption}`}
         style={{ WebkitTapHighlightColor: "transparent" }}
-        className="group relative inline-flex h-[60px] w-[240px] items-center justify-center gap-3 overflow-visible rounded-full bg-accent text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-70"
+        className="group relative inline-flex h-[60px] w-[240px] items-center justify-center gap-3 overflow-visible rounded-md bg-accent text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-70"
       >
-        {/* The fill: clipped to its own rounded wrapper so it never spills
-            past the pill's corners, while the pill itself stays
-            overflow-visible so the dice dock can send dice above it. */}
+        {/* The fill: clipped to its own wrapper so it never spills past the
+            pill's corners, while the pill itself stays overflow-visible so
+            the dice dock can send dice above it. Its radius has to match
+            the button's exactly, or the fill bulges past the button's own
+            (now square) corners on every roll. */}
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 overflow-hidden rounded-full"
+          className="pointer-events-none absolute inset-0 overflow-hidden rounded-md"
         >
           <span
             className="absolute inset-y-0 left-0 bg-accent-foreground/15"
@@ -77,15 +79,15 @@ const RollPill = forwardRef<HTMLButtonElement, RollPillProps>(function RollPill(
           />
         </span>
 
-        {/* One step up the type scale from the caption below (2xs -> xs),
-            with the weight and tracking every primary button in the app
-            uses, since this is the pill's one primary action rather than
-            another mono label. Checked against the pill's fixed 240px and
-            the dock beside it at the longest label, "Roll again": see the
-            task report for the arithmetic. */}
-        <span className="relative z-[1] font-mono text-xs font-semibold uppercase tracking-tight">
-          {label}
-        </span>
+        {/* text-sm font-semibold, sentence case: how every other primary
+            action in the app labels itself (components/ui/button.tsx's
+            base class; components/Navbar.tsx's CV link; components/
+            Socials.tsx's email CTA; components/About.tsx's hero CTAs). The
+            uppercase mono label this replaced read as a different design
+            language next to those. Checked against the pill's fixed 240px
+            and the dock beside it at the longest label, "Roll again": see
+            the task report for the arithmetic. */}
+        <span className="relative z-[1] text-sm font-semibold">{label}</span>
         <span className="relative z-[1]">{children}</span>
       </button>
 

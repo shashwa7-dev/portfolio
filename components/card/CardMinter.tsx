@@ -20,6 +20,7 @@ import {
   itemVariants,
 } from "@/lib/motionVariants";
 import DiceRoller from "@/components/card/DiceRoller";
+import PlaceholderCard from "@/components/card/PlaceholderCard";
 import Pips from "@/components/card/dice/Pips";
 import { useSoundPreference } from "@/components/card/dice/soundPreference";
 import type { CardData, Roll, RollSet } from "@/lib/card/types";
@@ -520,8 +521,18 @@ export default function CardMinter({
             ~17px clear of the pill below. */}
         <div className="relative mt-12 flex h-[350px] w-full items-center justify-center">
           {/* The deck: two idle cards, always present, so the slot never
-              looks empty before a roll. Plain bordered rectangles at the
-              card's own aspect ratio, offset and rotated per the reference. */}
+              looks empty before a roll. The back one is a plain bordered
+              rectangle at the card's own aspect ratio, offset and rotated
+              per the reference. The front one is the reserved slot's own
+              stand-in: PlaceholderCard sketches a stamp, a scribble where
+              the portrait goes, a wavy name and a torn stub, all in the
+              real card's own proportions, so the slot reads as "a card is
+              coming" instead of an empty box. It costs no layout shift when
+              the real card arrives: it never mounts or unmounts, and the
+              printed canvas (same size, same position, opaque from its
+              first fillRect) simply paints over it top to bottom during the
+              reveal, the same way it already covered this plain rectangle
+              before the sketch existed. */}
           {/* inset-0 m-auto, not the flex parent's centering: an absolutely
               positioned box is out of flow, so justify-content/align-items
               on the parent above never reaches it. Auto margins on a fixed
@@ -533,9 +544,11 @@ export default function CardMinter({
           />
           <div
             aria-hidden="true"
-            className="absolute inset-0 m-auto rounded-2xl border border-border bg-card"
+            className="absolute inset-0 m-auto overflow-hidden rounded-2xl border border-border bg-card"
             style={{ width: SLOT_CARD_W, height: SLOT_CARD_H, transform: DECK_OFFSET_FRONT }}
-          />
+          >
+            <PlaceholderCard width={SLOT_CARD_W} height={SLOT_CARD_H} />
+          </div>
           {/* The card itself. Transparent where the tear-line holes are cut
               with destination-out, so the deck card directly behind it
               shows through those cuts once it has printed. */}
