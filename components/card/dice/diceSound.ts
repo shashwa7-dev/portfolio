@@ -141,10 +141,11 @@ function getChime(): HTMLAudioElement | null {
 
 /**
  * Primes the chime element so its fetch is already under way well before
- * any reveal is possible. Called once from useDiceRoll's "press" branch,
- * the first user gesture of a throw: three throws and a settle always
- * separate that from the reveal that follows, which is plenty of time for
- * 33KB to arrive even on a slow connection. Never throws: a construction
+ * any reveal is possible. Called on every press from useDiceRoll's press
+ * branch: idempotent via getChime(), which reuses the one element once it
+ * exists, so frequent calls are cheap. Three throws and a settle always
+ * separate each press from the reveal that follows, which is plenty of time
+ * for 33KB to arrive even on a slow connection. Never throws: a construction
  * failure here just means playChime() finds nothing to play later.
  */
 export function primeChime(): void {

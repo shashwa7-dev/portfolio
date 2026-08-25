@@ -29,12 +29,10 @@ export const duration = {
   /** 404 page sequence only. The one sanctioned exception. */
   hero: 0.5,
   /**
-   * The dice throw. Outside the sub-300ms UI budget, and unlike
-   * --duration-sweep and --duration-print it cannot claim to be "not a
-   * response to input", because it plainly is one. The justification is
-   * different: this duration is the physics rather than a transition. A die
-   * that completes its arc in 300ms does not read as a thrown object at
-   * all, it reads as a glyph being swapped.
+   * The dice throw. Outside the sub-300ms UI budget: a response to input,
+   * but justified as physics rather than a transition. A die that completes
+   * its arc in 300ms does not read as a thrown object at all, it reads as a
+   * glyph being swapped.
    */
   throw: 0.7,
 } as const;
