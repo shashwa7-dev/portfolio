@@ -432,7 +432,7 @@ describe("drawTicket", () => {
     const h = CARD_H, w = CARD_W;
     const markSize = w * 0.052;
     const topY = h * 0.052 + markSize * 0.66;
-    expect(wordAt(texts, topY)).toBe("SHASHWA7.IN");
+    expect(wordAt(texts, topY)).toBe("SHASHWA7.IN/CARD");
 
     const TOP = h * 0.038;
     const sy = TOP + h * 0.101, sh = h * 0.507;
@@ -464,7 +464,7 @@ describe("drawTicket", () => {
     const h = CARD_H, w = CARD_W;
     const markSize = w * 0.052;
     const topY = h * 0.052 + markSize * 0.66;
-    expect(wordAt(texts, topY)).toBe("SHASHWA7.IN");
+    expect(wordAt(texts, topY)).toBe("SHASHWA7.IN/CARD");
   });
 
   it("draws the rarity share at the larger of the two stub sizes", () => {

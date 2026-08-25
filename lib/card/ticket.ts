@@ -187,10 +187,18 @@ export function drawTicket(
   if (fonts.mark) {
     ctx.drawImage(fonts.mark, L, markY, markSize, markSize);
   }
+  // Sized to match the odds line (w * 0.026), not the w * 0.019 this used to
+  // be: at the export's 1200px width, a 4:5 image on a social timeline
+  // renders around 400px, which put the old size at roughly 7.6px, the
+  // quietest thing on the card despite being the one piece of it that turns
+  // a viewer into a visitor. Kept in P.faint regardless: size does the
+  // legibility work here, and a stamp's country name is properly quiet.
+  // Carries the path too (not just the domain), so the artefact points at
+  // where it came from, not just where the owner lives.
   ctx.fillStyle = P.faint;
   ctx.textAlign = "left";
-  ctx.font = `${w * 0.019}px ${fonts.mono}`;
-  tracked(ctx, "SHASHWA7.IN", L + markSize + w * 0.022, markY + markSize * 0.66, w * 0.0026);
+  ctx.font = `${w * 0.026}px ${fonts.mono}`;
+  tracked(ctx, "SHASHWA7.IN/CARD", L + markSize + w * 0.022, markY + markSize * 0.66, w * 0.0026);
 
   // inner rule. Commemorative gets a second one, Misprint prints it twice off-register.
   //

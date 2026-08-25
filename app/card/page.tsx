@@ -36,12 +36,25 @@ export const metadata = {
 /**
  * Reading headers opts this route into dynamic rendering, which is intended:
  * the origin printed on the card is per request. Both headers are absent in
- * local dev, so the fallback is no origin line rather than a guess.
+ * local dev; in production that means no origin line rather than a guess.
+ * In development only, a NODE_ENV-guarded stand-in fills them in below so
+ * the origin line and the postmark's city can be seen without deploying.
  */
 export default function CardPage() {
   const h = headers();
-  const country = h.get("x-vercel-ip-country");
-  const rawCity = h.get("x-vercel-ip-city");
+  let country = h.get("x-vercel-ip-country");
+  let rawCity = h.get("x-vercel-ip-city");
+  // Development-only stand-in: Vercel's geo headers only exist on its edge,
+  // so both are always null on localhost, which makes the origin line and
+  // the postmark's city invisible to the owner without deploying. Each
+  // header falls back independently, and only when NODE_ENV is not
+  // "production", so real headers (if ever present in a non-production
+  // deploy, e.g. preview) still win. There is no fallback in production, by
+  // design: this branch is structurally unreachable there.
+  if (process.env.NODE_ENV !== "production") {
+    if (!country) country = "IN";
+    if (!rawCity) rawCity = "Bengaluru";
+  }
   let city = rawCity;
   if (rawCity) {
     try {
