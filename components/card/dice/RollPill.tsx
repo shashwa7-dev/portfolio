@@ -62,7 +62,7 @@ const RollPill = forwardRef<HTMLButtonElement, RollPillProps>(function RollPill(
         disabled={disabled}
         aria-label={`${label}. ${caption}`}
         style={{ WebkitTapHighlightColor: "transparent" }}
-        className="group relative h-[60px] w-[340px] overflow-visible rounded-md bg-accent text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-70"
+        className="group relative h-[60px] w-[min(340px,calc(100vw-3rem))] overflow-visible rounded-md bg-accent text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-70"
       >
         {/* The fill: clipped to its own wrapper so it never spills past the
             pill's corners, while the pill itself stays overflow-visible so
@@ -96,13 +96,31 @@ const RollPill = forwardRef<HTMLButtonElement, RollPillProps>(function RollPill(
             ordinary button, too quiet for the only control on the stage.
 
             The pill widened from 240px to 340px to fit this at text-lg
-            without crowding the dock. Worst case is CubeDice's two 40px
-            cubes plus their 12px gap (92px), inset 16px from the right, so
-            the dock's own left edge sits at 340 - 16 - 92 = 232px. "Roll
-            again" (the longest label) measures ~78px at text-lg in DM Sans
-            SemiBold, so centred in 340px its right edge lands at 170 +
-            39 = 209px, leaving roughly 23px of clearance before the dock.
-            TossDice's narrower 74px dock clears by roughly 41px. */}
+            without crowding the dock, but a fixed 340px overflows the
+            stage on real phones: it's `w-full max-w-[420px]` inside a
+            24px-each-side (`px-6`) container, so a 360px Android has only
+            312px to give and a 375px iPhone 327px. The width is now
+            `min(340px, 100vw - 3rem)`, tracking the viewport directly
+            rather than a percentage of an ancestor: the pill's own box has
+            no in-flow content (every child here is `absolute`), and every
+            ancestor up to the stage sizes to content, so a percentage
+            width would resolve against that shrink-wrapped chain and
+            collapse rather than fill the available space.
+
+            That still has to clear the dock at the narrowest phones, which
+            a fluid button alone doesn't guarantee. Both skins' docks are
+            now the same 74px footprint (CubeDice's cubes came down from
+            40px to 32px, closing their 12px gap to 10px: 32 + 32 + 10 =
+            74, matching TossDice's dock exactly), inset 16px from the
+            right, so the dock's own left edge sits at W - 16 - 74 = W - 90.
+            "Roll again" (the longest label) measures ~78px at text-lg in
+            DM Sans SemiBold, so centred in a button of width W its right
+            edge lands at W/2 + 39. At the 320px-viewport floor, W is 272px:
+            the dock's left edge is at 182px and the label's right edge at
+            175px, 7px of clearance, identical for both skins now that
+            their docks match. At the 340px cap, the dock's left edge is at
+            250px and the label's right edge at 209px, 41px of clearance,
+            again the same for both. */}
         <span className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center text-lg font-semibold">
           {label}
         </span>

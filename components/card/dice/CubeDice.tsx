@@ -17,11 +17,17 @@ import type { Die } from "@/lib/card/types";
 
 /** The cube's edge, and half of it. Every face sits `HALF` out from the
  *  centre, derived from `EDGE` rather than typed twice, so the box cannot
- *  come apart if the size ever changes. */
-const EDGE = 40;
+ *  come apart if the size ever changes.
+ *
+ *  Down from 40px: at 40px plus a 12px gap the dock ran to 92px, wide
+ *  enough that RollPill's centred label collided with it once the pill
+ *  went fluid for narrow phones. 32px, paired with a 10px gap (below),
+ *  brings the dock to 74px, matching TossDice's dock exactly, so both
+ *  skins clear the label by the same margin at every width. */
+const EDGE = 32;
 const HALF = EDGE / 2;
 
-/** Enough depth that a 40px cube reads as a box, not a fisheye. */
+/** Enough depth that a 32px cube reads as a box, not a fisheye. */
 const PERSPECTIVE = 480;
 
 /**
@@ -112,7 +118,7 @@ export default function CubeDice({ onComplete, issueCaption, onRollAgain, onRoll
         <motion.div
           aria-hidden="true"
           whileTap={tapPress}
-          className="flex items-center gap-3"
+          className="flex items-center gap-2.5"
           style={{ perspective: PERSPECTIVE }}
         >
           <Cube controls={controlsA} />
