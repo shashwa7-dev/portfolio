@@ -68,16 +68,24 @@ export default function CardMinter({
   const [revealing, setRevealing] = useState(false);
   const [roll, setRoll] = useState<RollSet | null>(null);
   // Controls the card's CSS rise out of the deck. Independent of `roll`:
-  // rolling again drops this to false first (the slide-out) and only
-  // clears `roll` once that transition has had time to finish, so the old
-  // (already-seen) card visibly leaves before the slot goes blank again.
+  // rolling again drops this to false first, and `roll` itself only clears
+  // once `riseMs` has elapsed (see handleRollAgain below). On the visitor's
+  // first card riseMs is FULL_REVEAL's real 500ms, so the old card visibly
+  // slides back into the deck before the slot goes blank. On every re-roll
+  // after that riseMs is SHORT_REVEAL's near-instant duration (see the note
+  // below), so there is no transition to see: the card simply disappears
+  // and the slot is blank on the next frame.
   const [cardShown, setCardShown] = useState(false);
   // The rise's actual CSS transition duration, read from whichever variant
-  // is currently in play (see the reveal effect below). Not the flat
-  // CARD_RISE_MS constant: SHORT_REVEAL's cardRise is near-instant on
-  // purpose, and hard-coding CARD_RISE_MS here would always play the full
-  // 500ms rise regardless of variant, leaving the print underway (and, on
+  // is currently in play (see the reveal effect below). Not a flat
+  // constant: SHORT_REVEAL's cardRise.duration is near-instant on purpose,
+  // and hard-coding FULL_REVEAL's 500ms here would always play the full
+  // rise regardless of variant, leaving the print underway (and, on
   // SHORT_REVEAL, well past the portrait) while the card was still moving.
+  // This number does double duty (both "how long to wait before touching
+  // the canvas" and "the CSS transition's own duration"), which is why
+  // SHORT_REVEAL's ABSENT placeholder has to be a hair above zero rather
+  // than exactly zero: see revealSequence.ts.
   const [riseMs, setRiseMs] = useState<number>(FULL_REVEAL.cardRise.duration);
   // RollPill's caption once the print has finished. Also doubles as the
   // "has a card been revealed" flag the pill's label reads: null means
@@ -207,10 +215,10 @@ export default function CardMinter({
   useEffect(() => {
     if (!roll || !ready) return;
     // A fresh roll landing supersedes any pending roll-again clear: nothing
-    // couples SETTLE_MS and CARD_RISE_MS, so a future change to either
-    // could otherwise let a stale timer null out this new roll's state
-    // moments after it arrives. Enforced here rather than left to the
-    // coincidence that they currently happen to both be 500.
+    // couples SETTLE_MS and FULL_REVEAL.cardRise.duration, so a future
+    // change to either could otherwise let a stale timer null out this
+    // new roll's state moments after it arrives. Enforced here rather than
+    // left to the coincidence that they currently happen to both be 500.
     window.clearTimeout(rollAgainTimerRef.current);
     const c = canvasRef.current;
     const data = buildData();
@@ -319,12 +327,15 @@ export default function CardMinter({
     }, "image/png");
   }, [buildData]);
 
-  /* Rolling again: the card slides back into the deck (cardShown false,
-     the same transition the rise uses in reverse) and the pill's fill
-     drains via useDiceRoll's `reset`. Nothing is rolled on the visitor's
-     behalf. `roll` itself, and the offscreen clear, wait for the slide-out
-     to finish so the old (already-seen) card doesn't just vanish under the
-     visitor mid-transition. */
+  /* Rolling again: cardShown flips to false and the pill's fill drains via
+     useDiceRoll's `reset`. Nothing is rolled on the visitor's behalf.
+     `roll` itself, and the offscreen clear, wait riseMs before landing, so
+     the old (already-seen) card is never cleared out from under a
+     transition that is still playing. On the visitor's first card that
+     wait is FULL_REVEAL's real 500ms and the card visibly slides back into
+     the deck first; on every re-roll after that riseMs is SHORT_REVEAL's
+     near-instant duration, so the card just disappears with nothing to
+     see, rather than repeating the slide. */
   const handleRollAgain = useCallback(() => {
     setIssueCaption(null);
     setCardShown(false);
@@ -336,7 +347,7 @@ export default function CardMinter({
       if (c && ctx) ctx.clearRect(0, 0, c.width, c.height);
       revealedOnceRef.current = false;
       setRoll(null);
-      // `riseMs` here, not the flat CARD_RISE_MS: this clear always tracks
+      // `riseMs` here, not a flat constant: this clear always tracks
       // whichever rise actually just played (FULL_REVEAL's 500ms on the
       // first card, SHORT_REVEAL's near-instant one on every re-roll
       // after), so the stage never sits with a dismissed card for longer

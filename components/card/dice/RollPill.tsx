@@ -3,6 +3,7 @@
 import { forwardRef, type ReactNode } from "react";
 import { motion } from "motion/react";
 import { blurSwapVariants, FILL_EASE, FILL_MS } from "@/lib/motionVariants";
+import type { DiceRollState } from "@/components/card/dice/useDiceRoll";
 
 /**
  * The button both dice skins share: the pill itself, its fill, the label
@@ -19,17 +20,16 @@ import { blurSwapVariants, FILL_EASE, FILL_MS } from "@/lib/motionVariants";
  * wash never flips that contrast.
  */
 type RollPillProps = {
-  label: string;
-  caption: string;
-  /** 0 to 1. */
-  progress: number;
-  disabled: boolean;
+  /** useDiceRoll's own return value, straight from the skin. RollPill reads
+   *  `rolls`, `caption`, `disabled` and `reducedMotion` off it directly
+   *  rather than taking each as its own prop: those seven props used to be
+   *  passed identically from both skins. */
+  state: DiceRollState;
+  /** Set once the print reveal has finished; overrides `state.caption` with
+   *  the issue line, flips the label to "Roll again", and is what decides
+   *  `revealed` below. Threaded straight from the skin, same as `state`. */
+  issueCaption: string | null;
   onClick: () => void;
-  reducedMotion: boolean;
-  /** True once a card exists and `caption` is the issue line rather than a
-   *  rolling-in-progress count. Governs the one moment the caption blurs
-   *  in rather than plainly updating: see the caption block below. */
-  revealed: boolean;
   /** The skin's own dice, at rest or mid-throw. RollPill draws none of it. */
   children: ReactNode;
 };
@@ -39,9 +39,18 @@ type RollPillProps = {
  *  way it already reaches into its dice with refs, and that needs the real
  *  node now that the button lives in here instead of in the skin. */
 const RollPill = forwardRef<HTMLButtonElement, RollPillProps>(function RollPill(
-  { label, caption, progress, disabled, onClick, reducedMotion, revealed, children },
+  { state, issueCaption, onClick, children },
   ref
 ) {
+  const { rolls, caption: rollingCaption, disabled, reducedMotion } = state;
+  // True once a card exists and `caption` is the issue line rather than a
+  // rolling-in-progress count. Governs both the label and the one moment
+  // the caption blurs in rather than plainly updating: see the caption
+  // block below.
+  const revealed = issueCaption !== null;
+  const label = revealed ? "Roll again" : "Roll";
+  const caption = issueCaption ?? rollingCaption;
+  const progress = rolls.length / 3;
   const pct = `${Math.max(0, Math.min(1, progress)) * 100}%`;
 
   return (
@@ -53,7 +62,7 @@ const RollPill = forwardRef<HTMLButtonElement, RollPillProps>(function RollPill(
         disabled={disabled}
         aria-label={`${label}. ${caption}`}
         style={{ WebkitTapHighlightColor: "transparent" }}
-        className="group relative inline-flex h-[60px] w-[240px] items-center justify-center gap-3 overflow-visible rounded-full bg-accent text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-elevated disabled:opacity-70"
+        className="group relative inline-flex h-[60px] w-[240px] items-center justify-center gap-3 overflow-visible rounded-full bg-accent text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-70"
       >
         {/* The fill: clipped to its own rounded wrapper so it never spills
             past the pill's corners, while the pill itself stays

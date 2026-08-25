@@ -14,14 +14,42 @@ const MARK_SRC = "/brand-mark.png";
    This is the same drawTicket the mint button calls: there is no separate
    thumbnail routine, so the gallery cannot advertise a card the generator
    does not actually produce. */
-/* One fixed roll for every specimen. The gallery is showing what each issue
-   looks like, not how it was won, and a random roll here would make the six
-   cards differ between visitors for no reason. */
-const SPECIMEN_ROLL: RollSet = [
-  [3, 4],
-  [5, 2],
-  [6, 1],
-];
+/* One fixed roll per specimen, each landing inside the band its own issue
+   advertises (see DICE_BANDS in lib/card/dice.ts): the Inverted specimen's
+   roll totals 34-36, the Misprint's totals 30-33, and so on. A single shared
+   roll used to sit on all five, which meant four of the five specimens
+   printed a total that contradicted the range printed beneath it. The
+   gallery is showing what each issue looks like, not how it was won, so
+   these are fixed constants rather than a random roll: that would make the
+   five cards differ between visitors for no reason, on top of still risking
+   the same contradiction on every visit that doesn't land in-band. */
+const SPECIMEN_ROLLS: Record<IssueKey, RollSet> = {
+  definitive: [
+    [3, 4],
+    [5, 2],
+    [6, 1],
+  ],
+  commemorative: [
+    [4, 4],
+    [4, 4],
+    [4, 4],
+  ],
+  firstDay: [
+    [5, 4],
+    [5, 4],
+    [5, 4],
+  ],
+  misprint: [
+    [6, 5],
+    [6, 5],
+    [5, 4],
+  ],
+  inverted: [
+    [6, 6],
+    [6, 6],
+    [6, 5],
+  ],
+};
 
 const SPECIMENS: { key: IssueKey; id: string; name: string; city: string; origin: string }[] = [
   { key: "definitive", id: "specimen-definitive", name: "Maya", city: "Lisbon", origin: "Lisbon, PT" },
@@ -62,7 +90,7 @@ function Specimen({
         // is a fixed prop for the same reason, so the five specimens are
         // identical for every visitor.
         issue: ISSUES[spec.key],
-        roll: SPECIMEN_ROLL,
+        roll: SPECIMEN_ROLLS[spec.key],
         origin: spec.origin,
         city: spec.city,
         date: "23 Aug 2026",

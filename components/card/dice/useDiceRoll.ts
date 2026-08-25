@@ -58,17 +58,17 @@ function safeHaptic(trigger: Trigger, input: Parameters<Trigger>[0]) {
  */
 export type Animate = (result: Roll) => Promise<void>;
 
+/**
+ * What a skin (and, through it, RollPill) actually reads. `throwDice` and
+ * `reset` are not part of this: both exist only to be called from inside
+ * `handleClick` below, and no skin calls either of them directly. `throwing`,
+ * `nextThrow`, `done` and `runningTotal` were returned once too, but nothing
+ * outside this hook read them; `done` still backs `disabled` internally.
+ */
 export type DiceRollState = {
-  /** Throws recorded so far, 0 to 3. */
+  /** Throws recorded so far, 0 to 3. Read by RollPill to derive its fill
+   *  progress. */
   rolls: readonly Roll[];
-  /** True while a throw is in flight. */
-  throwing: boolean;
-  /** 1, 2 or 3: which throw the button is about to make. */
-  nextThrow: number;
-  /** True once three throws are in. */
-  done: boolean;
-  /** Sum of every pip recorded so far. */
-  runningTotal: number;
   /** The aria-live sentence for the current state. */
   status: string;
   /**
@@ -79,7 +79,9 @@ export type DiceRollState = {
    * far display even exist, it only knows the throws.
    */
   caption: string;
-  /** True when the visitor has asked for reduced motion. */
+  /** True when the visitor has asked for reduced motion. Read directly by a
+   *  skin's own `animate` (to decide whether to play its throw animation at
+   *  all) and by RollPill (to gate the caption's blur-swap). */
   reducedMotion: boolean;
   /**
    * Whether RollPill's button should be inert right now: mid-throw, or the
@@ -88,15 +90,6 @@ export type DiceRollState = {
    * no-op a tap rather than doing anything visible.
    */
   disabled: boolean;
-  /** Starts a throw. No-ops while a throw is in flight or once three are recorded. */
-  throwDice: (animate: Animate) => void;
-  /**
-   * Clears every throw so far, ready for a fresh set. Used only when
-   * rolling again after a card exists: separate from unmounting the skin,
-   * so the pill's fill can drain with its own transition instead of a
-   * remounted element jumping straight to empty.
-   */
-  reset: () => void;
   /**
    * The pill's whole click contract: guards against a throw already in
    * flight, branches to "start a fresh set" when `revealed` is true
@@ -155,11 +148,16 @@ function buildCaption(rolls: readonly Roll[]): string {
  *   `handleClick`'s branch and `disabled`'s trailing window.
  * @param onRollAgain Called from `handleClick`'s revealed branch, after this
  *   hook's own `rolls` have already been cleared.
+ * @param onRollsChange Optional. Mirrors `rolls` up to the caller on every
+ *   change, so CardMinter's history strip can read the throws recorded so
+ *   far without a second copy of them. Lives here, in one effect, rather
+ *   than as a copy-pasted effect in every skin that calls this hook.
  */
 export function useDiceRoll(
   onComplete: (set: RollSet) => void,
   revealed: boolean,
-  onRollAgain: () => void
+  onRollAgain: () => void,
+  onRollsChange?: (rolls: readonly Roll[]) => void
 ): DiceRollState {
   const [rolls, setRolls] = useState<Roll[]>([]);
   const [throwing, setThrowing] = useState(false);
@@ -252,6 +250,13 @@ export function useDiceRoll(
     [throwing, revealed, reset, onRollAgain, throwDice, trigger]
   );
 
+  /* Mirrors `rolls` up to the caller, if it wants them, on every change.
+     Moved here from being pasted into both CubeDice and TossDice: the
+     effect, and the four-line comment explaining it, used to exist twice. */
+  useEffect(() => {
+    onRollsChange?.(rolls);
+  }, [rolls, onRollsChange]);
+
   /* Fix 1 of 3: the handoff fires from its own effect,
      never inline with the third roll's own setRolls call. Calling
      onComplete synchronously there would let React 18 batch the third
@@ -265,16 +270,12 @@ export function useDiceRoll(
     return () => clearTimeout(settle);
   }, [rolls, onComplete]);
 
-  const runningTotal = rolls.reduce((n, [a, b]) => n + a + b, 0);
-  const nextThrow = Math.min(rolls.length + 1, 3);
+  // Backs `disabled` below only; not part of the returned contract since
+  // nothing outside this hook reads it.
   const done = rolls.length === 3;
 
   return {
     rolls,
-    throwing,
-    nextThrow,
-    done,
-    runningTotal,
     status: buildStatus(rolls),
     caption: buildCaption(rolls),
     reducedMotion,
@@ -284,8 +285,6 @@ export function useDiceRoll(
     // no-ops once `rolls.length >= 3`. The pill should look inert for that
     // whole window rather than inviting a tap it silently ignores.
     disabled: throwing || (done && !revealed),
-    throwDice,
-    reset,
     handleClick,
   };
 }

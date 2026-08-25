@@ -66,18 +66,24 @@ const STAMP_BEAT_MS = 40;
 const ABSENT = 0.000001;
 
 export const FULL_REVEAL: RevealTimeline = {
-  // Mirrors --duration-card-rise / CARD_RISE_MS in lib/motionVariants.ts.
-  // The card rises blank; nothing is drawn to the visible canvas until this
-  // stage has had its full 500ms, or the finished card would be legible
-  // while it is still moving.
+  // The source of truth for the rise's duration: CardMinter reads this
+  // value directly (as variant.cardRise.duration), and --duration-card-rise
+  // in app/globals.css mirrors it for documentation only. The card rises
+  // blank; nothing is drawn to the visible canvas until this stage has had
+  // its full 500ms, or the finished card would be legible while it is
+  // still moving.
   cardRise: { at: 0, duration: 500 },
   print: { at: 500, duration: PRINT_MS },
   issueLine: { at: 500 + PRINT_MS + STAMP_BEAT_MS, duration: 200 },
 };
 
 export const SHORT_REVEAL: RevealTimeline = {
-  // Skips straight to print: the rise itself may still play (a re-roll's
-  // card comes back off the deck the same way), but nothing waits on it.
+  // Skips straight to print. ABSENT is also what CardMinter uses as the
+  // card's own CSS transition duration (riseMs), so a re-roll's card does
+  // not repeat the first card's animated rise off the deck: it just pops
+  // into place with no visible transition, which is the intended behaviour
+  // (someone rolling repeatedly for a rare issue should not sit through
+  // the rise's ceremony every time).
   cardRise: { at: 0, duration: ABSENT },
   print: { at: 0, duration: PRINT_MS },
   issueLine: { at: PRINT_MS + STAMP_BEAT_MS, duration: 200 },

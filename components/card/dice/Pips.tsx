@@ -15,12 +15,12 @@ const PIPS: Record<Die, readonly number[]> = {
  * render at wildly different weights and baselines across platforms. This
  * is the same reason the card prints its roll as text rather than glyphs.
  *
- * Shared by both skins: CubeDice uses it for every face of the live cube
- * and for its results row; TossDice uses it only for its results row (its
- * own airborne dice are a different, materially-lit SVG, not this flat
- * icon). Everything the two skins need differs only by size, so `className`
- * is the only prop: a die's value and its pip geometry are the same fact
- * everywhere, stated once here.
+ * Used by CubeDice for every face of the live cube, and by CardMinter for
+ * the roll-history strip's muted pairs of pips. TossDice does not import
+ * this at all: its own airborne dice are a different, materially-lit SVG,
+ * not this flat icon. Everything a consumer needs differs only by size, so
+ * `className` is the only prop: a die's value and its pip geometry are the
+ * same fact everywhere, stated once here.
  */
 export default function Pips({ value, className }: { value: Die; className?: string }) {
   return (

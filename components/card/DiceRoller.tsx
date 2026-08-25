@@ -21,7 +21,10 @@ function styleFromParam(raw: string | null): DiceStyle {
   return raw === "cube" || raw === "toss" ? raw : DEFAULT_STYLE;
 }
 
-type SkinProps = {
+/** The props shape both dice skins take. Exported so CubeDice and TossDice
+ *  read it from here instead of each re-declaring a byte-identical inline
+ *  prop literal. */
+export type SkinProps = {
   onComplete: (set: RollSet) => void;
   issueCaption: string | null;
   onRollAgain: () => void;

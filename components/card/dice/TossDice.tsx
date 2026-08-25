@@ -5,7 +5,8 @@ import { ARCS, tossKeyframes } from "@/lib/card/toss";
 import { duration, TOSS_EASE, TOSS_SHUFFLE_MS } from "@/lib/motionVariants";
 import { useDiceRoll, type Animate } from "@/components/card/dice/useDiceRoll";
 import RollPill from "@/components/card/dice/RollPill";
-import type { Die, Roll, RollSet } from "@/lib/card/types";
+import type { SkinProps } from "@/components/card/DiceRoller";
+import type { Die, Roll } from "@/lib/card/types";
 
 /**
  * The reference "toss" skin (.superpowers/sdd/2026-08-24-visitor-card-dice/
@@ -77,23 +78,7 @@ function Die({
   );
 }
 
-export default function TossDice({
-  onComplete,
-  issueCaption,
-  onRollAgain,
-  onRollsChange,
-}: {
-  onComplete: (set: RollSet) => void;
-  /** Set once the print reveal has finished; overrides the hook's own
-   *  rolling caption and flips the pill's label to "Roll again". */
-  issueCaption: string | null;
-  /** Called when the pill is tapped while `issueCaption` is set. */
-  onRollAgain: () => void;
-  /** Mirrors useDiceRoll's `rolls` up to CardMinter's history strip. See
-   *  DiceRoller.tsx's doc on the prop for why this lives here rather than
-   *  in the hook itself. */
-  onRollsChange: (rolls: readonly Roll[]) => void;
-}) {
+export default function TossDice({ onComplete, issueCaption, onRollAgain, onRollsChange }: SkinProps) {
   // useId, not a literal string: <defs> ids are global to the document and
   // the issue gallery renders other SVG on the same page. Colons stripped
   // since an unquoted `url(#id)` treats them as a CSS token boundary.
@@ -115,15 +100,8 @@ export default function TossDice({
   useEffect(() => () => teardownRef.current(), []);
 
   const revealed = issueCaption !== null;
-  const { rolls, status, caption, reducedMotion, disabled, handleClick } =
-    useDiceRoll(onComplete, revealed, onRollAgain);
-
-  // Purely a hand-off: `rolls` already exists in the hook above, this just
-  // reports it upward on every change so CardMinter's history strip can
-  // read it without a parallel copy of the throws.
-  useEffect(() => {
-    onRollsChange(rolls);
-  }, [rolls, onRollsChange]);
+  const diceRoll = useDiceRoll(onComplete, revealed, onRollAgain, onRollsChange);
+  const { status, reducedMotion, handleClick } = diceRoll;
 
   const animate = useCallback<Animate>(
     (result) =>
@@ -237,16 +215,7 @@ export default function TossDice({
         {status}
       </p>
 
-      <RollPill
-        ref={buttonRef}
-        label={revealed ? "Roll again" : "Roll"}
-        caption={issueCaption ?? caption}
-        progress={rolls.length / 3}
-        disabled={disabled}
-        onClick={onClick}
-        reducedMotion={reducedMotion}
-        revealed={revealed}
-      >
+      <RollPill ref={buttonRef} state={diceRoll} issueCaption={issueCaption} onClick={onClick}>
         {/* The dock: the dice live here at rest, and return here after
             the toss. */}
         <span className="relative inline-flex h-9 w-[74px] shrink-0 items-center" aria-hidden="true">

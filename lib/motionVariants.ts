@@ -133,14 +133,14 @@ export const blurSwapVariants: Variants = {
 };
 
 // ──────────────────────────────────────────────────────────────────────
-// Dice cube (DiceRoller) — a real `preserve-3d` cube rather than a flat
+// Dice cube (CubeDice) — a real `preserve-3d` cube rather than a flat
 // SVG face flickering through random values. `duration.throw` and
 // `ease.throw` above are its tokens.
 // ──────────────────────────────────────────────────────────────────────
 
 /**
  * Cube rotation, in degrees, that puts a given face toward the viewer. The
- * inverse of each face's placement transform in DiceRoller.tsx. Stated once
+ * inverse of each face's placement transform in CubeDice.tsx. Stated once
  * here so both the resting pose and the throw's landing target read it
  * rather than recomputing it inline.
  */
@@ -254,8 +254,12 @@ export const TOSS_SHUFFLE_MS = 55;
 // the card is a <canvas>, and RollPill's fill is a plain <span>, so there is
 // nothing here for `motion/react` to drive. These exist so no component
 // pastes the literal curve or offsets directly. Mirrored in app/globals.css
-// as --duration-card-rise, --ease-card-rise, --deck-offset-back,
-// --deck-offset-front, --duration-fill and --ease-fill.
+// as --ease-card-rise, --deck-offset-back, --deck-offset-front,
+// --duration-fill and --ease-fill (those and --duration-card-rise are
+// documentation mirrors only; nothing reads them). The rise's duration
+// itself lives in lib/card/revealSequence.ts as FULL_REVEAL.cardRise.
+// duration: that is the single source CardMinter reads, not a constant
+// in this file.
 // ──────────────────────────────────────────────────────────────────────
 
 /** Where the card sits before it rises. */
@@ -269,9 +273,6 @@ export const CARD_RISE_TO = "translateY(0) scale(1)";
  * overshoot at all.
  */
 export const CARD_RISE_EASE = "cubic-bezier(0.3, 1.1, 0.4, 1)";
-/** Mirrors --duration-card-rise and FULL_REVEAL.cardRise.duration in
- *  lib/card/revealSequence.ts. */
-export const CARD_RISE_MS = 500;
 /** The card's own fade. Kept off the overshooting curve above: a fade that
  *  overshoots past full opacity and back is a flicker, not a landing. */
 export const CARD_FADE_EASE = cssEase(ease.out);
