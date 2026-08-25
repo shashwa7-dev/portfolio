@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
-import { Download, Pencil, Volume2, VolumeX } from "lucide-react";
+import { Download, Pencil, RefreshCw, Volume2, VolumeX } from "lucide-react";
 import { ISSUES } from "@/lib/card/issues";
 import { isPerfect, issueFromTotal, pipTotal } from "@/lib/card/dice";
 import { serialFrom } from "@/lib/card/seed";
@@ -23,10 +23,20 @@ import DiceRoller from "@/components/card/DiceRoller";
 import PlaceholderCard from "@/components/card/PlaceholderCard";
 import Pips from "@/components/card/dice/Pips";
 import { useSoundPreference } from "@/components/card/dice/soundPreference";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { CardData, Roll, RollSet } from "@/lib/card/types";
 
 const KEY = "shashwa7:visitor-id";
 const MARK_SRC = "/brand-mark.png";
+
+/** The four header actions, grouped into one toolbar (see the band below).
+ *  Visually `h-8 w-8` (32px), not the 44px WCAG 2.5.5 wants: `before:-inset-1.5`
+ *  extends the actual hit area 6px past every edge (32 + 6 + 6 = 44) without
+ *  costing any layout width, so four of these plus the roll history still fit
+ *  a 320px viewport (see the report's arithmetic). `relative` is load-bearing:
+ *  the pseudo-element positions against this box, not the toolbar around it. */
+const TOOLBAR_BUTTON =
+  "relative flex h-8 w-8 items-center justify-center rounded-md text-subtle transition-colors duration-base ease-out before:absolute before:-inset-1.5 before:content-[''] hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 /** The card's on-stage preview size. Independent of CARD_W/CARD_H, the
  *  resolution `download()` and the print reveal actually draw at: this is
@@ -330,6 +340,25 @@ export default function CardMinter({
     }, "image/png");
   }, [buildData]);
 
+  /* Discards the current identity and starts a fresh one: a new
+     crypto.randomUUID() overwrites the one thing the portrait, the serial
+     and the sticker's shine angle are all hashed from (see serialFrom and
+     drawTicket). `roll` is untouched, so the issue stays exactly what the
+     dice decided; identity and edition are deliberately orthogonal (see the
+     module header of lib/card/dice.ts), and this button only ever writes
+     the id side of that pair. The redraw itself is not special-cased here:
+     buildData depends on visitorId, so the print-reveal effect below sees a
+     new `data` object and repaints, the same path a name edit already takes
+     once revealedOnceRef is true, straight to the finished frame with no
+     replay of the print animation. The old id is simply gone; nothing reads
+     it again, and a card already downloaded under it keeps hashing to the
+     same face forever because lib/card/seed.ts never changes. */
+  const handleRegenerateIdentity = useCallback(() => {
+    const id = crypto.randomUUID();
+    window.localStorage.setItem(KEY, id);
+    setVisitorId(id);
+  }, []);
+
   /* Rolling again: cardShown flips to false and the pill's fill drains via
      useDiceRoll's `reset`. Nothing is rolled on the visitor's behalf.
      `roll` itself, and the offscreen clear, wait riseMs before landing, so
@@ -416,55 +445,97 @@ export default function CardMinter({
             ))}
           </div>
 
-          {/* Edit, download and mute: actions on the card rather than a
-              form stacked beneath it, so opening any of them costs no
-              layout. Edit and download are rendered (not merely hidden)
-              only once a card exists, which keeps them out of the tab
-              order before then; mute is not card-gated, since the dice
-              (and their sound) are there from the start. Hidden as a group
-              only while the name field below is open, the same way edit
-              and download already were, so the field gets the row to
-              itself rather than squeezing past a third button too.
-              `rounded-md`, the same radius every other control in the app
-              uses (components/ui/button.tsx), and the hover/focus fill is
-              that file's `ghost` variant verbatim: without it the radius
-              has no background to round. The 44px hit target and the
-              focus ring are the one thing kept non-negotiable. */}
+          {/* Edit, regenerate, download and mute: one grouped toolbar
+              rather than four floating glyphs, which is what let a fourth
+              control (regenerate) join at all. Four 44px boxes with no
+              background and an 8px gap already used all but 16px of a
+              320px viewport's ~272px of header width; a fifth-of-that
+              fourth button would have overflowed it. `bg-elevated` gives
+              the group its own surface (the same token Navbar's own
+              control cluster uses) so the tighter `gap-1.5` reads as one
+              deliberate control rather than four cramped ones, and
+              `TOOLBAR_BUTTON` shrinks each button's own box to 32px
+              visually while keeping the 44px tap target WCAG 2.5.5 wants
+              via an invisible `before:-inset-1.5` expansion: see that
+              constant's own comment for the arithmetic. Edit, regenerate
+              and download are rendered (not merely hidden) only once a
+              card exists, which keeps them out of the tab order before
+              then; mute is not card-gated, since the dice (and their
+              sound) are there from the start. Hidden as a group only
+              while the name field below is open, so the field gets the
+              row to itself rather than squeezing past a fourth button
+              too. Every action gets a `Tooltip` (the app's one
+              `TooltipProvider` is mounted globally in app/layout.tsx);
+              the `aria-label`s underneath are unchanged, since a tooltip
+              only reaches pointers and is not an accessible name. */}
           {!editingName && (
-            <div className="flex shrink-0 items-center gap-2">
+            <div className="flex shrink-0 items-center gap-1.5 rounded-md bg-elevated p-1">
               {roll && (
                 <>
-                  <button
-                    type="button"
-                    onClick={openEditName}
-                    aria-label="Edit the name on the card"
-                    className="flex h-11 w-11 items-center justify-center rounded-md text-subtle transition-colors duration-base ease-out hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  >
-                    <Pencil className="h-4 w-4" aria-hidden="true" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={download}
-                    aria-label="Download the card as a PNG"
-                    className="flex h-11 w-11 items-center justify-center rounded-md text-subtle transition-colors duration-base ease-out hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  >
-                    <Download className="h-4 w-4" aria-hidden="true" />
-                  </button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        onClick={openEditName}
+                        aria-label="Edit the name on the card"
+                        className={TOOLBAR_BUTTON}
+                      >
+                        <Pencil className="h-4 w-4" aria-hidden="true" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>Edit name</TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        onClick={handleRegenerateIdentity}
+                        aria-label="Start over with a new portrait and serial"
+                        className={TOOLBAR_BUTTON}
+                      >
+                        <RefreshCw className="h-4 w-4" aria-hidden="true" />
+                      </button>
+                    </TooltipTrigger>
+                    {/* Plainly what it costs, not "regenerate if you don't
+                        like it": someone who has been rolling for a rare
+                        issue should know the serial goes with the face. */}
+                    <TooltipContent>
+                      Replaces your portrait and serial. Cannot be undone.
+                    </TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        onClick={download}
+                        aria-label="Download the card as a PNG"
+                        className={TOOLBAR_BUTTON}
+                      >
+                        <Download className="h-4 w-4" aria-hidden="true" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>Download PNG</TooltipContent>
+                  </Tooltip>
                 </>
               )}
-              <button
-                type="button"
-                onClick={toggleMuted}
-                aria-label={muted ? "Unmute the dice" : "Mute the dice"}
-                aria-pressed={muted}
-                className="flex h-11 w-11 items-center justify-center rounded-md text-subtle transition-colors duration-base ease-out hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                {muted ? (
-                  <VolumeX className="h-4 w-4" aria-hidden="true" />
-                ) : (
-                  <Volume2 className="h-4 w-4" aria-hidden="true" />
-                )}
-              </button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    onClick={toggleMuted}
+                    aria-label={muted ? "Unmute the dice" : "Mute the dice"}
+                    aria-pressed={muted}
+                    className={TOOLBAR_BUTTON}
+                  >
+                    {muted ? (
+                      <VolumeX className="h-4 w-4" aria-hidden="true" />
+                    ) : (
+                      <Volume2 className="h-4 w-4" aria-hidden="true" />
+                    )}
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>{muted ? "Unmute dice" : "Mute dice"}</TooltipContent>
+              </Tooltip>
             </div>
           )}
 
