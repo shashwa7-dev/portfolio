@@ -68,7 +68,13 @@ const RollPill = forwardRef<HTMLButtonElement, RollPillProps>(function RollPill(
           />
         </span>
 
-        <span className="relative z-[1] font-mono text-2xs uppercase tracking-label">
+        {/* One step up the type scale from the caption below (2xs -> xs),
+            with the weight and tracking every primary button in the app
+            uses, since this is the pill's one primary action rather than
+            another mono label. Checked against the pill's fixed 240px and
+            the dock beside it at the longest label, "Roll again": see the
+            task report for the arithmetic. */}
+        <span className="relative z-[1] font-mono text-xs font-semibold uppercase tracking-tight">
           {label}
         </span>
         <span className="relative z-[1]">{children}</span>

@@ -59,7 +59,7 @@ function Specimen({
         serial: serialFrom(spec.id),
         // The specimen shows its own issue, not the one its id happens to
         // roll: ISSUES[spec.key], never issueFromTotal(...). The roll below
-        // is a fixed prop for the same reason, so the six specimens are
+        // is a fixed prop for the same reason, so the five specimens are
         // identical for every visitor.
         issue: ISSUES[spec.key],
         roll: SPECIMEN_ROLL,
@@ -87,6 +87,9 @@ function Specimen({
       </p>
       <p className="font-mono text-2xs uppercase tracking-label text-subtle">
         {issue.label} per roll
+      </p>
+      <p className="font-mono text-2xs uppercase tracking-label text-subtle">
+        Totals {issue.range[0]} to {issue.range[1]}
       </p>
     </li>
   );
@@ -129,7 +132,8 @@ export default function IssueGallery() {
       </h2>
       <p className="mt-2 max-w-[58ch] text-sm text-muted-foreground">
         Each one changes something its name promises. The Misprint plate really
-        does slip, and the Inverted portrait really is upside down.
+        does slip, and the Inverted portrait really is upside down. The number
+        under each is what your six dice have to add up to.
       </p>
       {ready ? (
         <ul className="mt-6 grid grid-cols-2 gap-5 md:grid-cols-3">

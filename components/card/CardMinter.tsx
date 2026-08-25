@@ -405,18 +405,19 @@ export default function CardMinter({
           {/* Edit and download: actions on the card rather than a form
               stacked beneath it, so opening either costs no layout.
               Rendered (not merely hidden) only once a card exists, which
-              keeps them out of the tab order before then. Plain glyphs, no
-              circular fill or border, so the band stays quiet against the
-              bare page; muted until hovered or focused, same as every other
-              icon-only control in this app. The 44px hit target and the
-              focus ring are the one thing kept non-negotiable. */}
+              keeps them out of the tab order before then. `rounded-md`,
+              the same radius every other control in the app uses
+              (components/ui/button.tsx), and the hover/focus fill is that
+              file's `ghost` variant verbatim: without it the radius has no
+              background to round. The 44px hit target and the focus ring
+              are the one thing kept non-negotiable. */}
           {roll && !editingName && (
             <div className="flex shrink-0 items-center gap-2">
               <button
                 type="button"
                 onClick={openEditName}
                 aria-label="Edit the name on the card"
-                className="flex h-11 w-11 items-center justify-center rounded-full text-subtle transition-colors duration-base ease-out hover:text-foreground focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="flex h-11 w-11 items-center justify-center rounded-md text-subtle transition-colors duration-base ease-out hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <Pencil className="h-4 w-4" aria-hidden="true" />
               </button>
@@ -424,7 +425,7 @@ export default function CardMinter({
                 type="button"
                 onClick={download}
                 aria-label="Download the card as a PNG"
-                className="flex h-11 w-11 items-center justify-center rounded-full text-subtle transition-colors duration-base ease-out hover:text-foreground focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="flex h-11 w-11 items-center justify-center rounded-md text-subtle transition-colors duration-base ease-out hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <Download className="h-4 w-4" aria-hidden="true" />
               </button>
@@ -459,7 +460,7 @@ export default function CardMinter({
                     cancelEditName();
                   }
                 }}
-                className="w-full rounded-full border border-border bg-elevated px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
+                className="w-full rounded-md border border-border bg-elevated px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
               />
             </div>
           )}
@@ -467,11 +468,22 @@ export default function CardMinter({
 
         {/* mt-12 clears the header band (its 32px, plus room to breathe)
             without needing the band to claim any flow height itself. Below
-            this, the gap to the pill is now whatever DiceRoller's own
-            `mt-8` gives it in natural flow, not a `justify-between` spread
-            across a fixed-height panel: that used to leave roughly 150px of
-            dead air between the card and the pill. */}
-        <div className="relative mt-12 flex h-[380px] w-full items-center justify-center">
+            this, the gap to the pill is whatever DiceRoller's own `mt-8`
+            gives it in natural flow, not a `justify-between` spread across
+            a fixed-height panel: that used to leave roughly 150px of dead
+            air between the card and the pill.
+
+            The slot's own height is SLOT_CARD_H (350) exactly, matching the
+            canvas it centers, rather than the 380px this used to be: that
+            extra 30px was slack nothing needed, and it widened the visible
+            gap to the pill from 32px (DiceRoller's own margin) to 47px. The
+            deck cards behind the canvas still rotate past this box on their
+            lower corner (DECK_OFFSET_BACK's 8px translate plus its 3deg
+            rotation puts that corner ~15px below the canvas's own edge, the
+            most any deck offset extends past it), but nothing here clips:
+            this div has no `overflow-hidden`, and that corner still lands
+            ~17px clear of the pill below. */}
+        <div className="relative mt-12 flex h-[350px] w-full items-center justify-center">
           {/* The deck: two idle cards, always present, so the slot never
               looks empty before a roll. Plain bordered rectangles at the
               card's own aspect ratio, offset and rotated per the reference. */}
@@ -518,13 +530,6 @@ export default function CardMinter({
           onRollsChange={setRolls}
         />
       </div>
-
-      {roll && (
-        <p className="mx-auto mt-6 max-w-[420px] text-sm text-subtle">
-          Drawn from a random id kept in this browser. We read your country to
-          print it on the card and store nothing.
-        </p>
-      )}
     </div>
   );
 }
