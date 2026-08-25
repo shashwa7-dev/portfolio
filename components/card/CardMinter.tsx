@@ -33,7 +33,9 @@ const MARK_SRC = "/brand-mark.png";
  *  Visually `h-8 w-8` (32px), not the 44px WCAG 2.5.5 wants: `before:-inset-1.5`
  *  extends the actual hit area 6px past every edge (32 + 6 + 6 = 44) without
  *  costing any layout width, so four of these plus the roll history still fit
- *  a 320px viewport (see the report's arithmetic). `relative` is load-bearing:
+ *  a 320px viewport: four 32px boxes plus three 6px gaps and the container's
+ *  own padding come to about 154px, and the roll history to about 108px, so
+ *  262px against the 272px a 320px viewport leaves. `relative` is load-bearing:
  *  the pseudo-element positions against this box, not the toolbar around it. */
 const TOOLBAR_BUTTON =
   "relative flex h-8 w-8 items-center justify-center rounded-md text-subtle transition-colors duration-base ease-out before:absolute before:-inset-1.5 before:content-[''] hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
@@ -633,7 +635,7 @@ export default function CardMinter({
         </div>
 
         {/* mt-16 clears the header band (its 32px, plus room to breathe;
-            loosened a step from mt-12, see the report) without needing the
+            loosened a step from mt-12) without needing the
             band to claim any flow height itself. Below this, the gap to the
             pill is DiceRoller's own `mt-8` plus the `pt-4` wrapper around it
             further down, not a `justify-between` spread across a
