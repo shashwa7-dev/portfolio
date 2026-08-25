@@ -179,9 +179,9 @@ describe("drawTicket", () => {
 
   it("keeps the odds line inside the column reserved for it", () => {
     // "0.06% PER ROLL" is the longest of the five. maxIssue (w * 0.36) is
-    // the reserved width, and the hairline rule above the row is drawn
-    // from exactly Rt - maxIssue, so overrunning it would visibly cross
-    // the rule's left end.
+    // the reserved width the origin/date line's own shrinkToFit budget
+    // stops short of (Rt - maxIssue), so overrunning it here would visibly
+    // collide with that neighbour.
     const { ctx, texts } = makeStubCtx();
     drawTicket(ctx, cardFor("odds-width", "inverted"), CARD_W, CARD_H, FONTS);
 
@@ -607,8 +607,8 @@ describe("drawTicket", () => {
 
     expect(fontBeforeOrigin).toBe(bigFont);
     expect(fontBeforeOrigin).not.toBe(smallFont);
-    expect(fillStyleBeforeOrigin).toBe("#8a8175"); // LIGHT.faint
-    expect(fillStyleBeforeOrigin).not.toBe("#bdb4a4"); // LIGHT.veryFaint
+    expect(fillStyleBeforeOrigin).toBe("#7c7469"); // LIGHT.faint
+    expect(fillStyleBeforeOrigin).not.toBe("#91836a"); // LIGHT.veryFaint
   });
 
   it("keeps the name baseline at least h * 0.05 above the tear line", () => {
@@ -871,9 +871,9 @@ describe("drawTicket", () => {
   });
 
   it("shrinks the origin line rather than running it under the odds column", () => {
-    // A long city plus the roll suffix is the case that overruns. The
-    // hairline rule above the odds row starts at Rt - maxIssue, so the
-    // origin line must end before that.
+    // A long city plus the roll suffix is the case that overruns. The odds
+    // column reserves everything from Rt - maxIssue to Rt, so the origin
+    // line must end before that.
     const { ctx, texts, calls } = makeStubCtx();
     const data = { ...cardFor("roll-long", "definitive"), origin: "Sankt-Peterburg, RU" };
     drawTicket(ctx, data, CARD_W, CARD_H, FONTS);

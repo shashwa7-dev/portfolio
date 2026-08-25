@@ -37,8 +37,18 @@ const TEAL = "#1f6f78";
 const LIGHT = {
   stamp: "#fdfaf2",
   ink: "#1f1d1a",
-  faint: "#8a8175",
-  veryFaint: "#bdb4a4",
+  // Darkened from #8a8175 (~3.3:1 on the four cream/warm stocks, barely over
+  // the floor at a size that renders under 7px in the live preview): this
+  // now clears 3.9:1 or better on every light stock and 4.4:1 on the stamp
+  // itself, with real headroom below ink's ~14.5:1 rather than crowding it.
+  faint: "#7c7469",
+  // Darkened from #bdb4a4, which measured 1.8:1 on every light stock: badly
+  // under any reasonable floor for the SERIAL/ISSUE caps labels, the
+  // smallest text on the card. This clears 3.2:1 or better on every light
+  // stock (3.6:1 on the stamp) while staying visibly quieter than the new
+  // `faint` above it, so the label-vs-value ranking those two tones exist to
+  // carry is still legible, just no longer illegible on its own.
+  veryFaint: "#91836a",
   cancel: "#1f1d1a",
 };
 
@@ -54,8 +64,18 @@ const DARK = {
   // to it, only the envelope underneath differs.
   stamp: "#fdfaf2",
   ink: "#e8e3d8",
+  // Both unchanged: measured at 4.7:1 (faint on the near-black stock) and
+  // 3.4:1 (veryFaint on it), already clearing the same floor the light
+  // palette's own faint/veryFaint were raised to meet, so neither needed
+  // moving.
   faint: "#8a8175",
   veryFaint: "#6f6a63",
+  // The tier signature for Inverted. Only ever painted on the card's own
+  // dark stock (the issue value in the stub, below), where it measures
+  // 7.4:1 and is left exactly as it was. It must never be used for anything
+  // painted on the stamp itself (see "the cancel" below): the stamp is
+  // always cream, gold-on-cream measures under 2:1, and that is a mismatch
+  // to route around rather than a reason to relight the gold.
   cancel: "#c9a227",
 };
 
@@ -354,12 +374,17 @@ export function drawTicket(
   shrinkToFit(ctx, footText, fonts.mono, w * 0.0194, w * 0.012, w * 0.0006, sw - w * 0.06);
   tracked(ctx, footText, sx + sw / 2, sy + sh * 0.905, w * 0.0028, "center");
 
-  // the cancel
+  // the cancel. Sits on the stamp, which is always cream regardless of card
+  // mode (see the note on P.ink above), so its ink is LIGHT.cancel rather
+  // than P.cancel: routing Inverted's gold P.cancel through here (its
+  // rightful use is the issue value in the stub, on the actual dark stock)
+  // would print gold-on-cream at under 2:1, the same mismatch P.ink avoids
+  // for the frame rule above.
   const ccx = w * 0.724, ccy = h * 0.531 + TOP, cr = w * 0.101;
   ctx.save();
   ctx.globalAlpha = 0.62;
-  ctx.strokeStyle = data.issue.key === "firstDay" ? TEAL : P.cancel;
-  ctx.fillStyle = P.cancel;
+  ctx.strokeStyle = data.issue.key === "firstDay" ? TEAL : LIGHT.cancel;
+  ctx.fillStyle = LIGHT.cancel;
   ctx.lineWidth = w * 0.0052;
   ctx.beginPath(); ctx.arc(ccx, ccy, cr, 0, Math.PI * 2); ctx.stroke();
   ctx.lineWidth = w * 0.0026;
@@ -512,22 +537,16 @@ export function drawTicket(
   tracked(ctx, stubLine, L, h - h * 0.042, stubSpacing);
 
   // the odds: the single most interesting fact on the card, so it gets a
-  // hairline rule of its own and a size that actually reads, rather than
-  // the footnote-sized veryFaint line every other stub value uses.
+  // size that actually reads (P.ink, the card's leading tone) rather than
+  // the footnote-sized veryFaint line every other stub value uses. It used
+  // to also get a hairline rule of its own, drawn from Rt - maxIssue to Rt;
+  // the owner asked for that removed, so the row is now colour and size
+  // alone, the same device the origin/date row beside it already uses.
   //
   // Stated per roll, not as a share of all cards. Rolls are unlimited, so
   // "0.06% of cards" would be false: it is the chance of any one roll
   // landing here, and a patient visitor can hold a black card eventually.
   const shareY = h - h * 0.042;
-  ctx.save();
-  ctx.globalAlpha = 0.35;
-  ctx.strokeStyle = P.ink;
-  ctx.lineWidth = w * 0.0016;
-  ctx.beginPath();
-  ctx.moveTo(Rt - maxIssue, shareY - h * 0.026);
-  ctx.lineTo(Rt, shareY - h * 0.026);
-  ctx.stroke();
-  ctx.restore();
   ctx.fillStyle = P.ink;
   ctx.font = `${w * 0.026}px ${fonts.mono}`;
   ctx.textAlign = "right";

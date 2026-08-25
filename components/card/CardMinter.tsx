@@ -2,7 +2,18 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { Download, Pencil, RefreshCw, Volume2, VolumeX } from "lucide-react";
+import {
+  Check,
+  Copy,
+  Download,
+  MessageCircle,
+  Pencil,
+  RefreshCw,
+  Share2,
+  Volume2,
+  VolumeX,
+  X as XLogo,
+} from "lucide-react";
 import { ISSUES } from "@/lib/card/issues";
 import { isPerfect, issueFromTotal, pipTotal } from "@/lib/card/dice";
 import { serialFrom } from "@/lib/card/seed";
@@ -24,21 +35,47 @@ import Pips from "@/components/card/dice/Pips";
 import { playChime } from "@/components/card/dice/diceSound";
 import { useSoundPreference } from "@/components/card/dice/soundPreference";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import type { CardData, Roll, RollSet } from "@/lib/card/types";
 
 const KEY = "shashwa7:visitor-id";
 const MARK_SRC = "/brand-mark.png";
 
-/** The four header actions, grouped into one toolbar (see the band below).
- *  Visually `h-8 w-8` (32px), not the 44px WCAG 2.5.5 wants: `before:-inset-1.5`
- *  extends the actual hit area 6px past every edge (32 + 6 + 6 = 44) without
- *  costing any layout width, so four of these plus the roll history still fit
- *  a 320px viewport: four 32px boxes plus three 6px gaps and the container's
- *  own padding come to about 154px, and the roll history to about 108px, so
- *  262px against the 272px a 320px viewport leaves. `relative` is load-bearing:
- *  the pseudo-element positions against this box, not the toolbar around it. */
+/** How long the copy item's confirmation ("Copied") holds before the share
+ *  menu closes on its own. Not an animation duration (nothing here eases or
+ *  transitions), just how long a plain text swap gets to be read. */
+const COPY_CONFIRM_MS = 1400;
+
+/** The five header actions, grouped into one toolbar (see the band below).
+ *  Visually `h-7 w-7` (28px), not the 44px WCAG 2.5.5 wants: `before:-inset-2`
+ *  extends the actual hit area 8px past every edge (28 + 8 + 8 = 44) without
+ *  costing any layout width. That shrink is what made room for a fifth
+ *  control (share): at the previous `h-8 w-8` (32px) size, five buttons plus
+ *  the roll history ran to roughly 280px against the ~272px a 320px viewport
+ *  leaves. Worked out in full (five buttons, `gap-1.5`, the group's own
+ *  `p-1`, against the roll history at three pairs):
+ *
+ *    5 × 28px buttons        = 140px
+ *    4 × 6px gaps (gap-1.5)  =  24px
+ *    group padding (p-1)     =   8px
+ *    ---------------------------------
+ *    button group             172px
+ *    roll history (below)     100px
+ *    ---------------------------------
+ *    total                    272px
+ *
+ *  The roll history itself lost 8px the same way: three pairs of `h-3 w-3`
+ *  pips (28px a pair) at `gap-1` between the two pips of a pair is unchanged,
+ *  but the gap *between* pairs dropped from `gap-3` (12px) to `gap-2` (8px),
+ *  saving 2 × 4px. Shrinking the pips themselves instead was the other
+ *  option on the table; the gap was cheaper because it cost nothing at the
+ *  single-pair (one roll in) width the row spends most of its life at, only
+ *  showing up once three pairs are on screen together.
+ *
+ *  `relative` is load-bearing: the pseudo-element positions against this
+ *  box, not the toolbar around it. */
 const TOOLBAR_BUTTON =
-  "relative flex h-8 w-8 items-center justify-center rounded-md text-subtle transition-colors duration-base ease-out before:absolute before:-inset-1.5 before:content-[''] hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "relative flex h-7 w-7 items-center justify-center rounded-md text-subtle transition-colors duration-base ease-out before:absolute before:-inset-2 before:content-[''] hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 /** The card's on-stage preview size. Independent of CARD_W/CARD_H, the
  *  resolution `download()` and the visible canvas actually draw at: this is
@@ -124,6 +161,14 @@ export default function CardMinter({
   // touches `window`, which has no stable value on the server or during the
   // first render. Governs only the history chips' own entrance below.
   const [reducedMotion, setReducedMotion] = useState(false);
+  // Whether the X/WhatsApp/copy menu is open. Controlled (rather than left
+  // to Popover's own uncontrolled toggle) because the trigger's onClick
+  // below decides whether to open it at all: see handleShareTrigger.
+  const [shareOpen, setShareOpen] = useState(false);
+  // True for the brief window after "Copy" is pressed, so that item can
+  // swap its own icon/label to confirm the clipboard write actually
+  // happened rather than leaving the visitor to guess.
+  const [copied, setCopied] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const markRef = useRef<HTMLImageElement | null>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
@@ -341,56 +386,99 @@ export default function CardMinter({
     });
   }, [buildData, renderCardBlob]);
 
-  /* Two ceilings, so two paths. A phone with the Web Share API's file
-     support gets the actual PNG in its native sheet, carried straight from
-     renderCardBlob above; everywhere else opens a tweet composer with the
-     words and the link, since twitter.com/intent/tweet takes text and a
-     URL and cannot attach an image. `canShare({ files: [...] })` is the
-     check, not just `share` existing: some Safari versions expose `share`
-     without file support and throw when handed files.
+  /* Two ceilings, so two paths, chosen on the trigger's own click rather
+     than as the menu's first item: a phone with the Web Share API's file
+     support gets the actual PNG straight into its native sheet, carried
+     from renderCardBlob above, with no menu tap in between, since it is
+     strictly better than any intent (it can attach the image; neither
+     intent below can). Everywhere else the trigger opens the X/WhatsApp/
+     copy menu instead. `canShare({ files: [...] })` is the check, not just
+     `share` existing: some Safari versions expose `share` without file
+     support and throw when handed files.
 
-     A dismissed native sheet rejects its promise with AbortError. That is a
-     visitor changing their mind, not a failure: it is swallowed here rather
-     than falling through to the tweet composer, so declining the native
-     sheet never pops a second window nobody asked for. Any other failure
-     (the blob failing to generate, an unexpected share rejection) falls
-     through to the same composer instead; a blocked popup there just fails
-     silently, same as any other window.open a blocker eats. Nothing here
-     throws or leaves the button stuck, since there is no loading state to
-     get stuck in. */
-  const shareCard = useCallback(async () => {
+     Returns whether the share was actually handled, so handleShareTrigger
+     below knows whether to fall back to opening the menu. A dismissed
+     native sheet rejects its promise with AbortError: that is a visitor
+     changing their mind, not a failure, so it counts as handled (the menu
+     must not then pop open behind the sheet they just closed) rather than
+     falling through. Any other failure (the blob failing to generate, an
+     unexpected share rejection) counts as NOT handled, so the menu opens
+     and the visitor still has a way to share. */
+  const shareViaWebShare = useCallback(async (): Promise<boolean> => {
     const data = buildData();
-    if (!data) return;
+    if (!data) return true;
 
-    const text = buildShareText(data, cardUrl);
-    const url = cardUrl;
     const nav = typeof navigator === "undefined" ? null : navigator;
     const canFileShare =
       !!nav && typeof nav.share === "function" && typeof nav.canShare === "function";
+    if (!canFileShare) return false;
 
-    if (canFileShare) {
-      try {
-        const blob = await renderCardBlob(data);
-        if (blob) {
-          const file = new File([blob], `shashwa7-visitor-${data.serial}.png`, {
-            type: "image/png",
-          });
-          if (nav!.canShare({ files: [file] })) {
-            await nav!.share({ files: [file], text, url });
-            return;
-          }
-        }
-      } catch (err) {
-        if (err instanceof DOMException && err.name === "AbortError") return;
-        // Anything else (blob generation, an unexpected share rejection):
-        // fall through to the composer below rather than leaving the
-        // visitor with nothing.
-      }
+    try {
+      const blob = await renderCardBlob(data);
+      if (!blob) return false;
+      const file = new File([blob], `shashwa7-visitor-${data.serial}.png`, {
+        type: "image/png",
+      });
+      if (!nav!.canShare({ files: [file] })) return false;
+      await nav!.share({ files: [file], text: buildShareText(data, cardUrl), url: cardUrl });
+      return true;
+    } catch (err) {
+      if (err instanceof DOMException && err.name === "AbortError") return true;
+      return false;
     }
-
-    const intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
-    window.open(intent, "_blank", "noopener,noreferrer");
   }, [buildData, renderCardBlob, cardUrl]);
+
+  const handleShareTrigger = useCallback(async () => {
+    const handled = await shareViaWebShare();
+    if (!handled) setShareOpen(true);
+  }, [shareViaWebShare]);
+
+  /* X and WhatsApp are both link intents: neither can attach a file, so
+     both get the same words-plus-link buildShareText already builds
+     (unchanged from before this menu existed). WhatsApp's wa.me takes the
+     whole message, link included, in the one `text` param; X's intent
+     takes `text` and `url` as two separate params, which is why the same
+     cardUrl also gets appended there even though it already sits inside
+     `text` (twitter.com/intent/tweet has always taken it this way, from
+     before this menu existed). */
+  const shareToX = useCallback(() => {
+    const data = buildData();
+    if (!data) return;
+    const text = buildShareText(data, cardUrl);
+    const intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(cardUrl)}`;
+    window.open(intent, "_blank", "noopener,noreferrer");
+    setShareOpen(false);
+  }, [buildData, cardUrl]);
+
+  const shareToWhatsApp = useCallback(() => {
+    const data = buildData();
+    if (!data) return;
+    const text = buildShareText(data, cardUrl);
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank", "noopener,noreferrer");
+    setShareOpen(false);
+  }, [buildData, cardUrl]);
+
+  /* Confirms, then closes itself: COPY_CONFIRM_MS gives the "Copied" swap
+     time to be read before the menu goes away on its own, rather than
+     vanishing the instant the clipboard write resolves. A clipboard
+     rejection (permissions, an insecure context) has no other affordance to
+     fall back to here, so it stays a silent no-op, the same posture
+     shareViaWebShare takes for a dismissed native sheet. */
+  const copyShareText = useCallback(async () => {
+    const data = buildData();
+    if (!data) return;
+    const text = buildShareText(data, cardUrl);
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      window.setTimeout(() => {
+        setCopied(false);
+        setShareOpen(false);
+      }, COPY_CONFIRM_MS);
+    } catch {
+      // silent no-op, see the comment above
+    }
+  }, [buildData, cardUrl]);
 
   /* Discards the current identity and starts a fresh one: a new
      crypto.randomUUID() overwrites the one thing the portrait, the serial
@@ -485,12 +573,15 @@ export default function CardMinter({
               kept here. No box, no border, no index number: the order
               already says which roll is which, and the aria-live status
               already announces the totals out loud, which is also why this
-              is aria-hidden and pointer-events-none. Small and tightly
-              spaced so three pairs plus both actions fit well inside a
-              320px viewport; see the task report for the arithmetic. */}
+              is aria-hidden and pointer-events-none. The gap *between* pairs
+              is `gap-2` (8px), not the `gap-3` (12px) it used to be: at three
+              pairs that saves the 8px a fifth toolbar button (share) needed
+              to fit; see TOOLBAR_BUTTON's own comment for the full row
+              arithmetic. The gap *within* a pair (the two dice of one roll)
+              is untouched, since that pairing is what the gap is for. */}
           <div
             aria-hidden="true"
-            className="pointer-events-none flex shrink-0 items-center gap-3 opacity-60"
+            className="pointer-events-none flex shrink-0 items-center gap-2 opacity-60"
           >
             {rolls.map(([a, b], i) => (
               <motion.div
@@ -506,29 +597,29 @@ export default function CardMinter({
             ))}
           </div>
 
-          {/* Edit, regenerate, download and mute: one grouped toolbar
-              rather than four floating glyphs, which is what let a fourth
-              control (regenerate) join at all. Four 44px boxes with no
-              background and an 8px gap already used all but 16px of a
-              320px viewport's ~272px of header width; a fifth-of-that
-              fourth button would have overflowed it. `bg-elevated` gives
-              the group its own surface (the same token Navbar's own
-              control cluster uses) so the tighter `gap-1.5` reads as one
-              deliberate control rather than four cramped ones, and
-              `TOOLBAR_BUTTON` shrinks each button's own box to 32px
-              visually while keeping the 44px tap target WCAG 2.5.5 wants
-              via an invisible `before:-inset-1.5` expansion: see that
-              constant's own comment for the arithmetic. Edit, regenerate
-              and download are rendered (not merely hidden) only once a
-              card exists, which keeps them out of the tab order before
-              then; mute is not card-gated, since the dice (and their
-              sound) are there from the start. Hidden as a group only
-              while the name field below is open, so the field gets the
-              row to itself rather than squeezing past a fourth button
-              too. Every action gets a `Tooltip` (the app's one
+          {/* Edit, regenerate, download, share and mute: one grouped toolbar
+              rather than five floating glyphs, which is what let a fifth
+              control (share, moved up from a text link under the pill) join
+              at all. `bg-elevated` gives the group its own surface (the same
+              token Navbar's own control cluster uses) so the tight
+              `gap-1.5` reads as one deliberate control rather than five
+              cramped ones, and `TOOLBAR_BUTTON` shrinks each button's own
+              box to 28px visually while keeping the 44px tap target WCAG
+              2.5.5 wants via an invisible `before:-inset-2` expansion: see
+              that constant's own comment for the full row arithmetic. Edit,
+              regenerate, download and share are rendered (not merely
+              hidden) only once a card exists, which keeps them out of the
+              tab order before then; mute is not card-gated, since the dice
+              (and their sound) are there from the start. Hidden as a group
+              only while the name field below is open, so the field gets the
+              row to itself rather than squeezing past a fifth button too.
+              Every action but share gets a `Tooltip` (the app's one
               `TooltipProvider` is mounted globally in app/layout.tsx);
               the `aria-label`s underneath are unchanged, since a tooltip
-              only reaches pointers and is not an accessible name. */}
+              only reaches pointers and is not an accessible name. Share
+              carries a tooltip too, nested inside the `Popover` below,
+              since its trigger still needs one on the devices where it
+              opens a menu rather than the native sheet. */}
           {!editingName && (
             <div className="flex shrink-0 items-center gap-1.5 rounded-md bg-elevated p-1">
               {roll && (
@@ -577,6 +668,56 @@ export default function CardMinter({
                     </TooltipTrigger>
                     <TooltipContent>Download PNG</TooltipContent>
                   </Tooltip>
+                  <Popover open={shareOpen} onOpenChange={setShareOpen}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <PopoverTrigger
+                          onClick={handleShareTrigger}
+                          aria-label="Share your card"
+                          className={TOOLBAR_BUTTON}
+                        >
+                          <Share2 className="h-4 w-4" aria-hidden="true" />
+                        </PopoverTrigger>
+                      </TooltipTrigger>
+                      <TooltipContent>Share</TooltipContent>
+                    </Tooltip>
+                    {/* Only ever reached on a device without file-carrying
+                        Web Share support: see handleShareTrigger. X and
+                        WhatsApp are link-only intents (neither can attach
+                        the PNG), and copy puts the same words on the
+                        clipboard with a brief confirmation instead of a
+                        silent, unverifiable click. */}
+                    <PopoverContent align="end">
+                      <button
+                        type="button"
+                        onClick={shareToX}
+                        className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm text-foreground transition-colors duration-fast ease-out hover:bg-accent hover:text-accent-foreground"
+                      >
+                        <XLogo className="h-4 w-4 shrink-0" aria-hidden="true" />
+                        Share on X
+                      </button>
+                      <button
+                        type="button"
+                        onClick={shareToWhatsApp}
+                        className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm text-foreground transition-colors duration-fast ease-out hover:bg-accent hover:text-accent-foreground"
+                      >
+                        <MessageCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
+                        Share on WhatsApp
+                      </button>
+                      <button
+                        type="button"
+                        onClick={copyShareText}
+                        className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm text-foreground transition-colors duration-fast ease-out hover:bg-accent hover:text-accent-foreground"
+                      >
+                        {copied ? (
+                          <Check className="h-4 w-4 shrink-0" aria-hidden="true" />
+                        ) : (
+                          <Copy className="h-4 w-4 shrink-0" aria-hidden="true" />
+                        )}
+                        {copied ? "Copied" : "Copy"}
+                      </button>
+                    </PopoverContent>
+                  </Popover>
                 </>
               )}
               <Tooltip>
@@ -819,21 +960,6 @@ export default function CardMinter({
           />
         </div>
 
-        {/* Share: a text action, not a fifth toolbar icon (that row is
-            already full at a 320px viewport, see TOOLBAR_BUTTON's own
-            comment). Sits under the pill, near the issue caption, secondary
-            to Download rather than a peer to it. Rendered only once a card
-            exists, the same way Edit/Regenerate/Download above are: kept
-            out of the tab order before then rather than merely hidden. */}
-        {data && (
-          <button
-            type="button"
-            onClick={shareCard}
-            className="mt-3 text-sm text-foreground underline decoration-border-strong underline-offset-4 transition-colors duration-fast ease-out hover:decoration-foreground"
-          >
-            Share your card
-          </button>
-        )}
       </div>
     </div>
   );
