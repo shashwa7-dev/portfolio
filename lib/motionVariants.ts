@@ -283,6 +283,26 @@ export const CARD_FADE_EASE = cssEase(ease.out);
 export const DECK_OFFSET_BACK = "translate(6px, 8px) rotate(3deg)";
 export const DECK_OFFSET_FRONT = "translate(-4px, 4px) rotate(-2deg)";
 
+/**
+ * The card's turn from its back to its printed front (a CSS `rotateY`
+ * transition on the element carrying both faces). Duration is
+ * FULL_REVEAL.flip.duration / SHORT_REVEAL.flip.duration in
+ * lib/card/revealSequence.ts, the same split as the rise above: the
+ * component reads the duration from there, this file only owns the curve.
+ *
+ * Linear would read as a spinning sign, so this is eased out (brisk start,
+ * decelerating into face-up) and, like CARD_RISE_EASE, overshoots slightly
+ * past its target (past 180deg) before settling back, so the turn ends with
+ * a small settle rather than stopping dead. The standard "ease out back"
+ * curve.
+ */
+export const CARD_FLIP_EASE = "cubic-bezier(0.34, 1.56, 0.64, 1)";
+
+/** How far the flip's perspective sits from the card, in CSS pixels: how
+ *  pronounced the 3D turn looks. Kept here with every other flip token
+ *  rather than pasted into CardMinter.tsx as a literal. */
+export const CARD_FLIP_PERSPECTIVE = "1200px";
+
 /** How long the pill's fill bar takes to grow to its new width. */
 export const FILL_MS = 420;
 /** A touch gentler than CARD_RISE_EASE and never overshoots: the fill is a

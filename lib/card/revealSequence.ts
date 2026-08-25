@@ -6,6 +6,13 @@
  * component make that a hope; here it is an assertion, and
  * revealSequence.test.ts fails the build if a stage grows past the budget.
  *
+ * The middle stage is the card turning from its back to its printed front
+ * (CardMinter.tsx's own CSS transition on a `rotateY`, driven by
+ * `flip.duration` and `CARD_FLIP_EASE` in lib/motionVariants.ts). It replaced
+ * an earlier `print` stage that composited the finished bitmap onto the
+ * canvas top to bottom; at speed that read as an opacity wipe rather than as
+ * printing, and it is gone along with lib/card/reveal.ts's `startPrintReveal`.
+ *
  * It also keeps the two variants from drifting. The full ceremony plays
  * once, on a visitor's first completed set; every re-roll after that gets
  * the short one, because someone rolling repeatedly for a rare issue should
@@ -25,12 +32,15 @@ export type RevealStage = {
 };
 
 export type RevealTimeline = {
-  /** The card rising off the deck, blank. CardMinter.tsx's own CSS
-   *  transition does the actual animating; this only says when it starts
-   *  and how long the caller should wait before the canvas is touched. */
+  /** The card rising off the deck, showing its back. CardMinter.tsx's own
+   *  CSS transition does the actual animating; this only says when it
+   *  starts and how long the caller should wait before touching the
+   *  canvas. */
   cardRise: RevealStage;
-  /** The existing print reveal in lib/card/reveal.ts, which runs 900ms. */
-  print: RevealStage;
+  /** The turn from back to front: a CSS `rotateY` transition on the element
+   *  that carries both faces, eased with CARD_FLIP_EASE in
+   *  lib/motionVariants.ts. */
+  flip: RevealStage;
   issueLine: RevealStage;
 };
 
@@ -51,10 +61,14 @@ export const REVEAL_BUDGET_MS = 2000;
  */
 export const SETTLE_MS = 500;
 
-/** How long the print reveal itself takes. Mirrors --duration-print. */
-const PRINT_MS = 900;
+/** How long the turn itself takes. Mirrors --duration-flip. */
+const FLIP_MS = 600;
 
-/** The beat between the card finishing printing and the issue line landing. */
+/** The gap between the card landing at 520ms and the rise finishing at
+ *  500ms: room for the rise's own small settle before the turn starts. */
+const FLIP_GAP_MS = 20;
+
+/** The beat between the card finishing its turn and the issue line landing. */
 const STAMP_BEAT_MS = 40;
 
 /**
@@ -69,24 +83,28 @@ export const FULL_REVEAL: RevealTimeline = {
   // The source of truth for the rise's duration: CardMinter reads this
   // value directly (as variant.cardRise.duration), and --duration-card-rise
   // in app/globals.css mirrors it for documentation only. The card rises
-  // blank; nothing is drawn to the visible canvas until this stage has had
-  // its full 500ms, or the finished card would be legible while it is
-  // still moving.
+  // showing its back; the finished front is drawn to the canvas the moment
+  // the roll lands (safe now, since the back is what hides it, not late
+  // drawing), and only the turn below actually reveals it.
   cardRise: { at: 0, duration: 500 },
-  print: { at: 500, duration: PRINT_MS },
-  issueLine: { at: 500 + PRINT_MS + STAMP_BEAT_MS, duration: 200 },
+  // Starts FLIP_GAP_MS after the rise's own 500ms, so the rise's small
+  // settle finishes before the turn begins rather than the two overlapping.
+  flip: { at: 500 + FLIP_GAP_MS, duration: FLIP_MS },
+  issueLine: { at: 500 + FLIP_GAP_MS + FLIP_MS + STAMP_BEAT_MS, duration: 200 },
 };
 
 export const SHORT_REVEAL: RevealTimeline = {
-  // Skips straight to print. ABSENT is also what CardMinter uses as the
+  // Skips straight to the turn. ABSENT is also what CardMinter uses as the
   // card's own CSS transition duration (riseMs), so a re-roll's card does
   // not repeat the first card's animated rise off the deck: it just pops
   // into place with no visible transition, which is the intended behaviour
   // (someone rolling repeatedly for a rare issue should not sit through
-  // the rise's ceremony every time).
+  // the rise's ceremony every time). The turn itself still plays: the
+  // moment of not knowing is what the turn is for, and skipping it on every
+  // re-roll would leave nothing revealing the card at all.
   cardRise: { at: 0, duration: ABSENT },
-  print: { at: 0, duration: PRINT_MS },
-  issueLine: { at: PRINT_MS + STAMP_BEAT_MS, duration: 200 },
+  flip: { at: 0, duration: FLIP_MS },
+  issueLine: { at: FLIP_MS + STAMP_BEAT_MS, duration: 200 },
 };
 
 /** When the last stage finishes. */

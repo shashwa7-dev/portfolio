@@ -20,7 +20,7 @@ describe("the reveal fits its budget", () => {
 
   it("reports a total that matches the last stage to finish", () => {
     for (const [name, timeline] of TIMELINES) {
-      const stages = [timeline.cardRise, timeline.print, timeline.issueLine];
+      const stages = [timeline.cardRise, timeline.flip, timeline.issueLine];
       const last = Math.max(...stages.map((s) => s.at + s.duration));
       expect(timelineTotal(timeline), name).toBe(last);
     }
@@ -28,14 +28,14 @@ describe("the reveal fits its budget", () => {
 });
 
 describe("the stages are ordered", () => {
-  it.each(TIMELINES)("%s prints before the issue line starts", (_name, timeline) => {
-    const printEnds = timeline.print.at + timeline.print.duration;
-    expect(timeline.issueLine.at).toBeGreaterThanOrEqual(printEnds);
+  it.each(TIMELINES)("%s finishes turning before the issue line starts", (_name, timeline) => {
+    const flipEnds = timeline.flip.at + timeline.flip.duration;
+    expect(timeline.issueLine.at).toBeGreaterThanOrEqual(flipEnds);
   });
 
-  it("rises before it finishes printing, on the full timeline", () => {
-    const printEnds = FULL_REVEAL.print.at + FULL_REVEAL.print.duration;
-    expect(FULL_REVEAL.cardRise.at).toBeLessThan(printEnds);
+  it("rises before it finishes turning, on the full timeline", () => {
+    const flipEnds = FULL_REVEAL.flip.at + FULL_REVEAL.flip.duration;
+    expect(FULL_REVEAL.cardRise.at).toBeLessThan(flipEnds);
   });
 
   it("starts every stage at or after zero and gives each a real duration", () => {
@@ -61,8 +61,8 @@ describe("the short timeline is the cheap one", () => {
     expect(SHORT_REVEAL.cardRise.duration).toBeGreaterThan(0);
   });
 
-  it("skips straight to print: nothing is scheduled before it", () => {
-    expect(SHORT_REVEAL.print.at).toBe(0);
+  it("skips straight to the turn: nothing is scheduled before it", () => {
+    expect(SHORT_REVEAL.flip.at).toBe(0);
   });
 
   it("finishes sooner than the full sequence", () => {

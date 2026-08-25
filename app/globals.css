@@ -214,12 +214,6 @@
      anything. At 300ms the same sweep reads as a flicker. */
   --duration-sweep: 700ms;
 
-  /* The visitor card's printing reveal (CardMinter). Its own scale, not the
-     sub-300ms UI budget above: it is a one-time flourish on mint, not a
-     response to input, the same reasoning that puts --duration-sweep
-     outside that budget. */
-  --duration-print: 900ms;
-
   /* The dice throw on /card. Outside the sub-300ms UI budget, and unlike
      the two above it cannot claim to be "not a response to input": it is
      one. The justification is that the duration is the physics, not a
@@ -240,18 +234,21 @@
 
 /* The card's rise off the deck, the deck offsets, and the roll pill's fill
    (CardMinter.tsx / RollPill.tsx). --duration-card-rise mirrors
-   FULL_REVEAL.cardRise.duration in lib/card/revealSequence.ts; the other
-   five mirror CARD_RISE_EASE, DECK_OFFSET_BACK, DECK_OFFSET_FRONT, FILL_MS
-   and FILL_EASE in lib/motionVariants.ts. Those are what the components
-   actually import: nothing in this stylesheet reads any of the six
-   properties below today. They are documentation mirrors only, kept here
-   so the values are declared as CSS custom properties per the project
+   FULL_REVEAL.cardRise.duration in lib/card/revealSequence.ts; --duration-
+   flip mirrors FULL_REVEAL.flip.duration; the other six mirror
+   CARD_RISE_EASE, DECK_OFFSET_BACK, DECK_OFFSET_FRONT, CARD_FLIP_EASE,
+   FILL_MS and FILL_EASE in lib/motionVariants.ts. Those are what the
+   components actually import: nothing in this stylesheet reads any of the
+   eight properties below today. They are documentation mirrors only, kept
+   here so the values are declared as CSS custom properties per the project
    convention, and so a future CSS-only consumer has them. */
 :root {
   --duration-card-rise: 500ms;
   --ease-card-rise: cubic-bezier(0.3, 1.1, 0.4, 1);
   --deck-offset-back: translate(6px, 8px) rotate(3deg);
   --deck-offset-front: translate(-4px, 4px) rotate(-2deg);
+  --duration-flip: 600ms;
+  --ease-flip: cubic-bezier(0.34, 1.56, 0.64, 1);
   --duration-fill: 420ms;
   --ease-fill: cubic-bezier(0.3, 1, 0.4, 1);
 }
