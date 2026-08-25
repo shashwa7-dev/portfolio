@@ -63,12 +63,28 @@ function buildIssueCaption(data: CardData): string {
   return isPerfect(data.roll) ? `${line}, a perfect double six three times` : line;
 }
 
+/** The tweet/share body: names the real issue and its real per-roll odds,
+ *  since the specific number is the interesting part and the card already
+ *  knows it. `cardUrl` is `${baseUrl}card` (app/sitemap.ts), the same
+ *  canonical URL app/card/page.tsx already builds its own metadata from;
+ *  it arrives as a prop rather than an import here because app/sitemap.ts
+ *  pulls in `getBlogPosts`, which touches Node's `fs` and cannot land in
+ *  this "use client" bundle. No em-dash, per the app's copy rule. */
+function buildShareText(data: CardData, cardUrl: string): string {
+  return `I rolled a ${data.issue.name} visitor card. ${data.issue.label} per roll.\n\nMint your own at ${cardUrl}`;
+}
+
 export default function CardMinter({
   origin,
   city,
+  cardUrl,
 }: {
   origin: string | null;
   city: string | null;
+  /** `${baseUrl}card`, computed by the server page and handed down: see
+   *  buildShareText's own comment for why this can't just be imported
+   *  here. */
+  cardUrl: string;
 }) {
   const { muted, toggle: toggleMuted } = useSoundPreference();
   const [visitorId, setVisitorId] = useState<string | null>(null);
@@ -293,16 +309,26 @@ export default function CardMinter({
     };
   }, [roll, ready, buildData]);
 
-  const download = useCallback(() => {
-    const data = buildData();
-    if (!data) return;
+  /* The one place a PNG gets rendered off-screen: download() and shareCard()
+     below both call this instead of each drawing their own, since drawTicket
+     draws every size (preview, export, thumbnail) and CLAUDE.md forbids a
+     second drawing routine. Same canvas size, same fonts, same mark image
+     as the visible reveal (see the effect above); only the target (an
+     off-screen canvas rather than the on-page one) differs. */
+  const renderCardBlob = useCallback((data: CardData): Promise<Blob | null> => {
     const off = document.createElement("canvas");
     off.width = CARD_W;
     off.height = CARD_H;
     const ctx = off.getContext("2d");
-    if (!ctx) return;
+    if (!ctx) return Promise.resolve(null);
     drawTicket(ctx, data, CARD_W, CARD_H, { ...CARD_FONTS, mark: markRef.current });
-    off.toBlob((blob) => {
+    return new Promise((resolve) => off.toBlob(resolve, "image/png"));
+  }, []);
+
+  const download = useCallback(() => {
+    const data = buildData();
+    if (!data) return;
+    renderCardBlob(data).then((blob) => {
       if (!blob) return;
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -310,8 +336,59 @@ export default function CardMinter({
       a.download = `shashwa7-visitor-${data.serial}.png`;
       a.click();
       URL.revokeObjectURL(url);
-    }, "image/png");
-  }, [buildData]);
+    });
+  }, [buildData, renderCardBlob]);
+
+  /* Two ceilings, so two paths. A phone with the Web Share API's file
+     support gets the actual PNG in its native sheet, carried straight from
+     renderCardBlob above; everywhere else opens a tweet composer with the
+     words and the link, since twitter.com/intent/tweet takes text and a
+     URL and cannot attach an image. `canShare({ files: [...] })` is the
+     check, not just `share` existing: some Safari versions expose `share`
+     without file support and throw when handed files.
+
+     A dismissed native sheet rejects its promise with AbortError. That is a
+     visitor changing their mind, not a failure: it is swallowed here rather
+     than falling through to the tweet composer, so declining the native
+     sheet never pops a second window nobody asked for. Any other failure
+     (the blob failing to generate, an unexpected share rejection) falls
+     through to the same composer instead; a blocked popup there just fails
+     silently, same as any other window.open a blocker eats. Nothing here
+     throws or leaves the button stuck, since there is no loading state to
+     get stuck in. */
+  const shareCard = useCallback(async () => {
+    const data = buildData();
+    if (!data) return;
+
+    const text = buildShareText(data, cardUrl);
+    const url = cardUrl;
+    const nav = typeof navigator === "undefined" ? null : navigator;
+    const canFileShare =
+      !!nav && typeof nav.share === "function" && typeof nav.canShare === "function";
+
+    if (canFileShare) {
+      try {
+        const blob = await renderCardBlob(data);
+        if (blob) {
+          const file = new File([blob], `shashwa7-visitor-${data.serial}.png`, {
+            type: "image/png",
+          });
+          if (nav!.canShare({ files: [file] })) {
+            await nav!.share({ files: [file], text, url });
+            return;
+          }
+        }
+      } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") return;
+        // Anything else (blob generation, an unexpected share rejection):
+        // fall through to the composer below rather than leaving the
+        // visitor with nothing.
+      }
+    }
+
+    const intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+    window.open(intent, "_blank", "noopener,noreferrer");
+  }, [buildData, renderCardBlob, cardUrl]);
 
   /* Discards the current identity and starts a fresh one: a new
      crypto.randomUUID() overwrites the one thing the portrait, the serial
@@ -384,7 +461,7 @@ export default function CardMinter({
   };
 
   return (
-    <div className="mt-8">
+    <div className="mt-12">
       {/* The stage: the card, the header band and the pill sit directly on
           the page now, no boxed panel around them. Still `position:
           relative` so the header band below can anchor to it, and still
@@ -555,24 +632,27 @@ export default function CardMinter({
           )}
         </div>
 
-        {/* mt-12 clears the header band (its 32px, plus room to breathe)
-            without needing the band to claim any flow height itself. Below
-            this, the gap to the pill is whatever DiceRoller's own `mt-8`
-            gives it in natural flow, not a `justify-between` spread across
-            a fixed-height panel: that used to leave roughly 150px of dead
-            air between the card and the pill.
+        {/* mt-16 clears the header band (its 32px, plus room to breathe;
+            loosened a step from mt-12, see the report) without needing the
+            band to claim any flow height itself. Below this, the gap to the
+            pill is DiceRoller's own `mt-8` plus the `pt-4` wrapper around it
+            further down, not a `justify-between` spread across a
+            fixed-height panel: that used to leave roughly 150px of dead air
+            between the card and the pill.
 
             The slot's own height is SLOT_CARD_H (350) exactly, matching the
             canvas it centers, rather than the 380px this used to be: that
             extra 30px was slack nothing needed, and it widened the visible
-            gap to the pill from 32px (DiceRoller's own margin) to 47px. The
-            deck cards behind the canvas still rotate past this box on their
-            lower corner (DECK_OFFSET_BACK's 8px translate plus its 3deg
-            rotation puts that corner ~15px below the canvas's own edge, the
-            most any deck offset extends past it), but nothing here clips:
-            this div has no `overflow-hidden`, and that corner still lands
-            ~17px clear of the pill below. */}
-        <div className="relative mt-12 flex h-[350px] w-full items-center justify-center">
+            gap to the pill from 32px (DiceRoller's own margin) to 47px. This
+            reserved height is untouched by the spacing pass: only the space
+            around the slot grew, never what it reserves. The deck cards
+            behind the canvas still rotate past this box on their lower
+            corner (DECK_OFFSET_BACK's 8px translate plus its 3deg rotation
+            puts that corner ~15px below the canvas's own edge, the most any
+            deck offset extends past it), but nothing here clips: this div
+            has no `overflow-hidden`, and that corner lands even further
+            clear of the pill below now that its own gap grew too. */}
+        <div className="relative mt-16 flex h-[350px] w-full items-center justify-center">
           {/* The deck: two idle cards, always present, so the slot never
               looks empty before a roll. The back one is a plain bordered
               rectangle at the card's own aspect ratio, offset and rotated
@@ -723,12 +803,35 @@ export default function CardMinter({
           </AnimatePresence>
         </div>
 
-        <DiceRoller
-          onComplete={setRoll}
-          issueCaption={issueCaption}
-          onRollAgain={handleRollAgain}
-          onRollsChange={setRolls}
-        />
+        {/* pt-4 on top of DiceRoller's own mt-8 (unchanged, dice skins are
+            off limits for this pass) loosens the card-to-pill gap a step,
+            from 32px to 48px, without editing TossDice/CubeDice: padding
+            here, unlike a second margin, cannot collapse with the child's
+            own top margin. */}
+        <div className="pt-4">
+          <DiceRoller
+            onComplete={setRoll}
+            issueCaption={issueCaption}
+            onRollAgain={handleRollAgain}
+            onRollsChange={setRolls}
+          />
+        </div>
+
+        {/* Share: a text action, not a fifth toolbar icon (that row is
+            already full at a 320px viewport, see TOOLBAR_BUTTON's own
+            comment). Sits under the pill, near the issue caption, secondary
+            to Download rather than a peer to it. Rendered only once a card
+            exists, the same way Edit/Regenerate/Download above are: kept
+            out of the tab order before then rather than merely hidden. */}
+        {data && (
+          <button
+            type="button"
+            onClick={shareCard}
+            className="mt-3 text-sm text-foreground underline decoration-border-strong underline-offset-4 transition-colors duration-fast ease-out hover:decoration-foreground"
+          >
+            Share your card
+          </button>
+        )}
       </div>
     </div>
   );

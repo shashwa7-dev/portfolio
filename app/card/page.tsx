@@ -78,7 +78,7 @@ export default function CardPage() {
           Which of the five issues it prints on is decided by three throws of
           the dice, and you can roll as many times as you like.
         </p>
-        <CardMinter origin={origin ?? null} city={city} />
+        <CardMinter origin={origin ?? null} city={city} cardUrl={`${baseUrl}card`} />
         <IssueGallery />
       </Container>
     </main>
