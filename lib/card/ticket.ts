@@ -147,7 +147,7 @@ export function drawTicket(
   /* One engine per call, never a shared module-level instance. The vendored
      renderer keeps its ink registers in the factory closure, so two cards drawn
      from one engine would tread on each other's state. The issue gallery draws
-     six cards, so this is not hypothetical. */
+     five cards, so this is not hypothetical. */
   const engine = createEngine(ctx, { hand: fonts.hand });
 
   ctx.save();
