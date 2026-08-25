@@ -92,6 +92,7 @@ export default function TossDice({
   onComplete,
   issueCaption,
   onRollAgain,
+  onRollsChange,
 }: {
   onComplete: (set: RollSet) => void;
   /** Set once the print reveal has finished; overrides the hook's own
@@ -99,6 +100,10 @@ export default function TossDice({
   issueCaption: string | null;
   /** Called when the pill is tapped while `issueCaption` is set. */
   onRollAgain: () => void;
+  /** Mirrors useDiceRoll's `rolls` up to CardMinter's history strip. See
+   *  DiceRoller.tsx's doc on the prop for why this lives here rather than
+   *  in the hook itself. */
+  onRollsChange: (rolls: readonly Roll[]) => void;
 }) {
   // useId, not a literal string: <defs> ids are global to the document and
   // the issue gallery renders other SVG on the same page. Colons stripped
@@ -123,6 +128,13 @@ export default function TossDice({
   const revealed = issueCaption !== null;
   const { rolls, status, caption, reducedMotion, disabled, handleClick } =
     useDiceRoll(onComplete, revealed, onRollAgain);
+
+  // Purely a hand-off: `rolls` already exists in the hook above, this just
+  // reports it upward on every change so CardMinter's history strip can
+  // read it without a parallel copy of the throws.
+  useEffect(() => {
+    onRollsChange(rolls);
+  }, [rolls, onRollsChange]);
 
   const animate = useCallback<Animate>(
     (result) =>

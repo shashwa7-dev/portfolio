@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { motion } from "motion/react";
+import { Download, Pencil } from "lucide-react";
 import { ISSUES } from "@/lib/card/issues";
 import { isPerfect, issueFromTotal, pipTotal } from "@/lib/card/dice";
 import { serialFrom } from "@/lib/card/seed";
@@ -12,22 +14,25 @@ import {
   CARD_FADE_EASE,
   CARD_RISE_EASE,
   CARD_RISE_FROM,
-  CARD_RISE_MS,
   CARD_RISE_TO,
   DECK_OFFSET_BACK,
   DECK_OFFSET_FRONT,
+  itemVariants,
 } from "@/lib/motionVariants";
 import DiceRoller from "@/components/card/DiceRoller";
-import type { CardData, RollSet } from "@/lib/card/types";
+import Pips from "@/components/card/dice/Pips";
+import type { CardData, Roll, RollSet } from "@/lib/card/types";
 
 const KEY = "shashwa7:visitor-id";
 const MARK_SRC = "/brand-mark.png";
 
 /** The card's on-stage preview size. Independent of CARD_W/CARD_H, the
  *  resolution `download()` and the print reveal actually draw at: this is
- *  only the CSS box the canvas occupies inside the reserved slot. */
-const SLOT_CARD_W = 200;
-const SLOT_CARD_H = 250;
+ *  only the CSS box the canvas occupies inside the reserved slot. Still
+ *  exactly 4:5, same as CARD_W/CARD_H: drawTicket derives every coordinate
+ *  as a fraction of the box it is handed, so any other ratio distorts it. */
+const SLOT_CARD_W = 280;
+const SLOT_CARD_H = 350;
 
 function today(): string {
   return new Intl.DateTimeFormat("en-GB", {
@@ -78,8 +83,26 @@ export default function CardMinter({
   // "has a card been revealed" flag the pill's label reads: null means
   // "Roll", set means "Roll again".
   const [issueCaption, setIssueCaption] = useState<string | null>(null);
+  // Mirrors useDiceRoll's own `rolls`, handed up through DiceRoller's
+  // onRollsChange (see that file): the hook lives inside whichever skin is
+  // mounted, so this is the one path CardMinter has to the throws recorded
+  // so far. Purely a render source for the history strip; nothing here
+  // recomputes or re-records a throw, and it clears to [] for free the
+  // moment the hook's own `reset()` does.
+  const [rolls, setRolls] = useState<readonly Roll[]>([]);
+  // Whether the compact name field is open, overlaid on the stage in place
+  // of the edit/download actions. See openEditName and the input below.
+  const [editingName, setEditingName] = useState(false);
+  // Read once, the same way useDiceRoll reads it: prefersReducedMotion
+  // touches `window`, which has no stable value on the server or during the
+  // first render. Governs only the history chips' own entrance below.
+  const [reducedMotion, setReducedMotion] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const markRef = useRef<HTMLImageElement | null>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  // The name as it was the moment Edit was tapped, so Escape can restore it
+  // exactly rather than guessing at a previous value from state.
+  const nameBeforeEditRef = useRef(name);
   // The reveal plays once per card. Edits to the name afterwards redraw
   // straight to the finished frame: see the effect below. Reset to false
   // when rolling again, so the next card gets its own reveal.
@@ -136,6 +159,19 @@ export default function CardMinter({
   // Cancels a pending roll-again clear if the visitor navigates away mid
   // slide-out: nothing outlives the component to write to a detached ref.
   useEffect(() => () => window.clearTimeout(rollAgainTimerRef.current), []);
+
+  useEffect(() => {
+    setReducedMotion(prefersReducedMotion(window));
+  }, []);
+
+  // Focuses (and selects) the name field the moment it opens, so tapping
+  // Edit is enough to start typing without a second tap into the field.
+  useEffect(() => {
+    if (editingName) {
+      nameInputRef.current?.focus();
+      nameInputRef.current?.select();
+    }
+  }, [editingName]);
 
   const ready = fontsReady && markReady;
 
@@ -292,6 +328,7 @@ export default function CardMinter({
   const handleRollAgain = useCallback(() => {
     setIssueCaption(null);
     setCardShown(false);
+    setEditingName(false);
     window.clearTimeout(rollAgainTimerRef.current);
     rollAgainTimerRef.current = window.setTimeout(() => {
       const c = canvasRef.current;
@@ -299,10 +336,27 @@ export default function CardMinter({
       if (c && ctx) ctx.clearRect(0, 0, c.width, c.height);
       revealedOnceRef.current = false;
       setRoll(null);
-    }, CARD_RISE_MS);
-  }, []);
+      // `riseMs` here, not the flat CARD_RISE_MS: this clear always tracks
+      // whichever rise actually just played (FULL_REVEAL's 500ms on the
+      // first card, SHORT_REVEAL's near-instant one on every re-roll
+      // after), so the stage never sits with a dismissed card for longer
+      // than the rise that dismissed it took.
+    }, riseMs);
+  }, [riseMs]);
 
   const data = buildData();
+
+  const openEditName = () => {
+    nameBeforeEditRef.current = name;
+    setEditingName(true);
+  };
+
+  const commitEditName = () => setEditingName(false);
+
+  const cancelEditName = () => {
+    setName(nameBeforeEditRef.current);
+    setEditingName(false);
+  };
 
   return (
     <div className="mt-8">
@@ -312,9 +366,89 @@ export default function CardMinter({
           to select mid-tap. */}
       <div
         className="relative mx-auto flex w-full max-w-[420px] select-none flex-col items-center justify-between rounded-[30px] border border-border bg-elevated px-6 pb-10 pt-12"
-        style={{ height: 520 }}
+        style={{ height: 630 }}
       >
-        <div className="relative flex h-[270px] w-full items-center justify-center">
+        {/* The roll history: a chip per throw recorded so far, reading
+            straight from useDiceRoll's own `rolls` (handed up through
+            DiceRoller's onRollsChange) rather than a second count kept
+            here. Absolutely positioned and its own fixed height, occupied
+            whether or not it has chips in it, so nothing below ever moves
+            as they appear. Decorative duplicate of what the aria-live
+            status already announces inside the skin, hence aria-hidden and
+            pointer-events-none: it must never sit in front of the actions
+            in the corner beside it. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-4 flex h-8 items-center justify-center gap-2"
+        >
+          {rolls.map(([a, b], i) => (
+            <motion.div
+              key={i}
+              variants={itemVariants}
+              initial={reducedMotion ? false : "hidden"}
+              animate="visible"
+              className="flex items-center gap-1.5 rounded-full border border-border bg-card px-2.5 py-1"
+            >
+              <span className="font-mono text-2xs text-subtle">{i + 1}</span>
+              <Pips value={a} className="h-3.5 w-3.5" />
+              <Pips value={b} className="h-3.5 w-3.5" />
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Edit and download: actions on the card rather than a form
+            stacked beneath it, so opening either costs no layout. Rendered
+            (not merely hidden) only once a card exists, which keeps them
+            out of the tab order before then. */}
+        {roll && !editingName && (
+          <div className="absolute right-4 top-4 flex items-center gap-2">
+            <button
+              type="button"
+              onClick={openEditName}
+              aria-label="Edit the name on the card"
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-elevated text-foreground transition-colors duration-base ease-out hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-elevated"
+            >
+              <Pencil className="h-4 w-4" aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              onClick={download}
+              aria-label="Download the card as a PNG"
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-elevated text-foreground transition-colors duration-base ease-out hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-elevated"
+            >
+              <Download className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </div>
+        )}
+
+        {roll && editingName && (
+          <div className="absolute right-4 top-4">
+            {/* Disabled for the ~900ms the print reveal is running, rather
+                than letting a redraw cancel and jump ahead: the reveal only
+                ever plays once per card, right after it prints, so the
+                field is unusable for less than a second and never fights
+                the animation for the canvas. */}
+            <input
+              ref={nameInputRef}
+              value={name}
+              maxLength={18}
+              disabled={revealing}
+              aria-label="Name on the card"
+              onChange={(e) => setName(e.target.value)}
+              onBlur={commitEditName}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.currentTarget.blur();
+                } else if (e.key === "Escape") {
+                  cancelEditName();
+                }
+              }}
+              className="w-40 rounded-full border border-border bg-elevated px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
+            />
+          </div>
+        )}
+
+        <div className="relative flex h-[380px] w-full items-center justify-center">
           {/* The deck: two idle cards, always present, so the slot never
               looks empty before a roll. Plain bordered rectangles at the
               card's own aspect ratio, offset and rotated per the reference. */}
@@ -354,39 +488,19 @@ export default function CardMinter({
           />
         </div>
 
-        <DiceRoller onComplete={setRoll} issueCaption={issueCaption} onRollAgain={handleRollAgain} />
+        <DiceRoller
+          onComplete={setRoll}
+          issueCaption={issueCaption}
+          onRollAgain={handleRollAgain}
+          onRollsChange={setRolls}
+        />
       </div>
 
       {roll && (
-        <div className="mx-auto mt-6 max-w-[420px]">
-          <label className="block">
-            <span className="block font-mono text-2xs uppercase tracking-label text-subtle">
-              Name on the card
-            </span>
-            {/* Disabled for the ~900ms the print reveal is running, rather
-                than letting a redraw cancel and jump ahead: the reveal only
-                ever plays once per card, right after it prints, so the
-                field is unusable for less than a second and never fights
-                the animation for the canvas. */}
-            <input
-              value={name}
-              maxLength={18}
-              disabled={revealing}
-              onChange={(e) => setName(e.target.value)}
-              className="mt-1.5 w-full rounded-md border border-border bg-transparent px-3 py-2 text-base text-foreground disabled:opacity-50"
-            />
-          </label>
-          <button
-            onClick={download}
-            className="mt-3 w-full rounded-lg bg-accent px-4 py-2.5 text-base font-medium text-accent-foreground transition-colors duration-base ease-out hover:bg-accent-hover"
-          >
-            Download PNG
-          </button>
-          <p className="mt-3 text-sm text-subtle">
-            Drawn from a random id kept in this browser. We read your country to
-            print it on the card and store nothing.
-          </p>
-        </div>
+        <p className="mx-auto mt-6 max-w-[420px] text-sm text-subtle">
+          Drawn from a random id kept in this browser. We read your country to
+          print it on the card and store nothing.
+        </p>
       )}
     </div>
   );

@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import CubeDice from "@/components/card/dice/CubeDice";
 import TossDice from "@/components/card/dice/TossDice";
-import type { RollSet } from "@/lib/card/types";
+import type { Roll, RollSet } from "@/lib/card/types";
 
 /**
  * The chooser: picks a dice skin and renders it, nothing else. Both
@@ -25,28 +25,48 @@ type SkinProps = {
   onComplete: (set: RollSet) => void;
   issueCaption: string | null;
   onRollAgain: () => void;
+  /** Mirrors useDiceRoll's own `rolls` up to the caller on every change, so
+   *  CardMinter's history strip can read the throws recorded so far without
+   *  a second copy of them: the skin is the only thing that calls
+   *  useDiceRoll, so this is the one seam that can hand its `rolls` out. */
+  onRollsChange: (rolls: readonly Roll[]) => void;
 };
 
-function ChosenSkin({ onComplete, issueCaption, onRollAgain }: SkinProps) {
+function ChosenSkin({ onComplete, issueCaption, onRollAgain, onRollsChange }: SkinProps) {
   // /card is a server component that reads headers, so the override itself
   // is read here, client-side, from the URL rather than from a prop.
   const params = useSearchParams();
   const style = styleFromParam(params.get("dice"));
   return style === "cube" ? (
-    <CubeDice onComplete={onComplete} issueCaption={issueCaption} onRollAgain={onRollAgain} />
+    <CubeDice
+      onComplete={onComplete}
+      issueCaption={issueCaption}
+      onRollAgain={onRollAgain}
+      onRollsChange={onRollsChange}
+    />
   ) : (
-    <TossDice onComplete={onComplete} issueCaption={issueCaption} onRollAgain={onRollAgain} />
+    <TossDice
+      onComplete={onComplete}
+      issueCaption={issueCaption}
+      onRollAgain={onRollAgain}
+      onRollsChange={onRollsChange}
+    />
   );
 }
 
-export default function DiceRoller({ onComplete, issueCaption, onRollAgain }: SkinProps) {
+export default function DiceRoller({ onComplete, issueCaption, onRollAgain, onRollsChange }: SkinProps) {
   // useSearchParams requires a Suspense boundary in this Next version (it
   // opts the subtree into client-side rendering). No visible fallback: a
   // dice button that isn't interactive yet has nothing useful to show
   // before hydration resolves this on the client, which is immediate.
   return (
     <Suspense fallback={null}>
-      <ChosenSkin onComplete={onComplete} issueCaption={issueCaption} onRollAgain={onRollAgain} />
+      <ChosenSkin
+        onComplete={onComplete}
+        issueCaption={issueCaption}
+        onRollAgain={onRollAgain}
+        onRollsChange={onRollsChange}
+      />
     </Suspense>
   );
 }

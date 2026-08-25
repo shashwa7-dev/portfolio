@@ -1,12 +1,12 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { motion, useAnimationControls } from "motion/react";
 import { diceThrowVariants, tapPress } from "@/lib/motionVariants";
 import { useDiceRoll, type Animate } from "@/components/card/dice/useDiceRoll";
 import RollPill from "@/components/card/dice/RollPill";
 import Pips from "@/components/card/dice/Pips";
-import type { Die, RollSet } from "@/lib/card/types";
+import type { Die, Roll, RollSet } from "@/lib/card/types";
 
 /**
  * The original DiceRoller's 3D cube skin, moved onto useDiceRoll unchanged
@@ -69,6 +69,7 @@ export default function CubeDice({
   onComplete,
   issueCaption,
   onRollAgain,
+  onRollsChange,
 }: {
   onComplete: (set: RollSet) => void;
   /** Set once the print reveal has finished; overrides the hook's own
@@ -76,12 +77,23 @@ export default function CubeDice({
   issueCaption: string | null;
   /** Called when the pill is tapped while `issueCaption` is set. */
   onRollAgain: () => void;
+  /** Mirrors useDiceRoll's `rolls` up to CardMinter's history strip. See
+   *  DiceRoller.tsx's doc on the prop for why this lives here rather than
+   *  in the hook itself. */
+  onRollsChange: (rolls: readonly Roll[]) => void;
 }) {
   const controlsA = useAnimationControls();
   const controlsB = useAnimationControls();
   const revealed = issueCaption !== null;
   const { rolls, status, caption, reducedMotion, disabled, handleClick } =
     useDiceRoll(onComplete, revealed, onRollAgain);
+
+  // Purely a hand-off: `rolls` already exists in the hook above, this just
+  // reports it upward on every change so CardMinter's history strip can
+  // read it without a parallel copy of the throws.
+  useEffect(() => {
+    onRollsChange(rolls);
+  }, [rolls, onRollsChange]);
 
   /* Spins each cube to the rotation for its decided face plus full turns.
      Decides nothing: `result` arrives already chosen by the hook. */
