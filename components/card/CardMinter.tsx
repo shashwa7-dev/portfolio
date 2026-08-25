@@ -21,6 +21,7 @@ import {
 import DiceRoller from "@/components/card/DiceRoller";
 import PlaceholderCard from "@/components/card/PlaceholderCard";
 import Pips from "@/components/card/dice/Pips";
+import { playChime } from "@/components/card/dice/diceSound";
 import { useSoundPreference } from "@/components/card/dice/soundPreference";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { CardData, Roll, RollSet } from "@/lib/card/types";
@@ -237,6 +238,14 @@ export default function CardMinter({
       // redraw above is the whole job, nothing about the turn replays.
       return;
     }
+
+    // A genuine reveal, first roll or a re-roll: fires here, alongside the
+    // card's own rise (the AnimatePresence mount that brought this effect's
+    // `roll` in the first place), rather than waited out until the flip
+    // below finishes. Not gated on reducedMotion below: the mute toggle is
+    // the sound's own control, same reasoning as the ticks and the haptics,
+    // so both branches get the chime.
+    playChime();
 
     const reducedMotion = prefersReducedMotion(window);
 

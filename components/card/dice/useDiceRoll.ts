@@ -5,7 +5,7 @@ import { useWebHaptics } from "web-haptics/react";
 import { rollPair } from "@/lib/card/dice";
 import { prefersReducedMotion } from "@/lib/card/reveal";
 import { SETTLE_MS } from "@/lib/card/revealSequence";
-import { playTick } from "@/components/card/dice/diceSound";
+import { playTick, primeChime } from "@/components/card/dice/diceSound";
 import type { Roll, RollSet } from "@/lib/card/types";
 
 /**
@@ -259,6 +259,11 @@ export function useDiceRoll(
       // reads as three distinct weights rather than one repeated buzz.
       safeHaptic(trigger, "selection");
       playTick("press");
+      // Primes the reveal chime's fetch on every press, not just the
+      // first: cheap (getChime reuses the one element once it exists) and
+      // means a re-roll's own reveal is never the moment the chime's
+      // fetch starts.
+      primeChime();
       if (revealed) {
         reset();
         onRollAgain();
