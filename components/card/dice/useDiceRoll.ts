@@ -51,6 +51,13 @@ export type DiceRollState = {
   caption: string;
   /** True when the visitor has asked for reduced motion. */
   reducedMotion: boolean;
+  /**
+   * Whether RollPill's button should be inert right now: mid-throw, or the
+   * gap between the third roll landing and `revealed` (passed into the
+   * hook) turning true, during which `handleClick` would only silently
+   * no-op a tap rather than doing anything visible.
+   */
+  disabled: boolean;
   /** Starts a throw. No-ops while a throw is in flight or once three are recorded. */
   throwDice: (animate: Animate) => void;
   /**
@@ -60,6 +67,16 @@ export type DiceRollState = {
    * remounted element jumping straight to empty.
    */
   reset: () => void;
+  /**
+   * The pill's whole click contract: guards against a throw already in
+   * flight, branches to "start a fresh set" when `revealed` is true
+   * (clearing the throws and calling `onRollAgain`), and otherwise starts a
+   * throw with the skin's own `animate`. This branch is new logic this task
+   * introduced, not something carried over from before the pill existed, so
+   * it lives here once rather than being pasted into every skin the way
+   * Pips.tsx's markup once was.
+   */
+  handleClick: (animate: Animate) => void;
 };
 
 const ONES = [
@@ -101,7 +118,19 @@ function buildCaption(rolls: readonly Roll[]): string {
   return `${total} so far · ${remaining} more ${remaining === 1 ? "roll" : "rolls"}`;
 }
 
-export function useDiceRoll(onComplete: (set: RollSet) => void): DiceRollState {
+/**
+ * @param revealed Whether a card currently exists (the caller's own
+ *   `issueCaption !== null`, threaded in rather than recomputed here, since
+ *   the hook has no idea what an issue or a caption are). Governs both
+ *   `handleClick`'s branch and `disabled`'s trailing window.
+ * @param onRollAgain Called from `handleClick`'s revealed branch, after this
+ *   hook's own `rolls` have already been cleared.
+ */
+export function useDiceRoll(
+  onComplete: (set: RollSet) => void,
+  revealed: boolean,
+  onRollAgain: () => void
+): DiceRollState {
   const [rolls, setRolls] = useState<Roll[]>([]);
   const [throwing, setThrowing] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
@@ -154,6 +183,24 @@ export function useDiceRoll(onComplete: (set: RollSet) => void): DiceRollState {
      "Roll again" state once three throws have landed and settled). */
   const reset = useCallback(() => setRolls([]), []);
 
+  /* The shared click branch: guard, then "start fresh" vs "throw". Moved
+     here (rather than pasted into CubeDice and TossDice) because it is new
+     logic this task added, not code carried over from before RollPill
+     existed, and a review already flagged this exact shape of duplication
+     once over Pips.tsx. */
+  const handleClick = useCallback(
+    (animate: Animate) => {
+      if (throwing) return;
+      if (revealed) {
+        reset();
+        onRollAgain();
+        return;
+      }
+      throwDice(animate);
+    },
+    [throwing, revealed, reset, onRollAgain, throwDice]
+  );
+
   /* Fix 1 of 3: the handoff fires from its own effect,
      never inline with the third roll's own setRolls call. Calling
      onComplete synchronously there would let React 18 batch the third
@@ -180,7 +227,14 @@ export function useDiceRoll(onComplete: (set: RollSet) => void): DiceRollState {
     status: buildStatus(rolls),
     caption: buildCaption(rolls),
     reducedMotion,
+    // Mid-throw, or the gap between the third roll landing and `revealed`
+    // turning true: a tap in that gap would reach `handleClick`, find
+    // `revealed` still false, and fall into `throwDice`, which itself
+    // no-ops once `rolls.length >= 3`. The pill should look inert for that
+    // whole window rather than inviting a tap it silently ignores.
+    disabled: throwing || (done && !revealed),
     throwDice,
     reset,
+    handleClick,
   };
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { forwardRef, type ReactNode } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
 import { blurSwapVariants, FILL_EASE, FILL_MS } from "@/lib/motionVariants";
 
 /**
@@ -26,6 +26,10 @@ type RollPillProps = {
   disabled: boolean;
   onClick: () => void;
   reducedMotion: boolean;
+  /** True once a card exists and `caption` is the issue line rather than a
+   *  rolling-in-progress count. Governs the one moment the caption blurs
+   *  in rather than plainly updating: see the caption block below. */
+  revealed: boolean;
   /** The skin's own dice, at rest or mid-throw. RollPill draws none of it. */
   children: ReactNode;
 };
@@ -35,7 +39,7 @@ type RollPillProps = {
  *  way it already reaches into its dice with refs, and that needs the real
  *  node now that the button lives in here instead of in the skin. */
 const RollPill = forwardRef<HTMLButtonElement, RollPillProps>(function RollPill(
-  { label, caption, progress, disabled, onClick, reducedMotion, children },
+  { label, caption, progress, disabled, onClick, reducedMotion, revealed, children },
   ref
 ) {
   const pct = `${Math.max(0, Math.min(1, progress)) * 100}%`;
@@ -70,26 +74,27 @@ const RollPill = forwardRef<HTMLButtonElement, RollPillProps>(function RollPill(
         <span className="relative z-[1]">{children}</span>
       </button>
 
-      {reducedMotion ? (
-        <p className="font-mono text-2xs uppercase tracking-label text-subtle">{caption}</p>
+      {/* The caption. Every roll-count update (0, 1, 2, "N rolled") just
+          plainly replaces the text: it changes once a second at most and a
+          blur crossfade on top of the throw's own motion would be noise on
+          noise. The one exception is the moment `revealed` turns true: the
+          issue line landing is the swap blurSwapVariants exists for ("After
+          the print completes, the caption under the pill swaps to the
+          result"), so only that transition gets it, and only when motion is
+          allowed. Rolling `revealed` back to false (Roll again) pops the
+          plain caption back in without an exit animation: restarting the
+          fill is the ceremony there, not the caption. */}
+      {revealed && !reducedMotion ? (
+        <motion.p
+          variants={blurSwapVariants}
+          initial="hidden"
+          animate="visible"
+          className="font-mono text-2xs uppercase tracking-label text-subtle"
+        >
+          {caption}
+        </motion.p>
       ) : (
-        // popLayout, matching MobileChapters' own use of blurSwapVariants:
-        // it takes the outgoing caption out of flow as it leaves, so a
-        // shorter or longer line coming in next doesn't jump sideways
-        // against one still fading out. initial={false} keeps the very
-        // first caption still rather than blurring in on load.
-        <AnimatePresence mode="popLayout" initial={false}>
-          <motion.p
-            key={caption}
-            variants={blurSwapVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            className="font-mono text-2xs uppercase tracking-label text-subtle"
-          >
-            {caption}
-          </motion.p>
-        </AnimatePresence>
+        <p className="font-mono text-2xs uppercase tracking-label text-subtle">{caption}</p>
       )}
     </div>
   );

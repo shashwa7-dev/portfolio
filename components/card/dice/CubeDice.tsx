@@ -79,8 +79,9 @@ export default function CubeDice({
 }) {
   const controlsA = useAnimationControls();
   const controlsB = useAnimationControls();
-  const { rolls, throwing, status, caption, reducedMotion, throwDice, reset } =
-    useDiceRoll(onComplete);
+  const revealed = issueCaption !== null;
+  const { rolls, status, caption, reducedMotion, disabled, handleClick } =
+    useDiceRoll(onComplete, revealed, onRollAgain);
 
   /* Spins each cube to the rotation for its decided face plus full turns.
      Decides nothing: `result` arrives already chosen by the hook. */
@@ -107,21 +108,7 @@ export default function CubeDice({
     [controlsA, controlsB, reducedMotion]
   );
 
-  const revealed = issueCaption !== null;
-
-  const handleClick = useCallback(() => {
-    if (throwing) return;
-    if (revealed) {
-      // Start a fresh sequence: the pill's fill drains (via `reset`, not a
-      // remount) while CardMinter slides the finished card back into the
-      // deck. Nothing here rolls on the visitor's behalf: throwDice waits
-      // for the next tap, same as the very first roll did.
-      reset();
-      onRollAgain();
-      return;
-    }
-    throwDice(animate);
-  }, [throwing, revealed, reset, onRollAgain, throwDice, animate]);
+  const onClick = useCallback(() => handleClick(animate), [handleClick, animate]);
 
   return (
     <div className="mt-8">
@@ -135,9 +122,10 @@ export default function CubeDice({
         label={revealed ? "Roll again" : "Roll"}
         caption={issueCaption ?? caption}
         progress={rolls.length / 3}
-        disabled={throwing}
-        onClick={handleClick}
+        disabled={disabled}
+        onClick={onClick}
         reducedMotion={reducedMotion}
+        revealed={revealed}
       >
         <motion.div
           aria-hidden="true"

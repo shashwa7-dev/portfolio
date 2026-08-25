@@ -120,8 +120,9 @@ export default function TossDice({
   const teardownRef = useRef<() => void>(() => {});
   useEffect(() => () => teardownRef.current(), []);
 
-  const { rolls, throwing, status, caption, reducedMotion, throwDice, reset } =
-    useDiceRoll(onComplete);
+  const revealed = issueCaption !== null;
+  const { rolls, status, caption, reducedMotion, disabled, handleClick } =
+    useDiceRoll(onComplete, revealed, onRollAgain);
 
   const animate = useCallback<Animate>(
     (result) =>
@@ -131,6 +132,17 @@ export default function TossDice({
           resolve();
           return;
         }
+
+        // Both skins honour reduced motion; the squash is otherwise pure
+        // decoration on top of a throw that already works without it. Lives
+        // here (the first thing `animate` does), not in the click handler:
+        // `handleClick` now lives in useDiceRoll and runs `animate` as part
+        // of `throwDice`'s own dispatch, at the same effective moment a
+        // squash fired synchronously from the old inline click handler did.
+        buttonRef.current?.animate(
+          [{ transform: "scale(1)" }, { transform: "scale(.96)" }, { transform: "scale(1)" }],
+          { duration: duration.fast * 1000, easing: TOSS_EASE.press }
+        );
 
         buzz(12);
 
@@ -197,29 +209,7 @@ export default function TossDice({
     [dieRefA, dieRefB, reducedMotion]
   );
 
-  const revealed = issueCaption !== null;
-
-  const handleClick = useCallback(() => {
-    if (throwing) return;
-    if (revealed) {
-      // Start a fresh sequence: the pill's fill drains (via `reset`, not a
-      // remount) while CardMinter slides the finished card back into the
-      // deck. Nothing here rolls on the visitor's behalf: throwDice waits
-      // for the next tap, same as the very first roll did.
-      reset();
-      onRollAgain();
-      return;
-    }
-    // Both skins honour reduced motion; the squash is otherwise pure
-    // decoration on top of a click that already works without it.
-    if (!reducedMotion) {
-      buttonRef.current?.animate(
-        [{ transform: "scale(1)" }, { transform: "scale(.96)" }, { transform: "scale(1)" }],
-        { duration: duration.fast * 1000, easing: TOSS_EASE.press }
-      );
-    }
-    throwDice(animate);
-  }, [throwing, revealed, reset, onRollAgain, reducedMotion, throwDice, animate]);
+  const onClick = useCallback(() => handleClick(animate), [handleClick, animate]);
 
   return (
     <div className="mt-8">
@@ -254,9 +244,10 @@ export default function TossDice({
         label={revealed ? "Roll again" : "Roll"}
         caption={issueCaption ?? caption}
         progress={rolls.length / 3}
-        disabled={throwing}
-        onClick={handleClick}
+        disabled={disabled}
+        onClick={onClick}
         reducedMotion={reducedMotion}
+        revealed={revealed}
       >
         {/* The dock: the dice live here at rest, and return here after
             the toss. */}

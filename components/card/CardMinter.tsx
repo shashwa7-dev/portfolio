@@ -67,6 +67,13 @@ export default function CardMinter({
   // clears `roll` once that transition has had time to finish, so the old
   // (already-seen) card visibly leaves before the slot goes blank again.
   const [cardShown, setCardShown] = useState(false);
+  // The rise's actual CSS transition duration, read from whichever variant
+  // is currently in play (see the reveal effect below). Not the flat
+  // CARD_RISE_MS constant: SHORT_REVEAL's cardRise is near-instant on
+  // purpose, and hard-coding CARD_RISE_MS here would always play the full
+  // 500ms rise regardless of variant, leaving the print underway (and, on
+  // SHORT_REVEAL, well past the portrait) while the card was still moving.
+  const [riseMs, setRiseMs] = useState<number>(FULL_REVEAL.cardRise.duration);
   // RollPill's caption once the print has finished. Also doubles as the
   // "has a card been revealed" flag the pill's label reads: null means
   // "Roll", set means "Roll again".
@@ -163,6 +170,12 @@ export default function CardMinter({
      keystroke would be noise, not a moment. */
   useEffect(() => {
     if (!roll || !ready) return;
+    // A fresh roll landing supersedes any pending roll-again clear: nothing
+    // couples SETTLE_MS and CARD_RISE_MS, so a future change to either
+    // could otherwise let a stale timer null out this new roll's state
+    // moments after it arrives. Enforced here rather than left to the
+    // coincidence that they currently happen to both be 500.
+    window.clearTimeout(rollAgainTimerRef.current);
     const c = canvasRef.current;
     const data = buildData();
     if (!c || !data) return;
@@ -199,6 +212,9 @@ export default function CardMinter({
     // re-roll after that gets SHORT_REVEAL, so rolling repeatedly for a
     // rare issue doesn't mean sitting through the card's rise every time.
     const variant: RevealTimeline = hasEverRevealedRef.current ? SHORT_REVEAL : FULL_REVEAL;
+    // The component, not the constant, decides how long the rise's own CSS
+    // transition runs: see the state's doc above.
+    setRiseMs(variant.cardRise.duration);
 
     let raf1 = 0;
     let raf2 = 0;
@@ -327,7 +343,7 @@ export default function CardMinter({
               height: SLOT_CARD_H,
               opacity: cardShown ? 1 : 0,
               transform: cardShown ? CARD_RISE_TO : CARD_RISE_FROM,
-              transition: `opacity ${CARD_RISE_MS}ms ${CARD_FADE_EASE}, transform ${CARD_RISE_MS}ms ${CARD_RISE_EASE}`,
+              transition: `opacity ${riseMs}ms ${CARD_FADE_EASE}, transform ${riseMs}ms ${CARD_RISE_EASE}`,
             }}
             role="img"
             aria-label={
