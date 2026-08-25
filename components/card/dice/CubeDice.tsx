@@ -4,13 +4,14 @@ import { useCallback } from "react";
 import { motion, useAnimationControls } from "motion/react";
 import { diceThrowVariants, tapPress } from "@/lib/motionVariants";
 import { useDiceRoll, type Animate } from "@/components/card/dice/useDiceRoll";
+import RollPill from "@/components/card/dice/RollPill";
 import Pips from "@/components/card/dice/Pips";
 import type { Die, RollSet } from "@/lib/card/types";
 
 /**
  * The original DiceRoller's 3D cube skin, moved onto useDiceRoll unchanged
- * in look. Its markup, geometry and colours are carried across verbatim:
- * this is a move, not a redesign.
+ * in look. The cube itself (its markup, geometry and colours) is carried
+ * across verbatim; only its button chrome moved into the shared RollPill.
  */
 
 /** The cube's edge, and half of it. Every face sits `HALF` out from the
@@ -66,12 +67,19 @@ function Cube({ controls }: { controls: ReturnType<typeof useAnimationControls> 
 
 export default function CubeDice({
   onComplete,
+  issueCaption,
+  onRollAgain,
 }: {
   onComplete: (set: RollSet) => void;
+  /** Set once the print reveal has finished; overrides the hook's own
+   *  rolling caption and flips the pill's label to "Roll again". */
+  issueCaption: string | null;
+  /** Called when the pill is tapped while `issueCaption` is set. */
+  onRollAgain: () => void;
 }) {
   const controlsA = useAnimationControls();
   const controlsB = useAnimationControls();
-  const { rolls, throwing, nextThrow, done, runningTotal, status, reducedMotion, throwDice } =
+  const { rolls, throwing, status, caption, reducedMotion, throwDice, reset } =
     useDiceRoll(onComplete);
 
   /* Spins each cube to the rotation for its decided face plus full turns.
@@ -99,7 +107,21 @@ export default function CubeDice({
     [controlsA, controlsB, reducedMotion]
   );
 
-  const handleThrow = useCallback(() => throwDice(animate), [throwDice, animate]);
+  const revealed = issueCaption !== null;
+
+  const handleClick = useCallback(() => {
+    if (throwing) return;
+    if (revealed) {
+      // Start a fresh sequence: the pill's fill drains (via `reset`, not a
+      // remount) while CardMinter slides the finished card back into the
+      // deck. Nothing here rolls on the visitor's behalf: throwDice waits
+      // for the next tap, same as the very first roll did.
+      reset();
+      onRollAgain();
+      return;
+    }
+    throwDice(animate);
+  }, [throwing, revealed, reset, onRollAgain, throwDice, animate]);
 
   return (
     <div className="mt-8">
@@ -109,51 +131,24 @@ export default function CubeDice({
         {status}
       </p>
 
-      {!done && (
-        <button
-          type="button"
-          onClick={handleThrow}
-          disabled={throwing}
-          aria-label={`Throw the dice, roll ${nextThrow} of 3`}
-          className="group flex flex-col items-center gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-70"
+      <RollPill
+        label={revealed ? "Roll again" : "Roll"}
+        caption={issueCaption ?? caption}
+        progress={rolls.length / 3}
+        disabled={throwing}
+        onClick={handleClick}
+        reducedMotion={reducedMotion}
+      >
+        <motion.div
+          aria-hidden="true"
+          whileTap={tapPress}
+          className="flex items-center gap-3"
+          style={{ perspective: PERSPECTIVE }}
         >
-          <div className="transition-transform duration-fast ease-out group-hover:-translate-y-0.5">
-            <motion.div
-              aria-hidden="true"
-              whileTap={tapPress}
-              className="flex items-center gap-3"
-              style={{ perspective: PERSPECTIVE }}
-            >
-              <Cube controls={controlsA} />
-              <Cube controls={controlsB} />
-            </motion.div>
-          </div>
-          <span className="font-mono text-2xs uppercase tracking-label text-subtle">
-            tap to throw · {nextThrow} of 3
-          </span>
-        </button>
-      )}
-
-      {rolls.length > 0 && (
-        <div className="mt-4 border-t border-border pt-3">
-          <ul className="flex flex-wrap items-center gap-4">
-            {rolls.map((roll, i) => (
-              <li key={i} className="flex items-center gap-1.5">
-                <span className="flex gap-0.5">
-                  <Pips value={roll[0]} className="h-5 w-5" />
-                  <Pips value={roll[1]} className="h-5 w-5" />
-                </span>
-                <span className="font-mono text-2xs text-subtle">{roll[0] + roll[1]}</span>
-              </li>
-            ))}
-          </ul>
-          {done && (
-            <p className="mt-2 font-mono text-2xs uppercase tracking-label text-subtle">
-              Total {runningTotal}
-            </p>
-          )}
-        </div>
-      )}
+          <Cube controls={controlsA} />
+          <Cube controls={controlsB} />
+        </motion.div>
+      </RollPill>
     </div>
   );
 }

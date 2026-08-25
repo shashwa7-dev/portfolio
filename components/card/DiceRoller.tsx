@@ -21,26 +21,32 @@ function styleFromParam(raw: string | null): DiceStyle {
   return raw === "cube" || raw === "toss" ? raw : DEFAULT_STYLE;
 }
 
-function ChosenSkin({ onComplete }: { onComplete: (set: RollSet) => void }) {
+type SkinProps = {
+  onComplete: (set: RollSet) => void;
+  issueCaption: string | null;
+  onRollAgain: () => void;
+};
+
+function ChosenSkin({ onComplete, issueCaption, onRollAgain }: SkinProps) {
   // /card is a server component that reads headers, so the override itself
   // is read here, client-side, from the URL rather than from a prop.
   const params = useSearchParams();
   const style = styleFromParam(params.get("dice"));
-  return style === "cube" ? <CubeDice onComplete={onComplete} /> : <TossDice onComplete={onComplete} />;
+  return style === "cube" ? (
+    <CubeDice onComplete={onComplete} issueCaption={issueCaption} onRollAgain={onRollAgain} />
+  ) : (
+    <TossDice onComplete={onComplete} issueCaption={issueCaption} onRollAgain={onRollAgain} />
+  );
 }
 
-export default function DiceRoller({
-  onComplete,
-}: {
-  onComplete: (set: RollSet) => void;
-}) {
+export default function DiceRoller({ onComplete, issueCaption, onRollAgain }: SkinProps) {
   // useSearchParams requires a Suspense boundary in this Next version (it
   // opts the subtree into client-side rendering). No visible fallback: a
   // dice button that isn't interactive yet has nothing useful to show
   // before hydration resolves this on the client, which is immediate.
   return (
     <Suspense fallback={null}>
-      <ChosenSkin onComplete={onComplete} />
+      <ChosenSkin onComplete={onComplete} issueCaption={issueCaption} onRollAgain={onRollAgain} />
     </Suspense>
   );
 }

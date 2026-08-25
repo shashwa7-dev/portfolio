@@ -1,21 +1,20 @@
 /**
  * The reveal timeline, as data.
  *
- * The card's reveal is choreographed across five overlapping stages, and it
- * is committed to finishing in under two seconds. Timings scattered through
- * a component make that a hope; here it is an assertion, and
+ * The card's reveal is choreographed across three stages, and it is
+ * committed to finishing in under two seconds. Timings scattered through a
+ * component make that a hope; here it is an assertion, and
  * revealSequence.test.ts fails the build if a stage grows past the budget.
  *
  * It also keeps the two variants from drifting. The full ceremony plays
  * once, on a visitor's first completed set; every re-roll after that gets
  * the short one, because someone rolling repeatedly for a rare issue should
- * not sit through a backdrop each time. Both are described by the same
+ * not sit through the card's rise each time. Both are described by the same
  * shape, so the component reads one table and never branches on which it
  * was handed.
  *
  * Kept DOM-free like the rest of lib/card. Nothing here reads window or
- * schedules anything: it is numbers, and the component turns them into
- * motion.
+ * schedules anything: it is numbers, and CardMinter turns them into motion.
  */
 
 /** Milliseconds from the moment the third pair of dice come to rest. */
@@ -26,12 +25,13 @@ export type RevealStage = {
 };
 
 export type RevealTimeline = {
-  backdropIn: RevealStage;
-  cardForward: RevealStage;
+  /** The card rising off the deck, blank. CardMinter.tsx's own CSS
+   *  transition does the actual animating; this only says when it starts
+   *  and how long the caller should wait before the canvas is touched. */
+  cardRise: RevealStage;
   /** The existing print reveal in lib/card/reveal.ts, which runs 900ms. */
   print: RevealStage;
-  issueStamp: RevealStage;
-  backdropOut: RevealStage;
+  issueLine: RevealStage;
 };
 
 /** The ceiling the whole sequence is designed against. */
@@ -54,7 +54,7 @@ export const SETTLE_MS = 500;
 /** How long the print reveal itself takes. Mirrors --duration-print. */
 const PRINT_MS = 900;
 
-/** The beat between the card finishing printing and the issue landing. */
+/** The beat between the card finishing printing and the issue line landing. */
 const STAMP_BEAT_MS = 40;
 
 /**
@@ -66,25 +66,21 @@ const STAMP_BEAT_MS = 40;
 const ABSENT = 0.000001;
 
 export const FULL_REVEAL: RevealTimeline = {
-  backdropIn: { at: 0, duration: 160 },
-  // Overlaps the backdrop, and starts before the print so the card is
-  // already settled by the time ink appears on it.
-  cardForward: { at: 80, duration: 320 },
-  // The 240ms of empty frame before this is deliberate anticipation. There
-  // is nothing behind the canvas during it: a placeholder colour would show
-  // through the card's real tear-line cuts, and a per-issue stock colour
-  // would give away an Inverted result before it printed.
-  print: { at: 240, duration: PRINT_MS },
-  issueStamp: { at: 240 + PRINT_MS + STAMP_BEAT_MS, duration: 220 },
-  backdropOut: { at: 240 + PRINT_MS + STAMP_BEAT_MS + 220 + 40, duration: 280 },
+  // Mirrors --duration-card-rise / CARD_RISE_MS in lib/motionVariants.ts.
+  // The card rises blank; nothing is drawn to the visible canvas until this
+  // stage has had its full 500ms, or the finished card would be legible
+  // while it is still moving.
+  cardRise: { at: 0, duration: 500 },
+  print: { at: 500, duration: PRINT_MS },
+  issueLine: { at: 500 + PRINT_MS + STAMP_BEAT_MS, duration: 200 },
 };
 
 export const SHORT_REVEAL: RevealTimeline = {
-  backdropIn: { at: 0, duration: ABSENT },
-  cardForward: { at: 0, duration: ABSENT },
+  // Skips straight to print: the rise itself may still play (a re-roll's
+  // card comes back off the deck the same way), but nothing waits on it.
+  cardRise: { at: 0, duration: ABSENT },
   print: { at: 0, duration: PRINT_MS },
-  issueStamp: { at: PRINT_MS + STAMP_BEAT_MS, duration: 220 },
-  backdropOut: { at: PRINT_MS + STAMP_BEAT_MS + 220, duration: ABSENT },
+  issueLine: { at: PRINT_MS + STAMP_BEAT_MS, duration: 200 },
 };
 
 /** When the last stage finishes. */

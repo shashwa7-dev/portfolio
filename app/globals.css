@@ -238,6 +238,21 @@
   --dice-ink: #1f1d1a;
 }
 
+/* The card's rise off the deck, the deck offsets, and the roll pill's fill
+   (CardMinter.tsx / RollPill.tsx). Mirrors CARD_RISE_MS, CARD_RISE_EASE,
+   DECK_OFFSET_BACK, DECK_OFFSET_FRONT, FILL_MS and FILL_EASE in
+   lib/motionVariants.ts, which is what the components actually import: kept
+   here too so the values are declared as CSS custom properties per the
+   project convention, and so a future CSS-only consumer has them. */
+:root {
+  --duration-card-rise: 500ms;
+  --ease-card-rise: cubic-bezier(0.3, 1.1, 0.4, 1);
+  --deck-offset-back: translate(6px, 8px) rotate(3deg);
+  --deck-offset-front: translate(-4px, 4px) rotate(-2deg);
+  --duration-fill: 420ms;
+  --ease-fill: cubic-bezier(0.3, 1, 0.4, 1);
+}
+
 /* Link hover effect */
 a {
   transition: opacity var(--duration-fast) var(--ease-out);

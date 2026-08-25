@@ -4,7 +4,7 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { ARCS, tossKeyframes } from "@/lib/card/toss";
 import { duration, TOSS_EASE, TOSS_SHUFFLE_MS } from "@/lib/motionVariants";
 import { useDiceRoll, type Animate } from "@/components/card/dice/useDiceRoll";
-import Pips from "@/components/card/dice/Pips";
+import RollPill from "@/components/card/dice/RollPill";
 import type { Die, Roll, RollSet } from "@/lib/card/types";
 
 /**
@@ -90,8 +90,15 @@ function Die({
 
 export default function TossDice({
   onComplete,
+  issueCaption,
+  onRollAgain,
 }: {
   onComplete: (set: RollSet) => void;
+  /** Set once the print reveal has finished; overrides the hook's own
+   *  rolling caption and flips the pill's label to "Roll again". */
+  issueCaption: string | null;
+  /** Called when the pill is tapped while `issueCaption` is set. */
+  onRollAgain: () => void;
 }) {
   // useId, not a literal string: <defs> ids are global to the document and
   // the issue gallery renders other SVG on the same page. Colons stripped
@@ -113,7 +120,7 @@ export default function TossDice({
   const teardownRef = useRef<() => void>(() => {});
   useEffect(() => () => teardownRef.current(), []);
 
-  const { rolls, throwing, nextThrow, done, runningTotal, status, reducedMotion, throwDice } =
+  const { rolls, throwing, status, caption, reducedMotion, throwDice, reset } =
     useDiceRoll(onComplete);
 
   const animate = useCallback<Animate>(
@@ -190,7 +197,19 @@ export default function TossDice({
     [dieRefA, dieRefB, reducedMotion]
   );
 
+  const revealed = issueCaption !== null;
+
   const handleClick = useCallback(() => {
+    if (throwing) return;
+    if (revealed) {
+      // Start a fresh sequence: the pill's fill drains (via `reset`, not a
+      // remount) while CardMinter slides the finished card back into the
+      // deck. Nothing here rolls on the visitor's behalf: throwDice waits
+      // for the next tap, same as the very first roll did.
+      reset();
+      onRollAgain();
+      return;
+    }
     // Both skins honour reduced motion; the squash is otherwise pure
     // decoration on top of a click that already works without it.
     if (!reducedMotion) {
@@ -200,7 +219,7 @@ export default function TossDice({
       );
     }
     throwDice(animate);
-  }, [reducedMotion, throwDice, animate]);
+  }, [throwing, revealed, reset, onRollAgain, reducedMotion, throwDice, animate]);
 
   return (
     <div className="mt-8">
@@ -230,52 +249,26 @@ export default function TossDice({
         {status}
       </p>
 
-      {!done && (
-        <button
-          type="button"
-          ref={buttonRef}
-          onClick={handleClick}
-          disabled={throwing}
-          aria-label={`Throw the dice, roll ${nextThrow} of 3`}
-          style={{ WebkitTapHighlightColor: "transparent" }}
-          className="inline-flex items-center gap-4 rounded-full bg-accent px-6 py-3 text-accent-foreground hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-70"
-        >
-          <span className="font-mono text-2xs uppercase tracking-label">
-            tap to throw · {nextThrow} of 3
+      <RollPill
+        ref={buttonRef}
+        label={revealed ? "Roll again" : "Roll"}
+        caption={issueCaption ?? caption}
+        progress={rolls.length / 3}
+        disabled={throwing}
+        onClick={handleClick}
+        reducedMotion={reducedMotion}
+      >
+        {/* The dock: the dice live here at rest, and return here after
+            the toss. */}
+        <span className="relative inline-flex h-9 w-[74px] shrink-0 items-center" aria-hidden="true">
+          <span ref={dieRefA} className="absolute left-0 z-[2] inline-flex will-change-transform">
+            <Die value={faces[0]} wobbleId={wobbleId} faceGradId={faceGradId} pipGradId={pipGradId} />
           </span>
-          {/* The dock: the dice live here at rest, and return here after
-              the toss. */}
-          <span className="relative inline-flex h-9 w-[74px] shrink-0 items-center" aria-hidden="true">
-            <span ref={dieRefA} className="absolute left-0 z-[2] inline-flex will-change-transform">
-              <Die value={faces[0]} wobbleId={wobbleId} faceGradId={faceGradId} pipGradId={pipGradId} />
-            </span>
-            <span ref={dieRefB} className="absolute left-10 z-[1] inline-flex will-change-transform">
-              <Die value={faces[1]} wobbleId={wobbleId} faceGradId={faceGradId} pipGradId={pipGradId} />
-            </span>
+          <span ref={dieRefB} className="absolute left-10 z-[1] inline-flex will-change-transform">
+            <Die value={faces[1]} wobbleId={wobbleId} faceGradId={faceGradId} pipGradId={pipGradId} />
           </span>
-        </button>
-      )}
-
-      {rolls.length > 0 && (
-        <div className="mt-4 border-t border-border pt-3">
-          <ul className="flex flex-wrap items-center gap-4">
-            {rolls.map((roll, i) => (
-              <li key={i} className="flex items-center gap-1.5">
-                <span className="flex gap-0.5">
-                  <Pips value={roll[0]} className="h-5 w-5" />
-                  <Pips value={roll[1]} className="h-5 w-5" />
-                </span>
-                <span className="font-mono text-2xs text-subtle">{roll[0] + roll[1]}</span>
-              </li>
-            ))}
-          </ul>
-          {done && (
-            <p className="mt-2 font-mono text-2xs uppercase tracking-label text-subtle">
-              Total {runningTotal}
-            </p>
-          )}
-        </div>
-      )}
+        </span>
+      </RollPill>
     </div>
   );
 }

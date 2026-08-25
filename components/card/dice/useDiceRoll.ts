@@ -41,10 +41,25 @@ export type DiceRollState = {
   runningTotal: number;
   /** The aria-live sentence for the current state. */
   status: string;
+  /**
+   * RollPill's caption while rolling is still in progress (0, 1, 2, or the
+   * instant the 3rd throw lands but hasn't been handed to `onComplete` yet).
+   * Once a card exists, the caller overrides this with the issue line
+   * instead: this hook has no idea an issue, an odds table or a total-so-
+   * far display even exist, it only knows the throws.
+   */
+  caption: string;
   /** True when the visitor has asked for reduced motion. */
   reducedMotion: boolean;
   /** Starts a throw. No-ops while a throw is in flight or once three are recorded. */
   throwDice: (animate: Animate) => void;
+  /**
+   * Clears every throw so far, ready for a fresh set. Used only when
+   * rolling again after a card exists: separate from unmounting the skin,
+   * so the pill's fill can drain with its own transition instead of a
+   * remounted element jumping straight to empty.
+   */
+  reset: () => void;
 };
 
 const ONES = [
@@ -74,6 +89,16 @@ function buildStatus(rolls: readonly Roll[]): string {
   return `Roll ${rolls.length} of 3: ${spellOut(a)} and ${spellOut(b)}, ${spellOut(
     a + b
   )}. Running total ${spellOut(runningTotal)}.`;
+}
+
+/** RollPill's caption. See the field's doc on DiceRollState for why this
+ *  stops at "rolled" once three are in rather than reaching for an issue. */
+function buildCaption(rolls: readonly Roll[]): string {
+  if (rolls.length === 0) return "roll 3 times to print your card";
+  const total = rolls.reduce((n, [a, b]) => n + a + b, 0);
+  if (rolls.length === 3) return `${total} rolled`;
+  const remaining = 3 - rolls.length;
+  return `${total} so far · ${remaining} more ${remaining === 1 ? "roll" : "rolls"}`;
 }
 
 export function useDiceRoll(onComplete: (set: RollSet) => void): DiceRollState {
@@ -121,6 +146,14 @@ export function useDiceRoll(onComplete: (set: RollSet) => void): DiceRollState {
     [throwing, rolls.length]
   );
 
+  /* Not one of the three fixes above, and deliberately independent of them:
+     rolling again unmounts nothing, so a remount can't reset this for us
+     the way it used to when the whole skin used to disappear behind the
+     finished card. Only `rolls` clears; `throwing` is already false by the
+     time a caller has any business calling this (the pill only reaches its
+     "Roll again" state once three throws have landed and settled). */
+  const reset = useCallback(() => setRolls([]), []);
+
   /* Fix 1 of 3: the handoff fires from its own effect,
      never inline with the third roll's own setRolls call. Calling
      onComplete synchronously there would let React 18 batch the third
@@ -145,7 +178,9 @@ export function useDiceRoll(onComplete: (set: RollSet) => void): DiceRollState {
     done,
     runningTotal,
     status: buildStatus(rolls),
+    caption: buildCaption(rolls),
     reducedMotion,
     throwDice,
+    reset,
   };
 }

@@ -247,3 +247,43 @@ export const TOSS_EASE = {
 
 /** How often the shown faces shuffle while a die is airborne. */
 export const TOSS_SHUFFLE_MS = 55;
+
+// ──────────────────────────────────────────────────────────────────────
+// The card's rise off the deck, the deck itself, and the roll pill's fill
+// (CardMinter.tsx, RollPill.tsx). Plain CSS transitions, not Framer Motion:
+// the card is a <canvas>, and RollPill's fill is a plain <span>, so there is
+// nothing here for `motion/react` to drive. These exist so no component
+// pastes the literal curve or offsets directly. Mirrored in app/globals.css
+// as --duration-card-rise, --ease-card-rise, --deck-offset-back,
+// --deck-offset-front, --duration-fill and --ease-fill.
+// ──────────────────────────────────────────────────────────────────────
+
+/** Where the card sits before it rises. */
+export const CARD_RISE_FROM = "translateY(42px) scale(0.92)";
+/** Where it lands. */
+export const CARD_RISE_TO = "translateY(0) scale(1)";
+/**
+ * Overshoots slightly past 1 before settling, which is what gives the card
+ * its flick off the top of the deck rather than a plain ease-in. Not
+ * `ease.out` above: that curve never exceeds 1, so it cannot produce an
+ * overshoot at all.
+ */
+export const CARD_RISE_EASE = "cubic-bezier(0.3, 1.1, 0.4, 1)";
+/** Mirrors --duration-card-rise and FULL_REVEAL.cardRise.duration in
+ *  lib/card/revealSequence.ts. */
+export const CARD_RISE_MS = 500;
+/** The card's own fade. Kept off the overshooting curve above: a fade that
+ *  overshoots past full opacity and back is a flicker, not a landing. */
+export const CARD_FADE_EASE = cssEase(ease.out);
+
+/** The two idle cards behind the rising one, always present so the slot
+ *  never looks empty before a roll. Offsets and rotation lifted verbatim
+ *  from the owner's reference. */
+export const DECK_OFFSET_BACK = "translate(6px, 8px) rotate(3deg)";
+export const DECK_OFFSET_FRONT = "translate(-4px, 4px) rotate(-2deg)";
+
+/** How long the pill's fill bar takes to grow to its new width. */
+export const FILL_MS = 420;
+/** A touch gentler than CARD_RISE_EASE and never overshoots: the fill is a
+ *  meter, not a thrown object. */
+export const FILL_EASE = "cubic-bezier(0.3, 1, 0.4, 1)";

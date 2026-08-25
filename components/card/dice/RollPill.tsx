@@ -1,0 +1,98 @@
+"use client";
+
+import { forwardRef, type ReactNode } from "react";
+import { AnimatePresence, motion } from "motion/react";
+import { blurSwapVariants, FILL_EASE, FILL_MS } from "@/lib/motionVariants";
+
+/**
+ * The button both dice skins share: the pill itself, its fill, the label
+ * and the caption beneath. A skin passes only its dice dock as children;
+ * everything else was previously copy-pasted between CubeDice and TossDice,
+ * which a prior review flagged once already over Pips.tsx.
+ *
+ * The fill reuses `bg-accent` as its base (the same colour TossDice's old
+ * button already stood on, proven in both themes) with a translucent
+ * `accent-foreground` wash growing over it for progress. A fully opaque
+ * second colour was tried and rejected: `--accent` is this palette's ink,
+ * not a mid-tone brand hue, so an opaque fill and a static label colour
+ * cannot both stay legible once the fill passes under the text. A subtle
+ * wash never flips that contrast.
+ */
+type RollPillProps = {
+  label: string;
+  caption: string;
+  /** 0 to 1. */
+  progress: number;
+  disabled: boolean;
+  onClick: () => void;
+  reducedMotion: boolean;
+  /** The skin's own dice, at rest or mid-throw. RollPill draws none of it. */
+  children: ReactNode;
+};
+
+/** Forwards a ref to the underlying `<button>`: TossDice runs its own
+ *  press-squash WAAPI animation directly on the button element, the same
+ *  way it already reaches into its dice with refs, and that needs the real
+ *  node now that the button lives in here instead of in the skin. */
+const RollPill = forwardRef<HTMLButtonElement, RollPillProps>(function RollPill(
+  { label, caption, progress, disabled, onClick, reducedMotion, children },
+  ref
+) {
+  const pct = `${Math.max(0, Math.min(1, progress)) * 100}%`;
+
+  return (
+    <div className="flex flex-col items-center gap-3">
+      <button
+        ref={ref}
+        type="button"
+        onClick={onClick}
+        disabled={disabled}
+        aria-label={`${label}. ${caption}`}
+        style={{ WebkitTapHighlightColor: "transparent" }}
+        className="group relative inline-flex h-[60px] w-[240px] items-center justify-center gap-3 overflow-visible rounded-full bg-accent text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-elevated disabled:opacity-70"
+      >
+        {/* The fill: clipped to its own rounded wrapper so it never spills
+            past the pill's corners, while the pill itself stays
+            overflow-visible so the dice dock can send dice above it. */}
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 overflow-hidden rounded-full"
+        >
+          <span
+            className="absolute inset-y-0 left-0 bg-accent-foreground/15"
+            style={{ width: pct, transition: `width ${FILL_MS}ms ${FILL_EASE}` }}
+          />
+        </span>
+
+        <span className="relative z-[1] font-mono text-2xs uppercase tracking-label">
+          {label}
+        </span>
+        <span className="relative z-[1]">{children}</span>
+      </button>
+
+      {reducedMotion ? (
+        <p className="font-mono text-2xs uppercase tracking-label text-subtle">{caption}</p>
+      ) : (
+        // popLayout, matching MobileChapters' own use of blurSwapVariants:
+        // it takes the outgoing caption out of flow as it leaves, so a
+        // shorter or longer line coming in next doesn't jump sideways
+        // against one still fading out. initial={false} keeps the very
+        // first caption still rather than blurring in on load.
+        <AnimatePresence mode="popLayout" initial={false}>
+          <motion.p
+            key={caption}
+            variants={blurSwapVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="font-mono text-2xs uppercase tracking-label text-subtle"
+          >
+            {caption}
+          </motion.p>
+        </AnimatePresence>
+      )}
+    </div>
+  );
+});
+
+export default RollPill;
