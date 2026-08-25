@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useWebHaptics } from "web-haptics/react";
 import { rollPair } from "@/lib/card/dice";
 import { prefersReducedMotion } from "@/lib/card/reveal";
 import { SETTLE_MS } from "@/lib/card/revealSequence";
@@ -15,7 +16,36 @@ import type { Roll, RollSet } from "@/lib/card/types";
  * single component this was extracted from, and a second skin duplicating
  * them would mean every future fix landing twice. A skin gets none of this
  * to reimplement: it owns only motion and markup.
+ *
+ * Haptics live here for the same reason: one press trigger, one pair of
+ * landing taps and one completion trigger, rather than the old hand-rolled
+ * `buzz()` pasted into every skin that wants a throw to feel physical.
  */
+
+type Trigger = ReturnType<typeof useWebHaptics>["trigger"];
+
+/** Two dice land `HAPTIC_LANDING_STAGGER_MS` apart on the cube skin (see
+ *  `LANDING_STAGGER_S` in lib/motionVariants.ts, 0.04s). That constant
+ *  isn't exported and this task must not touch lib/, so the same value is
+ *  mirrored here rather than imported, purely to keep the two landing taps
+ *  reading like the same throw the visuals already depict. */
+const HAPTIC_LANDING_STAGGER_MS = 40;
+
+/**
+ * Wraps a `web-haptics` trigger the way the old hand-rolled `buzz()`
+ * wrapped `navigator.vibrate`: a missing implementation, a thrown error, or
+ * a rejected promise (the package itself, an unsupported browser, or a
+ * visitor who has toggled the feature off) must never interrupt a throw.
+ */
+function safeHaptic(trigger: Trigger, input: Parameters<Trigger>[0]) {
+  try {
+    trigger(input)?.catch(() => {
+      /* unsupported, or declined */
+    });
+  } catch {
+    /* unsupported */
+  }
+}
 
 /**
  * A skin's animation. Receives the already-decided pair so it can land on
@@ -134,6 +164,7 @@ export function useDiceRoll(
   const [rolls, setRolls] = useState<Roll[]>([]);
   const [throwing, setThrowing] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const { trigger } = useWebHaptics();
 
   // Read once, in an effect: prefersReducedMotion touches `window`, which
   // has no stable value during render (and none at all on the server).
@@ -153,6 +184,11 @@ export function useDiceRoll(
          chooses a result, it only receives one. */
       const result = rollPair(Math.random);
 
+      // Decided now, same as `result`: whether this throw is the one that
+      // completes the set of three, which decides the weight of its
+      // landing haptic below.
+      const completesSet = rolls.length === 2;
+
       void (async () => {
         try {
           try {
@@ -163,6 +199,16 @@ export function useDiceRoll(
                so it is recorded regardless of whether the animation
                finished. */
           }
+          // The landing: both dice have now settled, whether or not the
+          // skin's own animation finished cleanly. The third roll gets the
+          // heavier `success` preset instead of the usual two light taps,
+          // since it is the moment the set actually completes.
+          if (completesSet) {
+            safeHaptic(trigger, "success");
+          } else {
+            safeHaptic(trigger, "light");
+            window.setTimeout(() => safeHaptic(trigger, "light"), HAPTIC_LANDING_STAGGER_MS);
+          }
           setRolls((prev) => [...prev, result]);
         } finally {
           /* Fix 2 of 3: unconditional, so nothing above (including the
@@ -172,7 +218,7 @@ export function useDiceRoll(
         }
       })();
     },
-    [throwing, rolls.length]
+    [throwing, rolls.length, trigger]
   );
 
   /* Not one of the three fixes above, and deliberately independent of them:
@@ -191,6 +237,11 @@ export function useDiceRoll(
   const handleClick = useCallback(
     (animate: Animate) => {
       if (throwing) return;
+      // The lightest tap available, on every press this branch actually
+      // acts on ("selection": 8ms at 0.3 intensity, lighter than the
+      // "light" preset used for a die's own landing below) so a throw
+      // reads as three distinct weights rather than one repeated buzz.
+      safeHaptic(trigger, "selection");
       if (revealed) {
         reset();
         onRollAgain();
@@ -198,7 +249,7 @@ export function useDiceRoll(
       }
       throwDice(animate);
     },
-    [throwing, revealed, reset, onRollAgain, throwDice]
+    [throwing, revealed, reset, onRollAgain, throwDice, trigger]
   );
 
   /* Fix 1 of 3: the handoff fires from its own effect,

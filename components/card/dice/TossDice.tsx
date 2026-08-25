@@ -34,17 +34,6 @@ const FACES: Record<Die, readonly string[]> = {
  *  animation runs. This just picks what flickers past while airborne. */
 const shuffleFace = (): Die => (1 + Math.floor(Math.random() * 6)) as Die;
 
-/** Feature-detected and wrapped so an absent or throwing implementation
- *  (iOS Safari has no navigator.vibrate at all) never interrupts a throw. */
-function buzz(pattern: number | number[]) {
-  if (typeof navigator === "undefined" || typeof navigator.vibrate !== "function") return;
-  try {
-    navigator.vibrate(pattern);
-  } catch {
-    /* unsupported */
-  }
-}
-
 const DIE_SIZE = 34;
 
 function Die({
@@ -156,8 +145,6 @@ export default function TossDice({
           { duration: duration.fast * 1000, easing: TOSS_EASE.press }
         );
 
-        buzz(12);
-
         const shuffle = window.setInterval(() => {
           setFaces([shuffleFace(), shuffleFace()]);
         }, TOSS_SHUFFLE_MS);
@@ -185,7 +172,6 @@ export default function TossDice({
           window.clearInterval(shuffle);
           live.forEach((a) => a.cancel());
           setFaces(result);
-          buzz([0, 14, 45, 22]);
           resolve();
         };
 
