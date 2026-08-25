@@ -62,7 +62,7 @@ const RollPill = forwardRef<HTMLButtonElement, RollPillProps>(function RollPill(
         disabled={disabled}
         aria-label={`${label}. ${caption}`}
         style={{ WebkitTapHighlightColor: "transparent" }}
-        className="group relative inline-flex h-[60px] w-[240px] items-center justify-center gap-3 overflow-visible rounded-md bg-accent text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-70"
+        className="group relative h-[60px] w-[340px] overflow-visible rounded-md bg-accent text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-70"
       >
         {/* The fill: clipped to its own wrapper so it never spills past the
             pill's corners, while the pill itself stays overflow-visible so
@@ -79,16 +79,34 @@ const RollPill = forwardRef<HTMLButtonElement, RollPillProps>(function RollPill(
           />
         </span>
 
-        {/* text-sm font-semibold, sentence case: how every other primary
-            action in the app labels itself (components/ui/button.tsx's
-            base class; components/Navbar.tsx's CV link; components/
-            Socials.tsx's email CTA; components/About.tsx's hero CTAs). The
-            uppercase mono label this replaced read as a different design
-            language next to those. Checked against the pill's fixed 240px
-            and the dock beside it at the longest label, "Roll again": see
-            the task report for the arithmetic. */}
-        <span className="relative z-[1] text-sm font-semibold">{label}</span>
-        <span className="relative z-[1]">{children}</span>
+        {/* Centred against the button itself, not against the label+dock
+            pair: `justify-center` on the old flex row centred the group,
+            which put the word left of the button's true centre with the
+            dice filling the right half. The label now spans the button's
+            full width and centres within it; the dock (below) is pinned to
+            the right edge instead of sitting beside the label in flow, so
+            the two are no longer a group to centre.
+
+            font-semibold, sentence case: how every other primary action in
+            the app labels itself (components/ui/button.tsx's base class;
+            components/Navbar.tsx's CV link; components/Socials.tsx's email
+            CTA; components/About.tsx's hero CTAs). The uppercase mono label
+            this replaced read as a different design language next to
+            those. Sized text-lg, up from text-sm: quiet was right for an
+            ordinary button, too quiet for the only control on the stage.
+
+            The pill widened from 240px to 340px to fit this at text-lg
+            without crowding the dock. Worst case is CubeDice's two 40px
+            cubes plus their 12px gap (92px), inset 16px from the right, so
+            the dock's own left edge sits at 340 - 16 - 92 = 232px. "Roll
+            again" (the longest label) measures ~78px at text-lg in DM Sans
+            SemiBold, so centred in 340px its right edge lands at 170 +
+            39 = 209px, leaving roughly 23px of clearance before the dock.
+            TossDice's narrower 74px dock clears by roughly 41px. */}
+        <span className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center text-lg font-semibold">
+          {label}
+        </span>
+        <span className="absolute right-4 top-1/2 z-[1] -translate-y-1/2">{children}</span>
       </button>
 
       {/* The caption. Every roll-count update (0, 1, 2, "N rolled") just
