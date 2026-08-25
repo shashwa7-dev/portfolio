@@ -1,0 +1,130 @@
+"use client";
+
+import { useCallback } from "react";
+import { motion, useAnimationControls } from "motion/react";
+import { diceThrowVariants, tapPress } from "@/lib/motionVariants";
+import { useDiceRoll, type Animate } from "@/components/card/dice/useDiceRoll";
+import RollPill from "@/components/card/dice/RollPill";
+import Pips from "@/components/card/dice/Pips";
+import type { SkinProps } from "@/components/card/DiceRoller";
+import type { Die } from "@/lib/card/types";
+
+/**
+ * The original DiceRoller's 3D cube skin, moved onto useDiceRoll unchanged
+ * in look. The cube itself (its markup, geometry and colours) is carried
+ * across verbatim; only its button chrome moved into the shared RollPill.
+ */
+
+/** The cube's edge, and half of it. Every face sits `HALF` out from the
+ *  centre, derived from `EDGE` rather than typed twice, so the box cannot
+ *  come apart if the size ever changes.
+ *
+ *  Down from 40px: at 40px plus a 12px gap the dock ran to 92px, wide
+ *  enough that RollPill's centred label collided with it once the pill
+ *  went fluid for narrow phones. 32px, paired with a 10px gap (below),
+ *  brings the dock to 74px, matching TossDice's dock exactly, so both
+ *  skins clear the label by the same margin at every width. */
+const EDGE = 32;
+const HALF = EDGE / 2;
+
+/** Enough depth that a 32px cube reads as a box, not a fisheye. */
+const PERSPECTIVE = 480;
+
+/**
+ * Each face's placement on the cube: geometry, not a result. Opposite
+ * faces sum to 7, as on a real die. The side and top faces get a slight
+ * `brightness` filter so the cube reads as a volume instead of six
+ * identical cards in flight; no new colours, just tonal separation on
+ * `--dice-stock`.
+ */
+const FACES: readonly { value: Die; transform: string; shade?: string }[] = [
+  { value: 1, transform: `translateZ(${HALF}px)` },
+  { value: 6, transform: `rotateY(180deg) translateZ(${HALF}px)` },
+  { value: 2, transform: `rotateY(90deg) translateZ(${HALF}px)`, shade: "brightness(0.94)" },
+  { value: 5, transform: `rotateY(-90deg) translateZ(${HALF}px)`, shade: "brightness(0.94)" },
+  { value: 3, transform: `rotateX(90deg) translateZ(${HALF}px)`, shade: "brightness(0.88)" },
+  { value: 4, transform: `rotateX(-90deg) translateZ(${HALF}px)`, shade: "brightness(0.88)" },
+];
+
+/**
+ * A real cube: six absolutely positioned faces inside a `preserve-3d` box.
+ * `controls` drives its rotation entirely; the cube itself holds no state
+ * and reads no roll, so it cannot be the thing that leaks one.
+ */
+function Cube({ controls }: { controls: ReturnType<typeof useAnimationControls> }) {
+  return (
+    <motion.div
+      initial={{ rotateX: 0, rotateY: 0, y: 0 }}
+      animate={controls}
+      className="relative"
+      style={{ width: EDGE, height: EDGE, transformStyle: "preserve-3d" }}
+    >
+      {FACES.map((face) => (
+        <div
+          key={face.value}
+          className="absolute inset-0"
+          style={{ transform: face.transform, backfaceVisibility: "hidden", filter: face.shade }}
+        >
+          <Pips value={face.value} className="h-full w-full" />
+        </div>
+      ))}
+    </motion.div>
+  );
+}
+
+export default function CubeDice({ onComplete, issueCaption, onRollAgain, onRollsChange }: SkinProps) {
+  const controlsA = useAnimationControls();
+  const controlsB = useAnimationControls();
+  const revealed = issueCaption !== null;
+  const diceRoll = useDiceRoll(onComplete, revealed, onRollAgain, onRollsChange);
+  const { status, reducedMotion, handleClick } = diceRoll;
+
+  /* Spins each cube to the rotation for its decided face plus full turns.
+     Decides nothing: `result` arrives already chosen by the hook. */
+  const animate = useCallback<Animate>(
+    async (result) => {
+      const poseA = diceThrowVariants(result[0], 0);
+      const poseB = diceThrowVariants(result[1], 1);
+
+      if (reducedMotion) {
+        controlsA.set(poseA.rest);
+        controlsB.set(poseB.rest);
+        return;
+      }
+
+      try {
+        await Promise.all([controlsA.start(poseA.airborne), controlsB.start(poseB.airborne)]);
+      } finally {
+        /* Land on the decided face whether the spin finished cleanly or
+           was interrupted: a cube must never rest mid-turn. */
+        controlsA.set(poseA.rest);
+        controlsB.set(poseB.rest);
+      }
+    },
+    [controlsA, controlsB, reducedMotion]
+  );
+
+  const onClick = useCallback(() => handleClick(animate), [handleClick, animate]);
+
+  return (
+    <div className="mt-8">
+      {/* All meaning lives in text: the cube graphics are aria-hidden, and
+          this status carries the same information out loud. */}
+      <p className="sr-only" aria-live="polite">
+        {status}
+      </p>
+
+      <RollPill state={diceRoll} issueCaption={issueCaption} onClick={onClick}>
+        <motion.div
+          aria-hidden="true"
+          whileTap={tapPress}
+          className="flex items-center gap-2.5"
+          style={{ perspective: PERSPECTIVE }}
+        >
+          <Cube controls={controlsA} />
+          <Cube controls={controlsB} />
+        </motion.div>
+      </RollPill>
+    </div>
+  );
+}

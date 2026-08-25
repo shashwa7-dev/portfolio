@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Container from "@/components/layout/Container";
 import { SVGS } from "./SVGS";
-import { navLinks, socialLinks, contactEmail } from "@/lib/siteLinks";
+import { navLinks, footerOnlyLinks, socialLinks, contactEmail } from "@/lib/siteLinks";
 
 const SOCIAL_ICONS = {
   GitHub: SVGS.Github,
@@ -79,7 +79,7 @@ const Footer = () => {
                 Navigate
               </h2>
               <ul className="mt-4 space-y-2.5">
-                {navLinks.map((l) => (
+                {[...navLinks, ...footerOnlyLinks].map((l) => (
                   <li key={l.label}>
                     <Link
                       href={l.href}

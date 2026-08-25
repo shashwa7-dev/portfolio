@@ -32,6 +32,10 @@ export default async function sitemap() {
       url: `${baseUrl}cv`,
       lastModified: today,
     },
+    {
+      url: `${baseUrl}card`,
+      lastModified: today,
+    },
   ];
 
   const projects = getAllSideProjects().map((p) => ({

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Sans, IBM_Plex_Mono } from "next/font/google";
+import { DM_Sans } from "next/font/google";
 import dynamic from "next/dynamic";
 import { MotionConfig } from "motion/react";
 import "./globals.css";
@@ -11,6 +11,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import UmamiAnalytics from "@/components/Umami";
 import NoScript from "@/components/NoScript";
+import { cardHand, cardSticker, cardMono } from "@/lib/card/fonts";
 
 const CommandPalette = dynamic(() => import("@/components/CommandPalette"), {
   ssr: false,
@@ -26,12 +27,13 @@ const dmSans = DM_Sans({
   variable: "--font-sans",
 });
 
-const plexMono = IBM_Plex_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  display: "swap",
-  variable: "--font-mono",
-});
+/**
+ * The mono face is declared once, in lib/card/fonts.ts, and reused here as
+ * cardMono so the visitor-card canvas and the rest of the site share a
+ * single self-hosted IBM Plex Mono rather than shipping it twice. See that
+ * file for the full reasoning.
+ */
+const plexMono = cardMono;
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
@@ -122,7 +124,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`bg-background text-foreground border-border ${dmSans.variable} ${plexMono.variable} font-sans`}
+        className={`bg-background text-foreground border-border ${dmSans.variable} ${plexMono.variable} ${cardHand.variable} ${cardSticker.variable} font-sans`}
       >
         <NoScript />
         <MotionConfig reducedMotion="user">
