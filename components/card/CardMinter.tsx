@@ -320,8 +320,17 @@ export default function CardMinter({
     const ctx = c.getContext("2d");
     if (!ctx) return;
 
-    ctx.scale(dpr, dpr);
-    drawTicket(ctx, data, cssW, cssH, { ...CARD_FONTS, mark: markRef.current });
+    // Drawn in the export's own coordinate space (CARD_W x CARD_H), then
+    // scaled down to fit the backing store: the portrait engine derives
+    // DETAIL and its line-weight correction K from the pixel size it is
+    // handed (see lib/card/engine/portrait-engine.js), so a 280px call and
+    // download()/renderCardBlob's 1200px call used to compute different
+    // values and draw a genuinely different portrait. Scaling the context
+    // instead of the coordinates means the engine always sees CARD_W /
+    // CARD_H, so the preview becomes the same drawing rasterised smaller.
+    const scale = (cssW * dpr) / CARD_W;
+    ctx.scale(scale, scale);
+    drawTicket(ctx, data, CARD_W, CARD_H, { ...CARD_FONTS, mark: markRef.current });
 
     if (revealedOnceRef.current) {
       // Already revealed for this roll (a name edit, most likely): the
