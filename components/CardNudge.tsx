@@ -31,7 +31,7 @@ export default function CardNudge() {
           className="group flex flex-col gap-3 bg-card px-5 py-6 transition-colors duration-base ease-out hover:bg-elevated sm:flex-row sm:items-center sm:justify-between sm:gap-4"
         >
           <div className="flex items-start gap-3">
-            <Dices className="mt-0.5 h-5 w-5 shrink-0 text-subtle transition-colors duration-base ease-out group-hover:text-foreground" />
+            <Dices aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0 text-subtle transition-colors duration-base ease-out group-hover:text-foreground" />
             <div>
               <p className="text-xl font-semibold text-foreground">
                 Mint yourself a stamp card
@@ -43,7 +43,7 @@ export default function CardNudge() {
           </div>
           <span className="ml-8 inline-flex shrink-0 items-center gap-1.5 text-sm text-muted-foreground transition-colors duration-base ease-out group-hover:text-foreground sm:ml-0">
             Roll the dice
-            <ArrowRight className="h-4 w-4 transition-transform duration-base ease-out group-hover:translate-x-0.5" />
+            <ArrowRight aria-hidden="true" className="h-4 w-4 transition-transform duration-base ease-out group-hover:translate-x-0.5" />
           </span>
         </Link>
       </Bento>
