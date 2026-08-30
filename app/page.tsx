@@ -1,6 +1,7 @@
 import About from "@/components/About";
 import ExperienceWork from "@/components/ExperienceWork";
 import Projects from "@/components/Projects";
+import CardNudge from "@/components/CardNudge";
 import TechStack from "@/components/TechStack";
 import Activity from "@/components/Activity";
 import Faq from "@/components/Faq";
@@ -24,6 +25,7 @@ export default function Home() {
       <About />
       <ExperienceWork />
       <Projects />
+      <CardNudge />
       <TechStack />
       <Activity />
       <Faq />
