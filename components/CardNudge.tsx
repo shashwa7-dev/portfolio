@@ -21,11 +21,17 @@ import Bento from "@/components/layout/Bento";
 const FAN_STOCKS = ["#f4eede", "#eef1ef", "#17161a"]; // commemorative, first day, inverted
 
 /**
- * A single-cell banner pointing at `/card`, sitting in the page flow between
- * `Projects` and `TechStack` rather than floating over it. Both corners of
- * the homepage are already spoken for: `LaunchNudge` owns bottom left and
- * the chat FAB owns bottom right (see their own comments), so a third
- * overlay would collide with one of them.
+ * A single-cell banner pointing at `/card`, sitting in the page flow rather
+ * than floating over it. Both corners of the homepage are already spoken
+ * for: `LaunchNudge` owns bottom left and the chat FAB owns bottom right
+ * (see their own comments), so a third overlay would collide with one of
+ * them.
+ *
+ * Placed last in `app/page.tsx`, after `Socials` and directly above the
+ * footer rendered from `app/layout.tsx`. It used to sit mid-scroll, between
+ * `Projects` and `TechStack`, with copy that pitched the mechanic. Its copy
+ * now thanks a reader for reaching the end of the page instead, which only
+ * reads honestly from the actual end of the page.
  *
  * No local state, so this stays a server component like its neighbours: the
  * fan below, the chip's tilt and the arrow's slide are all `group`/
@@ -60,11 +66,19 @@ const FAN_STOCKS = ["#f4eede", "#eef1ef", "#17161a"]; // commemorative, first da
  * as well, since it is the site's own iconography rather than a claim about
  * any one card.
  *
- * Row layout (chip, fan and CTA side by side) starts at `md` rather than the
- * reference's 640px: the reading-width container is 760px including
- * padding, and at 640px there wasn't enough room left over for the title,
- * the fixed-size fan and the CTA without crowding. Below `md` the bar
- * stacks: chip and copy, then the fan centred, then the CTA as a full-width
+ * Two groups, not three: the copy sits alone on the left, and the fan and
+ * the CTA share a single wrapper on the right, so `justify-between` on the
+ * outer row splits copy from "everything about the card" instead of
+ * stranding the fan by itself in the middle. Within that wrapper the fan
+ * and the CTA sit side by side at `md`: the fan is short enough now that
+ * stacking it over the CTA would waste height this banner no longer has
+ * reason to spend, sitting where it does right above the footer.
+ *
+ * The row starts at `md` rather than the reference's 640px: the
+ * reading-width container is 760px including padding, and at 640px there
+ * wasn't enough room left over for the title, the fixed-size fan and the
+ * CTA without crowding. Below `md` the bar stacks: chip and copy, then the
+ * fan-and-CTA group with the fan centred above the CTA as a full-width
  * bordered tap target with its underline disabled, matching the reference's
  * mobile treatment. The fan itself stays one fixed size across breakpoints
  * rather than the reference's three-tier shrink: it is a handful of
@@ -97,63 +111,78 @@ export default function CardNudge() {
                 5 editions · 2 dice × 3 rolls
               </p>
               <p className="mt-1.5 text-base font-extrabold tracking-tight text-foreground md:text-lg">
-                Mint yourself a stamp card
+                You made it to the end
               </p>
               <p className="mt-1 text-sm text-muted-foreground">
-                Roll two dice, three times, to decide its edition.
+                Thanks for visiting. Mint yourself a stamp card on the way out.
               </p>
             </div>
           </div>
 
-          {/* The fan: three cards absolutely centred on top of one another,
-              each pushed sideways and rotated by its own amount so they
-              overlap like a hand fanned open. On hover every card pushes
-              further out, rotates a little more, and the black one (drawn
-              last, so normal stacking order already puts it on top) lifts
-              while the others settle a touch. Each card's translate keeps
-              its centring offset (the `50%`) and its fan offset (the tuned
-              pixel value) in one `calc()` rather than two separate
-              translate utilities, since Tailwind's translate-x and
-              translate-y utilities each own a single CSS variable and a
-              second one would simply overwrite the first instead of adding
-              to it. */}
-          <div
-            aria-hidden="true"
-            className="relative mx-auto h-[5.25rem] w-[7.5rem] shrink-0 md:mx-0"
-          >
-            <div
-              className="absolute left-1/2 top-1/2 h-[4.5rem] w-[3.5rem] -translate-x-[calc(50%_+_29px)] -translate-y-1/2 -rotate-[9deg] rounded-md border border-border-strong shadow-sm transition-transform duration-[var(--duration-fan)] ease-[var(--ease-fan)] group-hover:-translate-x-[calc(50%_+_48px)] group-hover:-rotate-[15deg] group-hover:translate-y-[calc(-50%_+_2px)]"
-              style={{ backgroundColor: FAN_STOCKS[0] }}
-            />
-            <div
-              className="absolute left-1/2 top-1/2 h-[4.5rem] w-[3.5rem] -translate-x-[calc(50%_+_9px)] -translate-y-1/2 -rotate-2 rounded-md border border-border-strong shadow-sm transition-transform duration-[var(--duration-fan)] ease-[var(--ease-fan)] group-hover:-translate-x-[calc(50%_+_17px)] group-hover:-rotate-[5deg]"
-              style={{ backgroundColor: FAN_STOCKS[1] }}
-            />
-            {/* The rare black stock: a heavier shadow and, unlike the two
-                light cards, a border strong enough on its own to keep it
-                readable against a near-black page in dark theme (the same
-                reason the four-card version of this fan carried a border on
-                every swatch). The dotted line and corner mark are the
-                perforation and rare-pull mark from the reference, kept only
-                on this card since it's the one both notes call out. */}
-            <div
-              className="absolute left-1/2 top-1/2 h-[4.5rem] w-[3.5rem] translate-x-[calc(-50%_+_11px)] -translate-y-1/2 rotate-6 rounded-md border border-border-strong shadow-md transition-transform duration-[var(--duration-fan)] ease-[var(--ease-fan)] group-hover:translate-x-[calc(-50%_+_22px)] group-hover:translate-y-[calc(-50%_-_6px)] group-hover:rotate-[9deg]"
-              style={{ backgroundColor: FAN_STOCKS[2] }}
-            >
-              <div className="absolute inset-x-2 top-[1.625rem] border-t-2 border-dotted border-white/20" />
-              <div className="absolute bottom-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-white/40" />
-            </div>
-          </div>
+          {/* Fan and CTA as one group, so `justify-between` on the row above
+              separates copy from "everything about the card" rather than
+              stranding the fan in the middle of three children. Side by
+              side at `md`, stacked (fan above CTA) below it. */}
+          <div className="flex flex-col items-center gap-4 md:flex-row md:gap-5">
+            {/* The fan: three cards absolutely centred on top of one another,
+                each pushed sideways and rotated by its own amount so they
+                overlap like a hand fanned open. On hover every card pushes
+                further out, rotates a little more, and the black one (drawn
+                last, so normal stacking order already puts it on top) lifts
+                while the others settle a touch. Each card's translate keeps
+                its centring offset (the `50%`) and its fan offset (the tuned
+                pixel value) in one `calc()` rather than two separate
+                translate utilities, since Tailwind's translate-x and
+                translate-y utilities each own a single CSS variable and a
+                second one would simply overwrite the first instead of adding
+                to it.
 
-          <span className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-border-strong px-4 py-2.5 text-sm font-medium text-foreground md:w-auto md:justify-start md:border-0 md:p-0 md:font-normal md:text-muted-foreground md:transition-colors md:duration-med md:ease-out md:group-hover:text-foreground">
-            <span className="relative inline-block">
-              Roll the dice
+                Sized one more step down than before: the container is
+                63x90px (was 84x120px) and each card is 54x42px (was 72x56px),
+                a uniform 0.75 scale that keeps the card's ~1.28 height/width
+                ratio (54/42 = 1.286, was 72/56 = 1.286) and every hover
+                offset scaled by the same 0.75, so the fan still opens by the
+                same proportions, just smaller: 29->21.75px / 48->36px,
+                9->6.75px / 17->12.75px, 11->8.25px / 22->16.5px horizontal,
+                and 2->1.5px / -6->-4.5px vertical. The perforation line on
+                the black card stays at ~36% of the card's height
+                (19.5/54 = 0.361, was 26/72 = 0.361) and its inset and the
+                rare-pull dot scale down with it. */}
+            <div aria-hidden="true" className="relative h-[63px] w-[90px] shrink-0">
+              <div
+                className="absolute left-1/2 top-1/2 h-[54px] w-[42px] -translate-x-[calc(50%_+_21.75px)] -translate-y-1/2 -rotate-[9deg] rounded-md border border-border-strong shadow-sm transition-transform duration-[var(--duration-fan)] ease-[var(--ease-fan)] group-hover:-translate-x-[calc(50%_+_36px)] group-hover:-rotate-[15deg] group-hover:translate-y-[calc(-50%_+_1.5px)]"
+                style={{ backgroundColor: FAN_STOCKS[0] }}
+              />
+              <div
+                className="absolute left-1/2 top-1/2 h-[54px] w-[42px] -translate-x-[calc(50%_+_6.75px)] -translate-y-1/2 -rotate-2 rounded-md border border-border-strong shadow-sm transition-transform duration-[var(--duration-fan)] ease-[var(--ease-fan)] group-hover:-translate-x-[calc(50%_+_12.75px)] group-hover:-rotate-[5deg]"
+                style={{ backgroundColor: FAN_STOCKS[1] }}
+              />
+              {/* The rare black stock: a heavier shadow and, unlike the two
+                  light cards, a border strong enough on its own to keep it
+                  readable against a near-black page in dark theme (the same
+                  reason the four-card version of this fan carried a border on
+                  every swatch). The dotted line and corner mark are the
+                  perforation and rare-pull mark from the reference, kept only
+                  on this card since it's the one both notes call out. */}
+              <div
+                className="absolute left-1/2 top-1/2 h-[54px] w-[42px] translate-x-[calc(-50%_+_8.25px)] -translate-y-1/2 rotate-6 rounded-md border border-border-strong shadow-md transition-transform duration-[var(--duration-fan)] ease-[var(--ease-fan)] group-hover:translate-x-[calc(-50%_+_16.5px)] group-hover:translate-y-[calc(-50%_-_4.5px)] group-hover:rotate-[9deg]"
+                style={{ backgroundColor: FAN_STOCKS[2] }}
+              >
+                <div className="absolute inset-x-1.5 top-[19.5px] border-t-2 border-dotted border-white/20" />
+                <div className="absolute bottom-1 right-1 h-1 w-1 rounded-full bg-white/40" />
+              </div>
+            </div>
+
+            <span className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-border-strong px-4 py-2.5 text-sm font-medium text-foreground md:w-auto md:justify-start md:border-0 md:p-0 md:font-normal md:text-muted-foreground md:transition-colors md:duration-med md:ease-out md:group-hover:text-foreground">
+              <span className="relative inline-block">
+                Roll the dice
+              </span>
+              <ArrowRight
+                aria-hidden="true"
+                className="h-4 w-4 shrink-0 transition-transform duration-med ease-out group-hover:translate-x-1"
+              />
             </span>
-            <ArrowRight
-              aria-hidden="true"
-              className="h-4 w-4 shrink-0 transition-transform duration-med ease-out group-hover:translate-x-1"
-            />
-          </span>
+          </div>
         </Link>
       </Bento>
     </Section>
