@@ -28,14 +28,18 @@ const FAN_STOCKS = ["#f4eede", "#eef1ef", "#17161a"]; // commemorative, first da
  * overlay would collide with one of them.
  *
  * No local state, so this stays a server component like its neighbours: the
- * fan below, the chip's tilt, the CTA's underline wipe and the arrow's slide
- * are all `group`/`group-hover` CSS on plain elements, not JavaScript. The
- * one non-utility escape hatch is `transition-[right]` on the underline: the
- * wipe is a `right: 100%` to `right: 0` reveal (an oversized underline
- * pinned by its right edge, so it grows in from the left as `right` shrinks)
- * and Tailwind has no named utility for transitioning that property, but
- * `right-full` / `right-0` and the transition itself are still ordinary
- * Tailwind classes, not a `<style>` block.
+ * fan below, the chip's tilt and the arrow's slide are all `group`/
+ * `group-hover` CSS on plain elements, not JavaScript, and every class here
+ * is an ordinary Tailwind utility rather than a `<style>` block.
+ *
+ * The reference this came from also wiped an underline in under the CTA
+ * label. That is gone. It shipped with both `right-full` and `w-full` and no
+ * `left`, so instead of growing from nothing it was a full-width rule parked
+ * outside the box, sliding across on hover, and animating `right` relaid out
+ * the line every frame. Doing it properly means growing the rule with
+ * `scaleX` from a left origin, which is one transform and no layout work, but
+ * the CTA already reads as a link from its colour shift and its arrow, so the
+ * underline was removed rather than rebuilt.
  *
  * Sized from the reference's tuned reference values rather than the app's
  * duration/easing tokens where the two don't line up: the fan's overshoot
@@ -142,7 +146,7 @@ export default function CardNudge() {
           </div>
 
           <span className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-border-strong px-4 py-2.5 text-sm font-medium text-foreground md:w-auto md:justify-start md:border-0 md:p-0 md:font-normal md:text-muted-foreground md:transition-colors md:duration-med md:ease-out md:group-hover:text-foreground">
-            <span className="relative inline-block md:after:absolute md:after:-bottom-0.5 md:after:right-full md:after:h-px md:after:w-full md:after:bg-foreground md:after:transition-[right] md:after:duration-med md:after:ease-out md:after:content-[''] md:group-hover:after:right-0">
+            <span className="relative inline-block">
               Roll the dice
             </span>
             <ArrowRight
