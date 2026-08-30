@@ -69,22 +69,48 @@ const FAN_STOCKS = ["#f4eede", "#eef1ef", "#17161a"]; // commemorative, first da
  * Two groups, not three: the copy sits alone on the left, and the fan and
  * the CTA share a single wrapper on the right, so `justify-between` on the
  * outer row splits copy from "everything about the card" instead of
- * stranding the fan by itself in the middle. Within that wrapper the fan
- * and the CTA sit side by side at `md`: the fan is short enough now that
- * stacking it over the CTA would waste height this banner no longer has
- * reason to spend, sitting where it does right above the footer.
+ * stranding the fan by itself in the middle.
+ *
+ * At `md` that wrapper stops being a flex row and becomes a fixed
+ * 140x108px box (`relative` at every width so it can anchor its own
+ * children, `md:h-[108px] md:w-[140px] md:shrink-0` from `md` up), still
+ * an ordinary flex item next to the copy. The fan and the CTA are
+ * each pinned `absolute` inside it: the fan at `top-0 right-0`, the corner
+ * of the banner the owner asked for, and the CTA at `bottom-0 right-0`,
+ * "absolutely positioned below the card". An absolutely positioned element
+ * contributes no size to its container, so if the fan and the CTA were
+ * left to define this box's footprint themselves, the banner would shrink
+ * to the copy's height alone and both would spill past the bottom edge.
+ * Giving the box an explicit height instead means it, not its absolute
+ * children, is what `md:items-center` measures on the row: the row (and so
+ * the banner, once py-5's 40px top-and-bottom is added back) is always at
+ * least 148px tall at `md`, whatever the copy does.
+ *
+ * The two numbers are sized around the fan's own hover spread, not just
+ * its resting state. On `group-hover` the fan's leftmost card pushes out
+ * to 36px from centre (21.75px at rest), landing its left edge 12px past
+ * the left edge of the fan's own 90px-wide box. 140px, 50px wider than the
+ * fan, keeps that overshoot 38px inside the reserved box's own left edge,
+ * so a hovered fan still can't reach the copy: the copy is a separate flex
+ * sibling, and flexbox won't let two siblings' boxes overlap regardless of
+ * what one sibling's children spill into it. The same hover state pushes
+ * the black card's top edge up to, but not past, 0px inside the fan's own
+ * box (it rests at 4.5px), so nothing crosses the reserved box's top edge
+ * either, 20px short of the Bento's rounded, overflow-hidden border (this
+ * banner's own px-5/py-5).
  *
  * The row starts at `md` rather than the reference's 640px: the
  * reading-width container is 760px including padding, and at 640px there
  * wasn't enough room left over for the title, the fixed-size fan and the
- * CTA without crowding. Below `md` the bar stacks: chip and copy, then the
- * fan-and-CTA group with the fan centred above the CTA as a full-width
- * bordered tap target with its underline disabled, matching the reference's
- * mobile treatment. The fan itself stays one fixed size across breakpoints
- * rather than the reference's three-tier shrink: it is a handful of
- * decorative divs with hand-picked pixel offsets, and re-deriving every
- * offset at a second and third scale wasn't worth it for a shape nobody is
- * asked to look at closely.
+ * CTA without crowding. Below `md` the bar stacks in normal flow, nothing
+ * absolutely positioned: chip and copy, then the fan-and-CTA group with the
+ * fan centred above the CTA as a full-width bordered tap target with its
+ * underline disabled, matching the reference's mobile treatment. The fan
+ * itself stays one fixed size across breakpoints rather than the
+ * reference's three-tier shrink: it is a handful of decorative divs with
+ * hand-picked pixel offsets, and re-deriving every offset at a second and
+ * third scale wasn't worth it for a shape nobody is asked to look at
+ * closely.
  */
 export default function CardNudge() {
   return (
@@ -121,9 +147,15 @@ export default function CardNudge() {
 
           {/* Fan and CTA as one group, so `justify-between` on the row above
               separates copy from "everything about the card" rather than
-              stranding the fan in the middle of three children. Side by
-              side at `md`, stacked (fan above CTA) below it. */}
-          <div className="flex flex-col items-center gap-4 md:flex-row md:gap-5">
+              stranding the fan in the middle of three children. Below `md`
+              this stays an ordinary flex column: fan centred, then the CTA
+              in flow beneath it. At `md` it becomes a fixed 140x108px box
+              (still just a flex item next to the copy) that anchors the
+              fan and the CTA as absolutely positioned corners of the
+              banner instead of flex siblings; see the component doc
+              comment above for the exact numbers this box's size and the
+              two corners are built from. */}
+          <div className="relative flex flex-col items-center gap-4 md:h-[108px] md:w-[140px] md:shrink-0">
             {/* The fan: three cards absolutely centred on top of one another,
                 each pushed sideways and rotated by its own amount so they
                 overlap like a hand fanned open. On hover every card pushes
@@ -148,7 +180,10 @@ export default function CardNudge() {
                 the black card stays at ~36% of the card's height
                 (19.5/54 = 0.361, was 26/72 = 0.361) and its inset and the
                 rare-pull dot scale down with it. */}
-            <div aria-hidden="true" className="relative h-[63px] w-[90px] shrink-0">
+            <div
+              aria-hidden="true"
+              className="relative h-[63px] w-[90px] shrink-0 md:absolute md:right-0 md:top-0"
+            >
               <div
                 className="absolute left-1/2 top-1/2 h-[54px] w-[42px] -translate-x-[calc(50%_+_21.75px)] -translate-y-1/2 -rotate-[9deg] rounded-md border border-border-strong shadow-sm transition-transform duration-[var(--duration-fan)] ease-[var(--ease-fan)] group-hover:-translate-x-[calc(50%_+_36px)] group-hover:-rotate-[15deg] group-hover:translate-y-[calc(-50%_+_1.5px)]"
                 style={{ backgroundColor: FAN_STOCKS[0] }}
@@ -173,7 +208,7 @@ export default function CardNudge() {
               </div>
             </div>
 
-            <span className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-border-strong px-4 py-2.5 text-sm font-medium text-foreground md:w-auto md:justify-start md:border-0 md:p-0 md:font-normal md:text-muted-foreground md:transition-colors md:duration-med md:ease-out md:group-hover:text-foreground">
+            <span className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-border-strong px-4 py-2.5 text-sm font-medium text-foreground md:absolute md:bottom-0 md:right-0 md:w-auto md:justify-start md:border-0 md:p-0 md:font-normal md:text-muted-foreground md:transition-colors md:duration-med md:ease-out md:group-hover:text-foreground">
               <span className="relative inline-block">
                 Roll the dice
               </span>
