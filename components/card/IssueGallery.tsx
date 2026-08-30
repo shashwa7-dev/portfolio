@@ -78,7 +78,12 @@ function Specimen({
     c.height = Math.round(cssH * dpr);
     const ctx = c.getContext("2d");
     if (!ctx) return;
-    ctx.scale(dpr, dpr);
+    // Same fix as CardMinter's visible canvas: drawn in the export's own
+    // coordinate space and scaled down to fit, so the portrait engine's
+    // size-derived DETAIL and K match what a download actually produces.
+    // See that component's reveal effect for the full explanation.
+    const scale = (cssW * dpr) / CARD_W;
+    ctx.scale(scale, scale);
     drawTicket(
       ctx,
       {
@@ -95,8 +100,8 @@ function Specimen({
         city: spec.city,
         date: "23 Aug 2026",
       },
-      cssW,
-      cssH,
+      CARD_W,
+      CARD_H,
       { ...CARD_FONTS, mark }
     );
   }, [spec, mark]);
