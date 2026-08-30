@@ -78,7 +78,7 @@ export default function CardNudge() {
       <Bento className="grid-cols-1">
         <Link
           href="/card"
-          className="group flex flex-col gap-5 bg-card px-5 py-6 transition-colors duration-med ease-out hover:bg-elevated md:flex-row md:items-center md:justify-between md:gap-6"
+          className="group flex flex-col gap-5 bg-card px-5 py-5 transition-colors duration-med ease-out hover:bg-elevated md:flex-row md:items-center md:justify-between md:gap-6"
         >
           <div className="flex items-start gap-3.5">
             {/* The chip's tinted background (`bg-elevated` plus a stronger
@@ -88,7 +88,7 @@ export default function CardNudge() {
                 sitting on the same near-black plane as the card itself. */}
             <div
               aria-hidden="true"
-              className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-elevated ring-1 ring-border-strong transition-transform duration-med ease-out group-hover:-rotate-[8deg]"
+              className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-elevated ring-1 ring-border-strong transition-transform duration-med ease-out group-hover:-rotate-[8deg]"
             >
               <Dices aria-hidden="true" className="h-5 w-5 text-foreground" />
             </div>
@@ -96,7 +96,7 @@ export default function CardNudge() {
               <p className="font-mono text-2xs uppercase tracking-label text-subtle">
                 5 editions · 2 dice × 3 rolls
               </p>
-              <p className="mt-1.5 text-xl font-extrabold tracking-tight text-foreground md:text-2xl">
+              <p className="mt-1.5 text-base font-extrabold tracking-tight text-foreground md:text-lg">
                 Mint yourself a stamp card
               </p>
               <p className="mt-1 text-sm text-muted-foreground">
@@ -119,14 +119,14 @@ export default function CardNudge() {
               to it. */}
           <div
             aria-hidden="true"
-            className="relative mx-auto h-[7.25rem] w-[10.5rem] shrink-0 md:mx-0"
+            className="relative mx-auto h-[5.25rem] w-[7.5rem] shrink-0 md:mx-0"
           >
             <div
-              className="absolute left-1/2 top-1/2 h-[6.25rem] w-[4.875rem] -translate-x-[calc(50%_+_40px)] -translate-y-1/2 -rotate-[9deg] rounded-md border border-border-strong shadow-sm transition-transform duration-[var(--duration-fan)] ease-[var(--ease-fan)] group-hover:-translate-x-[calc(50%_+_66px)] group-hover:-rotate-[15deg] group-hover:translate-y-[calc(-50%_+_3px)]"
+              className="absolute left-1/2 top-1/2 h-[4.5rem] w-[3.5rem] -translate-x-[calc(50%_+_29px)] -translate-y-1/2 -rotate-[9deg] rounded-md border border-border-strong shadow-sm transition-transform duration-[var(--duration-fan)] ease-[var(--ease-fan)] group-hover:-translate-x-[calc(50%_+_48px)] group-hover:-rotate-[15deg] group-hover:translate-y-[calc(-50%_+_2px)]"
               style={{ backgroundColor: FAN_STOCKS[0] }}
             />
             <div
-              className="absolute left-1/2 top-1/2 h-[6.25rem] w-[4.875rem] -translate-x-[calc(50%_+_13px)] -translate-y-1/2 -rotate-2 rounded-md border border-border-strong shadow-sm transition-transform duration-[var(--duration-fan)] ease-[var(--ease-fan)] group-hover:-translate-x-[calc(50%_+_24px)] group-hover:-rotate-[5deg]"
+              className="absolute left-1/2 top-1/2 h-[4.5rem] w-[3.5rem] -translate-x-[calc(50%_+_9px)] -translate-y-1/2 -rotate-2 rounded-md border border-border-strong shadow-sm transition-transform duration-[var(--duration-fan)] ease-[var(--ease-fan)] group-hover:-translate-x-[calc(50%_+_17px)] group-hover:-rotate-[5deg]"
               style={{ backgroundColor: FAN_STOCKS[1] }}
             />
             {/* The rare black stock: a heavier shadow and, unlike the two
@@ -137,10 +137,10 @@ export default function CardNudge() {
                 perforation and rare-pull mark from the reference, kept only
                 on this card since it's the one both notes call out. */}
             <div
-              className="absolute left-1/2 top-1/2 h-[6.25rem] w-[4.875rem] translate-x-[calc(-50%_+_15px)] -translate-y-1/2 rotate-6 rounded-md border border-border-strong shadow-md transition-transform duration-[var(--duration-fan)] ease-[var(--ease-fan)] group-hover:translate-x-[calc(-50%_+_30px)] group-hover:translate-y-[calc(-50%_-_8px)] group-hover:rotate-[9deg]"
+              className="absolute left-1/2 top-1/2 h-[4.5rem] w-[3.5rem] translate-x-[calc(-50%_+_11px)] -translate-y-1/2 rotate-6 rounded-md border border-border-strong shadow-md transition-transform duration-[var(--duration-fan)] ease-[var(--ease-fan)] group-hover:translate-x-[calc(-50%_+_22px)] group-hover:translate-y-[calc(-50%_-_6px)] group-hover:rotate-[9deg]"
               style={{ backgroundColor: FAN_STOCKS[2] }}
             >
-              <div className="absolute inset-x-2 top-9 border-t-2 border-dotted border-white/20" />
+              <div className="absolute inset-x-2 top-[1.625rem] border-t-2 border-dotted border-white/20" />
               <div className="absolute bottom-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-white/40" />
             </div>
           </div>
