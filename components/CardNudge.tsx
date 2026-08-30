@@ -39,15 +39,14 @@ const FAN_STOCKS = ["#f4eede", "#eef1ef", "#17161a"]; // commemorative, first da
  *
  * Sized from the reference's tuned reference values rather than the app's
  * duration/easing tokens where the two don't line up: the fan's overshoot
- * (`cubic-bezier(0.3,1.1,0.4,1)`, 450ms) is the signature move the owner
- * asked to keep exactly, and coincidentally the same curve shape as
- * `CARD_RISE_EASE` in `lib/motionVariants.ts` (cards flicking into a new
- * position, on the card's own rise and here). That constant isn't exported
- * and this component takes no client/JS boundary to import it through
- * anyway, so the curve is spelled out literally rather than invented a new
- * export for a single caller. Everything else (the bar's colour swap, the
- * chip's tilt, the arrow's slide, the underline's wipe) rides the app's own
- * `duration-med` / `ease-out` tokens.
+ * (--duration-fan: 450ms, --ease-fan: cubic-bezier(0.3, 1.1, 0.4, 1)) is
+ * the signature move the owner asked to keep exactly, and coincidentally the
+ * same curve shape as CARD_RISE_EASE in lib/motionVariants.ts (cards
+ * flicking into a new position, on the card's own rise and here). That
+ * constant isn't exported and this component is CSS-only, so the curve is
+ * duplicated in app/globals.css rather than imported. Everything else (the
+ * bar's colour swap, the chip's tilt, the arrow's slide, the underline's
+ * wipe) rides the app's own `duration-med` / `ease-out` tokens.
  *
  * The card itself is generative and per-visitor, so nothing here renders an
  * actual minted card: a screenshot of one would show a single visitor's
@@ -119,11 +118,11 @@ export default function CardNudge() {
             className="relative mx-auto h-[7.25rem] w-[10.5rem] shrink-0 md:mx-0"
           >
             <div
-              className="absolute left-1/2 top-1/2 h-[6.25rem] w-[4.875rem] -translate-x-[calc(50%_+_40px)] -translate-y-1/2 -rotate-[9deg] rounded-md border border-border-strong shadow-sm transition-transform duration-[450ms] ease-[cubic-bezier(0.3,1.1,0.4,1)] group-hover:-translate-x-[calc(50%_+_66px)] group-hover:-rotate-[15deg] group-hover:translate-y-[calc(-50%_+_3px)]"
+              className="absolute left-1/2 top-1/2 h-[6.25rem] w-[4.875rem] -translate-x-[calc(50%_+_40px)] -translate-y-1/2 -rotate-[9deg] rounded-md border border-border-strong shadow-sm transition-transform duration-[var(--duration-fan)] ease-[var(--ease-fan)] group-hover:-translate-x-[calc(50%_+_66px)] group-hover:-rotate-[15deg] group-hover:translate-y-[calc(-50%_+_3px)]"
               style={{ backgroundColor: FAN_STOCKS[0] }}
             />
             <div
-              className="absolute left-1/2 top-1/2 h-[6.25rem] w-[4.875rem] -translate-x-[calc(50%_+_13px)] -translate-y-1/2 -rotate-2 rounded-md border border-border-strong shadow-sm transition-transform duration-[450ms] ease-[cubic-bezier(0.3,1.1,0.4,1)] group-hover:-translate-x-[calc(50%_+_24px)] group-hover:-rotate-[5deg]"
+              className="absolute left-1/2 top-1/2 h-[6.25rem] w-[4.875rem] -translate-x-[calc(50%_+_13px)] -translate-y-1/2 -rotate-2 rounded-md border border-border-strong shadow-sm transition-transform duration-[var(--duration-fan)] ease-[var(--ease-fan)] group-hover:-translate-x-[calc(50%_+_24px)] group-hover:-rotate-[5deg]"
               style={{ backgroundColor: FAN_STOCKS[1] }}
             />
             {/* The rare black stock: a heavier shadow and, unlike the two
@@ -134,7 +133,7 @@ export default function CardNudge() {
                 perforation and rare-pull mark from the reference, kept only
                 on this card since it's the one both notes call out. */}
             <div
-              className="absolute left-1/2 top-1/2 h-[6.25rem] w-[4.875rem] translate-x-[calc(-50%_+_15px)] -translate-y-1/2 rotate-6 rounded-md border border-border-strong shadow-md transition-transform duration-[450ms] ease-[cubic-bezier(0.3,1.1,0.4,1)] group-hover:translate-x-[calc(-50%_+_30px)] group-hover:translate-y-[calc(-50%_-_8px)] group-hover:rotate-[9deg]"
+              className="absolute left-1/2 top-1/2 h-[6.25rem] w-[4.875rem] translate-x-[calc(-50%_+_15px)] -translate-y-1/2 rotate-6 rounded-md border border-border-strong shadow-md transition-transform duration-[var(--duration-fan)] ease-[var(--ease-fan)] group-hover:translate-x-[calc(-50%_+_30px)] group-hover:translate-y-[calc(-50%_-_8px)] group-hover:rotate-[9deg]"
               style={{ backgroundColor: FAN_STOCKS[2] }}
             >
               <div className="absolute inset-x-2 top-9 border-t-2 border-dotted border-white/20" />
