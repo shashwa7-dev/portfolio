@@ -27,17 +27,6 @@ export const navLinks: NavLink[] = [
   { label: "CV", href: "/cv", match: "/cv" },
 ];
 
-/**
- * Footer only, deliberately not in `navLinks`.
- *
- * `navLinks` is shared with the header so the two cannot drift. The visitor
- * card does not belong in the header: it is a toy, and the header is for the
- * work. But an unlinked route is an undiscovered one, so the footer carries it.
- */
-export const footerOnlyLinks: NavLink[] = [
-  { label: "Visitor card", href: "/card", match: "/card" },
-];
-
 /** Named rather than keyed by icon, so the icon stays a rendering concern. */
 export type SocialLink = { name: "GitHub" | "LinkedIn" | "Twitter"; href: string };
 
