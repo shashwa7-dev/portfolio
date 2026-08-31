@@ -628,57 +628,13 @@ export default function CardMinter({
 
   return (
     <div className="mt-12">
-      {/* The roll history, and only the roll history. The card's actions
-          moved into the plate's own top-right margin (see PlateFrame's
-          `topRight`), which left this row with one child and nothing to
-          justify between.
-
-          It takes PlateFrame's 480px measure rather than the card's 280,
-          so the first pip sits flush above the "// specimen" label
-          directly beneath it. The two were on different measures while the
-          toolbar was still here, and the ragged left edge that made was
-          the reason the row was pulled in to the card in the first place.
-          With the toolbar gone, flush to the plate is what lines up.
-
-          Still a fixed `h-8`, occupied whether or not there are any pips
-          in it yet, so nothing below it moves when the first roll lands. */}
-      <div className="mx-auto mb-3 flex h-8 w-full max-w-[480px] select-none items-center">
-        {/* The roll history: a muted pair of pips per throw recorded so
-            far, reading straight from useDiceRoll's own `rolls` (handed up
-            through DiceRoller's onRollsChange) rather than a second count
-            kept here. No box, no border, no index number: the order
-            already says which roll is which, and the aria-live status
-            already announces the totals out loud, which is also why this
-            is aria-hidden and pointer-events-none. The gap *between* pairs
-            is `gap-2` (8px), not the `gap-3` (12px) it used to be: at three
-            pairs that saves the 8px a fifth toolbar button (share) needed
-            to fit; see TOOLBAR_BUTTON's own comment for the full row
-            arithmetic. The gap *within* a pair (the two dice of one roll)
-            is untouched, since that pairing is what the gap is for. */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none flex shrink-0 items-center gap-2 opacity-60"
-        >
-          {rolls.map(([a, b], i) => (
-            <motion.div
-              key={i}
-              variants={itemVariants}
-              initial={reducedMotion ? false : "hidden"}
-              animate="visible"
-              className="flex items-center gap-1"
-            >
-              <Pips value={a} className="h-3 w-3" />
-              <Pips value={b} className="h-3 w-3" />
-            </motion.div>
-          ))}
-        </div>
-      </div>
-
       {/* The plate: a dashed frame with registration crosses, drawn around
           the card and the pill, so the two read as one sheet rather than
-          two things stacked. The controls stay outside it, above. See
-          PlateFrame for why printing marks belong on this feature
-          specifically.
+          two things stacked. The card's actions sit in its top-right
+          margin, outside the rule; the roll history is inside it, in the
+          gap between the card and the pill, because the outcomes belong to
+          the throw and read best where the throw happens. See PlateFrame
+          for why printing marks belong on this feature specifically.
 
           The three labels are real: the serial is the card's own once a
           roll has produced one, and says so when it has not. The plate
@@ -1053,7 +1009,52 @@ export default function CardMinter({
             from 32px to 48px, without editing TossDice/CubeDice: padding
             here, unlike a second margin, cannot collapse with the child's
             own top margin. */}
-        <div className="pt-4">
+        <div className="relative pt-4">
+          {/* The roll history: a muted pair of pips per throw recorded so
+              far, reading straight from useDiceRoll's own `rolls` (handed up
+              through DiceRoller's onRollsChange) rather than a second count
+              kept here. No box, no border, no index number: the order
+              already says which roll is which, and the aria-live status
+              already announces the totals out loud, which is also why this
+              is aria-hidden and pointer-events-none.
+
+              Absolutely positioned in the gap between the card and the pill,
+              rather than in a row of its own above the plate. The outcomes
+              belong to the throw, so they read where the throw happens; up
+              in the margin they were the first thing on the page and the
+              last thing anyone would connect to the button at the bottom.
+              Absolute so they claim no flow height: an empty history and a
+              history of three both leave the card and the pill exactly where
+              they are.
+
+              The `h-12` is that gap exactly, 48px, being the wrapper's own
+              `pt-4` plus DiceRoller's `mt-8` (see the comment above it), so
+              `items-center` centres the pips between the two rather than
+              hanging them off a tuned offset.
+
+              The gap *between* pairs
+              is `gap-2` (8px), not the `gap-3` (12px) it used to be: at three
+              pairs that saves the 8px a fifth toolbar button (share) needed
+              to fit; see TOOLBAR_BUTTON's own comment for the full row
+              arithmetic. The gap *within* a pair (the two dice of one roll)
+              is untouched, since that pairing is what the gap is for. */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 top-0 flex h-12 items-center justify-center gap-2 opacity-60"
+          >
+            {rolls.map(([a, b], i) => (
+              <motion.div
+                key={i}
+                variants={itemVariants}
+                initial={reducedMotion ? false : "hidden"}
+                animate="visible"
+                className="flex items-center gap-1"
+              >
+                <Pips value={a} className="h-3 w-3" />
+                <Pips value={b} className="h-3 w-3" />
+              </motion.div>
+            ))}
+          </div>
           <DiceRoller
             onComplete={setRoll}
             issueCaption={issueCaption}
