@@ -31,6 +31,7 @@ import {
 } from "@/lib/motionVariants";
 import DiceRoller from "@/components/card/DiceRoller";
 import PlateFrame from "@/components/card/PlateFrame";
+import IssueLadder from "@/components/card/IssueLadder";
 import PlaceholderCard from "@/components/card/PlaceholderCard";
 import Pips from "@/components/card/dice/Pips";
 import { playChime } from "@/components/card/dice/diceSound";
@@ -1097,6 +1098,12 @@ export default function CardMinter({
 
       </div>
       </PlateFrame>
+
+      {/* Rendered here rather than from the page, because the page is a
+          server component and cannot know which issue is on screen. The
+          ladder marks the visitor's own row, which is what stops it reading
+          as a footnote under the thing it describes. */}
+      <IssueLadder current={data?.issue.key ?? null} />
     </div>
   );
 }
