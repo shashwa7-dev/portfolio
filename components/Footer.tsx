@@ -75,10 +75,13 @@ const Footer = () => {
                 `navLinks`. An unlinked route is an undiscovered one, and this
                 is where it gets discovered. Set as an aside rather than a
                 fourth link in a list, so trimming the lists did not cost the
-                card the only entrance it has. */}
+                card the only entrance it has. Block-level, not inline-flex:
+                the address above it is an inline-block, so at this column
+                width the two shared a line and the top margin had nothing to
+                push against. `w-fit` keeps the hover target on the text. */}
             <Link
               href="/card"
-              className="mt-6 inline-flex items-center gap-1.5 font-mono text-2xs uppercase tracking-label text-subtle transition-colors duration-fast ease-out hover:text-foreground"
+              className="mt-6 flex w-fit items-center gap-1.5 font-mono text-2xs uppercase tracking-label text-subtle transition-colors duration-fast ease-out hover:text-foreground"
             >
               Mint a visitor card
               <span aria-hidden>&rarr;</span>
