@@ -1103,7 +1103,7 @@ export default function CardMinter({
           server component and cannot know which issue is on screen. The
           ladder marks the visitor's own row, which is what stops it reading
           as a footnote under the thing it describes. */}
-      <IssueLadder current={data?.issue.key ?? null} />
+      <IssueLadder card={data} />
     </div>
   );
 }

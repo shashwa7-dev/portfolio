@@ -1,37 +1,93 @@
+"use client";
+
+import { useCallback, useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
+import { X } from "lucide-react";
 import { ISSUES } from "@/lib/card/issues";
-import { STOCK } from "@/lib/card/ticket";
-import type { IssueKey } from "@/lib/card/types";
+import { serialFrom } from "@/lib/card/seed";
+import { drawTicket, CARD_W, CARD_H } from "@/lib/card/ticket";
+import { CARD_FONTS } from "@/lib/card/fonts";
+import { backdropFadeVariants, dialogPopVariants } from "@/lib/motionVariants";
+import type { CardData, IssueKey, RollSet } from "@/lib/card/types";
 
 /**
- * The five issues as a rarity table, rarest first.
+ * The five issues as a rarity table, rarest first, each row showing the card
+ * it produces. Clicking one opens it large.
  *
- * This replaced a grid of five drawn specimens, which was the wrong thing
- * shown the wrong size. Five canvases at roughly 230px each inside a 760px
- * column left the plate detail too small to read, `md:grid-cols-3` stranded
- * two cards on a ragged second row, and the whole section waited behind a
- * "Drawing the issues..." line while the card fonts loaded. Worse, it spent
- * the page's best space on five things that look nearly identical: four of
- * the five print on the same cream paper, and at that size the difference
- * between Definitive and Commemorative is a tint.
- *
- * What actually differs between issues is what they do, what you have to
- * roll, and how likely that is. So that is what this shows, and it needs no
- * canvas at all: a stock swatch instead of a thumbnail, the change each
- * issue makes to the card, the dice range, and the odds. The only card
- * rendered on this page is now the visitor's own.
+ * This replaced a grid of five specimens drawn at roughly 230px each, which
+ * left the plate detail too small to read and stranded two cards on a ragged
+ * `md:grid-cols-3` row. The cards are back, but as thumbnails beside the
+ * thing that actually differs between issues: what each one changes, what
+ * you have to roll for it, and how often that lands. The detail lives in the
+ * zoom, where there is room for it.
  *
  * Every number is read from `ISSUES`, which reads them from the counted 6d6
  * distribution in `lib/card/dice.ts`. Nothing here is typed by hand, so a
  * band that changes cannot leave this table stating the old odds.
  */
 
+const MARK_SRC = "/brand-mark.png";
+
+/**
+ * Each card is drawn once, at a size big enough for the zoom, into an
+ * offscreen canvas. The thumbnail and the overlay are both `drawImage` blits
+ * of that one master.
+ *
+ * This is the whole reason the cards can come back. `drawTicket` hands the
+ * portrait engine `CARD_W` whatever the display size, so the engine does its
+ * full generative work on every call: drawing a thumbnail and then a zoom
+ * would pay that twice per issue, and re-opening a zoom would pay it again.
+ * Blitting costs nothing after the first draw, so five issues cost five
+ * draws for the life of the page, and opening a card is instant.
+ *
+ * 720px wide covers a 360px overlay on a 2x display. Above that the blit is
+ * upscaling, which is why the overlay is capped below it.
+ */
+const MASTER_W = 720;
+const MASTER_H = Math.round((MASTER_W * CARD_H) / CARD_W);
+
+/* Fixed ids and rolls, one per issue, so every visitor sees the same five
+   specimens and each one prints a total that actually falls inside the range
+   printed beside it. */
+const SPECIMEN_ROLLS: Record<IssueKey, RollSet> = {
+  definitive: [[3, 4], [5, 2], [6, 1]],
+  commemorative: [[4, 4], [4, 4], [4, 4]],
+  firstDay: [[5, 4], [5, 4], [5, 4]],
+  misprint: [[6, 5], [6, 5], [5, 4]],
+  inverted: [[6, 6], [6, 6], [6, 5]],
+};
+
+const SPECIMENS: Record<IssueKey, { id: string; name: string; city: string; origin: string }> = {
+  definitive: { id: "specimen-definitive", name: "Maya", city: "Lisbon", origin: "Lisbon, PT" },
+  commemorative: { id: "specimen-commemorative", name: "Jonas", city: "Berlin", origin: "Berlin, DE" },
+  firstDay: { id: "specimen-firstday", name: "Priya", city: "Toronto", origin: "Toronto, CA" },
+  misprint: { id: "specimen-misprint", name: "Ade", city: "Lagos", origin: "Lagos, NG" },
+  inverted: { id: "specimen-inverted", name: "Ana", city: "Porto", origin: "Porto, PT" },
+};
+
+/** The specimen for an issue: its own issue, never the one its id happens to
+ *  roll, and a fixed roll so the five never differ between visitors. */
+function specimenData(key: IssueKey): CardData {
+  const s = SPECIMENS[key];
+  return {
+    visitorId: s.id,
+    name: s.name,
+    serial: serialFrom(s.id),
+    issue: ISSUES[key],
+    roll: SPECIMEN_ROLLS[key],
+    origin: s.origin,
+    city: s.city,
+    date: "23 Aug 2026",
+  };
+}
+
 /**
  * What each issue changes about the card, checked against `drawTicket`
  * rather than written from the names. Misprint really does print the inner
  * rule and the portrait twice out of register; First day really does swap
- * the postmark's legend and ink; Inverted really does turn the portrait
- * over. If a sixth issue is added that changes nothing but a colour, it
- * does not get a line here, because there would be nothing true to write.
+ * the postmark's legend and ink to teal; Inverted really does turn the
+ * portrait over. A sixth issue that changed nothing but a colour would have
+ * no true line to write here, which is the test for whether it earns a name.
  */
 const CHANGES: Record<IssueKey, string> = {
   inverted: "The portrait prints upside down, on black stock",
@@ -41,15 +97,144 @@ const CHANGES: Record<IssueKey, string> = {
   definitive: "The standard issue, no overprint",
 };
 
-/** Rarest first. Sorted by the real per-roll chance rather than by a
- *  hand-kept order, so the ladder cannot disagree with the numbers in it. */
+/** Rarest first, sorted by the real per-roll chance rather than a hand-kept
+ *  order, so the ladder cannot disagree with the numbers in it. */
 const LADDER = Object.values(ISSUES).sort((a, b) => a.chance - b.chance);
 
 /** The commonest issue's chance, so the bars read against the top of the
- *  scale rather than against 100% and leave the whole row near-empty. */
+ *  scale rather than against 100% and leave every row near-empty. */
 const WIDEST = Math.max(...LADDER.map((i) => i.chance));
 
-export default function IssueLadder({ current }: { current?: IssueKey | null }) {
+/** Identifies a drawing for the cache. The visitor's own card changes when
+ *  they rename it, re-roll it or regenerate the portrait, and each of those
+ *  has to invalidate; a specimen never changes at all. */
+function cacheKey(key: IssueKey, own: CardData | null): string {
+  if (!own) return key;
+  return `own:${own.visitorId}:${own.serial}:${own.name}:${own.issue.key}:${own.roll
+    .flat()
+    .join("")}`;
+}
+
+/** Blits a master canvas into a visible one at the width it is given. */
+function CardBlit({
+  master,
+  className,
+  label,
+}: {
+  master: HTMLCanvasElement | null;
+  className: string;
+  label: string;
+}) {
+  const ref = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const c = ref.current;
+    if (!c || !master) return;
+    const dpr = window.devicePixelRatio || 1;
+    const cssW = c.clientWidth;
+    if (!cssW) return;
+    c.width = Math.round(cssW * dpr);
+    c.height = Math.round(((cssW * CARD_H) / CARD_W) * dpr);
+    const ctx = c.getContext("2d");
+    if (!ctx) return;
+    ctx.clearRect(0, 0, c.width, c.height);
+    ctx.drawImage(master, 0, 0, c.width, c.height);
+  }, [master]);
+
+  return (
+    <canvas ref={ref} className={className} role="img" aria-label={label} />
+  );
+}
+
+export default function IssueLadder({ card }: { card: CardData | null }) {
+  const [ready, setReady] = useState(false);
+  const [zoomed, setZoomed] = useState<IssueKey | null>(null);
+  const markRef = useRef<HTMLImageElement | null>(null);
+  const masters = useRef(new Map<string, HTMLCanvasElement>());
+  /* Bumped after a draw so the blits re-run: the cache lives in a ref, which
+     does not trigger a render on its own. */
+  const [drawn, setDrawn] = useState(0);
+  /* The control that opened the overlay, so focus goes back where it was. */
+  const opener = useRef<HTMLElement | null>(null);
+
+  /* Canvas draws text in whatever face is loaded at draw time, so nothing can
+     be drawn before the webfonts and the brand mark have settled. Loaded once
+     and shared across all five. A decode failure still draws, with mark null. */
+  useEffect(() => {
+    let cancelled = false;
+    const fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
+    const img = new Image();
+    img.src = MARK_SRC;
+    const markReady = img
+      .decode()
+      .then(() => {
+        if (!cancelled) markRef.current = img;
+      })
+      .catch(() => {
+        if (!cancelled) markRef.current = null;
+      });
+    Promise.all([fontsReady, markReady]).finally(() => {
+      if (!cancelled) setReady(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const masterFor = useCallback(
+    (key: IssueKey, own: CardData | null): HTMLCanvasElement | null => {
+      if (!ready) return null;
+      const id = cacheKey(key, own);
+      const hit = masters.current.get(id);
+      if (hit) return hit;
+      const off = document.createElement("canvas");
+      off.width = MASTER_W;
+      off.height = MASTER_H;
+      const ctx = off.getContext("2d");
+      if (!ctx) return null;
+      // Drawn in the export's own coordinate space and scaled, so the
+      // portrait engine's size-derived DETAIL and K match what a download
+      // produces. Same fix as CardMinter's visible canvas.
+      ctx.scale(MASTER_W / CARD_W, MASTER_H / CARD_H);
+      drawTicket(ctx, own ?? specimenData(key), CARD_W, CARD_H, {
+        ...CARD_FONTS,
+        mark: markRef.current,
+      });
+      masters.current.set(id, off);
+      return off;
+    },
+    [ready]
+  );
+
+  /* Draw all five once the fonts land, and redraw the visitor's own row when
+     their card changes. Everything else is served from the cache. */
+  useEffect(() => {
+    if (!ready) return;
+    for (const issue of LADDER) {
+      masterFor(issue.key, card && card.issue.key === issue.key ? card : null);
+    }
+    setDrawn((n) => n + 1);
+  }, [ready, card, masterFor]);
+
+  const close = useCallback(() => {
+    setZoomed(null);
+    opener.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    if (!zoomed) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") close();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [zoomed, close]);
+
+  const ownFor = (key: IssueKey) =>
+    card && card.issue.key === key ? card : null;
+
+  const zoomIssue = zoomed ? ISSUES[zoomed] : null;
+
   return (
     <section className="mt-16">
       <h2 className="text-xl font-semibold tracking-tight text-foreground">
@@ -63,28 +248,42 @@ export default function IssueLadder({ current }: { current?: IssueKey | null }) 
 
       <ul className="mt-6">
         {LADDER.map((issue) => {
-          const mine = issue.key === current;
+          const own = ownFor(issue.key);
+          const mine = own !== null;
           return (
             <li
               key={issue.key}
-              // `aria-current` rather than a visual-only highlight: the row
-              // for the card a visitor is holding is genuinely the current
-              // one, and a colour change alone says nothing to a screen
-              // reader.
+              // `aria-current`, not a colour alone: the row for the card a
+              // visitor is holding is genuinely the current one, and a
+              // background change says nothing to a screen reader.
               aria-current={mine ? "true" : undefined}
-              className={`relative grid grid-cols-[14px_1fr_auto] items-center gap-x-4 gap-y-1 rounded-lg border-b border-border px-3 py-3 last:border-b-0 sm:grid-cols-[14px_1fr_4.5rem_5.5rem] ${
+              className={`relative grid grid-cols-[40px_1fr] items-center gap-x-4 gap-y-2 rounded-lg border-b border-border px-3 py-3 last:border-b-0 sm:grid-cols-[40px_1fr_4.5rem_5.5rem] ${
                 mine ? "bg-elevated" : ""
               }`}
             >
-              {/* The stock, which is the one thing that differs between the
-                  four cream issues and is legible at any size. A ring rather
-                  than a border so the near-black inverted stock still has an
-                  edge on a dark page. */}
-              <span
-                aria-hidden="true"
-                className="h-[18px] w-3.5 rounded-sm ring-1 ring-inset ring-border-strong"
-                style={{ backgroundColor: STOCK[issue.key] }}
-              />
+              {/* The card itself, small. The button is the zoom trigger, so
+                  the whole row stays a row rather than becoming one big
+                  target: the text beside it is information, not a control. */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  opener.current = e.currentTarget;
+                  setZoomed(issue.key);
+                }}
+                aria-label={`Enlarge the ${issue.name} card`}
+                className="group relative block w-10 rounded-[3px] transition-transform duration-fast ease-out hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              >
+                <CardBlit
+                  key={drawn}
+                  master={masterFor(issue.key, own)}
+                  className="block w-full rounded-[3px] shadow-sm ring-1 ring-border-strong"
+                  label={
+                    mine
+                      ? `Your ${issue.name} card`
+                      : `Example of a ${issue.name} card`
+                  }
+                />
+              </button>
 
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-foreground">
@@ -100,9 +299,9 @@ export default function IssueLadder({ current }: { current?: IssueKey | null }) 
                 </p>
               </div>
 
-              {/* Below `sm` these two share the third column and sit under
-                  the name; from `sm` they get a column each. The range is
-                  what to roll, the odds are how often that happens. */}
+              {/* Below `sm` these share a row under the name; from `sm` they
+                  each get a column. The range is what to roll, the odds are
+                  how often that lands. */}
               <div className="col-start-2 flex items-center gap-4 sm:col-start-3 sm:col-span-2 sm:grid sm:grid-cols-[4.5rem_5.5rem] sm:gap-x-4">
                 <span className="font-mono text-2xs uppercase tracking-label text-muted-foreground sm:text-right">
                   {issue.range[0]}&ndash;{issue.range[1]}
@@ -113,9 +312,9 @@ export default function IssueLadder({ current }: { current?: IssueKey | null }) 
                   </span>
                   {/* True to scale. Inverted is a sliver beside Definitive's
                       full bar, which is the honest picture and the reason to
-                      draw it at all. `max()` keeps that sliver visible at
-                      0.06% instead of rounding it to nothing, and the real
-                      number sits directly above it either way. */}
+                      draw one at all. `max()` keeps that sliver visible at
+                      0.06% rather than rounding it away, and the real number
+                      sits directly above it. */}
                   <span
                     aria-hidden="true"
                     className="mt-1.5 block h-[3px] w-full overflow-hidden rounded-full bg-border"
@@ -135,6 +334,58 @@ export default function IssueLadder({ current }: { current?: IssueKey | null }) 
           );
         })}
       </ul>
+
+      <AnimatePresence>
+        {zoomIssue && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center p-6"
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+          >
+            <motion.div
+              variants={backdropFadeVariants}
+              onClick={close}
+              className="absolute inset-0 bg-background/85 backdrop-blur-sm"
+              aria-hidden="true"
+            />
+            {/* `aria-modal` with a label, and Escape and the backdrop both
+                close it. Focus returns to the thumbnail that opened it. */}
+            <motion.div
+              variants={dialogPopVariants}
+              role="dialog"
+              aria-modal="true"
+              aria-label={`${zoomIssue.name} card, enlarged`}
+              className="relative w-full max-w-[340px]"
+            >
+              <CardBlit
+                key={`zoom-${zoomed}-${drawn}`}
+                master={masterFor(zoomIssue.key, ownFor(zoomIssue.key))}
+                className="block w-full rounded-2xl shadow-2xl ring-1 ring-border-strong"
+                label={`${zoomIssue.name} card, enlarged`}
+              />
+              <div className="mt-4 text-center">
+                <p className="font-mono text-2xs uppercase tracking-label text-subtle">
+                  {zoomIssue.range[0]}&ndash;{zoomIssue.range[1]} &middot;{" "}
+                  {zoomIssue.label} per roll
+                </p>
+                <p className="mt-1.5 text-sm text-muted-foreground">
+                  {CHANGES[zoomIssue.key]}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={close}
+                autoFocus
+                aria-label="Close"
+                className="absolute -right-1 -top-11 grid h-9 w-9 place-items-center rounded-full bg-elevated text-muted-foreground ring-1 ring-border-strong transition-colors duration-fast ease-out hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <X className="h-4 w-4" aria-hidden="true" />
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
