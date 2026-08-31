@@ -34,6 +34,18 @@ type RollPillProps = {
   children: ReactNode;
 };
 
+/**
+ * The caption under the button, capped at the button's own width and
+ * balanced rather than left to wrap ragged. The issue line
+ * ("Commemorative, 30.9% per roll, rolled 25") is longer than 280px at this
+ * size, and without these it broke wherever it ran out of room and left a
+ * single word stranded on the second line, which reads as a layout fault
+ * rather than as a caption. Declared once because both the animated and the
+ * plain branch below render it.
+ */
+const CAPTION =
+  "max-w-[min(280px,calc(100vw-3rem))] text-balance text-center font-mono text-2xs uppercase tracking-label text-subtle";
+
 /** Forwards a ref to the underlying `<button>`: TossDice runs its own
  *  press-squash WAAPI animation directly on the button element, the same
  *  way it already reaches into its dice with refs, and that needs the real
@@ -149,12 +161,14 @@ const RollPill = forwardRef<HTMLButtonElement, RollPillProps>(function RollPill(
           variants={blurSwapVariants}
           initial="hidden"
           animate="visible"
-          className="font-mono text-2xs uppercase tracking-label text-subtle"
+          className={CAPTION}
         >
           {caption}
         </motion.p>
       ) : (
-        <p className="font-mono text-2xs uppercase tracking-label text-subtle">{caption}</p>
+        <p className={CAPTION}>
+          {caption}
+        </p>
       )}
     </div>
   );

@@ -92,7 +92,7 @@ const COPY_CONFIRM_MS = 1400;
  *  `relative` is load-bearing: the pseudo-element positions against this
  *  box, not the toolbar around it. */
 const TOOLBAR_BUTTON =
-  "relative flex h-7 w-7 items-center justify-center rounded-md text-subtle transition-colors duration-base ease-out before:absolute before:-inset-2 before:content-[''] hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "relative flex h-6 w-6 items-center justify-center rounded-md text-subtle transition-colors duration-base ease-out before:absolute before:-inset-2.5 before:content-[''] hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 /** The card's on-stage preview size. Independent of CARD_W/CARD_H, the
  *  resolution `download()` and the visible canvas actually draw at: this is
@@ -643,10 +643,20 @@ export default function CardMinter({
           than absolutely positioned, so it reserves that height itself
           instead of the card slot reserving it on the band's behalf.
 
-          `max-w-[480px]` is PlateFrame's own outer measure, so the row's two
-          ends land on the plate's outer edges, directly above the margin
-          labels that share them. */}
-      <div className="mx-auto mb-3 flex h-8 w-full max-w-[480px] select-none items-center justify-between gap-2">
+          `max-w-[280px]` is the card's own width, not the plate's 480. The
+          row was the plate's, which put the history hard against the frame's
+          left edge and the toolbar against its right, both a long way
+          outside the card they act on. Matching the card means the first pip
+          starts where the card starts and the last button ends where it
+          ends.
+
+          That is a tighter row than it was, which is the other half of why
+          the toolbar buttons came down from 28px to 24px: five of them at
+          the old size, plus their gaps and the group's padding, left the
+          history too little to shrink into. Their tap targets did not
+          shrink with them, since `before:-inset-2.5` grows each one back to
+          44px. */}
+      <div className="mx-auto mb-3 flex h-8 w-full max-w-[280px] select-none items-center justify-between gap-2">
         {/* The roll history: a muted pair of pips per throw recorded so
             far, reading straight from useDiceRoll's own `rolls` (handed up
             through DiceRoller's onRollsChange) rather than a second count
@@ -712,7 +722,7 @@ export default function CardMinter({
                       aria-label="Edit the name on the card"
                       className={TOOLBAR_BUTTON}
                     >
-                      <Pencil className="h-4 w-4" aria-hidden="true" />
+                      <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
                     </button>
                   </TooltipTrigger>
                   <TooltipContent>Edit name</TooltipContent>
@@ -725,7 +735,7 @@ export default function CardMinter({
                       aria-label="Start over with a new portrait and serial"
                       className={TOOLBAR_BUTTON}
                     >
-                      <RefreshCw className="h-4 w-4" aria-hidden="true" />
+                      <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
                     </button>
                   </TooltipTrigger>
                   {/* Plainly what it costs, not "regenerate if you don't
@@ -743,7 +753,7 @@ export default function CardMinter({
                       aria-label="Download the card as a PNG"
                       className={TOOLBAR_BUTTON}
                     >
-                      <Download className="h-4 w-4" aria-hidden="true" />
+                      <Download className="h-3.5 w-3.5" aria-hidden="true" />
                     </button>
                   </TooltipTrigger>
                   <TooltipContent>Download PNG</TooltipContent>
@@ -756,7 +766,7 @@ export default function CardMinter({
                         aria-label="Share your card"
                         className={TOOLBAR_BUTTON}
                       >
-                        <Share2 className="h-4 w-4" aria-hidden="true" />
+                        <Share2 className="h-3.5 w-3.5" aria-hidden="true" />
                       </PopoverTrigger>
                     </TooltipTrigger>
                     <TooltipContent>Share</TooltipContent>
@@ -810,9 +820,9 @@ export default function CardMinter({
                   className={TOOLBAR_BUTTON}
                 >
                   {muted ? (
-                    <VolumeX className="h-4 w-4" aria-hidden="true" />
+                    <VolumeX className="h-3.5 w-3.5" aria-hidden="true" />
                   ) : (
-                    <Volume2 className="h-4 w-4" aria-hidden="true" />
+                    <Volume2 className="h-3.5 w-3.5" aria-hidden="true" />
                   )}
                 </button>
               </TooltipTrigger>
