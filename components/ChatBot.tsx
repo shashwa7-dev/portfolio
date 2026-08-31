@@ -5,6 +5,12 @@ import { X, Send, Copy, Check, ArrowDown, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import MarkdownMessage from "./chat/MarkdownMessage";
 import { cn } from "@/lib/utils";
+import {
+  parseChatFrame,
+  resolveReply,
+  takeCompleteLines,
+} from "@/lib/chatStream";
+import { CONNECTION_TROUBLE } from "@/lib/chatMessages";
 import IconSwap from "@/components/common/IconSwap";
 import AgentMark from "@/components/common/AgentMark";
 import {
@@ -175,44 +181,69 @@ const S7Bot = () => {
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let accumulatedContent = "";
+      // Held rather than thrown. This used to be `throw new Error(data.error)`
+      // inside the same try whose catch guarded JSON.parse, so the route's
+      // error frame was caught two lines later, logged, and dropped: the
+      // visitor got an assistant bubble with nothing in it. It is now carried
+      // to the end of the stream and handed to resolveReply, which decides
+      // between it and whatever text did arrive.
+      let serverError: string | null = null;
+      // Carries the half of a frame that a read ended in the middle of. See
+      // takeCompleteLines: a frame is not guaranteed to arrive in one piece,
+      // and parsing each read on its own loses both halves of any that got
+      // cut, which reads as a sentence missing from the middle of an answer.
+      let buffer = "";
+      let streamEnded = false;
 
-      while (true) {
+      stream: while (!streamEnded) {
         const { done, value } = await reader.read();
-        if (done) break;
+        streamEnded = done;
+        if (value) buffer += decoder.decode(value, { stream: true });
 
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split("\n");
+        const { lines, rest } = takeCompleteLines(buffer, streamEnded);
+        buffer = rest;
 
         for (const line of lines) {
-          if (line.startsWith("data: ")) {
-            try {
-              const data = JSON.parse(line.slice(6));
+          const frame = parseChatFrame(line);
+          if (!frame) continue;
 
-              if (data.done) {
-                return;
-              }
+          // Labelled break, not the `return` this used to be: returning here
+          // skipped the settle below, which is the whole reason a finished
+          // stream can no longer leave the bubble empty.
+          if (frame.done) break stream;
 
-              if (data.error) {
-                throw new Error(data.error);
-              }
+          if (frame.error) {
+            serverError = frame.error;
+            continue;
+          }
 
-              if (data.emailState !== undefined) {
-                setEmailState(data.emailState);
-              }
+          if (frame.emailState !== undefined) {
+            setEmailState(frame.emailState as EmailState | null);
+          }
 
-              if (data.text) {
-                accumulatedContent += data.text;
-                setMessages((prev) => [
-                  ...prev.slice(0, -1),
-                  { role: "assistant", content: accumulatedContent },
-                ]);
-              }
-            } catch (e) {
-              console.error("Error parsing SSE data:", e);
-            }
+          if (frame.text) {
+            accumulatedContent += frame.text;
+            setMessages((prev) => [
+              ...prev.slice(0, -1),
+              { role: "assistant", content: accumulatedContent },
+            ]);
           }
         }
       }
+
+      // Settle the bubble. Text streamed in stays exactly as it was; the only
+      // case this changes anything is a stream that produced none, which is
+      // the empty bubble this whole path exists to make impossible.
+      setMessages((prev) => [
+        ...prev.slice(0, -1),
+        {
+          role: "assistant",
+          content: resolveReply({
+            accumulated: accumulatedContent,
+            errorText: serverError,
+          }),
+        },
+      ]);
     } catch (error: any) {
       console.error("Stream error:", error);
       if (error.name !== "AbortError") {
@@ -220,8 +251,9 @@ const S7Bot = () => {
           ...prev.slice(0, -1),
           {
             role: "assistant",
-            content:
-              "Sorry, there was an error generating the response. Please try again.",
+            // The same line the route sends, so a failure reads identically
+            // whether it was the network here or the model there.
+            content: CONNECTION_TROUBLE,
           },
         ]);
       }

@@ -7,6 +7,7 @@ import {
 import nodemailer from "nodemailer";
 import fs from "fs";
 import path from "path";
+import { CONNECTION_TROUBLE, RECIPIENT_EMAIL } from "@/lib/chatMessages";
 
 /**
  * Truffy's system prompt is loaded from `data/agent-memory.md` — single source
@@ -32,7 +33,6 @@ const basePrompt = fs.readFileSync(
 
 // Constants and Types
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const RECIPIENT_EMAIL = "shashwa7.dev@gmail.com";
 
 /**
  * The fixed shape of a scope refusal, used verbatim by the cheap pre-filter
@@ -43,17 +43,6 @@ const RECIPIENT_EMAIL = "shashwa7.dev@gmail.com";
  */
 const STANDARD_REFUSAL =
   "I can't do that part. If part of your message was about Shashwat, this site, or getting in touch with him, ask me just that and I'll answer it.";
-
-/**
- * Shared copy for genuine failures, where the assistant could not do its
- * job: the model call throwing, or the request handler itself erroring
- * before a response can be built. Deliberately not used for
- * `STANDARD_REFUSAL`, which fires on an out-of-scope request the assistant
- * understood fine and is choosing not to fulfil; pointing that visitor at
- * Shashwat's inbox would just relay the out-of-scope ask to him instead of
- * refusing it. Built from `RECIPIENT_EMAIL` so the two can't drift apart.
- */
-const CONNECTION_TROUBLE = `Sorry, I'm having trouble connecting right now. Feel free to email Shashwat directly at ${RECIPIENT_EMAIL}!`;
 
 const RATE_LIMIT = {
   MAX_EMAILS_PER_HOUR: 3,
@@ -351,10 +340,19 @@ export async function POST(request: NextRequest) {
           // into one string.
           systemInstruction: basePrompt,
           generationConfig: {
-            // A visitor question about a person's career does not need more
-            // than a few hundred tokens to answer well, and capping it bounds
-            // both cost and how much room a jailbreak attempt has to work with.
-            maxOutputTokens: 400,
+            // Was 400, on the reasoning that a question about someone's
+            // career does not need more than a few hundred tokens to answer.
+            // That reasoning counted the answer and forgot what else comes
+            // out of a 2.5 model: reasoning tokens are billed against this
+            // same ceiling, so a budget sized for the reply alone can be
+            // spent before the reply starts. The generation then stops at
+            // MAX_TOKENS, which is not a "bad" finish reason, so `text()`
+            // returns "" instead of throwing and the visitor gets silence.
+            // 1200 leaves room for both. The cap is still here to bound cost
+            // and to limit how much room a jailbreak attempt has to work in,
+            // and the guard below means running out can no longer show a
+            // visitor nothing.
+            maxOutputTokens: 1200,
             // Low rather than zero: this is factual recall from a memory
             // file, not creative writing, but some phrasing variety keeps
             // replies from reading like a lookup table.
@@ -538,11 +536,41 @@ export async function POST(request: NextRequest) {
             // this text, so there is nothing here for an injection attempt
             // to append itself to.
             const result = await model.generateContentStream(message);
+            let streamed = "";
             for await (const chunk of result.stream) {
               const text = chunk.text();
+              // Empty chunks carry nothing and the client skips them anyway.
+              if (!text) continue;
+              streamed += text;
               await writer.write(
                 encoder.encode(`data: ${JSON.stringify({ text })}\n\n`)
               );
+            }
+            // A generation can succeed and still produce no text: it stops at
+            // MAX_TOKENS having spent the budget on reasoning, or returns no
+            // candidates at all. Neither throws, so without this the stream
+            // would close having said nothing and the visitor would be left
+            // looking at an empty bubble. The client has its own floor for
+            // the same reason; this one keeps the endpoint honest for any
+            // caller, not just the widget.
+            if (!streamed.trim()) {
+              // The visitor's line goes out first. Reading the finish reason
+              // means awaiting `result.response`, which can itself reject
+              // (a blocked prompt resolves that way), and an exception there
+              // would jump to the catch below with the fallback unsent. The
+              // whole point of this branch is that something always gets
+              // said, so nothing that can throw is allowed to come first.
+              await writer.write(
+                encoder.encode(
+                  `data: ${JSON.stringify({ text: CONNECTION_TROUBLE })}\n\n`
+                )
+              );
+              // Diagnosis, best effort. MAX_TOKENS here means the ceiling
+              // above is still too low for the reasoning plus the reply.
+              const finishReason = await result.response
+                .then((r) => r.candidates?.[0]?.finishReason ?? "no candidates")
+                .catch(() => "response unavailable");
+              console.error("Chat generation produced no text:", finishReason);
             }
           }
         }
