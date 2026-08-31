@@ -6,13 +6,11 @@ import {
   Check,
   Copy,
   Download,
-  MessageCircle,
   Pencil,
   UserRound,
   Share2,
   Volume2,
   VolumeX,
-  X as XLogo,
 } from "lucide-react";
 import { ISSUES } from "@/lib/card/issues";
 import { isPerfect, issueFromTotal, pipTotal } from "@/lib/card/dice";
@@ -35,6 +33,7 @@ import PlateFrame from "@/components/card/PlateFrame";
 import IssueLadder from "@/components/card/IssueLadder";
 import PlaceholderCard from "@/components/card/PlaceholderCard";
 import Pips from "@/components/card/dice/Pips";
+import { SVGS } from "@/components/SVGS";
 import { playChime } from "@/components/card/dice/diceSound";
 import { HAPTICS, safeHaptic } from "@/components/card/haptics";
 import { useSoundPreference } from "@/components/card/dice/soundPreference";
@@ -160,8 +159,7 @@ function buildShareBody(data: CardData): string {
 
 /**
  * The same words with the link on the end, for every channel that takes one
- * string: WhatsApp's single `text` param, the clipboard, and the native
- * share sheet.
+ * string: the clipboard, and the native share sheet.
  *
  * X is the exception and takes `buildShareBody` plus a separate `url`, which
  * is why the body stops at "Mint yourself one:" and the link is appended
@@ -224,7 +222,7 @@ export default function CardMinter({
   // touches `window`, which has no stable value on the server or during the
   // first render. Governs only the history chips' own entrance below.
   const [reducedMotion, setReducedMotion] = useState(false);
-  // Whether the X/WhatsApp/copy menu is open. Controlled (rather than left
+  // Whether the X/copy menu is open. Controlled (rather than left
   // to Popover's own uncontrolled toggle) because the trigger's onClick
   // below decides whether to open it at all: see handleShareTrigger.
   const [shareOpen, setShareOpen] = useState(false);
@@ -482,7 +480,7 @@ export default function CardMinter({
      support gets the actual PNG straight into its native sheet, carried
      from renderCardBlob above, with no menu tap in between, since it is
      strictly better than any intent (it can attach the image; neither
-     intent below can). Everywhere else the trigger opens the X/WhatsApp/
+     intent below can). Everywhere else the trigger opens the X/
      copy menu instead. `canShare({ files: [...] })` is the check, not just
      `share` existing: some Safari versions expose `share` without file
      support and throw when handed files.
@@ -554,7 +552,7 @@ export default function CardMinter({
      before closing, so a timer left over from an earlier copy can never
      fire into whatever the menu is doing next. Without this, closing the
      menu by any route other than that timer's own completion (Escape, a
-     click outside, tapping X or WhatsApp, or re-triggering share) would
+     click outside, tapping X, or re-triggering share) would
      leave the timer armed; if the visitor reopened the menu inside that
      1400ms window, the stale timer would still fire and close the menu
      they had just reopened, or flash a stale "Copied" on a fast reopen. */
@@ -566,8 +564,8 @@ export default function CardMinter({
 
   /* The Popover's own onOpenChange: opening is a plain setShareOpen(true)
      (nothing to clean up), closing goes through closeShareMenu above so
-     Escape and click-outside get the same cleanup shareToX, shareToWhatsApp
-     and copyShareText's own timeout already need. */
+     Escape and click-outside get the same cleanup shareToX and
+     copyShareText's own timeout already need. */
   const handleShareOpenChange = useCallback(
     (open: boolean) => {
       if (open) {
@@ -579,10 +577,12 @@ export default function CardMinter({
     [closeShareMenu],
   );
 
-  /* X and WhatsApp are both link intents: neither can attach a file, so
-     both get the same words-plus-link buildShareText already builds.
-     WhatsApp's wa.me takes the whole message, link included, in its one
-     `text` param.
+  /* The desktop menu is X and copy, and nothing else. WhatsApp was a third
+     item that only ever opened wa.me in a browser tab; on a phone, where
+     someone might genuinely want to send this to a person, the native share
+     sheet already lists the real WhatsApp app and can hand it the actual
+     PNG, which wa.me cannot. It was a worse copy of a better path that the
+     device offering it already takes.
 
      X takes `text` and `url` separately, and this used to send the link in
      both, which put it in the composed post twice in a row: `url` does not
@@ -595,9 +595,9 @@ export default function CardMinter({
      `/intent/post` rather than `/intent/tweet`: both still resolve, but
      post is the current name.
 
-     Both close via closeShareMenu rather than setShareOpen(false) directly,
-     since either can be tapped while a copy confirmation from moments
-     earlier is still pending its own timer. */
+     Closes via closeShareMenu rather than setShareOpen(false) directly,
+     since it can be tapped while a copy confirmation from moments earlier
+     is still pending its own timer. */
   const shareToX = useCallback(() => {
     const data = buildData();
     if (!data) return;
@@ -605,14 +605,6 @@ export default function CardMinter({
       buildShareBody(data)
     )}&url=${encodeURIComponent(cardUrl)}`;
     window.open(intent, "_blank", "noopener,noreferrer");
-    closeShareMenu();
-  }, [buildData, cardUrl, closeShareMenu]);
-
-  const shareToWhatsApp = useCallback(() => {
-    const data = buildData();
-    if (!data) return;
-    const text = buildShareText(data, cardUrl);
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank", "noopener,noreferrer");
     closeShareMenu();
   }, [buildData, cardUrl, closeShareMenu]);
 
@@ -825,10 +817,18 @@ export default function CardMinter({
                       </TooltipTrigger>
                       <TooltipContent>Share</TooltipContent>
                     </Tooltip>
-                    {/* Only ever reached on a device without file-carrying
-                        Web Share support: see handleShareTrigger. X and
-                        WhatsApp are link-only intents (neither can attach
-                        the PNG), and copy puts the same words on the
+                    {/* Reached on anything that is not a touch device with
+                        file-carrying Web Share: see handleShareTrigger, and
+                        in practice that means every laptop.
+
+                        The X mark is the real one from SVGS, not lucide's
+                        `X`, which is its close glyph. A dismiss cross
+                        labelled "Share on X" was the wrong icon twice over:
+                        wrong brand, and the one symbol in the menu that
+                        already means "get rid of this".
+
+                        X is a link-only intent and cannot attach the PNG,
+                        so copy sits beside it, putting the same words on the
                         clipboard with a brief confirmation instead of a
                         silent, unverifiable click. */}
                     <PopoverContent align="end">
@@ -837,16 +837,8 @@ export default function CardMinter({
                         onClick={shareToX}
                         className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm text-foreground transition-colors duration-fast ease-out hover:bg-accent hover:text-accent-foreground"
                       >
-                        <XLogo className="h-4 w-4 shrink-0" aria-hidden="true" />
+                        <SVGS.Twitter className="h-4 w-4 shrink-0" aria-hidden="true" />
                         Share on X
-                      </button>
-                      <button
-                        type="button"
-                        onClick={shareToWhatsApp}
-                        className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm text-foreground transition-colors duration-fast ease-out hover:bg-accent hover:text-accent-foreground"
-                      >
-                        <MessageCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
-                        Share on WhatsApp
                       </button>
                       <button
                         type="button"
