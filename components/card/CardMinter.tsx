@@ -149,13 +149,28 @@ function buildIssueCaption(data: CardData): string {
  *  it arrives as a prop rather than an import here because app/sitemap.ts
  *  pulls in `getBlogPosts`, which touches Node's `fs` and cannot land in
  *  this "use client" bundle. No em-dash, per the app's copy rule. */
-function buildShareText(data: CardData, cardUrl: string): string {
+function buildShareBody(data: CardData): string {
   /* "an Inverted", not "a Inverted". Only one of the five names begins with
      a vowel, and it is the 0.06% one: the single card anybody is actually
      going to post is the one the sentence would have been broken for.
      Checked rather than hardcoded, so a sixth issue cannot reintroduce it. */
   const article = /^[aeiou]/i.test(data.issue.name) ? "an" : "a";
-  return `I pulled ${article} ${data.issue.name} visitor card. ${data.issue.label} per roll.\n\nMint yourself one at ${cardUrl}`;
+  return `I pulled ${article} ${data.issue.name} visitor card. ${data.issue.label} per roll.\n\nMint yourself one:`;
+}
+
+/**
+ * The same words with the link on the end, for every channel that takes one
+ * string: WhatsApp's single `text` param, the clipboard, and the native
+ * share sheet.
+ *
+ * X is the exception and takes `buildShareBody` plus a separate `url`, which
+ * is why the body stops at "Mint yourself one:" and the link is appended
+ * here rather than written into the sentence. Both routes end up reading
+ * identically; only X gets to treat the URL as a URL, which is what makes it
+ * render the page's preview card under the post.
+ */
+function buildShareText(data: CardData, cardUrl: string): string {
+  return `${buildShareBody(data)} ${cardUrl}`;
 }
 
 export default function CardMinter({
@@ -544,13 +559,16 @@ export default function CardMinter({
      WhatsApp's wa.me takes the whole message, link included, in its one
      `text` param.
 
-     X takes `text` and `url` separately, and this used to send both. The
-     old comment here claimed the two params were how the intent "takes it",
-     but `url` does not replace a link inside `text`, it appends another
-     one, so every tweet composed from this button carried the card URL
-     twice in a row. `text` already ends with it, and X linkifies URLs in
-     the body and builds its preview card from them exactly as it would
-     from the param, so the param is what goes.
+     X takes `text` and `url` separately, and this used to send the link in
+     both, which put it in the composed post twice in a row: `url` does not
+     replace a link inside `text`, it appends another one. So X gets
+     buildShareBody, which stops before the link, and the `url` param
+     supplies it. Passing the URL as a URL rather than as characters in a
+     sentence is also what gets the page's preview card rendered under the
+     post.
+
+     `/intent/post` rather than `/intent/tweet`: both still resolve, but
+     post is the current name.
 
      Both close via closeShareMenu rather than setShareOpen(false) directly,
      since either can be tapped while a copy confirmation from moments
@@ -558,8 +576,9 @@ export default function CardMinter({
   const shareToX = useCallback(() => {
     const data = buildData();
     if (!data) return;
-    const text = buildShareText(data, cardUrl);
-    const intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+    const intent = `https://twitter.com/intent/post?text=${encodeURIComponent(
+      buildShareBody(data)
+    )}&url=${encodeURIComponent(cardUrl)}`;
     window.open(intent, "_blank", "noopener,noreferrer");
     closeShareMenu();
   }, [buildData, cardUrl, closeShareMenu]);
