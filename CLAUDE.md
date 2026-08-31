@@ -70,7 +70,7 @@ Concrete triggers that REQUIRE a memory-file update:
 npm run dev      # next dev (port 3000 by default; this repo uses 3001 in practice)
 npm run build    # next build
 npm run lint     # next lint
-npm test         # vitest run (lib/card's pure modules: seed, issues, types, dice, toss, revealSequence)
+npm test         # vitest run (pure lib modules: card's seed, issues, types, dice, toss, revealSequence, plus chatStream)
 ```
 
 ---
