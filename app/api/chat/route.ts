@@ -18,9 +18,12 @@ import path from "path";
  * This file also carries the scope contract (what Truffy will and won't
  * answer). It is passed to the model as `systemInstruction`, a channel
  * separate from the visitor's message, rather than concatenated into one
- * prompt string. That separation is what makes the rules a boundary a
- * visitor's own text cannot talk its way past by claiming to be a new
- * instruction.
+ * prompt string. That separation means a visitor's message is never
+ * concatenated into the instructions and can't pose as a new one the way
+ * it could in a single combined string. It raises the bar against a
+ * visitor's text claiming to be a new instruction; it is not a guarantee
+ * that no phrasing gets through, and the pre-filter below and the model's
+ * own judgment are what actually carry that weight case by case.
  */
 const basePrompt = fs.readFileSync(
   path.join(process.cwd(), "data", "agent-memory.md"),
@@ -39,7 +42,18 @@ const RECIPIENT_EMAIL = "shashwa7.dev@gmail.com";
  * the refusal came from the regex or from the model itself.
  */
 const STANDARD_REFUSAL =
-  "I'm just here to talk about Shashwat, this site, or getting in touch with him. Ask me about his work, the visitor card, or anything else here.";
+  "I can't do that part. If part of your message was about Shashwat, this site, or getting in touch with him, ask me just that and I'll answer it.";
+
+/**
+ * Shared copy for genuine failures, where the assistant could not do its
+ * job: the model call throwing, or the request handler itself erroring
+ * before a response can be built. Deliberately not used for
+ * `STANDARD_REFUSAL`, which fires on an out-of-scope request the assistant
+ * understood fine and is choosing not to fulfil; pointing that visitor at
+ * Shashwat's inbox would just relay the out-of-scope ask to him instead of
+ * refusing it. Built from `RECIPIENT_EMAIL` so the two can't drift apart.
+ */
+const CONNECTION_TROUBLE = `Sorry, I'm having trouble connecting right now. Feel free to email Shashwat directly at ${RECIPIENT_EMAIL}!`;
 
 const RATE_LIMIT = {
   MAX_EMAILS_PER_HOUR: 3,
@@ -90,7 +104,10 @@ const transporter = nodemailer.createTransport({
  * not coordinate across concurrent instances, so it raises the cost of
  * casual, repeated abuse from a single warm instance. It does not stop a
  * determined attacker, who can simply trigger fresh instances or rotate
- * identifiers.
+ * identifiers. It also has no eviction: an attacker who keeps rotating
+ * identifiers grows these Maps for the life of the instance rather than
+ * getting throttled. Bounded by the instance recycling, not by anything
+ * in this function.
  */
 const checkRateLimit = (
   identifier: string,
@@ -129,7 +146,9 @@ const checkRateLimit = (
  * most requests fall through to the IP (or the shared bucket behind a proxy
  * that strips forwarding headers): documented here rather than glossed
  * over, because a rate limit keyed on an identifier that rarely resolves is
- * weaker than it sounds.
+ * weaker than it sounds. `x-forwarded-for` specifically is client-supplied
+ * on any setup that does not have a trusted proxy rewriting it, so a
+ * visitor who wants a fresh bucket can usually just set the header.
  */
 const getChatIdentifier = (request: NextRequest): string => {
   const sessionId = request.cookies.get("sessionId")?.value;
@@ -167,9 +186,31 @@ const INJECTION_PATTERNS = [
   /reveal\s+(your\s+)?(instructions|prompt|rules)/i,
 ];
 
+/**
+ * Both verb patterns below (write / generate / create / give me) share a
+ * failure mode: "write", "create" and "generate" are also the bare verb
+ * form used right after a question auxiliary ("did he write...", "does he
+ * create..."), so an ungated pattern flags a real question about existing
+ * work ("Did Shashwat write the visitor card app?") as a request to
+ * produce new code. This lookbehind stands the pattern down when a
+ * question word leads into the verb with a few words of slack ("did he",
+ * "does Shashwat", "who wrote" already misses it on tense alone). A
+ * question about what he already built is in-scope content; only the
+ * imperative form ("write me a script") is the thing being screened for.
+ */
+const QUESTION_LEAD =
+  "(?:did|does|do|has|have|had|was|were|is|are|who|what|when|where|why|how)";
+const NOT_A_QUESTION = `(?<!\\b${QUESTION_LEAD}\\b(?:\\s+\\S+){0,3}\\s+)`;
+
 const CODE_GEN_PATTERNS = [
-  /\bwrite\s+(?:me\s+|us\s+)?(?:\S+\s+){0,3}?(script|program|function|app|component|algorithm)\b/i,
-  /\b(generate|create|give\s+me)\s+(?:\S+\s+){0,3}?(script|program|function|app|component|algorithm|code|snippet)\b/i,
+  new RegExp(
+    `${NOT_A_QUESTION}\\bwrite\\s+(?:me\\s+|us\\s+)?(?:\\S+\\s+){0,3}?(script|program|function|app|component|algorithm)\\b`,
+    "i"
+  ),
+  new RegExp(
+    `${NOT_A_QUESTION}\\b(generate|create|give\\s+me)\\s+(?:\\S+\\s+){0,3}?(script|program|function|app|component|algorithm|code|snippet)\\b`,
+    "i"
+  ),
   /\bwrite\s+(?:some\s+)?code\b/i,
   /```/,
 ];
@@ -487,7 +528,7 @@ export async function POST(request: NextRequest) {
             await writer.write(
               encoder.encode(
                 `data: ${JSON.stringify({
-                  text: `You've reached the chat limit for now. Please try again in ${minutesRemaining} minutes, or email Shashwat directly if it's urgent.`,
+                  text: `You've reached the chat limit for now. Try again in ${minutesRemaining} minutes, or email Shashwat directly at ${RECIPIENT_EMAIL} if it's urgent.`,
                 })}\n\n`
               )
             );
@@ -514,8 +555,7 @@ export async function POST(request: NextRequest) {
         await writer.write(
           encoder.encode(
             `data: ${JSON.stringify({
-              error:
-                "Something went wrong on my end. Please try again in a moment.",
+              error: CONNECTION_TROUBLE,
             })}\n\n`
           )
         );
@@ -533,7 +573,7 @@ export async function POST(request: NextRequest) {
     console.error("Chat request failed:", error);
     return new Response(
       JSON.stringify({
-        error: "Something went wrong on my end. Please try again in a moment.",
+        error: CONNECTION_TROUBLE,
       }),
       {
         status: 500,
