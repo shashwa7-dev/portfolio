@@ -1004,12 +1004,16 @@ export default function CardMinter({
           </AnimatePresence>
         </div>
 
-        {/* pt-4 on top of DiceRoller's own mt-8 (unchanged, dice skins are
-            off limits for this pass) loosens the card-to-pill gap a step,
-            from 32px to 48px, without editing TossDice/CubeDice: padding
-            here, unlike a second margin, cannot collapse with the child's
-            own top margin. */}
-        <div className="relative pt-4">
+        {/* pt-10 on top of DiceRoller's own mt-8 (unchanged, the dice skins
+            stay off limits) puts the card-to-pill gap at 72px, up from the
+            48px pt-4 gave it and the 32px of the margin alone. The extra
+            room is for the roll outcomes that now sit in this gap: at 48px
+            the pips cleared the card by 18px and the button by 18px, which
+            was enough to fit them and not enough to let them breathe.
+
+            Padding here rather than a second margin, because padding cannot
+            collapse with the child's own top margin. */}
+        <div className="relative pt-10">
           {/* The roll history: a muted pair of pips per throw recorded so
               far, reading straight from useDiceRoll's own `rolls` (handed up
               through DiceRoller's onRollsChange) rather than a second count
@@ -1027,10 +1031,11 @@ export default function CardMinter({
               history of three both leave the card and the pill exactly where
               they are.
 
-              The `h-12` is that gap exactly, 48px, being the wrapper's own
-              `pt-4` plus DiceRoller's `mt-8` (see the comment above it), so
+              The `h-[72px]` is that gap exactly, being the wrapper's own
+              `pt-10` plus DiceRoller's `mt-8` (see the comment above it), so
               `items-center` centres the pips between the two rather than
-              hanging them off a tuned offset.
+              hanging them off a tuned offset. Change either and this has to
+              change with them, which is why both are named here.
 
               The gap *between* pairs
               is `gap-2` (8px), not the `gap-3` (12px) it used to be: at three
@@ -1040,7 +1045,7 @@ export default function CardMinter({
               is untouched, since that pairing is what the gap is for. */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 top-0 flex h-12 items-center justify-center gap-2 opacity-60"
+            className="pointer-events-none absolute inset-x-0 top-0 flex h-[72px] items-center justify-center gap-2 opacity-60"
           >
             {rolls.map(([a, b], i) => (
               <motion.div
