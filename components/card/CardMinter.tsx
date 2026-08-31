@@ -29,12 +29,14 @@ import {
   cardRiseVariants,
   itemVariants,
 } from "@/lib/motionVariants";
+import { useWebHaptics } from "web-haptics/react";
 import DiceRoller from "@/components/card/DiceRoller";
 import PlateFrame from "@/components/card/PlateFrame";
 import IssueLadder from "@/components/card/IssueLadder";
 import PlaceholderCard from "@/components/card/PlaceholderCard";
 import Pips from "@/components/card/dice/Pips";
 import { playChime } from "@/components/card/dice/diceSound";
+import { HAPTICS, safeHaptic } from "@/components/card/haptics";
 import { useSoundPreference } from "@/components/card/dice/soundPreference";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -164,6 +166,9 @@ export default function CardMinter({
   cardUrl: string;
 }) {
   const { muted, toggle: toggleMuted } = useSoundPreference();
+  /* The reveal's haptic. The dice have their own trigger inside useDiceRoll;
+     this one is for the moment the card lands, which happens here. */
+  const { trigger } = useWebHaptics();
   const [visitorId, setVisitorId] = useState<string | null>(null);
   const [name, setName] = useState("Visitor");
   const [fontsReady, setFontsReady] = useState(false);
@@ -367,6 +372,14 @@ export default function CardMinter({
     // the sound's own control, same reasoning as the ticks and the haptics,
     // so both branches get the chime.
     playChime();
+    // And the reveal's own haptic, which this moment did not have at all:
+    // three throws each buzzed and then the thing they were for arrived in
+    // silence. The heaviest weight in the vocabulary, and the only custom
+    // pattern in it, because a card being struck is not a notification.
+    // Fires here with the chime rather than after the flip, for the same
+    // reason the chime does: this is the instant the card is decided, and
+    // the flip is how it is shown.
+    safeHaptic(trigger, HAPTICS.reveal);
 
     const reducedMotion = prefersReducedMotion(window);
 
@@ -412,7 +425,7 @@ export default function CardMinter({
       window.clearTimeout(flipDoneTimer);
       window.clearTimeout(captionTimer);
     };
-  }, [roll, ready, buildData]);
+  }, [roll, ready, buildData, trigger]);
 
   /* The one place a PNG gets rendered off-screen: download() and shareCard()
      below both call this instead of each drawing their own, since drawTicket

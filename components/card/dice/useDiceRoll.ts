@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useWebHaptics } from "web-haptics/react";
+import { HAPTICS, safeHaptic } from "@/components/card/haptics";
 import { rollPair } from "@/lib/card/dice";
 import { prefersReducedMotion } from "@/lib/card/reveal";
 import { SETTLE_MS } from "@/lib/card/revealSequence";
@@ -23,7 +24,6 @@ import type { Roll, RollSet } from "@/lib/card/types";
  * `buzz()` pasted into every skin that wants a throw to feel physical.
  */
 
-type Trigger = ReturnType<typeof useWebHaptics>["trigger"];
 
 /** Two dice land `HAPTIC_LANDING_STAGGER_MS` apart on the cube skin (see
  *  `LANDING_STAGGER_S` in lib/motionVariants.ts, 0.04s). That constant
@@ -38,22 +38,6 @@ const HAPTIC_LANDING_STAGGER_MS = 40;
  *  there is no haptic equivalent to keep in step with, unlike the landing
  *  taps above. */
 const SETTLE_TICK_MS = 70;
-
-/**
- * Wraps a `web-haptics` trigger the way the old hand-rolled `buzz()`
- * wrapped `navigator.vibrate`: a missing implementation, a thrown error, or
- * a rejected promise (the package itself, an unsupported browser, or a
- * visitor who has toggled the feature off) must never interrupt a throw.
- */
-function safeHaptic(trigger: Trigger, input: Parameters<Trigger>[0]) {
-  try {
-    trigger(input)?.catch(() => {
-      /* unsupported, or declined */
-    });
-  } catch {
-    /* unsupported */
-  }
-}
 
 /**
  * A skin's animation. Receives the already-decided pair so it can land on
@@ -212,13 +196,13 @@ export function useDiceRoll(
           // same "land" sound voice too rather than a fourth one invented
           // just for this branch.
           if (completesSet) {
-            safeHaptic(trigger, "success");
+            safeHaptic(trigger, HAPTICS.setComplete);
             playTick("land");
           } else {
-            safeHaptic(trigger, "light");
+            safeHaptic(trigger, HAPTICS.dieLanding);
             playTick("land");
             window.setTimeout(() => {
-              safeHaptic(trigger, "light");
+              safeHaptic(trigger, HAPTICS.dieLanding);
               playTick("land");
             }, HAPTIC_LANDING_STAGGER_MS);
           }
@@ -253,11 +237,13 @@ export function useDiceRoll(
   const handleClick = useCallback(
     (animate: Animate) => {
       if (throwing) return;
-      // The lightest tap available, on every press this branch actually
-      // acts on ("selection": 8ms at 0.3 intensity, lighter than the
-      // "light" preset used for a die's own landing below) so a throw
-      // reads as three distinct weights rather than one repeated buzz.
-      safeHaptic(trigger, "selection");
+      // Firm, on every press this branch actually acts on. This was
+      // "selection", the lightest thing the library ships at 8ms and 0.3
+      // intensity, which on the largest control on the page read as
+      // nothing at all. A press is the visitor's own action and gets to
+      // feel like one; the dice that follow stay light, so a throw is
+      // still three distinct weights rather than one repeated buzz.
+      safeHaptic(trigger, HAPTICS.press);
       playTick("press");
       // Primes the reveal chime's fetch on every press, not just the
       // first: cheap (getChime reuses the one element once it exists) and
