@@ -15,19 +15,18 @@ const Socials = () => {
   return (
     <Section number="06" label="Contact" title="Let's build something good" width="reading">
       <div>
-        <a
-          href={`mailto:${contactEmail}`}
-          className="inline-block rounded-md bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground hover:opacity-90 transition-opacity"
-        >
-          {contactEmail}
-        </a>
-
-        {/* Directly under the address, not at the foot of the section. The
-            card is the second thing offered to someone who has decided to
-            get in touch, so it follows the address rather than trailing the
-            whole block. Where and when, and the profiles, close the section
-            after it. */}
-        <CardNudge className="mt-8" />
+        {/* The two things on offer, side by side and the same height: write
+            to him, or take a card. `flex-wrap` so the card drops onto its own
+            line on a narrow phone rather than squeezing the address. */}
+        <div className="flex flex-wrap items-center gap-3">
+          <a
+            href={`mailto:${contactEmail}`}
+            className="inline-block rounded-md bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground hover:opacity-90 transition-opacity"
+          >
+            {contactEmail}
+          </a>
+          <CardNudge />
+        </div>
 
         <div className="mt-8 space-y-4">
           {/* Where and when, in text rather than with the hero's flag.
