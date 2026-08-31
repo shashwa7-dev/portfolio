@@ -101,10 +101,6 @@ const CHANGES: Record<IssueKey, string> = {
  *  order, so the ladder cannot disagree with the numbers in it. */
 const LADDER = Object.values(ISSUES).sort((a, b) => a.chance - b.chance);
 
-/** The commonest issue's chance, so the bars read against the top of the
- *  scale rather than against 100% and leave every row near-empty. */
-const WIDEST = Math.max(...LADDER.map((i) => i.chance));
-
 /** Identifies a drawing for the cache. The visitor's own card changes when
  *  they rename it, re-roll it or regenerate the portrait, and each of those
  *  has to invalidate; a specimen never changes at all. */
@@ -113,33 +109,6 @@ function cacheKey(key: IssueKey, own: CardData | null): string {
   return `own:${own.visitorId}:${own.serial}:${own.name}:${own.issue.key}:${own.roll
     .flat()
     .join("")}`;
-}
-
-/**
- * The odds bar, true to scale.
- *
- * Inverted is a sliver beside Definitive's full bar, which is the honest
- * picture and the reason to draw one at all. `max()` keeps that sliver
- * visible at 0.06% rather than rounding it away, and the real number is
- * always printed beside it, so the bar never has to carry the value alone.
- *
- * A component rather than repeated markup: the row renders one at each
- * breakpoint, and the scale maths must not exist in two places.
- */
-function OddsBar({ chance, strong }: { chance: number; strong: boolean }) {
-  return (
-    <span
-      aria-hidden="true"
-      className="block h-[3px] w-full overflow-hidden rounded-full bg-border"
-    >
-      <span
-        className={`block h-full rounded-full ${
-          strong ? "bg-foreground" : "bg-border-strong"
-        }`}
-        style={{ width: `max(2px, ${(chance / WIDEST) * 100}%)` }}
-      />
-    </span>
-  );
 }
 
 /** Blits a master canvas into a visible one at the width it is given. */
@@ -287,13 +256,14 @@ export default function IssueLadder({ card }: { card: CardData | null }) {
               // No radius. The rows carry a bottom rule, and a rounded
               // corner pulls that line away from the row's own edges, which
               // reads as a detached tab rather than as a table.
-              className={`relative grid grid-cols-[40px_1fr] items-start gap-x-3 gap-y-2.5 border-b border-border px-2 py-3.5 last:border-b-0 sm:grid-cols-[40px_1fr_4.5rem_5.5rem] sm:items-center sm:gap-x-4 sm:gap-y-0 sm:px-3 sm:py-3 ${
+              className={`relative grid grid-cols-[44px_1fr] items-start gap-x-3.5 border-b border-border px-2 py-3.5 last:border-b-0 sm:px-3 ${
                 mine ? "bg-elevated" : ""
               }`}
             >
-              {/* The card itself, small. The button is the zoom trigger, so
-                  the whole row stays a row rather than becoming one big
-                  target: the text beside it is information, not a control. */}
+              {/* The card itself, small. Only this is a button: the text
+                  beside it is information, not a control, and making the
+                  whole row clickable would give a screen reader one target
+                  announcing every column at once. */}
               <button
                 type="button"
                 onClick={(e) => {
@@ -301,20 +271,18 @@ export default function IssueLadder({ card }: { card: CardData | null }) {
                   setZoomed(issue.key);
                 }}
                 aria-label={`Enlarge the ${issue.name} card`}
-                className="group relative block w-10 rounded-[3px] transition-transform duration-fast ease-out hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                className="block w-11 rounded-[3px] transition-transform duration-fast ease-out hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
-                {/* The shared-layout source. The overlay below carries the
-                    same `layoutId`, so opening animates this exact box out
-                    to the centre and closing animates it back into the row
-                    it came from, rather than a scale from nowhere.
+                {/* The shared-layout source. The overlay carries the same
+                    `layoutId`, so opening animates this exact box out to the
+                    centre and closing animates it back into the row it came
+                    from.
 
                     Hidden while zoomed: with two elements sharing a
-                    layoutId, both are laid out, and leaving this one painted
-                    would show a second copy sitting in the row underneath
-                    the one that just flew out of it. `visibility` rather
-                    than unmounting, because Framer measures this box to know
-                    where to fly back to, and an unmounted element has no
-                    box to measure. */}
+                    layoutId both are laid out, and leaving this one painted
+                    shows a second copy in the row underneath the one that
+                    just flew out of it. `visibility`, not unmounting, since
+                    Framer measures this box to know where to fly back to. */}
                 <motion.span
                   layoutId={`issue-card-${issue.key}`}
                   transition={layoutMorph}
@@ -335,50 +303,37 @@ export default function IssueLadder({ card }: { card: CardData | null }) {
               </button>
 
               <div className="min-w-0">
-                <p className="text-sm font-semibold text-foreground">
-                  {issue.name}
-                  {mine && (
-                    <span className="ml-2 font-mono text-2xs uppercase tracking-label text-subtle">
-                      yours
-                    </span>
-                  )}
-                </p>
-                <p className="mt-0.5 text-xs text-muted-foreground">
+                {/* Name and odds on one baseline, the way a list of prices
+                    reads. The percentage is the number a visitor is actually
+                    weighing, so it gets the end of the line rather than a
+                    column of its own; `shrink-0` keeps it there when the
+                    name is long. */}
+                <div className="flex items-baseline justify-between gap-3">
+                  <p className="truncate text-sm font-semibold text-foreground">
+                    {issue.name}
+                    {mine && (
+                      <span className="ml-2 font-mono text-2xs uppercase tracking-label text-subtle">
+                        yours
+                      </span>
+                    )}
+                  </p>
+                  <p className="shrink-0 font-mono text-2xs uppercase tracking-label text-foreground">
+                    {issue.label}
+                    <span className="ml-1 text-subtle">per roll</span>
+                  </p>
+                </div>
+
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                   {CHANGES[issue.key]}
                 </p>
+
+                {/* What to roll for it. Quiet, because it is the answer to a
+                    question asked second: a visitor reads the odds to decide
+                    whether they want it, and this only afterwards. */}
+                <p className="mt-1.5 font-mono text-2xs uppercase tracking-label text-subtle">
+                  Totals {issue.range[0]} to {issue.range[1]}
+                </p>
               </div>
-
-              {/* Two presentations rather than one set of classes trying
-                  to be both. Stacked in a column at 40px wide, the odds span
-                  shrank to the width of its own label and took the bar with
-                  it, which put a 40px bar under a full-width row and made
-                  the one thing the bar is for, comparing lengths,
-                  impossible.
-
-                  So: a phone gets one line of numbers with the bar full
-                  width beneath it, where it has room to mean something, and
-                  `sm` up gets the two aligned columns. Only one is ever
-                  rendered. */}
-              <div className="col-start-2 flex flex-col gap-1.5 sm:hidden">
-                <span className="font-mono text-2xs uppercase tracking-label text-muted-foreground">
-                  {issue.range[0]}&ndash;{issue.range[1]}
-                  <span className="mx-1.5 text-subtle">&middot;</span>
-                  <span className="text-foreground">{issue.label}</span> per roll
-                </span>
-                <OddsBar chance={issue.chance} strong={mine} />
-              </div>
-
-              <span className="hidden font-mono text-2xs uppercase tracking-label text-muted-foreground sm:block sm:text-right">
-                {issue.range[0]}&ndash;{issue.range[1]}
-              </span>
-              <span className="hidden sm:block sm:text-right">
-                <span className="block font-mono text-2xs uppercase tracking-label text-foreground">
-                  {issue.label}
-                </span>
-                <span className="mt-1.5 block">
-                  <OddsBar chance={issue.chance} strong={mine} />
-                </span>
-              </span>
             </li>
           );
         })}
