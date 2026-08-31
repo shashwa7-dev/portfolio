@@ -115,6 +115,33 @@ function cacheKey(key: IssueKey, own: CardData | null): string {
     .join("")}`;
 }
 
+/**
+ * The odds bar, true to scale.
+ *
+ * Inverted is a sliver beside Definitive's full bar, which is the honest
+ * picture and the reason to draw one at all. `max()` keeps that sliver
+ * visible at 0.06% rather than rounding it away, and the real number is
+ * always printed beside it, so the bar never has to carry the value alone.
+ *
+ * A component rather than repeated markup: the row renders one at each
+ * breakpoint, and the scale maths must not exist in two places.
+ */
+function OddsBar({ chance, strong }: { chance: number; strong: boolean }) {
+  return (
+    <span
+      aria-hidden="true"
+      className="block h-[3px] w-full overflow-hidden rounded-full bg-border"
+    >
+      <span
+        className={`block h-full rounded-full ${
+          strong ? "bg-foreground" : "bg-border-strong"
+        }`}
+        style={{ width: `max(2px, ${(chance / WIDEST) * 100}%)` }}
+      />
+    </span>
+  );
+}
+
 /** Blits a master canvas into a visible one at the width it is given. */
 function CardBlit({
   master,
@@ -260,7 +287,7 @@ export default function IssueLadder({ card }: { card: CardData | null }) {
               // No radius. The rows carry a bottom rule, and a rounded
               // corner pulls that line away from the row's own edges, which
               // reads as a detached tab rather than as a table.
-              className={`relative grid grid-cols-[40px_1fr] items-center gap-x-4 gap-y-2 border-b border-border px-3 py-3 last:border-b-0 sm:grid-cols-[40px_1fr_4.5rem_5.5rem] ${
+              className={`relative grid grid-cols-[40px_1fr] items-start gap-x-3 gap-y-2.5 border-b border-border px-2 py-3.5 last:border-b-0 sm:grid-cols-[40px_1fr_4.5rem_5.5rem] sm:items-center sm:gap-x-4 sm:gap-y-0 sm:px-3 sm:py-3 ${
                 mine ? "bg-elevated" : ""
               }`}
             >
@@ -321,37 +348,37 @@ export default function IssueLadder({ card }: { card: CardData | null }) {
                 </p>
               </div>
 
-              {/* Below `sm` these share a row under the name; from `sm` they
-                  each get a column. The range is what to roll, the odds are
-                  how often that lands. */}
-              <div className="col-start-2 flex items-center gap-4 sm:col-start-3 sm:col-span-2 sm:grid sm:grid-cols-[4.5rem_5.5rem] sm:gap-x-4">
-                <span className="font-mono text-2xs uppercase tracking-label text-muted-foreground sm:text-right">
+              {/* Two presentations rather than one set of classes trying
+                  to be both. Stacked in a column at 40px wide, the odds span
+                  shrank to the width of its own label and took the bar with
+                  it, which put a 40px bar under a full-width row and made
+                  the one thing the bar is for, comparing lengths,
+                  impossible.
+
+                  So: a phone gets one line of numbers with the bar full
+                  width beneath it, where it has room to mean something, and
+                  `sm` up gets the two aligned columns. Only one is ever
+                  rendered. */}
+              <div className="col-start-2 flex flex-col gap-1.5 sm:hidden">
+                <span className="font-mono text-2xs uppercase tracking-label text-muted-foreground">
                   {issue.range[0]}&ndash;{issue.range[1]}
+                  <span className="mx-1.5 text-subtle">&middot;</span>
+                  <span className="text-foreground">{issue.label}</span> per roll
                 </span>
-                <span className="sm:text-right">
-                  <span className="block font-mono text-2xs uppercase tracking-label text-foreground">
-                    {issue.label}
-                  </span>
-                  {/* True to scale. Inverted is a sliver beside Definitive's
-                      full bar, which is the honest picture and the reason to
-                      draw one at all. `max()` keeps that sliver visible at
-                      0.06% rather than rounding it away, and the real number
-                      sits directly above it. */}
-                  <span
-                    aria-hidden="true"
-                    className="mt-1.5 block h-[3px] w-full overflow-hidden rounded-full bg-border"
-                  >
-                    <span
-                      className={`block h-full rounded-full ${
-                        mine ? "bg-foreground" : "bg-border-strong"
-                      }`}
-                      style={{
-                        width: `max(2px, ${(issue.chance / WIDEST) * 100}%)`,
-                      }}
-                    />
-                  </span>
-                </span>
+                <OddsBar chance={issue.chance} strong={mine} />
               </div>
+
+              <span className="hidden font-mono text-2xs uppercase tracking-label text-muted-foreground sm:block sm:text-right">
+                {issue.range[0]}&ndash;{issue.range[1]}
+              </span>
+              <span className="hidden sm:block sm:text-right">
+                <span className="block font-mono text-2xs uppercase tracking-label text-foreground">
+                  {issue.label}
+                </span>
+                <span className="mt-1.5 block">
+                  <OddsBar chance={issue.chance} strong={mine} />
+                </span>
+              </span>
             </li>
           );
         })}
