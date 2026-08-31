@@ -16,9 +16,12 @@ import { cn } from "@/lib/utils";
  * three offsets are 0.385, 0.115 and 0.154 of a card's width. Rotations are
  * fixed in degrees, since an angle does not scale.
  *
- * A component rather than markup copied into each caller. `CardNudge` still
- * carries its own copy of this fan on the branch that reshaped the footer;
- * when that lands it should take this instead, and delete its own.
+ * `CardNudge` keeps its own fan rather than calling this one, deliberately.
+ * That fan opens on hover with a tuned overshoot, and folding the two
+ * together would mean either this static one carrying hover machinery it
+ * never uses, or that one losing the movement it exists for. What they do
+ * share is `FAN_STOCKS`, exported below: three hex strings are the part that
+ * would actually drift, and the part where drift would show.
  */
 
 /**
@@ -30,7 +33,7 @@ import { cn } from "@/lib/utils";
  * coupling it to the card feature's internals over three hex strings would
  * be the wrong kind of reuse. If `STOCK` changes, update this by eye.
  */
-const FAN_STOCKS = ["#f4eede", "#eef1ef", "#17161a"];
+export const FAN_STOCKS = ["#f4eede", "#eef1ef", "#17161a"];
 
 export default function CardFan({
   w,

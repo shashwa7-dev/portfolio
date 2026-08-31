@@ -196,6 +196,20 @@ export default function IssueLadder({ card }: { card: CardData | null }) {
         ...CARD_FONTS,
         mark: markRef.current,
       });
+      // Only ever one of the visitor's own card in here. The key carries
+      // their name, serial and roll, so every re-roll, rename and portrait
+      // regeneration mints a new entry, and a 720x900 canvas is around
+      // 2.6MB of pixel data. Rolling is the thing this page invites you to
+      // do repeatedly, so without this the cache grows by a few megabytes
+      // per throw and never gives any of it back. The five specimens never
+      // change and are never evicted.
+      if (own) {
+        const stale: string[] = [];
+        masters.current.forEach((_, k) => {
+          if (k.startsWith("own:")) stale.push(k);
+        });
+        stale.forEach((k) => masters.current.delete(k));
+      }
       masters.current.set(id, off);
       return off;
     },
