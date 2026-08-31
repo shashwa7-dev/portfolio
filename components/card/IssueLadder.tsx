@@ -7,7 +7,7 @@ import { ISSUES } from "@/lib/card/issues";
 import { serialFrom } from "@/lib/card/seed";
 import { drawTicket, CARD_W, CARD_H } from "@/lib/card/ticket";
 import { CARD_FONTS } from "@/lib/card/fonts";
-import { backdropFadeVariants, dialogPopVariants } from "@/lib/motionVariants";
+import { backdropFadeVariants } from "@/lib/motionVariants";
 import type { CardData, IssueKey, RollSet } from "@/lib/card/types";
 
 /**
@@ -257,7 +257,10 @@ export default function IssueLadder({ card }: { card: CardData | null }) {
               // visitor is holding is genuinely the current one, and a
               // background change says nothing to a screen reader.
               aria-current={mine ? "true" : undefined}
-              className={`relative grid grid-cols-[40px_1fr] items-center gap-x-4 gap-y-2 rounded-lg border-b border-border px-3 py-3 last:border-b-0 sm:grid-cols-[40px_1fr_4.5rem_5.5rem] ${
+              // No radius. The rows carry a bottom rule, and a rounded
+              // corner pulls that line away from the row's own edges, which
+              // reads as a detached tab rather than as a table.
+              className={`relative grid grid-cols-[40px_1fr] items-center gap-x-4 gap-y-2 border-b border-border px-3 py-3 last:border-b-0 sm:grid-cols-[40px_1fr_4.5rem_5.5rem] ${
                 mine ? "bg-elevated" : ""
               }`}
             >
@@ -273,16 +276,34 @@ export default function IssueLadder({ card }: { card: CardData | null }) {
                 aria-label={`Enlarge the ${issue.name} card`}
                 className="group relative block w-10 rounded-[3px] transition-transform duration-fast ease-out hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
-                <CardBlit
-                  key={drawn}
-                  master={masterFor(issue.key, own)}
-                  className="block w-full rounded-[3px] shadow-sm ring-1 ring-border-strong"
-                  label={
-                    mine
-                      ? `Your ${issue.name} card`
-                      : `Example of a ${issue.name} card`
-                  }
-                />
+                {/* The shared-layout source. The overlay below carries the
+                    same `layoutId`, so opening animates this exact box out
+                    to the centre and closing animates it back into the row
+                    it came from, rather than a scale from nowhere.
+
+                    Hidden while zoomed: with two elements sharing a
+                    layoutId, both are laid out, and leaving this one painted
+                    would show a second copy sitting in the row underneath
+                    the one that just flew out of it. `visibility` rather
+                    than unmounting, because Framer measures this box to know
+                    where to fly back to, and an unmounted element has no
+                    box to measure. */}
+                <motion.span
+                  layoutId={`issue-card-${issue.key}`}
+                  className="block"
+                  style={{ visibility: zoomed === issue.key ? "hidden" : "visible" }}
+                >
+                  <CardBlit
+                    key={drawn}
+                    master={masterFor(issue.key, own)}
+                    className="block w-full rounded-[3px] shadow-sm ring-1 ring-border-strong"
+                    label={
+                      mine
+                        ? `Your ${issue.name} card`
+                        : `Example of a ${issue.name} card`
+                    }
+                  />
+                </motion.span>
               </button>
 
               <div className="min-w-0">
@@ -335,57 +356,90 @@ export default function IssueLadder({ card }: { card: CardData | null }) {
         })}
       </ul>
 
-      <AnimatePresence>
-        {zoomIssue && (
-          <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center p-6"
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-          >
-            <motion.div
-              variants={backdropFadeVariants}
-              onClick={close}
-              className="absolute inset-0 bg-background/85 backdrop-blur-sm"
-              aria-hidden="true"
-            />
-            {/* `aria-modal` with a label, and Escape and the backdrop both
-                close it. Focus returns to the thumbnail that opened it. */}
-            <motion.div
-              variants={dialogPopVariants}
-              role="dialog"
-              aria-modal="true"
-              aria-label={`${zoomIssue.name} card, enlarged`}
-              className="relative w-full max-w-[340px]"
-            >
-              <CardBlit
-                key={`zoom-${zoomed}-${drawn}`}
-                master={masterFor(zoomIssue.key, ownFor(zoomIssue.key))}
-                className="block w-full rounded-2xl shadow-2xl ring-1 ring-border-strong"
-                label={`${zoomIssue.name} card, enlarged`}
+      {/* The zoom target. The container is always mounted and inert
+          (`pointer-events-none`, nothing inside it when closed) rather than
+          rendered with the overlay: it is what centres the card, and Framer
+          needs the destination box to exist to animate a shared layout into
+          it. An unmounted parent would also take the exit animation down
+          with it the moment the card closes.
+
+          Centring is flexbox, deliberately, not `left-1/2` with a
+          `-translate-x-1/2`. A layout animation drives `transform`, so a
+          transform of our own on the same element is overwritten mid-flight
+          and the card lands off-centre. */}
+      <div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center p-6">
+        <AnimatePresence>
+          {zoomIssue && (
+            <>
+              <motion.div
+                key="backdrop"
+                variants={backdropFadeVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                onClick={close}
+                className="pointer-events-auto absolute inset-0 bg-background/85 backdrop-blur-sm"
+                aria-hidden="true"
               />
-              <div className="mt-4 text-center">
-                <p className="font-mono text-2xs uppercase tracking-label text-subtle">
-                  {zoomIssue.range[0]}&ndash;{zoomIssue.range[1]} &middot;{" "}
-                  {zoomIssue.label} per roll
-                </p>
-                <p className="mt-1.5 text-sm text-muted-foreground">
-                  {CHANGES[zoomIssue.key]}
-                </p>
-              </div>
-              <button
+
+              <motion.div
+                key="panel"
+                role="dialog"
+                aria-modal="true"
+                aria-label={`${zoomIssue.name} card, enlarged`}
+                className="pointer-events-auto relative flex w-full max-w-[340px] flex-col items-center"
+              >
+                {/* Only the card carries the layoutId, so only the card
+                    morphs. The caption under it fades on its own: stretching
+                    a line of type from thumbnail width to full width is the
+                    part of a shared-layout transition that always looks
+                    wrong. */}
+                <motion.div layoutId={`issue-card-${zoomed}`} className="w-full">
+                  <CardBlit
+                    key={`zoom-${zoomed}-${drawn}`}
+                    master={masterFor(zoomIssue.key, ownFor(zoomIssue.key))}
+                    className="block w-full rounded-2xl shadow-2xl ring-1 ring-border-strong"
+                    label={`${zoomIssue.name} card, enlarged`}
+                  />
+                </motion.div>
+
+                <motion.div
+                  variants={backdropFadeVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="mt-4 text-center"
+                >
+                  <p className="font-mono text-2xs uppercase tracking-label text-subtle">
+                    {zoomIssue.range[0]}&ndash;{zoomIssue.range[1]} &middot;{" "}
+                    {zoomIssue.label} per roll
+                  </p>
+                  <p className="mt-1.5 text-sm text-muted-foreground">
+                    {CHANGES[zoomIssue.key]}
+                  </p>
+                </motion.div>
+              </motion.div>
+
+              {/* Pinned to the viewport rather than to the card, so it does
+                  not ride the morph. */}
+              <motion.button
+                key="close"
                 type="button"
+                variants={backdropFadeVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
                 onClick={close}
                 autoFocus
                 aria-label="Close"
-                className="absolute -right-1 -top-11 grid h-9 w-9 place-items-center rounded-full bg-elevated text-muted-foreground ring-1 ring-border-strong transition-colors duration-fast ease-out hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="pointer-events-auto absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-full bg-elevated text-muted-foreground ring-1 ring-border-strong transition-colors duration-fast ease-out hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <X className="h-4 w-4" aria-hidden="true" />
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              </motion.button>
+            </>
+          )}
+        </AnimatePresence>
+      </div>
     </section>
   );
 }
