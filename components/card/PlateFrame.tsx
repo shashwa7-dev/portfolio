@@ -55,6 +55,31 @@ const dashedRule = {
   backgroundRepeat: "no-repeat",
 } as const;
 
+/**
+ * The dot grid inside the plate: graph paper for the sheet the card is
+ * struck on, and the same argument as the crosses and the dashed rule.
+ *
+ * Two changes from the pattern this came from. Its dots were a fixed
+ * `#fecdd3`, which is one theme's colour and would stay pink through the
+ * other, so they read off `--border-strong` and take whatever ink the theme
+ * is using. And it painted an opaque `bg-white` base under them, which on
+ * this site would punch a light panel through the dark theme; there is no
+ * base here at all, so the page shows through and the grid is only the dots.
+ *
+ * The radial mask is kept as-is: it fades the grid out well before the
+ * dashed rule, so the dots never collide with the frame or crowd the corner
+ * crosses, and the plate reads as paper rather than as a tiled swatch.
+ */
+const dotGrid = {
+  backgroundImage:
+    "radial-gradient(hsl(var(--border-strong)) 1px, transparent 1px)",
+  backgroundSize: "16px 16px",
+  maskImage:
+    "radial-gradient(ellipse 50% 50% at 50% 50%, #000 60%, transparent 100%)",
+  WebkitMaskImage:
+    "radial-gradient(ellipse 50% 50% at 50% 50%, #000 60%, transparent 100%)",
+} as const;
+
 /** One registration cross, centred on the corner it is positioned at. */
 function Cross({ className }: { className: string }) {
   return (
@@ -104,6 +129,16 @@ export default function PlateFrame({
       </div>
 
       <div className="relative px-4 py-8 sm:px-8" style={dashedRule}>
+        {/* First child, so DOM order alone puts the grid behind the card and
+            the pill. `inset-0` keeps it inside the rule rather than under
+            it: the dashes are painted on this element's own background and
+            the grid is a layer in front of that, which is why the two do not
+            have to share one backgroundImage. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 opacity-70"
+          style={dotGrid}
+        />
         <Cross className="-left-[5px] -top-[5px]" />
         <Cross className="-right-[5px] -top-[5px]" />
         <Cross className="-bottom-[5px] -left-[5px]" />
