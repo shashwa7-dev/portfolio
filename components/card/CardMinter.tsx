@@ -30,6 +30,7 @@ import {
   itemVariants,
 } from "@/lib/motionVariants";
 import DiceRoller from "@/components/card/DiceRoller";
+import PlateFrame from "@/components/card/PlateFrame";
 import PlaceholderCard from "@/components/card/PlaceholderCard";
 import Pips from "@/components/card/dice/Pips";
 import { playChime } from "@/components/card/dice/diceSound";
@@ -625,11 +626,27 @@ export default function CardMinter({
 
   return (
     <div className="mt-12">
+      {/* The plate: a dashed frame with registration crosses, drawn around
+          the whole stage rather than around the card alone, so the card, the
+          header band and the pill read as one sheet instead of three things
+          stacked. See PlateFrame for why printing marks belong on this
+          feature specifically.
+
+          The labels are real. The ratio is the plate's actual 4:5, which is
+          the one proportion drawTicket cannot be given anything else; the
+          serial is the card's own once a roll has produced one, and says so
+          when it has not. */}
+      <PlateFrame
+        topLeft="// specimen"
+        topRight="4:5"
+        bottomLeft="shashwa7.in"
+        bottomRight={data ? data.serial : "// unissued"}
+      >
       {/* The stage: the card, the header band and the pill sit directly on
           the page now, no boxed panel around them. Still `position:
           relative` so the header band below can anchor to it, and still
           `select-none`: a control surface, not text to select mid-tap. */}
-      <div className="relative mx-auto flex w-full max-w-[420px] select-none flex-col items-center">
+      <div className="relative mx-auto flex w-full max-w-[280px] select-none flex-col items-center">
         {/* The header band: the roll history on the left, edit/download (or
             the name field) on the right, in one `justify-between` row so
             the two groups can never overlap at any width, structurally
@@ -1034,6 +1051,7 @@ export default function CardMinter({
         </div>
 
       </div>
+      </PlateFrame>
     </div>
   );
 }
