@@ -79,6 +79,21 @@ export const dialogPopVariants: Variants = {
   exit: { opacity: 0, scale: 0.98, transition: { duration: duration.fast, ease: ease.out } },
 };
 
+/**
+ * The shared-layout morph, for a `layoutId` pair.
+ *
+ * Framer's default for a layout animation is a spring, which overshoots and
+ * settles. A card flying out of a table row and back into it is a change of
+ * position, not a thrown object, so it takes the app's single UI curve and a
+ * duration inside the same sub-300ms budget every other transition here
+ * obeys. `duration.med` rather than `base`: the card travels the height of
+ * the page, and the shortest durations read as a cut at that distance.
+ */
+export const layoutMorph = {
+  duration: duration.med,
+  ease: ease.out,
+} as const;
+
 /** Pure fade for backdrops / overlays. */
 export const backdropFadeVariants: Variants = {
   hidden: { opacity: 0 },

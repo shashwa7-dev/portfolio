@@ -7,7 +7,7 @@ import { ISSUES } from "@/lib/card/issues";
 import { serialFrom } from "@/lib/card/seed";
 import { drawTicket, CARD_W, CARD_H } from "@/lib/card/ticket";
 import { CARD_FONTS } from "@/lib/card/fonts";
-import { backdropFadeVariants } from "@/lib/motionVariants";
+import { backdropFadeVariants, layoutMorph } from "@/lib/motionVariants";
 import type { CardData, IssueKey, RollSet } from "@/lib/card/types";
 
 /**
@@ -290,6 +290,7 @@ export default function IssueLadder({ card }: { card: CardData | null }) {
                     box to measure. */}
                 <motion.span
                   layoutId={`issue-card-${issue.key}`}
+                  transition={layoutMorph}
                   className="block"
                   style={{ visibility: zoomed === issue.key ? "hidden" : "visible" }}
                 >
@@ -394,7 +395,16 @@ export default function IssueLadder({ card }: { card: CardData | null }) {
                     a line of type from thumbnail width to full width is the
                     part of a shared-layout transition that always looks
                     wrong. */}
-                <motion.div layoutId={`issue-card-${zoomed}`} className="w-full">
+                {/* Both ends of the pair carry the same transition: Framer
+                    reads it from whichever element leads the animation, and
+                    that is the thumbnail on the way out and the overlay on
+                    the way back. Set on one only, the return trip falls back
+                    to the default spring. */}
+                <motion.div
+                  layoutId={`issue-card-${zoomed}`}
+                  transition={layoutMorph}
+                  className="w-full"
+                >
                   <CardBlit
                     key={`zoom-${zoomed}-${drawn}`}
                     master={masterFor(zoomIssue.key, ownFor(zoomIssue.key))}
