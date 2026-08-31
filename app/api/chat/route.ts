@@ -1,5 +1,9 @@
 import { NextRequest } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import {
+  GoogleGenerativeAI,
+  HarmCategory,
+  HarmBlockThreshold,
+} from "@google/generative-ai";
 import nodemailer from "nodemailer";
 import fs from "fs";
 import path from "path";
@@ -10,6 +14,13 @@ import path from "path";
  * etc. When any portfolio data changes, that file must be updated too (see
  * `CLAUDE.md`). Cached at module load for the lifetime of the serverless
  * function instance; cold starts re-read.
+ *
+ * This file also carries the scope contract (what Truffy will and won't
+ * answer). It is passed to the model as `systemInstruction`, a channel
+ * separate from the visitor's message, rather than concatenated into one
+ * prompt string. That separation is what makes the rules a boundary a
+ * visitor's own text cannot talk its way past by claiming to be a new
+ * instruction.
  */
 const basePrompt = fs.readFileSync(
   path.join(process.cwd(), "data", "agent-memory.md"),
@@ -20,10 +31,35 @@ const basePrompt = fs.readFileSync(
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const RECIPIENT_EMAIL = "shashwa7.dev@gmail.com";
 
+/**
+ * The fixed shape of a scope refusal, used verbatim by the cheap pre-filter
+ * below and described to the model (in `data/agent-memory.md`) as the shape
+ * its own refusals should take. Keeping it in one place means a visitor
+ * always gets a scoped-assistant answer rather than a "broken" one, whether
+ * the refusal came from the regex or from the model itself.
+ */
+const STANDARD_REFUSAL =
+  "I'm just here to talk about Shashwat, this site, or getting in touch with him. Ask me about his work, the visitor card, or anything else here.";
+
 const RATE_LIMIT = {
   MAX_EMAILS_PER_HOUR: 3,
   RESET_INTERVAL: 60 * 60 * 1000, // 1 hour in milliseconds
 };
+
+/**
+ * Budget for the general chat path (not the email flow, which has its own
+ * limits above). Generous enough for a real conversation about Shashwat's
+ * work, tight enough that the endpoint can't be turned into a free,
+ * unmetered model.
+ */
+const CHAT_RATE_LIMIT = {
+  MAX_MESSAGES_PER_HOUR: 20,
+  RESET_INTERVAL: 60 * 60 * 1000, // 1 hour in milliseconds
+};
+
+// A cheap pre-filter's cap on input size. Generous for a real question about
+// a person's career; not generous enough to be worth pasting an essay into.
+const MAX_MESSAGE_LENGTH = 3000;
 
 // Rate limiting storage
 const emailSenderLimits = new Map<
@@ -31,6 +67,7 @@ const emailSenderLimits = new Map<
   { count: number; lastReset: number }
 >();
 const sessionLimits = new Map<string, { count: number; lastReset: number }>();
+const chatLimits = new Map<string, { count: number; lastReset: number }>();
 
 // Initialize nodemailer transporter
 const transporter = nodemailer.createTransport({
@@ -41,10 +78,25 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Rate limiting function
+/**
+ * Rate limiting function. `maxCount` and `resetInterval` default to the
+ * original email budget so the two existing call sites (sender email,
+ * email session) keep their exact behaviour unchanged; the chat path below
+ * passes its own, larger budget through the same mechanism rather than
+ * reimplementing it.
+ *
+ * This is per-instance, in-memory state: a Map that lives only as long as
+ * one serverless function instance does. It resets on cold start and does
+ * not coordinate across concurrent instances, so it raises the cost of
+ * casual, repeated abuse from a single warm instance. It does not stop a
+ * determined attacker, who can simply trigger fresh instances or rotate
+ * identifiers.
+ */
 const checkRateLimit = (
   identifier: string,
-  limitsMap: Map<string, { count: number; lastReset: number }>
+  limitsMap: Map<string, { count: number; lastReset: number }>,
+  maxCount: number = RATE_LIMIT.MAX_EMAILS_PER_HOUR,
+  resetInterval: number = RATE_LIMIT.RESET_INTERVAL
 ): { allowed: boolean; timeRemaining?: number } => {
   const now = Date.now();
   const limit = limitsMap.get(identifier);
@@ -54,19 +106,78 @@ const checkRateLimit = (
     return { allowed: true };
   }
 
-  if (now - limit.lastReset >= RATE_LIMIT.RESET_INTERVAL) {
+  if (now - limit.lastReset >= resetInterval) {
     limitsMap.set(identifier, { count: 1, lastReset: now });
     return { allowed: true };
   }
 
-  if (limit.count >= RATE_LIMIT.MAX_EMAILS_PER_HOUR) {
-    const timeRemaining = RATE_LIMIT.RESET_INTERVAL - (now - limit.lastReset);
+  if (limit.count >= maxCount) {
+    const timeRemaining = resetInterval - (now - limit.lastReset);
     return { allowed: false, timeRemaining };
   }
 
   limit.count += 1;
   limitsMap.set(identifier, limit);
   return { allowed: true };
+};
+
+/**
+ * Identifies a visitor for the chat rate limit. Reads the same "sessionId"
+ * cookie the email flow reads, then falls back to the client IP from
+ * standard proxy headers, then to a single shared bucket if neither is
+ * present. Nothing in this app currently sets that cookie, so in practice
+ * most requests fall through to the IP (or the shared bucket behind a proxy
+ * that strips forwarding headers): documented here rather than glossed
+ * over, because a rate limit keyed on an identifier that rarely resolves is
+ * weaker than it sounds.
+ */
+const getChatIdentifier = (request: NextRequest): string => {
+  const sessionId = request.cookies.get("sessionId")?.value;
+  if (sessionId) return sessionId;
+  const forwardedFor = request.headers.get("x-forwarded-for");
+  if (forwardedFor) return forwardedFor.split(",")[0].trim();
+  return request.headers.get("x-real-ip") || "shared-bucket";
+};
+
+/**
+ * Cheap regex screen for the blatant cases, run before any API call so
+ * obvious abuse never costs a token or a round trip. This is a cost
+ * optimisation, not the security boundary: it catches messages that are
+ * too long, transparent prompt-injection phrasing, and explicit requests
+ * for generated code. It does nothing against paraphrase, typos, a
+ * request split across turns, or anything even mildly disguised. The
+ * `systemInstruction` sent to the model on every request is the actual
+ * scope enforcement; this only saves money on the cases too obvious to
+ * need it.
+ *
+ * One deliberate false-positive tradeoff: the "in <language>" patterns
+ * below will also fire on a genuine stack question phrased that way (e.g.
+ * "is he any good in Python"). That costs a visitor a rephrase, not a
+ * security failure, and is preferred here to a narrower pattern that
+ * misses the "write me a script in Python" case the brief calls out.
+ */
+const INJECTION_PATTERNS = [
+  /ignore\s+(?:(?:all|the)\s+)*(previous|prior|above)\s+instructions?/i,
+  /disregard\s+(?:(?:the|all)\s+)*(above|previous|prior)/i,
+  /system\s*prompt/i,
+  /you\s+are\s+now\b/i,
+  /new\s+instructions?\s*:/i,
+  /reveal\s+(your\s+)?(instructions|prompt|rules)/i,
+];
+
+const CODE_GEN_PATTERNS = [
+  /\bwrite\s+(?:me\s+|us\s+)?(?:\S+\s+){0,3}?(script|program|function|app|component|algorithm)\b/i,
+  /\b(generate|create|give\s+me)\s+(?:\S+\s+){0,3}?(script|program|function|app|component|algorithm|code|snippet)\b/i,
+  /\bwrite\s+(?:some\s+)?code\b/i,
+  /```/,
+  /\b(in|using)\s+(python|javascript|typescript|java|c\+\+|golang|rust|php|ruby|sql|bash|c#)\b/i,
+];
+
+const isBlatantAbuse = (message: string): boolean => {
+  if (message.length > MAX_MESSAGE_LENGTH) return true;
+  return [...INJECTION_PATTERNS, ...CODE_GEN_PATTERNS].some((pattern) =>
+    pattern.test(message)
+  );
 };
 
 // Email content validation
@@ -191,8 +302,46 @@ export async function POST(request: NextRequest) {
         const genAI = initializeGoogleAI();
         const model = genAI.getGenerativeModel({
           model: "gemini-2.5-flash-lite",
+          // The scope contract lives here, not in the prompt text sent per
+          // request: `systemInstruction` is a separate channel the SDK keeps
+          // apart from user content, so a visitor's message cannot pose as a
+          // new instruction the way it could when the two were concatenated
+          // into one string.
+          systemInstruction: basePrompt,
+          generationConfig: {
+            // A visitor question about a person's career does not need more
+            // than a few hundred tokens to answer well, and capping it bounds
+            // both cost and how much room a jailbreak attempt has to work with.
+            maxOutputTokens: 400,
+            // Low rather than zero: this is factual recall from a memory
+            // file, not creative writing, but some phrasing variety keeps
+            // replies from reading like a lookup table.
+            temperature: 0.3,
+          },
+          // Explicit rather than left at SDK defaults, so the choice is
+          // visible and won't silently change under us on a package update.
+          // Standard "block medium and above" across all four categories:
+          // this is a public-facing chat widget, not a content-moderation
+          // product, so the default moderation posture is what we want.
+          safetySettings: [
+            {
+              category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+              threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+            },
+            {
+              category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+              threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+            },
+            {
+              category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+              threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+            },
+            {
+              category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+              threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+            },
+          ],
         });
-        // Handle email collection flow
         // Handle email collection flow
         if (emailState || detectEmailIntent(message)) {
           const state = emailState || { step: "email", data: {} };
@@ -313,22 +462,60 @@ export async function POST(request: NextRequest) {
               }
               break;
           }
+        } else if (isBlatantAbuse(message)) {
+          // Cost optimisation, not the boundary: refuses the obvious cases
+          // (see isBlatantAbuse above) without spending a token. Everything
+          // that gets past this still has to clear systemInstruction.
+          await writer.write(
+            encoder.encode(
+              `data: ${JSON.stringify({ text: STANDARD_REFUSAL })}\n\n`
+            )
+          );
         } else {
-          // Combine base prompt with user message
-          const prompt = `${basePrompt}\n\nUser: ${message}`;
-          // Handle normal AI conversation
-          const result = await model.generateContentStream(prompt);
-          for await (const chunk of result.stream) {
-            const text = chunk.text();
-            await writer.write(
-              encoder.encode(`data: ${JSON.stringify({ text })}\n\n`)
+          const chatCheck = checkRateLimit(
+            getChatIdentifier(request),
+            chatLimits,
+            CHAT_RATE_LIMIT.MAX_MESSAGES_PER_HOUR,
+            CHAT_RATE_LIMIT.RESET_INTERVAL
+          );
+
+          if (!chatCheck.allowed) {
+            const minutesRemaining = Math.ceil(
+              chatCheck.timeRemaining! / (60 * 1000)
             );
+            await writer.write(
+              encoder.encode(
+                `data: ${JSON.stringify({
+                  text: `You've reached the chat limit for now. Please try again in ${minutesRemaining} minutes, or email Shashwat directly if it's urgent.`,
+                })}\n\n`
+              )
+            );
+          } else {
+            // The visitor's message is sent as-is, as the user turn: the
+            // scope rules live in systemInstruction above, not folded into
+            // this text, so there is nothing here for an injection attempt
+            // to append itself to.
+            const result = await model.generateContentStream(message);
+            for await (const chunk of result.stream) {
+              const text = chunk.text();
+              await writer.write(
+                encoder.encode(`data: ${JSON.stringify({ text })}\n\n`)
+              );
+            }
           }
         }
-      } catch (error: any) {
+      } catch (error) {
+        // Never stream error.message to the client: it can carry SDK or API
+        // detail (quota errors, model identifiers, upstream text) that has no
+        // business reaching a visitor. Log the real error server-side and
+        // send a generic, friendly line over SSE instead.
+        console.error("Chat generation failed:", error);
         await writer.write(
           encoder.encode(
-            `data: ${JSON.stringify({ error: error.message })}\n\n`
+            `data: ${JSON.stringify({
+              error:
+                "Something went wrong on my end. Please try again in a moment.",
+            })}\n\n`
           )
         );
       } finally {
@@ -340,9 +527,13 @@ export async function POST(request: NextRequest) {
     })();
 
     return response;
-  } catch (error: any) {
+  } catch (error) {
+    // Same rule as above: log the detail, tell the client nothing specific.
+    console.error("Chat request failed:", error);
     return new Response(
-      JSON.stringify({ error: `Server Error: ${error.message}` }),
+      JSON.stringify({
+        error: "Something went wrong on my end. Please try again in a moment.",
+      }),
       {
         status: 500,
         headers: { "Content-Type": "application/json" },
