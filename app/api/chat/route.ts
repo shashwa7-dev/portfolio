@@ -150,11 +150,13 @@ const getChatIdentifier = (request: NextRequest): string => {
  * scope enforcement; this only saves money on the cases too obvious to
  * need it.
  *
- * One deliberate false-positive tradeoff: the "in <language>" patterns
- * below will also fire on a genuine stack question phrased that way (e.g.
- * "is he any good in Python"). That costs a visitor a rephrase, not a
- * security failure, and is preferred here to a narrower pattern that
- * misses the "write me a script in Python" case the brief calls out.
+ * Deliberately does NOT match language names on their own (e.g. "is he
+ * any good in Python?" or "What has he built using Rust?"). Asking which
+ * languages someone works in is core in-scope content about the owner.
+ * Explicit code-generation requests are already caught by the patterns
+ * that match "write me a script", "generate code", etc., which do not
+ * require the language name to trigger. A narrower regex would save nothing
+ * while refusing legitimate visitor questions about the owner's stack.
  */
 const INJECTION_PATTERNS = [
   /ignore\s+(?:(?:all|the)\s+)*(previous|prior|above)\s+instructions?/i,
@@ -170,7 +172,6 @@ const CODE_GEN_PATTERNS = [
   /\b(generate|create|give\s+me)\s+(?:\S+\s+){0,3}?(script|program|function|app|component|algorithm|code|snippet)\b/i,
   /\bwrite\s+(?:some\s+)?code\b/i,
   /```/,
-  /\b(in|using)\s+(python|javascript|typescript|java|c\+\+|golang|rust|php|ruby|sql|bash|c#)\b/i,
 ];
 
 const isBlatantAbuse = (message: string): boolean => {
