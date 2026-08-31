@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 type Props = {
-  as?: "div" | "section" | "header" | "footer" | "main";
+  as?: "div" | "section" | "header" | "footer" | "main" | "nav";
   width?: "reading" | "wide";
   className?: string;
   children: React.ReactNode;
