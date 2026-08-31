@@ -36,7 +36,12 @@ export function parseChatFrame(line: string): ChatFrame | null {
   if (!line.startsWith("data: ")) return null;
   try {
     const parsed: unknown = JSON.parse(line.slice(6));
-    if (!parsed || typeof parsed !== "object") return null;
+    // `typeof` alone would let an array through, since arrays are objects.
+    // Nothing downstream would crash on one, but a frame is a record and
+    // saying so here keeps the type honest rather than merely harmless.
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      return null;
+    }
     return parsed as ChatFrame;
   } catch {
     // A partial or malformed frame is not worth failing the whole reply
@@ -77,4 +82,30 @@ export function resolveReply({
   if (accumulated.trim()) return accumulated;
   if (errorText && errorText.trim()) return errorText;
   return CONNECTION_TROUBLE;
+}
+
+/**
+ * Split a read buffer into whole lines, holding back a partial one.
+ *
+ * A frame is written as one `data: {...}\n\n`, but nothing promises it
+ * arrives as one read: a long reply is delivered in whatever pieces the
+ * transport chooses, and a frame can straddle two of them. Splitting each
+ * read on its own and parsing every piece silently drops both halves of any
+ * frame that got cut, taking a sentence out of the middle of an answer with
+ * no error anywhere.
+ *
+ * So the tail after the final newline is not a frame yet, it is the start of
+ * one, and it waits for the rest. `atEnd` says no more reads are coming, so
+ * whatever is left is all there will ever be and is returned as a line.
+ *
+ * This mattered more the moment `maxOutputTokens` went from 400 to 1200:
+ * the same bug, three times as many chunks for it to happen in.
+ */
+export function takeCompleteLines(
+  buffer: string,
+  atEnd = false
+): { lines: string[]; rest: string } {
+  const parts = buffer.split("\n");
+  if (atEnd) return { lines: parts, rest: "" };
+  return { lines: parts, rest: parts.pop() ?? "" };
 }

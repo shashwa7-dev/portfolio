@@ -554,15 +554,23 @@ export async function POST(request: NextRequest) {
             // the same reason; this one keeps the endpoint honest for any
             // caller, not just the widget.
             if (!streamed.trim()) {
-              console.error(
-                "Chat generation produced no text",
-                await result.response.then((r) => r.candidates?.[0]?.finishReason)
-              );
+              // The visitor's line goes out first. Reading the finish reason
+              // means awaiting `result.response`, which can itself reject
+              // (a blocked prompt resolves that way), and an exception there
+              // would jump to the catch below with the fallback unsent. The
+              // whole point of this branch is that something always gets
+              // said, so nothing that can throw is allowed to come first.
               await writer.write(
                 encoder.encode(
                   `data: ${JSON.stringify({ text: CONNECTION_TROUBLE })}\n\n`
                 )
               );
+              // Diagnosis, best effort. MAX_TOKENS here means the ceiling
+              // above is still too low for the reasoning plus the reply.
+              const finishReason = await result.response
+                .then((r) => r.candidates?.[0]?.finishReason ?? "no candidates")
+                .catch(() => "response unavailable");
+              console.error("Chat generation produced no text:", finishReason);
             }
           }
         }

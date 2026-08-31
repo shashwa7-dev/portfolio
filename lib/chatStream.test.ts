@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { parseChatFrame, resolveReply } from "@/lib/chatStream";
+import {
+  parseChatFrame,
+  resolveReply,
+  takeCompleteLines,
+} from "@/lib/chatStream";
 import { CONNECTION_TROUBLE } from "@/lib/chatMessages";
 
 /** Build a frame the way `app/api/chat/route.ts` writes one. */
@@ -129,5 +133,96 @@ describe("a stream never ends in an empty bubble", () => {
         frame({ done: true }),
       ])
     ).toBe("Half an answer.");
+  });
+});
+
+describe("takeCompleteLines", () => {
+  it("holds back the tail after the last newline", () => {
+    expect(takeCompleteLines('data: {"text":"a"}\n\ndata: {"te')).toEqual({
+      lines: ['data: {"text":"a"}', ""],
+      rest: 'data: {"te',
+    });
+  });
+
+  it("takes everything once no more reads are coming", () => {
+    expect(takeCompleteLines('data: {"text":"a"}', true)).toEqual({
+      lines: ['data: {"text":"a"}'],
+      rest: "",
+    });
+  });
+
+  it("holds back a whole buffer that contains no newline yet", () => {
+    expect(takeCompleteLines("data: {")).toEqual({ lines: [], rest: "data: {" });
+  });
+
+  it("leaves nothing behind when the buffer ends on a newline", () => {
+    expect(takeCompleteLines("a\nb\n")).toEqual({ lines: ["a", "b"], rest: "" });
+  });
+
+  it("handles an empty buffer at the end of a stream", () => {
+    expect(takeCompleteLines("", true)).toEqual({ lines: [""], rest: "" });
+  });
+});
+
+/**
+ * Replays a stream the way the widget reads one: in arbitrary network-sized
+ * pieces rather than one frame at a time, since that is the shape the split
+ * bug hides in.
+ */
+function replayChunks(chunks: string[]): string {
+  let accumulated = "";
+  let errorText: string | null = null;
+  let buffer = "";
+
+  outer: for (let i = 0; i < chunks.length; i++) {
+    buffer += chunks[i];
+    const atEnd = i === chunks.length - 1;
+    const { lines, rest } = takeCompleteLines(buffer, atEnd);
+    buffer = rest;
+    for (const line of lines) {
+      const parsed = parseChatFrame(line);
+      if (!parsed) continue;
+      if (parsed.done) break outer;
+      if (parsed.error) {
+        errorText = parsed.error;
+        continue;
+      }
+      if (parsed.text) accumulated += parsed.text;
+    }
+  }
+  return resolveReply({ accumulated, errorText });
+}
+
+describe("frames split across reads", () => {
+  it("keeps text whose frame straddles two reads", () => {
+    // The frame for " Dehidden" is cut in half by the read boundary.
+    expect(
+      replayChunks([
+        'data: {"text":"He built"}\n\ndata: {"te',
+        'xt":" Dehidden."}\n\ndata: {"done":true}\n\n',
+      ])
+    ).toBe("He built Dehidden.");
+  });
+
+  it("keeps text when a frame is split into three reads", () => {
+    expect(
+      replayChunks(['data: {"te', 'xt":"who', 'le"}\n\ndata: {"done":true}\n\n'])
+    ).toBe("whole");
+  });
+
+  it("keeps a frame that only completes on the very last read", () => {
+    expect(
+      replayChunks(['data: {"text":"tail"}', "\n\n"])
+    ).toBe("tail");
+  });
+
+  it("still falls back when the split frames amount to no text", () => {
+    expect(replayChunks(['data: {"te', 'xt":""}\n\n'])).toBe(CONNECTION_TROUBLE);
+  });
+
+  it("delivers an error frame that arrived in two pieces", () => {
+    expect(
+      replayChunks(['data: {"error":"Upstr', 'eam is down."}\n\n'])
+    ).toBe("Upstream is down.");
   });
 });

@@ -5,7 +5,11 @@ import { X, Send, Copy, Check, ArrowDown, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import MarkdownMessage from "./chat/MarkdownMessage";
 import { cn } from "@/lib/utils";
-import { parseChatFrame, resolveReply } from "@/lib/chatStream";
+import {
+  parseChatFrame,
+  resolveReply,
+  takeCompleteLines,
+} from "@/lib/chatStream";
 import { CONNECTION_TROUBLE } from "@/lib/chatMessages";
 import IconSwap from "@/components/common/IconSwap";
 import AgentMark from "@/components/common/AgentMark";
@@ -184,14 +188,22 @@ const S7Bot = () => {
       // to the end of the stream and handed to resolveReply, which decides
       // between it and whatever text did arrive.
       let serverError: string | null = null;
+      // Carries the half of a frame that a read ended in the middle of. See
+      // takeCompleteLines: a frame is not guaranteed to arrive in one piece,
+      // and parsing each read on its own loses both halves of any that got
+      // cut, which reads as a sentence missing from the middle of an answer.
+      let buffer = "";
+      let streamEnded = false;
 
-      stream: while (true) {
+      stream: while (!streamEnded) {
         const { done, value } = await reader.read();
-        if (done) break;
+        streamEnded = done;
+        if (value) buffer += decoder.decode(value, { stream: true });
 
-        const chunk = decoder.decode(value, { stream: true });
+        const { lines, rest } = takeCompleteLines(buffer, streamEnded);
+        buffer = rest;
 
-        for (const line of chunk.split("\n")) {
+        for (const line of lines) {
           const frame = parseChatFrame(line);
           if (!frame) continue;
 
