@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Mail } from "lucide-react";
 import Container from "@/components/layout/Container";
 import { SVGS } from "./SVGS";
@@ -32,11 +33,38 @@ const SOCIAL_ICONS = {
  * become square icon buttons in the opposite corner rather than a second
  * column of labelled rows. `footerLinks` decides which routes appear (see
  * `lib/siteLinks.ts`); this file decides how they look.
+ *
+ * The cat is Muybridge, running along the bottom edge on a loop. It is
+ * `unoptimized` because Next's image pipeline would re-encode it and a
+ * re-encoded GIF is a still: the animation is the whole point. It is
+ * positioned on the `<footer>` rather than inside the `Container`, so on a
+ * wide screen it runs in the outer margin and never crosses the text column.
+ *
+ * Two blend modes rather than one opacity. The plate is a photograph on white
+ * paper, so dropped in as-is its background would be a pale rectangle on the
+ * dark theme and a slightly-wrong-white one on the light theme, since the
+ * page is a warm neutral and the paper is not. `mix-blend-multiply` drops the
+ * white and keeps the cat; in dark theme `invert` flips the plate so the
+ * paper is black and the cat is light, and `mix-blend-screen` drops the black
+ * instead. Either way only the animal survives, on whatever the page is.
+ *
+ * `motion-reduce:hidden` because a GIF cannot be paused. There is no static
+ * frame to fall back to, so the honest answer for someone who asked for less
+ * motion is to not show it.
  */
 const Footer = () => {
   return (
-    <footer className="mt-24 border-t border-border">
-      <Container width="wide" className="py-12 md:py-16">
+    <footer className="relative mt-24 overflow-hidden border-t border-border">
+      <Image
+        src="/footer-cat.gif"
+        alt=""
+        width={320}
+        height={207}
+        unoptimized
+        aria-hidden
+        className="pointer-events-none absolute bottom-0 right-0 w-[168px] select-none opacity-[0.14] mix-blend-multiply grayscale motion-reduce:hidden dark:opacity-[0.2] dark:mix-blend-screen dark:invert md:w-[232px]"
+      />
+      <Container width="wide" className="relative py-12 md:py-16">
         <div className="max-w-sm">
           <Link
             href="/"
