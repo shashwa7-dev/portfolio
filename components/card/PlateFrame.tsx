@@ -66,18 +66,26 @@ const dashedRule = {
  * this site would punch a light panel through the dark theme; there is no
  * base here at all, so the page shows through and the grid is only the dots.
  *
- * The radial mask is kept as-is: it fades the grid out well before the
- * dashed rule, so the dots never collide with the frame or crowd the corner
- * crosses, and the plate reads as paper rather than as a tiled swatch.
+ * Density and spread are both a step up from the first pass, which kept the
+ * grid to a small pool in the middle of the plate. 12px spacing rather than
+ * 16px is about half again as many dots, and the mask's ellipse is grown to
+ * 70% of the box with its opaque core out to 50% of that, so the falloff
+ * starts later and finishes past the edge: the grid is still fully solid
+ * roughly two thirds of the way out and around 57% opaque where it meets the
+ * rule, instead of gone before it gets there.
+ *
+ * It still fades rather than stopping, which is the point of the mask. A grid
+ * that ran to a hard edge would read as a tiled swatch, and one that touched
+ * the dashed rule would fight the corner crosses for the same pixels.
  */
 const dotGrid = {
   backgroundImage:
     "radial-gradient(hsl(var(--border-strong)) 1px, transparent 1px)",
-  backgroundSize: "16px 16px",
+  backgroundSize: "12px 12px",
   maskImage:
-    "radial-gradient(ellipse 50% 50% at 50% 50%, #000 60%, transparent 100%)",
+    "radial-gradient(ellipse 70% 70% at 50% 50%, #000 50%, transparent 100%)",
   WebkitMaskImage:
-    "radial-gradient(ellipse 50% 50% at 50% 50%, #000 60%, transparent 100%)",
+    "radial-gradient(ellipse 70% 70% at 50% 50%, #000 50%, transparent 100%)",
 } as const;
 
 /** One registration cross, centred on the corner it is positioned at. */
