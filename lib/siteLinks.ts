@@ -27,6 +27,33 @@ export const navLinks: NavLink[] = [
   { label: "CV", href: "/cv", match: "/cv" },
 ];
 
+/**
+ * The footer's Navigate row: a curated subset of the header's list, plus the
+ * two routes that are not in it.
+ *
+ * The footer briefly carried every route in `navLinks`, which is what the
+ * sticky header already renders at every width. Repeating the whole bar is
+ * what made it worth cutting; carrying the handful someone actually leaves a
+ * page for is not the same thing. Books and Shelf are the personal-interest
+ * pages and stay in the header only, where a reader browsing for them will be.
+ *
+ * `href`s come from `navLinks` rather than being retyped, so a route that
+ * moves cannot leave a dead link here. The trade is that renaming a label in
+ * `navLinks` drops it from this row, which is visible in the footer the
+ * moment it happens.
+ */
+const FOOTER_ROUTES = new Set(["Work", "Projects", "Writing", "CV"]);
+
+export const footerLinks: NavLink[] = [
+  // Not in `navLinks`: the header's own wordmark is the way home from the
+  // top of the page, so the header does not need the word as well.
+  { label: "Home", href: "/" },
+  ...navLinks.filter((l) => FOOTER_ROUTES.has(l.label)),
+  // Deliberately absent from the header: it is a toy and the header is for
+  // the work. An unlinked route is an undiscovered one, so it lives here.
+  { label: "Visitor card", href: "/card", match: "/card" },
+];
+
 /** Named rather than keyed by icon, so the icon stays a rendering concern. */
 export type SocialLink = { name: "GitHub" | "LinkedIn" | "Twitter"; href: string };
 
