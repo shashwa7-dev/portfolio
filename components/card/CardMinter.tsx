@@ -499,9 +499,34 @@ export default function CardMinter({
     const data = buildData();
     if (!data) return true;
 
+    /* Touch devices only, whatever the browser claims it can do.
+
+       macOS Safari answers `canShare({ files })` with true and then opens
+       the OS share sheet, which offers AirDrop, Mail, Messages and
+       Reminders. There is no X in it and no WhatsApp, so on a desktop the
+       native sheet is not the better path this branch was written to
+       prefer: it is a dead end that swallows the button. The intent menu
+       below is the only way to post from a laptop, and it was almost never
+       reached.
+
+       On a phone the reverse still holds, which is why this branch stays:
+       the sheet lists the real X and WhatsApp apps and can hand them the
+       actual PNG, which no intent URL can do.
+
+       `(pointer: coarse)` rather than a user-agent test, since the question
+       is "is this a touch device" and that is exactly what it answers.
+       matchMedia is guarded: it is absent in some embedded webviews, and an
+       unguarded call there would throw inside a click handler. */
     const nav = typeof navigator === "undefined" ? null : navigator;
+    const coarsePointer =
+      typeof window !== "undefined" &&
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(pointer: coarse)").matches;
     const canFileShare =
-      !!nav && typeof nav.share === "function" && typeof nav.canShare === "function";
+      coarsePointer &&
+      !!nav &&
+      typeof nav.share === "function" &&
+      typeof nav.canShare === "function";
     if (!canFileShare) return false;
 
     try {
