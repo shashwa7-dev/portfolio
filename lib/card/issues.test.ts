@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { ISSUES } from "./issues";
+import { ISSUES, issueFromParam } from "./issues";
 import { DICE_BANDS } from "./dice";
 import type { IssueKey } from "./types";
 
@@ -52,6 +52,28 @@ describe("ISSUES", () => {
     const byMin = [...Object.values(ISSUES)].sort((a, b) => a.range[0] - b.range[0]);
     for (let i = 1; i < byMin.length; i++) {
       expect(byMin[i].chance).toBeLessThan(byMin[i - 1].chance);
+    }
+  });
+});
+
+describe("issueFromParam", () => {
+  it("resolves each of the five keys", () => {
+    for (const key of Object.keys(ISSUES) as IssueKey[]) {
+      expect(issueFromParam(key)?.key).toBe(key);
+    }
+  });
+
+  it("returns null for a missing or unknown param", () => {
+    expect(issueFromParam(undefined)).toBeNull();
+    expect(issueFromParam("")).toBeNull();
+    expect(issueFromParam("nope")).toBeNull();
+  });
+
+  /* The reason this function exists. `key in ISSUES` answers true for every
+     one of these and hands back a member of Object.prototype. */
+  it("does not resolve inherited properties", () => {
+    for (const probe of ["constructor", "toString", "hasOwnProperty", "__proto__", "valueOf"]) {
+      expect(issueFromParam(probe)).toBeNull();
     }
   });
 });

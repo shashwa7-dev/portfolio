@@ -67,3 +67,19 @@ export const ISSUES: Record<IssueKey, Issue> = {
     inverted: true,
   },
 };
+
+/**
+ * Resolves an `?issue=` query param to a real issue, or null.
+ *
+ * `hasOwnProperty`, not `key in ISSUES`. `in` walks the prototype chain, so
+ * "constructor", "toString" and "__proto__" all answer true and hand back a
+ * member of Object.prototype: `?issue=constructor` produced a card titled
+ * "A Object souvenir card" pointing at og/issue-undefined.png. The param is
+ * meant to be an enum with five values, and this is what makes it one.
+ */
+export function issueFromParam(key: string | undefined): Issue | null {
+  if (!key) return null;
+  return Object.prototype.hasOwnProperty.call(ISSUES, key)
+    ? ISSUES[key as IssueKey]
+    : null;
+}

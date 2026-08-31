@@ -5,8 +5,7 @@ import CardMinter from "@/components/card/CardMinter";
 import CardFan from "@/components/card/CardFan";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl } from "@/lib/seo";
-import { ISSUES } from "@/lib/card/issues";
-import type { IssueKey } from "@/lib/card/types";
+import { issueFromParam } from "@/lib/card/issues";
 
 const DESCRIPTION =
   "Mint yourself a souvenir card. The portrait is drawn in your browser from a random id, the issue is decided by three throws of the dice, and the card downloads as a PNG.";
@@ -27,10 +26,11 @@ const CARD_OG = ogUrl({
  * of five images rendered from the real drawTicket by
  * `scripts/render-issue-og.ts`.
  *
- * The param is an enum, not content. It is checked against ISSUES and
- * anything else falls straight back to the generic card, so the query string
- * can name one of five committed files and nothing else: no text from a URL
- * ever reaches a renderer, because nothing renders at request time.
+ * The param is an enum, not content. `issueFromParam` resolves it against
+ * the five real keys and anything else falls straight back to the generic
+ * card, so the query string can name one of five committed files and nothing
+ * else: no text from a URL ever reaches a renderer, because nothing renders
+ * at request time.
  *
  * The canonical URL stays parameterless. Five URLs for one page is a
  * duplicate-content problem, and the param changes only what a crawler is
@@ -41,8 +41,7 @@ export function generateMetadata({
 }: {
   searchParams: { issue?: string };
 }): Metadata {
-  const key = searchParams.issue;
-  const issue = key && key in ISSUES ? ISSUES[key as IssueKey] : null;
+  const issue = issueFromParam(searchParams.issue);
   const image = issue ? `${baseUrl}og/issue-${issue.key}.png` : CARD_OG;
   const title = issue
     ? `A ${issue.name} souvenir card`
