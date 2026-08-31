@@ -6,13 +6,11 @@ import {
   Check,
   Copy,
   Download,
-  MessageCircle,
   Pencil,
   UserRound,
   Share2,
   Volume2,
   VolumeX,
-  X as XLogo,
 } from "lucide-react";
 import { ISSUES } from "@/lib/card/issues";
 import { isPerfect, issueFromTotal, pipTotal } from "@/lib/card/dice";
@@ -35,6 +33,8 @@ import PlateFrame from "@/components/card/PlateFrame";
 import IssueLadder from "@/components/card/IssueLadder";
 import PlaceholderCard from "@/components/card/PlaceholderCard";
 import Pips from "@/components/card/dice/Pips";
+import { indefiniteArticle } from "@/lib/card/issues";
+import { SVGS } from "@/components/SVGS";
 import { playChime } from "@/components/card/dice/diceSound";
 import { HAPTICS, safeHaptic } from "@/components/card/haptics";
 import { useSoundPreference } from "@/components/card/dice/soundPreference";
@@ -149,8 +149,37 @@ function buildIssueCaption(data: CardData): string {
  *  it arrives as a prop rather than an import here because app/sitemap.ts
  *  pulls in `getBlogPosts`, which touches Node's `fs` and cannot land in
  *  this "use client" bundle. No em-dash, per the app's copy rule. */
+function buildShareBody(data: CardData): string {
+  const article = indefiniteArticle(data.issue.name);
+  return `I pulled ${article} ${data.issue.name} souvenir card. ${data.issue.label} per roll.\n\nMint yourself one:`;
+}
+
+/**
+ * The same words with the link on the end, for every channel that takes one
+ * string: the clipboard, and the native share sheet.
+ *
+ * X is the exception and takes `buildShareBody` plus a separate `url`, which
+ * is why the body stops at "Mint yourself one:" and the link is appended
+ * here rather than written into the sentence. Both routes end up reading
+ * identically; only X gets to treat the URL as a URL, which is what makes it
+ * render the page's preview card under the post.
+ */
 function buildShareText(data: CardData, cardUrl: string): string {
-  return `I rolled a ${data.issue.name} visitor card. ${data.issue.label} per roll.\n\nMint your own at ${cardUrl}`;
+  return `${buildShareBody(data)} ${shareUrl(data, cardUrl)}`;
+}
+
+/**
+ * The shared link, carrying the issue so the preview shows the edition this
+ * post is bragging about rather than the generic page card. See
+ * `generateMetadata` in app/card/page.tsx: the param names one of five
+ * committed images and is ignored if it names anything else.
+ *
+ * Only the issue. Not the serial, not the roll, and above all not the name,
+ * which is free text: nothing about a URL should be able to decide what an
+ * image served from this domain says.
+ */
+function shareUrl(data: CardData, cardUrl: string): string {
+  return `${cardUrl}?issue=${encodeURIComponent(data.issue.key)}`;
 }
 
 export default function CardMinter({
@@ -204,7 +233,7 @@ export default function CardMinter({
   // touches `window`, which has no stable value on the server or during the
   // first render. Governs only the history chips' own entrance below.
   const [reducedMotion, setReducedMotion] = useState(false);
-  // Whether the X/WhatsApp/copy menu is open. Controlled (rather than left
+  // Whether the X/copy menu is open. Controlled (rather than left
   // to Popover's own uncontrolled toggle) because the trigger's onClick
   // below decides whether to open it at all: see handleShareTrigger.
   const [shareOpen, setShareOpen] = useState(false);
@@ -462,7 +491,7 @@ export default function CardMinter({
      support gets the actual PNG straight into its native sheet, carried
      from renderCardBlob above, with no menu tap in between, since it is
      strictly better than any intent (it can attach the image; neither
-     intent below can). Everywhere else the trigger opens the X/WhatsApp/
+     intent below can). Everywhere else the trigger opens the X/
      copy menu instead. `canShare({ files: [...] })` is the check, not just
      `share` existing: some Safari versions expose `share` without file
      support and throw when handed files.
@@ -479,9 +508,34 @@ export default function CardMinter({
     const data = buildData();
     if (!data) return true;
 
+    /* Touch devices only, whatever the browser claims it can do.
+
+       macOS Safari answers `canShare({ files })` with true and then opens
+       the OS share sheet, which offers AirDrop, Mail, Messages and
+       Reminders. There is no X in it and no WhatsApp, so on a desktop the
+       native sheet is not the better path this branch was written to
+       prefer: it is a dead end that swallows the button. The intent menu
+       below is the only way to post from a laptop, and it was almost never
+       reached.
+
+       On a phone the reverse still holds, which is why this branch stays:
+       the sheet lists the real X and WhatsApp apps and can hand them the
+       actual PNG, which no intent URL can do.
+
+       `(pointer: coarse)` rather than a user-agent test, since the question
+       is "is this a touch device" and that is exactly what it answers.
+       matchMedia is guarded: it is absent in some embedded webviews, and an
+       unguarded call there would throw inside a click handler. */
     const nav = typeof navigator === "undefined" ? null : navigator;
+    const coarsePointer =
+      typeof window !== "undefined" &&
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(pointer: coarse)").matches;
     const canFileShare =
-      !!nav && typeof nav.share === "function" && typeof nav.canShare === "function";
+      coarsePointer &&
+      !!nav &&
+      typeof nav.share === "function" &&
+      typeof nav.canShare === "function";
     if (!canFileShare) return false;
 
     try {
@@ -491,7 +545,7 @@ export default function CardMinter({
         type: "image/png",
       });
       if (!nav!.canShare({ files: [file] })) return false;
-      await nav!.share({ files: [file], text: buildShareText(data, cardUrl), url: cardUrl });
+      await nav!.share({ files: [file], text: buildShareText(data, cardUrl), url: shareUrl(data, cardUrl) });
       return true;
     } catch (err) {
       if (err instanceof DOMException && err.name === "AbortError") return true;
@@ -509,7 +563,7 @@ export default function CardMinter({
      before closing, so a timer left over from an earlier copy can never
      fire into whatever the menu is doing next. Without this, closing the
      menu by any route other than that timer's own completion (Escape, a
-     click outside, tapping X or WhatsApp, or re-triggering share) would
+     click outside, tapping X, or re-triggering share) would
      leave the timer armed; if the visitor reopened the menu inside that
      1400ms window, the stale timer would still fire and close the menu
      they had just reopened, or flash a stale "Copied" on a fast reopen. */
@@ -521,8 +575,8 @@ export default function CardMinter({
 
   /* The Popover's own onOpenChange: opening is a plain setShareOpen(true)
      (nothing to clean up), closing goes through closeShareMenu above so
-     Escape and click-outside get the same cleanup shareToX, shareToWhatsApp
-     and copyShareText's own timeout already need. */
+     Escape and click-outside get the same cleanup shareToX and
+     copyShareText's own timeout already need. */
   const handleShareOpenChange = useCallback(
     (open: boolean) => {
       if (open) {
@@ -534,30 +588,34 @@ export default function CardMinter({
     [closeShareMenu],
   );
 
-  /* X and WhatsApp are both link intents: neither can attach a file, so
-     both get the same words-plus-link buildShareText already builds
-     (unchanged from before this menu existed). WhatsApp's wa.me takes the
-     whole message, link included, in the one `text` param; X's intent
-     takes `text` and `url` as two separate params, which is why the same
-     cardUrl also gets appended there even though it already sits inside
-     `text` (twitter.com/intent/tweet has always taken it this way, from
-     before this menu existed). Both close via closeShareMenu rather than
-     setShareOpen(false) directly, since either can be tapped while a copy
-     confirmation from moments earlier is still pending its own timer. */
+  /* The desktop menu is X and copy, and nothing else. WhatsApp was a third
+     item that only ever opened wa.me in a browser tab; on a phone, where
+     someone might genuinely want to send this to a person, the native share
+     sheet already lists the real WhatsApp app and can hand it the actual
+     PNG, which wa.me cannot. It was a worse copy of a better path that the
+     device offering it already takes.
+
+     X takes `text` and `url` separately, and this used to send the link in
+     both, which put it in the composed post twice in a row: `url` does not
+     replace a link inside `text`, it appends another one. So X gets
+     buildShareBody, which stops before the link, and the `url` param
+     supplies it. Passing the URL as a URL rather than as characters in a
+     sentence is also what gets the page's preview card rendered under the
+     post.
+
+     `/intent/post` rather than `/intent/tweet`: both still resolve, but
+     post is the current name.
+
+     Closes via closeShareMenu rather than setShareOpen(false) directly,
+     since it can be tapped while a copy confirmation from moments earlier
+     is still pending its own timer. */
   const shareToX = useCallback(() => {
     const data = buildData();
     if (!data) return;
-    const text = buildShareText(data, cardUrl);
-    const intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(cardUrl)}`;
+    const intent = `https://twitter.com/intent/post?text=${encodeURIComponent(
+      buildShareBody(data)
+    )}&url=${encodeURIComponent(shareUrl(data, cardUrl))}`;
     window.open(intent, "_blank", "noopener,noreferrer");
-    closeShareMenu();
-  }, [buildData, cardUrl, closeShareMenu]);
-
-  const shareToWhatsApp = useCallback(() => {
-    const data = buildData();
-    if (!data) return;
-    const text = buildShareText(data, cardUrl);
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank", "noopener,noreferrer");
     closeShareMenu();
   }, [buildData, cardUrl, closeShareMenu]);
 
@@ -770,10 +828,18 @@ export default function CardMinter({
                       </TooltipTrigger>
                       <TooltipContent>Share</TooltipContent>
                     </Tooltip>
-                    {/* Only ever reached on a device without file-carrying
-                        Web Share support: see handleShareTrigger. X and
-                        WhatsApp are link-only intents (neither can attach
-                        the PNG), and copy puts the same words on the
+                    {/* Reached on anything that is not a touch device with
+                        file-carrying Web Share: see handleShareTrigger, and
+                        in practice that means every laptop.
+
+                        The X mark is the real one from SVGS, not lucide's
+                        `X`, which is its close glyph. A dismiss cross
+                        labelled "Share on X" was the wrong icon twice over:
+                        wrong brand, and the one symbol in the menu that
+                        already means "get rid of this".
+
+                        X is a link-only intent and cannot attach the PNG,
+                        so copy sits beside it, putting the same words on the
                         clipboard with a brief confirmation instead of a
                         silent, unverifiable click. */}
                     <PopoverContent align="end">
@@ -782,16 +848,8 @@ export default function CardMinter({
                         onClick={shareToX}
                         className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm text-foreground transition-colors duration-fast ease-out hover:bg-accent hover:text-accent-foreground"
                       >
-                        <XLogo className="h-4 w-4 shrink-0" aria-hidden="true" />
+                        <SVGS.Twitter className="h-4 w-4 shrink-0" aria-hidden="true" />
                         Share on X
-                      </button>
-                      <button
-                        type="button"
-                        onClick={shareToWhatsApp}
-                        className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm text-foreground transition-colors duration-fast ease-out hover:bg-accent hover:text-accent-foreground"
-                      >
-                        <MessageCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
-                        Share on WhatsApp
                       </button>
                       <button
                         type="button"
@@ -1033,7 +1091,7 @@ export default function CardMinter({
                         role="img"
                         aria-label={
                           data
-                            ? `A ${data.issue.name} visitor card, serial ${data.serial}, issued to ${data.name}, from a roll of ${pipTotal(data.roll)}.`
+                            ? `${indefiniteArticle(data.issue.name) === "an" ? "An" : "A"} ${data.issue.name} souvenir card, serial ${data.serial}, issued to ${data.name}, from a roll of ${pipTotal(data.roll)}.`
                             : "The card's reserved space. It rises here once you roll three times."
                         }
                       />

@@ -72,7 +72,7 @@ export default function CardNudge({ className }: { className?: string }) {
           style={{ backgroundColor: FAN_STOCKS[2] }}
         />
       </span>
-      Mint your card
+      Mint your souvenir
       <ArrowRight
         aria-hidden="true"
         className="h-4 w-4 shrink-0 transition-transform duration-med ease-out group-hover:translate-x-1"

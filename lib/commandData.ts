@@ -32,7 +32,7 @@ export function buildCommands(): Command[] {
       // the only direct route, so it stays listed here.
       { id: "nav-coffee", label: "Coffee", group: "Navigation", href: "/coffee" },
       { id: "nav-cv", label: "CV", group: "Navigation", href: "/cv" },
-      { id: "nav-card", label: "Mint a visitor card", group: "Navigation", href: "/card" },
+      { id: "nav-card", label: "Mint your souvenir card", group: "Navigation", href: "/card" },
     ] satisfies Command[]
   ).map(withGoToKeys);
   const projects: Command[] = getAllSideProjects().map((p) => ({

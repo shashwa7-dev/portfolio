@@ -1,38 +1,73 @@
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Container from "@/components/layout/Container";
 import CardMinter from "@/components/card/CardMinter";
 import CardFan from "@/components/card/CardFan";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl } from "@/lib/seo";
+import { indefiniteArticle, issueFromParam } from "@/lib/card/issues";
 
 const DESCRIPTION =
-  "Mint yourself a stamp card. The portrait is drawn in your browser from a random id, the issue is decided by three throws of the dice, and the card downloads as a PNG.";
+  "Mint yourself a souvenir card. The portrait is drawn in your browser from a random id, the issue is decided by three throws of the dice, and the card downloads as a PNG.";
 
 const CARD_OG = ogUrl({
-  title: "Mint a visitor card",
+  title: "Mint your souvenir card",
   subtitle: "Identity is permanent, edition is fate.",
   type: "generic",
   label: "Card",
 });
 
-export const metadata = {
-  title: "Mint a visitor card",
-  description: DESCRIPTION,
-  alternates: { canonical: `${baseUrl}card` },
-  openGraph: {
-    title: "Mint a visitor card",
-    description: DESCRIPTION,
-    url: `${baseUrl}card`,
-    images: [{ url: CARD_OG }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Mint a visitor card",
-    description: DESCRIPTION,
-    images: [CARD_OG],
-  },
-};
+/**
+ * The link preview names the edition someone actually pulled.
+ *
+ * A post saying "I pulled an Inverted card" used to carry the same generic
+ * page card as every other share, so the one number worth showing off was
+ * missing from the only place strangers would see it. `?issue=` selects one
+ * of five images rendered from the real drawTicket by
+ * `scripts/render-issue-og.ts`.
+ *
+ * The param is an enum, not content. `issueFromParam` resolves it against
+ * the five real keys and anything else falls straight back to the generic
+ * card, so the query string can name one of five committed files and nothing
+ * else: no text from a URL ever reaches a renderer, because nothing renders
+ * at request time.
+ *
+ * The canonical URL stays parameterless. Five URLs for one page is a
+ * duplicate-content problem, and the param changes only what a crawler is
+ * told to preview, never what the page is.
+ */
+export function generateMetadata({
+  searchParams,
+}: {
+  searchParams: { issue?: string | string[] };
+}): Metadata {
+  const issue = issueFromParam(searchParams.issue);
+  const image = issue ? `${baseUrl}og/issue-${issue.key}.png` : CARD_OG;
+  const title = issue
+    ? `${indefiniteArticle(issue.name) === "an" ? "An" : "A"} ${issue.name} souvenir card`
+    : "Mint your souvenir card";
+  const description = issue
+    ? `${issue.name}, ${issue.label} per roll. ${DESCRIPTION}`
+    : DESCRIPTION;
 
+  return {
+    title,
+    description,
+    alternates: { canonical: `${baseUrl}card` },
+    openGraph: {
+      title,
+      description,
+      url: `${baseUrl}card`,
+      images: [{ url: image }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [image],
+    },
+  };
+}
 /**
  * Reading headers opts this route into dynamic rendering, which is intended:
  * the origin printed on the card is per request. Both headers are absent in
@@ -75,7 +110,7 @@ export default function CardPage() {
             words into three. */}
         <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
           <h1 className="text-3xl font-semibold tracking-tighter text-foreground">
-            Mint a visitor card
+            Mint your souvenir card
           </h1>
           <CardFan w={26} />
         </div>

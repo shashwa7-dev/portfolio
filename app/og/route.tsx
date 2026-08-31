@@ -230,7 +230,7 @@ export async function GET(request: Request) {
             width: "520px",
             height: "630px",
             objectFit: "cover",
-            opacity: 0.1,
+            opacity: 0.25,
           }}
         />
         {/* Feathers the grain's left edge into the ground.
@@ -240,7 +240,14 @@ export async function GET(request: Request) {
             the texture starts, which reads as a misplaced rectangle rather than
             as paper. A gradient of the ground colour laid over the same box,
             opaque at the seam and clear by the time it reaches the edge, does
-            the same job with the one primitive satori does support. */}
+            the same job with the one primitive satori does support.
+
+            The stops move with the texture's opacity. At 0.1 the grain was
+            faint enough that clearing by 78% hid the seam on its own; at
+            0.25 there is two and a half times as much of it to hide, so the
+            ground holds opaque for the first 12% and does not clear until
+            92%. Raise the opacity again and these have to follow, or the
+            crop reappears as a vertical line down the card. */}
         <div
           style={{
             position: "absolute",
@@ -249,7 +256,7 @@ export async function GET(request: Request) {
             width: "520px",
             height: "630px",
             display: "flex",
-            background: `linear-gradient(to right, ${GROUND} 0%, rgba(241, 240, 239, 0) 78%)`,
+            background: `linear-gradient(to right, ${GROUND} 0%, ${GROUND} 12%, rgba(241, 240, 239, 0) 92%)`,
           }}
         />
 

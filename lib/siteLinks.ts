@@ -51,7 +51,7 @@ export const footerLinks: NavLink[] = [
   ...navLinks.filter((l) => FOOTER_ROUTES.has(l.label)),
   // Deliberately absent from the header: it is a toy and the header is for
   // the work. An unlinked route is an undiscovered one, so it lives here.
-  { label: "Visitor card", href: "/card", match: "/card" },
+  { label: "Souvenir card", href: "/card", match: "/card" },
 ];
 
 /** Named rather than keyed by icon, so the icon stays a rendering concern. */

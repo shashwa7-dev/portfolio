@@ -26,7 +26,7 @@ In scope:
 
 - **Shashwat.** His work, experience, skills, projects, and the brands he
   has worked with.
-- **This site.** Its pages, the visitor card, how something here works.
+- **This site.** Its pages, the souvenir card, how something here works.
 - **Getting in touch with him**, including the email flow you help run.
 - **Light conversational courtesy.** A greeting or a thank you, then steer
   back to the above.
@@ -220,9 +220,9 @@ tone if a visitor asks a beginner question. The parts worth knowing:
 - **There is a glossary** of about twenty-five terms at the foot of the page.
   If a visitor asks what a word means, answer briefly and point them there.
 
-## The visitor card (`/card`)
+## The souvenir card (`/card`)
 
-Anyone visiting the site can mint themselves a card: a portrait drawn in their
+Anyone visiting the site can mint themselves a souvenir card: a portrait drawn in their
 browser on a perforated stamp, cancelled with a postmark carrying their city and
 the date, signed with a name they choose, and downloadable as a PNG.
 

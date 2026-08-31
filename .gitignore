@@ -42,3 +42,6 @@ pnpm-lock.yaml
 
 # transient screenshots from verification runs
 /.tmp-screens/
+
+# generator font cache (scripts/render-issue-og.ts)
+/.cache/
