@@ -7,6 +7,7 @@ import { Sun, Moon } from "lucide-react";
 import { useDarkMode } from "@/app/hooks/useDarkMode";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { navLinks } from "@/lib/siteLinks";
+import Container from "@/components/layout/Container";
 
 
 /**
@@ -31,7 +32,13 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/70 backdrop-blur-xl">
-      <nav className="mx-auto flex max-w-[1080px] items-center justify-between px-6 py-3.5">
+      {/* The same measure as the page below it. The bar used to run to
+          1080px while every route's content stopped at 760, so the mark and
+          the nav sat outside the column they belong to and the site read as
+          two different widths stacked on each other. Through `Container`
+          rather than a second hardcoded max-width, so there is one place the
+          measure is decided. */}
+      <Container as="nav" className="flex items-center justify-between py-3.5">
         {/* The mark alone, with no wordmark beside it.
 
             It is painted as a mask rather than drawn as an <img>: the asset is
@@ -139,7 +146,7 @@ export default function Navbar() {
             Menu
           </button>
         </div>
-      </nav>
+      </Container>
 
       <div
         id="mobile-nav"
@@ -149,12 +156,13 @@ export default function Navbar() {
           visibility: mobileOpen ? "visible" : "hidden",
         }}
       >
-        <div className="overflow-hidden">
+        <div className="overflow-hidden border-t border-border">
           {/* CV is filtered out here, not missing. It is the accent pill in the
               row above, which is on screen whether this panel is open or not,
               so listing it again would be the same destination twice on one
               screen with the quieter of the two below the fold. */}
-          <ul className="border-t border-border px-6">
+          <Container>
+            <ul>
             {navLinks
               .filter((l) => l.href !== "/cv")
               .map((l) => (
@@ -171,7 +179,8 @@ export default function Navbar() {
                   </Link>
                 </li>
               ))}
-          </ul>
+            </ul>
+          </Container>
         </div>
       </div>
     </header>

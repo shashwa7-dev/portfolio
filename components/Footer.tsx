@@ -34,37 +34,42 @@ const SOCIAL_ICONS = {
  * column of labelled rows. `footerLinks` decides which routes appear (see
  * `lib/siteLinks.ts`); this file decides how they look.
  *
- * The cat is Muybridge, running along the bottom edge on a loop. It is
- * `unoptimized` because Next's image pipeline would re-encode it and a
- * re-encoded GIF is a still: the animation is the whole point. It is
- * positioned on the `<footer>` rather than inside the `Container`, so on a
- * wide screen it runs in the outer margin and never crosses the text column.
+ * The width is the page's, not its own. This ran to 1080px while every
+ * route's content stopped at 760, so the footer was a wider block bolted
+ * under a narrower page. `Container`'s default measure now, the same call
+ * the header makes.
  *
- * Two blend modes rather than one opacity. The plate is a photograph on white
- * paper, so dropped in as-is its background would be a pale rectangle on the
- * dark theme and a slightly-wrong-white one on the light theme, since the
- * page is a warm neutral and the paper is not. `mix-blend-multiply` drops the
- * white and keeps the cat; in dark theme `invert` flips the plate so the
- * paper is black and the cat is light, and `mix-blend-screen` drops the black
- * instead. Either way only the animal survives, on whatever the page is.
+ * The panther is full bleed behind all of it, and faded in from the top
+ * rather than laid flat. A photograph that starts at the footer's border
+ * would draw that border as the edge of a picture; arriving out of nothing
+ * across the first 40% of the height means the page darkens into it instead.
  *
- * `motion-reduce:hidden` because a GIF cannot be paused. There is no static
- * frame to fall back to, so the honest answer for someone who asked for less
- * motion is to not show it.
+ * It carries two opacities because it is a near-black photograph and the two
+ * themes do opposite things with that. On the dark theme it belongs, and the
+ * eyes are the only part with enough luminance to read, which is the whole
+ * image. On the light theme the same file is just a grey wash over a warm
+ * page, so it runs at less than a third of the strength: enough to weight the
+ * bottom of the page, not enough to look like a mistake.
  */
 const Footer = () => {
   return (
     <footer className="relative mt-24 overflow-hidden border-t border-border">
-      <Image
-        src="/footer-cat.gif"
-        alt=""
-        width={320}
-        height={207}
-        unoptimized
-        aria-hidden
-        className="pointer-events-none absolute bottom-0 right-0 w-[168px] select-none opacity-[0.14] mix-blend-multiply grayscale motion-reduce:hidden dark:opacity-[0.2] dark:mix-blend-screen dark:invert md:w-[232px]"
-      />
-      <Container width="wide" className="relative py-12 md:py-16">
+      <span aria-hidden className="pointer-events-none absolute inset-0">
+        <Image
+          src="/footer-panther.jpg"
+          alt=""
+          fill
+          sizes="100vw"
+          quality={70}
+          className="select-none object-cover object-center opacity-[0.08] dark:opacity-[0.28]"
+          style={{
+            maskImage: "linear-gradient(to bottom, transparent 0%, black 40%)",
+            WebkitMaskImage:
+              "linear-gradient(to bottom, transparent 0%, black 40%)",
+          }}
+        />
+      </span>
+      <Container className="relative py-12 md:py-16">
         <div className="max-w-sm">
           <Link
             href="/"
