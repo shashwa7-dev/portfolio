@@ -48,9 +48,11 @@ const MARK_SRC = "/brand-mark.png";
 const COPY_CONFIRM_MS = 1400;
 
 /** The five header actions, grouped into one toolbar (see the band below).
- *  Visually `h-7 w-7` (28px), not the 44px WCAG 2.5.5 wants: `before:-inset-2`
- *  extends the actual hit area 8px past every edge (28 + 8 + 8 = 44) without
- *  costing any layout width. That shrink is what made room for a fifth
+ *  Visually `h-6 w-6` (24px), not the 44px WCAG 2.5.5 wants:
+ *  `before:-inset-2.5` extends the actual hit area 10px past every edge
+ *  (24 + 10 + 10 = 44) without costing any layout width. It was 28px with an
+ *  8px expansion until the row was pulled in to the card's width; the tap
+ *  target did not move, only the glyph. That shrink is what made room for a fifth
  *  control (share): at the previous `h-8 w-8` (32px) size, five buttons plus
  *  the roll history ran to roughly 280px against the ~272px a 320px viewport
  *  leaves. Worked out in full (five buttons, the group's own `p-1`, the
@@ -626,37 +628,21 @@ export default function CardMinter({
 
   return (
     <div className="mt-12">
-      {/* The controls, above the plate rather than inside it. The roll
-          history on the left, edit/download (or the name field) on the
-          right, in one `justify-between` row so the two groups can never
-          overlap at any width, structurally rather than by a padding value
-          tuned to one viewport.
+      {/* The roll history, and only the roll history. The card's actions
+          moved into the plate's own top-right margin (see PlateFrame's
+          `topRight`), which left this row with one child and nothing to
+          justify between.
 
-          Outside the frame because they are not part of what is being
-          struck. The plate holds the card and the one control that acts on
-          it; muting sound, renaming and downloading are done to a card that
-          already exists, and inside the frame they read as printed on the
-          sheet.
+          It takes PlateFrame's 480px measure rather than the card's 280,
+          so the first pip sits flush above the "// specimen" label
+          directly beneath it. The two were on different measures while the
+          toolbar was still here, and the ragged left edge that made was
+          the reason the row was pulled in to the card in the first place.
+          With the toolbar gone, flush to the plate is what lines up.
 
-          Still a fixed `h-8`, occupied whether or not the history has any
-          pips in it yet, so nothing below it ever moves. In flow now rather
-          than absolutely positioned, so it reserves that height itself
-          instead of the card slot reserving it on the band's behalf.
-
-          `max-w-[280px]` is the card's own width, not the plate's 480. The
-          row was the plate's, which put the history hard against the frame's
-          left edge and the toolbar against its right, both a long way
-          outside the card they act on. Matching the card means the first pip
-          starts where the card starts and the last button ends where it
-          ends.
-
-          That is a tighter row than it was, which is the other half of why
-          the toolbar buttons came down from 28px to 24px: five of them at
-          the old size, plus their gaps and the group's padding, left the
-          history too little to shrink into. Their tap targets did not
-          shrink with them, since `before:-inset-2.5` grows each one back to
-          44px. */}
-      <div className="mx-auto mb-3 flex h-8 w-full max-w-[280px] select-none items-center justify-between gap-2">
+          Still a fixed `h-8`, occupied whether or not there are any pips
+          in it yet, so nothing below it moves when the first roll lands. */}
+      <div className="mx-auto mb-3 flex h-8 w-full max-w-[480px] select-none items-center">
         {/* The roll history: a muted pair of pips per throw recorded so
             far, reading straight from useDiceRoll's own `rolls` (handed up
             through DiceRoller's onRollsChange) rather than a second count
@@ -686,183 +672,6 @@ export default function CardMinter({
             </motion.div>
           ))}
         </div>
-
-        {/* Edit, regenerate, download, share and mute: one grouped toolbar
-            rather than five floating glyphs, which is what let a fifth
-            control (share, moved up from a text link under the pill) join
-            at all. `bg-elevated` gives the group its own surface (the same
-            token Navbar's own control cluster uses) so the tight
-            `gap-1` reads as one deliberate control rather than five
-            cramped ones, and `TOOLBAR_BUTTON` shrinks each button's own
-            box to 28px visually while keeping the 44px tap target WCAG
-            2.5.5 wants via an invisible `before:-inset-2` expansion: see
-            that constant's own comment for the full row arithmetic. Edit,
-            regenerate, download and share are rendered (not merely
-            hidden) only once a card exists, which keeps them out of the
-            tab order before then; mute is not card-gated, since the dice
-            (and their sound) are there from the start. Hidden as a group
-            only while the name field below is open, so the field gets the
-            row to itself rather than squeezing past a fifth button too.
-            Every action but share gets a `Tooltip` (the app's one
-            `TooltipProvider` is mounted globally in app/layout.tsx);
-            the `aria-label`s underneath are unchanged, since a tooltip
-            only reaches pointers and is not an accessible name. Share
-            carries a tooltip too, nested inside the `Popover` below,
-            since its trigger still needs one on the devices where it
-            opens a menu rather than the native sheet. */}
-        {!editingName && (
-          <div className="flex shrink-0 items-center gap-1 rounded-md bg-elevated p-1">
-            {roll && (
-              <>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      type="button"
-                      onClick={openEditName}
-                      aria-label="Edit the name on the card"
-                      className={TOOLBAR_BUTTON}
-                    >
-                      <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent>Edit name</TooltipContent>
-                </Tooltip>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      type="button"
-                      onClick={handleRegenerateIdentity}
-                      aria-label="Start over with a new portrait and serial"
-                      className={TOOLBAR_BUTTON}
-                    >
-                      <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
-                    </button>
-                  </TooltipTrigger>
-                  {/* Plainly what it costs, not "regenerate if you don't
-                      like it": someone who has been rolling for a rare
-                      issue should know the serial goes with the face. */}
-                  <TooltipContent>
-                    Replaces your portrait and serial. Cannot be undone.
-                  </TooltipContent>
-                </Tooltip>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      type="button"
-                      onClick={download}
-                      aria-label="Download the card as a PNG"
-                      className={TOOLBAR_BUTTON}
-                    >
-                      <Download className="h-3.5 w-3.5" aria-hidden="true" />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent>Download PNG</TooltipContent>
-                </Tooltip>
-                <Popover open={shareOpen} onOpenChange={handleShareOpenChange}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <PopoverTrigger
-                        onClick={handleShareTrigger}
-                        aria-label="Share your card"
-                        className={TOOLBAR_BUTTON}
-                      >
-                        <Share2 className="h-3.5 w-3.5" aria-hidden="true" />
-                      </PopoverTrigger>
-                    </TooltipTrigger>
-                    <TooltipContent>Share</TooltipContent>
-                  </Tooltip>
-                  {/* Only ever reached on a device without file-carrying
-                      Web Share support: see handleShareTrigger. X and
-                      WhatsApp are link-only intents (neither can attach
-                      the PNG), and copy puts the same words on the
-                      clipboard with a brief confirmation instead of a
-                      silent, unverifiable click. */}
-                  <PopoverContent align="end">
-                    <button
-                      type="button"
-                      onClick={shareToX}
-                      className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm text-foreground transition-colors duration-fast ease-out hover:bg-accent hover:text-accent-foreground"
-                    >
-                      <XLogo className="h-4 w-4 shrink-0" aria-hidden="true" />
-                      Share on X
-                    </button>
-                    <button
-                      type="button"
-                      onClick={shareToWhatsApp}
-                      className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm text-foreground transition-colors duration-fast ease-out hover:bg-accent hover:text-accent-foreground"
-                    >
-                      <MessageCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
-                      Share on WhatsApp
-                    </button>
-                    <button
-                      type="button"
-                      onClick={copyShareText}
-                      className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm text-foreground transition-colors duration-fast ease-out hover:bg-accent hover:text-accent-foreground"
-                    >
-                      {copied ? (
-                        <Check className="h-4 w-4 shrink-0" aria-hidden="true" />
-                      ) : (
-                        <Copy className="h-4 w-4 shrink-0" aria-hidden="true" />
-                      )}
-                      {copied ? "Copied" : "Copy"}
-                    </button>
-                  </PopoverContent>
-                </Popover>
-              </>
-            )}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  onClick={toggleMuted}
-                  aria-label={muted ? "Unmute the dice" : "Mute the dice"}
-                  aria-pressed={muted}
-                  className={TOOLBAR_BUTTON}
-                >
-                  {muted ? (
-                    <VolumeX className="h-3.5 w-3.5" aria-hidden="true" />
-                  ) : (
-                    <Volume2 className="h-3.5 w-3.5" aria-hidden="true" />
-                  )}
-                </button>
-              </TooltipTrigger>
-              <TooltipContent>{muted ? "Unmute dice" : "Mute dice"}</TooltipContent>
-            </Tooltip>
-          </div>
-        )}
-
-        {roll && editingName && (
-          // min-w-0 lets this shrink below its content's natural width
-          // instead of forcing the row to overflow; max-w-[160px] stops
-          // it stretching further than a name needs once the history
-          // group is small (0 or 1 pair). It still shrinks with the
-          // history at three pairs, which is exactly the width the row
-          // has to spare at that moment: see the task report.
-          <div className="min-w-0 max-w-[160px] flex-1">
-            {/* Disabled for the ~600ms the turn is running, rather than
-                letting a redraw cancel and jump ahead: the turn only ever
-                plays once per card, so the field is unusable for well
-                under a second and never fights the animation for the
-                canvas. */}
-            <input
-              ref={nameInputRef}
-              value={name}
-              maxLength={18}
-              disabled={revealing}
-              aria-label="Name on the card"
-              onChange={(e) => setName(e.target.value)}
-              onBlur={commitEditName}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.currentTarget.blur();
-                } else if (e.key === "Escape") {
-                  cancelEditName();
-                }
-              }}
-              className="w-full rounded-md border border-border bg-elevated px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
-            />
-          </div>
-        )}
       </div>
 
       {/* The plate: a dashed frame with registration crosses, drawn around
@@ -871,13 +680,193 @@ export default function CardMinter({
           PlateFrame for why printing marks belong on this feature
           specifically.
 
-          The labels are real. The ratio is the plate's actual 4:5, which is
-          the one proportion drawTicket cannot be given anything else; the
-          serial is the card's own once a roll has produced one, and says so
-          when it has not. */}
+          The three labels are real: the serial is the card's own once a
+          roll has produced one, and says so when it has not. The plate
+          ratio used to sit top-right and is gone, since that corner now
+          holds the card's actions, and a label competing with a control
+          for the same corner is a label losing. */}
       <PlateFrame
         topLeft="// specimen"
-        topRight="4:5"
+        topRight={
+          <>
+          {/* Edit, regenerate, download, share and mute: one grouped toolbar
+              rather than five floating glyphs, which is what let a fifth
+              control (share, moved up from a text link under the pill) join
+              at all. `bg-elevated` gives the group its own surface (the same
+              token Navbar's own control cluster uses) so the tight
+              `gap-1` reads as one deliberate control rather than five
+              cramped ones, and `TOOLBAR_BUTTON` shrinks each button's own
+              box to 24px visually while keeping the 44px tap target WCAG
+              2.5.5 wants via an invisible `before:-inset-2.5` expansion: see
+              that constant's own comment for the full row arithmetic. Edit,
+              regenerate, download and share are rendered (not merely
+              hidden) only once a card exists, which keeps them out of the
+              tab order before then; mute is not card-gated, since the dice
+              (and their sound) are there from the start. Hidden as a group
+              only while the name field below is open, so the field gets the
+              row to itself rather than squeezing past a fifth button too.
+              Every action but share gets a `Tooltip` (the app's one
+              `TooltipProvider` is mounted globally in app/layout.tsx);
+              the `aria-label`s underneath are unchanged, since a tooltip
+              only reaches pointers and is not an accessible name. Share
+              carries a tooltip too, nested inside the `Popover` below,
+              since its trigger still needs one on the devices where it
+              opens a menu rather than the native sheet. */}
+          {!editingName && (
+            <div className="flex shrink-0 items-center gap-1 rounded-md bg-elevated p-1">
+              {roll && (
+                <>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        onClick={openEditName}
+                        aria-label="Edit the name on the card"
+                        className={TOOLBAR_BUTTON}
+                      >
+                        <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>Edit name</TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        onClick={handleRegenerateIdentity}
+                        aria-label="Start over with a new portrait and serial"
+                        className={TOOLBAR_BUTTON}
+                      >
+                        <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
+                      </button>
+                    </TooltipTrigger>
+                    {/* Plainly what it costs, not "regenerate if you don't
+                        like it": someone who has been rolling for a rare
+                        issue should know the serial goes with the face. */}
+                    <TooltipContent>
+                      Replaces your portrait and serial. Cannot be undone.
+                    </TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        onClick={download}
+                        aria-label="Download the card as a PNG"
+                        className={TOOLBAR_BUTTON}
+                      >
+                        <Download className="h-3.5 w-3.5" aria-hidden="true" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>Download PNG</TooltipContent>
+                  </Tooltip>
+                  <Popover open={shareOpen} onOpenChange={handleShareOpenChange}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <PopoverTrigger
+                          onClick={handleShareTrigger}
+                          aria-label="Share your card"
+                          className={TOOLBAR_BUTTON}
+                        >
+                          <Share2 className="h-3.5 w-3.5" aria-hidden="true" />
+                        </PopoverTrigger>
+                      </TooltipTrigger>
+                      <TooltipContent>Share</TooltipContent>
+                    </Tooltip>
+                    {/* Only ever reached on a device without file-carrying
+                        Web Share support: see handleShareTrigger. X and
+                        WhatsApp are link-only intents (neither can attach
+                        the PNG), and copy puts the same words on the
+                        clipboard with a brief confirmation instead of a
+                        silent, unverifiable click. */}
+                    <PopoverContent align="end">
+                      <button
+                        type="button"
+                        onClick={shareToX}
+                        className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm text-foreground transition-colors duration-fast ease-out hover:bg-accent hover:text-accent-foreground"
+                      >
+                        <XLogo className="h-4 w-4 shrink-0" aria-hidden="true" />
+                        Share on X
+                      </button>
+                      <button
+                        type="button"
+                        onClick={shareToWhatsApp}
+                        className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm text-foreground transition-colors duration-fast ease-out hover:bg-accent hover:text-accent-foreground"
+                      >
+                        <MessageCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
+                        Share on WhatsApp
+                      </button>
+                      <button
+                        type="button"
+                        onClick={copyShareText}
+                        className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm text-foreground transition-colors duration-fast ease-out hover:bg-accent hover:text-accent-foreground"
+                      >
+                        {copied ? (
+                          <Check className="h-4 w-4 shrink-0" aria-hidden="true" />
+                        ) : (
+                          <Copy className="h-4 w-4 shrink-0" aria-hidden="true" />
+                        )}
+                        {copied ? "Copied" : "Copy"}
+                      </button>
+                    </PopoverContent>
+                  </Popover>
+                </>
+              )}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    onClick={toggleMuted}
+                    aria-label={muted ? "Unmute the dice" : "Mute the dice"}
+                    aria-pressed={muted}
+                    className={TOOLBAR_BUTTON}
+                  >
+                    {muted ? (
+                      <VolumeX className="h-3.5 w-3.5" aria-hidden="true" />
+                    ) : (
+                      <Volume2 className="h-3.5 w-3.5" aria-hidden="true" />
+                    )}
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>{muted ? "Unmute dice" : "Mute dice"}</TooltipContent>
+              </Tooltip>
+            </div>
+          )}
+
+          {roll && editingName && (
+            // min-w-0 lets this shrink below its content's natural width
+            // instead of forcing the row to overflow; max-w-[160px] stops
+            // it stretching further than a name needs once the history
+            // group is small (0 or 1 pair). It still shrinks with the
+            // history at three pairs, which is exactly the width the row
+            // has to spare at that moment: see the task report.
+            <div className="min-w-0 max-w-[160px] flex-1">
+              {/* Disabled for the ~600ms the turn is running, rather than
+                  letting a redraw cancel and jump ahead: the turn only ever
+                  plays once per card, so the field is unusable for well
+                  under a second and never fights the animation for the
+                  canvas. */}
+              <input
+                ref={nameInputRef}
+                value={name}
+                maxLength={18}
+                disabled={revealing}
+                aria-label="Name on the card"
+                onChange={(e) => setName(e.target.value)}
+                onBlur={commitEditName}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.currentTarget.blur();
+                  } else if (e.key === "Escape") {
+                    cancelEditName();
+                  }
+                }}
+                className="w-full rounded-md border border-border bg-elevated px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
+              />
+            </div>
+          )}
+          </>
+        }
         bottomLeft="shashwa7.in"
         bottomRight={data ? data.serial : "// unissued"}
       >
