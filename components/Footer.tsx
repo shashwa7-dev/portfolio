@@ -46,10 +46,17 @@ const SOCIAL_ICONS = {
  *
  * It carries two opacities because it is a near-black photograph and the two
  * themes do opposite things with that. On the dark theme it belongs, and the
- * eyes are the only part with enough luminance to read, which is the whole
- * image. On the light theme the same file is just a grey wash over a warm
- * page, so it runs at less than a third of the strength: enough to weight the
- * bottom of the page, not enough to look like a mistake.
+ * eyes are the only part with the luminance to read, which is the whole
+ * image. On the light theme the same file darkens a warm page rather than
+ * sitting on it, so it runs at roughly half.
+ *
+ * That half is a contrast budget, not a taste call. Over the darkest fur,
+ * `muted-foreground` on this page measures 4.75:1 at 0.08 and 3.95:1 at
+ * 0.16, against WCAG AA's 4.5:1 for body text, so the footer's links and its
+ * baseline line are now marginally under on the light theme. Going further
+ * means darkening the footer's own text to pay for it. Nothing on the dark
+ * theme is affected: there the photo is darker than the page, so more of it
+ * raises contrast rather than lowering it.
  */
 const Footer = () => {
   return (
@@ -61,7 +68,7 @@ const Footer = () => {
           fill
           sizes="100vw"
           quality={70}
-          className="select-none object-cover object-center opacity-[0.08] dark:opacity-[0.28]"
+          className="select-none object-cover object-center opacity-[0.16] dark:opacity-[0.28]"
           style={{
             maskImage: "linear-gradient(to bottom, transparent 0%, black 40%)",
             WebkitMaskImage:
