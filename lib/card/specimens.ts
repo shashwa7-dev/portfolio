@@ -26,12 +26,26 @@ export const SPECIMEN_ROLLS: Record<IssueKey, RollSet> = {
   inverted: [[6, 6], [6, 6], [6, 5]],
 };
 
+/**
+ * Every specimen is signed "Visitor", which is the app's own default name
+ * (see CardMinter's `name` state) and what an unedited card actually says.
+ *
+ * They used to carry invented first names, one per issue. On the page that
+ * was harmless; on the link previews, which are public images that turn up
+ * in other people's timelines, five made-up people signing five cards reads
+ * as though real visitors are being shown off. One neutral name says the
+ * same thing about the edition and claims nothing about anybody.
+ *
+ * The cities stay varied. An origin is a fact about where a card was struck,
+ * not a person, and it is the thing that keeps the five from looking like
+ * one card printed five times.
+ */
 export const SPECIMENS: Record<IssueKey, { id: string; name: string; city: string; origin: string }> = {
-  definitive: { id: "specimen-definitive", name: "Maya", city: "Lisbon", origin: "Lisbon, PT" },
-  commemorative: { id: "specimen-commemorative", name: "Jonas", city: "Berlin", origin: "Berlin, DE" },
-  firstDay: { id: "specimen-firstday", name: "Priya", city: "Toronto", origin: "Toronto, CA" },
-  misprint: { id: "specimen-misprint", name: "Ade", city: "Lagos", origin: "Lagos, NG" },
-  inverted: { id: "specimen-inverted", name: "Ana", city: "Porto", origin: "Porto, PT" },
+  definitive: { id: "specimen-definitive", name: "Visitor", city: "Lisbon", origin: "Lisbon, PT" },
+  commemorative: { id: "specimen-commemorative", name: "Visitor", city: "Berlin", origin: "Berlin, DE" },
+  firstDay: { id: "specimen-firstday", name: "Visitor", city: "Toronto", origin: "Toronto, CA" },
+  misprint: { id: "specimen-misprint", name: "Visitor", city: "Lagos", origin: "Lagos, NG" },
+  inverted: { id: "specimen-inverted", name: "Visitor", city: "Porto", origin: "Porto, PT" },
 };
 
 /** The specimen for an issue: its own issue, never the one its id happens to
