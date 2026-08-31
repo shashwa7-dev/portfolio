@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Container from "@/components/layout/Container";
 import { SVGS } from "./SVGS";
-import { navLinks, footerOnlyLinks, socialLinks, contactEmail } from "@/lib/siteLinks";
+import { socialLinks, contactEmail } from "@/lib/siteLinks";
 
 const SOCIAL_ICONS = {
   GitHub: SVGS.Github,
@@ -19,16 +19,17 @@ const SOCIAL_ICONS = {
  * bottom of a page, which are where else to go, how to get in touch, and who
  * this is.
  *
- * So: a rule, a brand block, two columns of links, and a baseline. The
- * navigation and profiles come from `lib/siteLinks`, the same lists the header
- * and the contact section read, because a footer that has quietly fallen a
- * route behind is the usual way this component rots.
+ * It then answered the first of those twice. A "Navigate" column listed every
+ * route in `navLinks`, which is the list the sticky header renders on every
+ * page at every width, its mobile menu included: seven links repeating a bar
+ * that is still on screen. What is left is the part no other surface carries.
+ * Who this is, the address, the profiles, and the card.
  */
 const Footer = () => {
   return (
     <footer className="mt-24 border-t border-border">
       <Container width="wide" className="py-12 md:py-16">
-        <div className="flex flex-col gap-10 md:flex-row md:justify-between md:gap-16">
+        <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between md:gap-16">
           <div className="max-w-sm">
             <Link
               href="/"
@@ -68,53 +69,47 @@ const Footer = () => {
             >
               {contactEmail}
             </a>
+
+            {/* The one route with no other way in. The header is for the work
+                and the card is a toy, so it is deliberately absent from
+                `navLinks`. An unlinked route is an undiscovered one, and this
+                is where it gets discovered. Set as an aside rather than a
+                fourth link in a list, so trimming the lists did not cost the
+                card the only entrance it has. Block-level, not inline-flex:
+                the address above it is an inline-block, so at this column
+                width the two shared a line and the top margin had nothing to
+                push against. `w-fit` keeps the hover target on the text. */}
+            <Link
+              href="/card"
+              className="mt-6 flex w-fit items-center gap-1.5 font-mono text-2xs uppercase tracking-label text-subtle transition-colors duration-fast ease-out hover:text-foreground"
+            >
+              Mint a visitor card
+              <span aria-hidden>&rarr;</span>
+            </Link>
           </div>
 
-          <nav
-            aria-label="Footer"
-            className="grid grid-cols-2 gap-x-12 gap-y-8 sm:gap-x-20"
-          >
-            <div>
-              <h2 className="font-mono text-2xs uppercase tracking-label text-subtle">
-                Navigate
-              </h2>
-              <ul className="mt-4 space-y-2.5">
-                {[...navLinks, ...footerOnlyLinks].map((l) => (
-                  <li key={l.label}>
-                    <Link
-                      href={l.href}
-                      className="text-sm text-muted-foreground transition-colors duration-fast ease-out hover:text-foreground"
+          <nav aria-label="Social profiles">
+            <h2 className="font-mono text-2xs uppercase tracking-label text-subtle">
+              Elsewhere
+            </h2>
+            <ul className="mt-4 space-y-2.5">
+              {socialLinks.map(({ name, href }) => {
+                const Icon = SOCIAL_ICONS[name];
+                return (
+                  <li key={name}>
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors duration-fast ease-out hover:text-foreground"
                     >
-                      {l.label}
-                    </Link>
+                      <Icon className="h-3.5 w-3.5" />
+                      {name}
+                    </a>
                   </li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <h2 className="font-mono text-2xs uppercase tracking-label text-subtle">
-                Elsewhere
-              </h2>
-              <ul className="mt-4 space-y-2.5">
-                {socialLinks.map(({ name, href }) => {
-                  const Icon = SOCIAL_ICONS[name];
-                  return (
-                    <li key={name}>
-                      <a
-                        href={href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors duration-fast ease-out hover:text-foreground"
-                      >
-                        <Icon className="h-3.5 w-3.5" />
-                        {name}
-                      </a>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
+                );
+              })}
+            </ul>
           </nav>
         </div>
 

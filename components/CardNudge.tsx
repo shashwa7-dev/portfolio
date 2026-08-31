@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Dices } from "lucide-react";
-import Section from "@/components/layout/Section";
 import Bento from "@/components/layout/Bento";
+import { cn } from "@/lib/utils";
 
 /**
  * Real issue stocks for the fan's three cards, copied by eye from `STOCK` in
@@ -27,11 +27,23 @@ const FAN_STOCKS = ["#f4eede", "#eef1ef", "#17161a"]; // commemorative, first da
  * (see their own comments), so a third overlay would collide with one of
  * them.
  *
- * Placed last in `app/page.tsx`, after `Socials` and directly above the
- * footer rendered from `app/layout.tsx`. It used to sit mid-scroll, between
- * `Projects` and `TechStack`, with copy that pitched the mechanic. Its copy
- * now thanks a reader for reaching the end of the page instead, which only
- * reads honestly from the actual end of the page.
+ * Rendered by `Socials`, at the foot of the Contact section, which is the
+ * last section on the homepage and sits directly above the footer from
+ * `app/layout.tsx`. It used to sit mid-scroll between `Projects` and
+ * `TechStack`, with copy that pitched the mechanic; its copy now thanks a
+ * reader for reaching the end of the page instead, which only reads honestly
+ * from the actual end of the page.
+ *
+ * It also used to carry its own `<Section>`, which made it a numberless,
+ * titleless ninth section whose only content was one card. Two stacked
+ * section paddings put roughly 190px of empty space between the contact
+ * details and a card that is a postscript to them, and the page ended on a
+ * heading-less band that read as an afterthought rather than as part of the
+ * parting note. It is a block now, and the section it belongs to is the one
+ * already asking the reader to get in touch.
+ *
+ * `className` is the caller's spacing, not the component's: how far this
+ * sits from whatever precedes it is a fact about the section it lands in.
  *
  * No local state, so this stays a server component like its neighbours: the
  * fan below, the chip's tilt and the arrow's slide are all `group`/
@@ -112,9 +124,9 @@ const FAN_STOCKS = ["#f4eede", "#eef1ef", "#17161a"]; // commemorative, first da
  * third scale wasn't worth it for a shape nobody is asked to look at
  * closely.
  */
-export default function CardNudge() {
+export default function CardNudge({ className }: { className?: string }) {
   return (
-    <Section width="reading">
+    <div className={cn(className)}>
       <Bento className="grid-cols-1">
         <Link
           href="/card"
@@ -220,6 +232,6 @@ export default function CardNudge() {
           </div>
         </Link>
       </Bento>
-    </Section>
+    </div>
   );
 }

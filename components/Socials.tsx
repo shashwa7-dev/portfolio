@@ -1,7 +1,7 @@
-"use client";
 import React from "react";
 import { SVGS } from "./SVGS";
 import Section from "@/components/layout/Section";
+import CardNudge from "@/components/CardNudge";
 import { socialLinks, contactEmail, location } from "@/lib/siteLinks";
 
 const ICONS = {
@@ -53,6 +53,13 @@ const Socials = () => {
           })}
         </div>
       </div>
+
+      {/* The parting note, inside the section that is already the parting
+          note, rather than as a section of its own below it. Outside the
+          `space-y-4` above so it takes this spacing and not that rhythm: the
+          contact details are one tight block of related lines, and the card
+          is a separate thought that follows them. */}
+      <CardNudge className="mt-10 md:mt-12" />
     </Section>
   );
 };
