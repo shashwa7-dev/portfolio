@@ -156,31 +156,41 @@ export default function Navbar() {
           visibility: mobileOpen ? "visible" : "hidden",
         }}
       >
-        <div className="overflow-hidden border-t border-border">
-          {/* CV is filtered out here, not missing. It is the accent pill in the
-              row above, which is on screen whether this panel is open or not,
-              so listing it again would be the same destination twice on one
-              screen with the quieter of the two below the fold. */}
-          <Container>
-            <ul>
-            {navLinks
-              .filter((l) => l.href !== "/cv")
-              .map((l) => (
-                <li key={l.label}>
-                  <Link
-                    href={l.href}
-                    aria-current={
-                      l.match && pathname.startsWith(l.match) ? "page" : undefined
-                    }
-                    onClick={() => setMobileOpen(false)}
-                    className="block py-3 text-sm text-muted-foreground transition-colors duration-fast ease-out hover:text-foreground aria-[current=page]:text-foreground"
-                  >
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </Container>
+        <div className="overflow-hidden">
+          {/* The rule sits inside the clip, not on it. `overflow-hidden` does
+              not clip its own border, so on the collapsing element it would
+              stay drawn as a 1px line under the bar for the length of the
+              close transition, until `visibility` flipped. Full bleed, while
+              the links inside it take the same measure as the bar above. */}
+          <div className="border-t border-border">
+            <Container>
+              {/* CV is filtered out here, not missing. It is the accent pill
+                  in the row above, which is on screen whether this panel is
+                  open or not, so listing it again would be the same
+                  destination twice on one screen with the quieter of the two
+                  below the fold. */}
+              <ul>
+                {navLinks
+                  .filter((l) => l.href !== "/cv")
+                  .map((l) => (
+                    <li key={l.label}>
+                      <Link
+                        href={l.href}
+                        aria-current={
+                          l.match && pathname.startsWith(l.match)
+                            ? "page"
+                            : undefined
+                        }
+                        onClick={() => setMobileOpen(false)}
+                        className="block py-3 text-sm text-muted-foreground transition-colors duration-fast ease-out hover:text-foreground aria-[current=page]:text-foreground"
+                      >
+                        {l.label}
+                      </Link>
+                    </li>
+                  ))}
+              </ul>
+            </Container>
+          </div>
         </div>
       </div>
     </header>
