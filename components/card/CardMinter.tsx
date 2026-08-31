@@ -33,6 +33,7 @@ import PlateFrame from "@/components/card/PlateFrame";
 import IssueLadder from "@/components/card/IssueLadder";
 import PlaceholderCard from "@/components/card/PlaceholderCard";
 import Pips from "@/components/card/dice/Pips";
+import { indefiniteArticle } from "@/lib/card/issues";
 import { SVGS } from "@/components/SVGS";
 import { playChime } from "@/components/card/dice/diceSound";
 import { HAPTICS, safeHaptic } from "@/components/card/haptics";
@@ -149,11 +150,7 @@ function buildIssueCaption(data: CardData): string {
  *  pulls in `getBlogPosts`, which touches Node's `fs` and cannot land in
  *  this "use client" bundle. No em-dash, per the app's copy rule. */
 function buildShareBody(data: CardData): string {
-  /* "an Inverted", not "a Inverted". Only one of the five names begins with
-     a vowel, and it is the 0.06% one: the single card anybody is actually
-     going to post is the one the sentence would have been broken for.
-     Checked rather than hardcoded, so a sixth issue cannot reintroduce it. */
-  const article = /^[aeiou]/i.test(data.issue.name) ? "an" : "a";
+  const article = indefiniteArticle(data.issue.name);
   return `I pulled ${article} ${data.issue.name} souvenir card. ${data.issue.label} per roll.\n\nMint yourself one:`;
 }
 
@@ -1094,7 +1091,7 @@ export default function CardMinter({
                         role="img"
                         aria-label={
                           data
-                            ? `A ${data.issue.name} souvenir card, serial ${data.serial}, issued to ${data.name}, from a roll of ${pipTotal(data.roll)}.`
+                            ? `${indefiniteArticle(data.issue.name) === "an" ? "An" : "A"} ${data.issue.name} souvenir card, serial ${data.serial}, issued to ${data.name}, from a roll of ${pipTotal(data.roll)}.`
                             : "The card's reserved space. It rises here once you roll three times."
                         }
                       />

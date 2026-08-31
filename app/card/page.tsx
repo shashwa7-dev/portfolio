@@ -5,7 +5,7 @@ import CardMinter from "@/components/card/CardMinter";
 import CardFan from "@/components/card/CardFan";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl } from "@/lib/seo";
-import { issueFromParam } from "@/lib/card/issues";
+import { indefiniteArticle, issueFromParam } from "@/lib/card/issues";
 
 const DESCRIPTION =
   "Mint yourself a souvenir card. The portrait is drawn in your browser from a random id, the issue is decided by three throws of the dice, and the card downloads as a PNG.";
@@ -39,12 +39,12 @@ const CARD_OG = ogUrl({
 export function generateMetadata({
   searchParams,
 }: {
-  searchParams: { issue?: string };
+  searchParams: { issue?: string | string[] };
 }): Metadata {
   const issue = issueFromParam(searchParams.issue);
   const image = issue ? `${baseUrl}og/issue-${issue.key}.png` : CARD_OG;
   const title = issue
-    ? `A ${issue.name} souvenir card`
+    ? `${indefiniteArticle(issue.name) === "an" ? "An" : "A"} ${issue.name} souvenir card`
     : "Mint your souvenir card";
   const description = issue
     ? `${issue.name}, ${issue.label} per roll. ${DESCRIPTION}`

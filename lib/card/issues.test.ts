@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { ISSUES, issueFromParam } from "./issues";
+import { ISSUES, indefiniteArticle, issueFromParam } from "./issues";
 import { DICE_BANDS } from "./dice";
 import type { IssueKey } from "./types";
 
@@ -75,5 +75,37 @@ describe("issueFromParam", () => {
     for (const probe of ["constructor", "toString", "hasOwnProperty", "__proto__", "valueOf"]) {
       expect(issueFromParam(probe)).toBeNull();
     }
+  });
+});
+
+describe("indefiniteArticle", () => {
+  it("agrees with every real issue name", () => {
+    const expected: Record<string, "a" | "an"> = {
+      Definitive: "a",
+      Commemorative: "a",
+      "First day": "a",
+      Misprint: "a",
+      Inverted: "an",
+    };
+    for (const key of Object.keys(ISSUES) as IssueKey[]) {
+      const name = ISSUES[key].name;
+      expect(`${indefiniteArticle(name)} ${name}`).toBe(`${expected[name]} ${name}`);
+    }
+  });
+
+  /* The one that matters. Inverted is 0.06% of rolls and the only card
+     anybody posts, so it is the only name the article was ever wrong for. */
+  it("says an before a vowel, whatever the case", () => {
+    expect(indefiniteArticle("Inverted")).toBe("an");
+    expect(indefiniteArticle("inverted")).toBe("an");
+    expect(indefiniteArticle("Overprint")).toBe("an");
+    expect(indefiniteArticle("Misprint")).toBe("a");
+  });
+});
+
+describe("issueFromParam with a repeated query param", () => {
+  it("returns null for the array Next hands over", () => {
+    expect(issueFromParam(["inverted", "misprint"])).toBeNull();
+    expect(issueFromParam([])).toBeNull();
   });
 });

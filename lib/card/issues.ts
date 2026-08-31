@@ -69,7 +69,24 @@ export const ISSUES: Record<IssueKey, Issue> = {
 };
 
 /**
+ * "an Inverted", "a Misprint".
+ *
+ * Every string the site builds from an issue name needs this, and each one
+ * that skipped it read wrong for exactly one of the five: the 0.06% card,
+ * which is the only one anybody posts. Derived rather than special-cased on
+ * "Inverted", so a sixth issue starting with a vowel cannot reintroduce it.
+ */
+export function indefiniteArticle(name: string): "a" | "an" {
+  return /^[aeiou]/i.test(name) ? "an" : "a";
+}
+
+/**
  * Resolves an `?issue=` query param to a real issue, or null.
+ *
+ * Takes `string | string[]` because that is what Next hands a page for a
+ * query param, and a repeated `?issue=a&issue=b` arrives as an array. An
+ * array fails the lookup and falls back to the generic card, which is
+ * correct, but the parameter type has to admit it can happen.
  *
  * `hasOwnProperty`, not `key in ISSUES`. `in` walks the prototype chain, so
  * "constructor", "toString" and "__proto__" all answer true and hand back a
@@ -77,8 +94,10 @@ export const ISSUES: Record<IssueKey, Issue> = {
  * "A Object souvenir card" pointing at og/issue-undefined.png. The param is
  * meant to be an enum with five values, and this is what makes it one.
  */
-export function issueFromParam(key: string | undefined): Issue | null {
-  if (!key) return null;
+export function issueFromParam(
+  key: string | string[] | undefined
+): Issue | null {
+  if (!key || typeof key !== "string") return null;
   return Object.prototype.hasOwnProperty.call(ISSUES, key)
     ? ISSUES[key as IssueKey]
     : null;
