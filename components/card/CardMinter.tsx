@@ -8,7 +8,7 @@ import {
   Download,
   MessageCircle,
   Pencil,
-  RefreshCw,
+  UserRound,
   Share2,
   Volume2,
   VolumeX,
@@ -693,7 +693,16 @@ export default function CardMinter({
                         aria-label="Start over with a new portrait and serial"
                         className={TOOLBAR_BUTTON}
                       >
-                        <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
+                        {/* A person, not a refresh arrow. The circular
+                            arrow is the universal "reload this thing"
+                            glyph, and what this button reloads is not the
+                            page or the roll but the face on the card, which
+                            is the one thing on the stage a visitor might
+                            want to change without changing anything else.
+                            The tooltip and the aria-label carry the cost
+                            (the serial goes too); the icon just has to name
+                            the subject. */}
+                        <UserRound className="h-3.5 w-3.5" aria-hidden="true" />
                       </button>
                     </TooltipTrigger>
                     {/* Plainly what it costs, not "regenerate if you don't
