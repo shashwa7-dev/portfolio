@@ -150,7 +150,12 @@ function buildIssueCaption(data: CardData): string {
  *  pulls in `getBlogPosts`, which touches Node's `fs` and cannot land in
  *  this "use client" bundle. No em-dash, per the app's copy rule. */
 function buildShareText(data: CardData, cardUrl: string): string {
-  return `I rolled a ${data.issue.name} visitor card. ${data.issue.label} per roll.\n\nMint your own at ${cardUrl}`;
+  /* "an Inverted", not "a Inverted". Only one of the five names begins with
+     a vowel, and it is the 0.06% one: the single card anybody is actually
+     going to post is the one the sentence would have been broken for.
+     Checked rather than hardcoded, so a sixth issue cannot reintroduce it. */
+  const article = /^[aeiou]/i.test(data.issue.name) ? "an" : "a";
+  return `I pulled ${article} ${data.issue.name} visitor card. ${data.issue.label} per roll.\n\nMint yourself one at ${cardUrl}`;
 }
 
 export default function CardMinter({
@@ -535,20 +540,26 @@ export default function CardMinter({
   );
 
   /* X and WhatsApp are both link intents: neither can attach a file, so
-     both get the same words-plus-link buildShareText already builds
-     (unchanged from before this menu existed). WhatsApp's wa.me takes the
-     whole message, link included, in the one `text` param; X's intent
-     takes `text` and `url` as two separate params, which is why the same
-     cardUrl also gets appended there even though it already sits inside
-     `text` (twitter.com/intent/tweet has always taken it this way, from
-     before this menu existed). Both close via closeShareMenu rather than
-     setShareOpen(false) directly, since either can be tapped while a copy
-     confirmation from moments earlier is still pending its own timer. */
+     both get the same words-plus-link buildShareText already builds.
+     WhatsApp's wa.me takes the whole message, link included, in its one
+     `text` param.
+
+     X takes `text` and `url` separately, and this used to send both. The
+     old comment here claimed the two params were how the intent "takes it",
+     but `url` does not replace a link inside `text`, it appends another
+     one, so every tweet composed from this button carried the card URL
+     twice in a row. `text` already ends with it, and X linkifies URLs in
+     the body and builds its preview card from them exactly as it would
+     from the param, so the param is what goes.
+
+     Both close via closeShareMenu rather than setShareOpen(false) directly,
+     since either can be tapped while a copy confirmation from moments
+     earlier is still pending its own timer. */
   const shareToX = useCallback(() => {
     const data = buildData();
     if (!data) return;
     const text = buildShareText(data, cardUrl);
-    const intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(cardUrl)}`;
+    const intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
     window.open(intent, "_blank", "noopener,noreferrer");
     closeShareMenu();
   }, [buildData, cardUrl, closeShareMenu]);
