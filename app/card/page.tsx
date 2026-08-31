@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import Container from "@/components/layout/Container";
 import CardMinter from "@/components/card/CardMinter";
-import IssueGallery from "@/components/card/IssueGallery";
+import CardFan from "@/components/card/CardFan";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl } from "@/lib/seo";
 
@@ -68,9 +68,17 @@ export default function CardPage() {
   return (
     <main className="py-8 md:py-12">
       <Container width="reading">
-        <h1 className="text-3xl font-semibold tracking-tighter text-foreground">
-          Mint a visitor card
-        </h1>
+        {/* The fan sits with the title rather than above or below it, so the
+            page opens by showing what it is offering instead of only naming
+            it. `items-center` on a wrapping row: at 320px the heading takes
+            two lines and the fan drops beneath it rather than squeezing the
+            words into three. */}
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+          <h1 className="text-3xl font-semibold tracking-tighter text-foreground">
+            Mint a visitor card
+          </h1>
+          <CardFan w={26} />
+        </div>
         <p className="mt-3 max-w-[56ch] text-base text-muted-foreground">
           Identity is permanent, edition is fate. Your portrait comes from a
           random id kept in this browser, so it is yours and it never changes.
@@ -79,7 +87,6 @@ export default function CardPage() {
           the dice, and you can roll as many times as you like.
         </p>
         <CardMinter origin={origin ?? null} city={city} cardUrl={`${baseUrl}card`} />
-        <IssueGallery />
       </Container>
     </main>
   );

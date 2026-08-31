@@ -1,18 +1,12 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { FAN_STOCKS } from "@/components/card/CardFan";
 
-/**
- * Real issue stocks for the fan's three cards, copied by eye from `STOCK` in
- * `lib/card/ticket.ts`: commemorative, first day and the rare black inverted
- * stock. Definitive and misprint are left out, both sitting within a hair of
- * commemorative's warm cream. Local constants rather than an import from
- * `lib/card/`: the fan is a decorative approximation, not a rendering of a
- * real card, and coupling this to the card feature's internals over three hex
- * strings would be the wrong kind of reuse. If `STOCK` changes, update this
- * by eye; nothing here breaks if it drifts.
- */
-const FAN_STOCKS = ["#f4eede", "#eef1ef", "#17161a"]; // commemorative, first day, inverted
+/* The stocks come from CardFan, which draws the same three cards beside the
+   /card heading. The two fans are separate components on purpose (see that
+   file), but the colours are the one thing that would drift between them
+   and be seen doing it. */
 
 /**
  * A button-sized link to `/card`, sitting beside the address in the Contact

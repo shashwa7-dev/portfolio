@@ -8,7 +8,7 @@ import {
   Download,
   MessageCircle,
   Pencil,
-  RefreshCw,
+  UserRound,
   Share2,
   Volume2,
   VolumeX,
@@ -29,10 +29,14 @@ import {
   cardRiseVariants,
   itemVariants,
 } from "@/lib/motionVariants";
+import { useWebHaptics } from "web-haptics/react";
 import DiceRoller from "@/components/card/DiceRoller";
+import PlateFrame from "@/components/card/PlateFrame";
+import IssueLadder from "@/components/card/IssueLadder";
 import PlaceholderCard from "@/components/card/PlaceholderCard";
 import Pips from "@/components/card/dice/Pips";
 import { playChime } from "@/components/card/dice/diceSound";
+import { HAPTICS, safeHaptic } from "@/components/card/haptics";
 import { useSoundPreference } from "@/components/card/dice/soundPreference";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -47,9 +51,11 @@ const MARK_SRC = "/brand-mark.png";
 const COPY_CONFIRM_MS = 1400;
 
 /** The five header actions, grouped into one toolbar (see the band below).
- *  Visually `h-7 w-7` (28px), not the 44px WCAG 2.5.5 wants: `before:-inset-2`
- *  extends the actual hit area 8px past every edge (28 + 8 + 8 = 44) without
- *  costing any layout width. That shrink is what made room for a fifth
+ *  Visually `h-6 w-6` (24px), not the 44px WCAG 2.5.5 wants:
+ *  `before:-inset-2.5` extends the actual hit area 10px past every edge
+ *  (24 + 10 + 10 = 44) without costing any layout width. It was 28px with an
+ *  8px expansion until the row was pulled in to the card's width; the tap
+ *  target did not move, only the glyph. That shrink is what made room for a fifth
  *  control (share): at the previous `h-8 w-8` (32px) size, five buttons plus
  *  the roll history ran to roughly 280px against the ~272px a 320px viewport
  *  leaves. Worked out in full (five buttons, the group's own `p-1`, the
@@ -91,7 +97,7 @@ const COPY_CONFIRM_MS = 1400;
  *  `relative` is load-bearing: the pseudo-element positions against this
  *  box, not the toolbar around it. */
 const TOOLBAR_BUTTON =
-  "relative flex h-7 w-7 items-center justify-center rounded-md text-subtle transition-colors duration-base ease-out before:absolute before:-inset-2 before:content-[''] hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "relative flex h-6 w-6 items-center justify-center rounded-md text-subtle transition-colors duration-base ease-out before:absolute before:-inset-2.5 before:content-[''] hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 /** The card's on-stage preview size. Independent of CARD_W/CARD_H, the
  *  resolution `download()` and the visible canvas actually draw at: this is
@@ -109,13 +115,31 @@ function today(): string {
   }).format(new Date());
 }
 
-/** RollPill's caption once a card exists: the issue, its odds, and what it
- *  took to earn it. A perfect 36 (double six, three times) gets a line of
- *  its own, since the running total alone doesn't say how it happened. */
+/**
+ * RollPill's caption once a card exists: the issue and its odds.
+ *
+ * Written to a budget. The caption is one line that never wraps (see
+ * `CAPTION` in RollPill), and at `text-2xs` in mono with `tracking-label`
+ * a character costs about 7px: 6px of advance plus 0.1em of tracking. The
+ * narrowest case is a 320px viewport, where the pill resolves to 272px, so
+ * the line has room for 38 characters and no more.
+ *
+ * Both of the previous forms broke that. "Commemorative · 30.9% per roll ·
+ * rolled 25" is 42, and a perfect roll produced "Inverted · 0.06% per roll ·
+ * rolled 36, a perfect double six three times" at 71, which wrapped to three
+ * lines and moved everything under it.
+ *
+ * The roll total is what went, in both. It is not lost: the pips sit directly above
+ * the button, and the card itself prints "rolled N" in its own footer. The
+ * odds stay phrased per roll rather than as a share of cards, which is the
+ * one thing about this line that is a claim rather than a decoration.
+ *
+ * Longest possible output is "Inverted · 0.06% per roll · perfect" at 35.
+ * "Commemorative" is the longest issue name and its normal form is 30.
+ */
 function buildIssueCaption(data: CardData): string {
-  const total = pipTotal(data.roll);
-  const line = `${data.issue.name} · ${data.issue.label} per roll · rolled ${total}`;
-  return isPerfect(data.roll) ? `${line}, a perfect double six three times` : line;
+  const line = `${data.issue.name} · ${data.issue.label} per roll`;
+  return isPerfect(data.roll) ? `${line} · perfect` : line;
 }
 
 /** The tweet/share body: names the real issue and its real per-roll odds,
@@ -142,6 +166,9 @@ export default function CardMinter({
   cardUrl: string;
 }) {
   const { muted, toggle: toggleMuted } = useSoundPreference();
+  /* The reveal's haptic. The dice have their own trigger inside useDiceRoll;
+     this one is for the moment the card lands, which happens here. */
+  const { trigger } = useWebHaptics();
   const [visitorId, setVisitorId] = useState<string | null>(null);
   const [name, setName] = useState("Visitor");
   const [fontsReady, setFontsReady] = useState(false);
@@ -345,6 +372,14 @@ export default function CardMinter({
     // the sound's own control, same reasoning as the ticks and the haptics,
     // so both branches get the chime.
     playChime();
+    // And the reveal's own haptic, which this moment did not have at all:
+    // three throws each buzzed and then the thing they were for arrived in
+    // silence. The heaviest weight in the vocabulary, and the only custom
+    // pattern in it, because a card being struck is not a notification.
+    // Fires here with the chime rather than after the flip, for the same
+    // reason the chime does: this is the instant the card is decided, and
+    // the flip is how it is shown.
+    safeHaptic(trigger, HAPTICS.reveal);
 
     const reducedMotion = prefersReducedMotion(window);
 
@@ -390,7 +425,7 @@ export default function CardMinter({
       window.clearTimeout(flipDoneTimer);
       window.clearTimeout(captionTimer);
     };
-  }, [roll, ready, buildData]);
+  }, [roll, ready, buildData, trigger]);
 
   /* The one place a PNG gets rendered off-screen: download() and shareCard()
      below both call this instead of each drawing their own, since drawTicket
@@ -625,51 +660,23 @@ export default function CardMinter({
 
   return (
     <div className="mt-12">
-      {/* The stage: the card, the header band and the pill sit directly on
-          the page now, no boxed panel around them. Still `position:
-          relative` so the header band below can anchor to it, and still
-          `select-none`: a control surface, not text to select mid-tap. */}
-      <div className="relative mx-auto flex w-full max-w-[420px] select-none flex-col items-center">
-        {/* The header band: the roll history on the left, edit/download (or
-            the name field) on the right, in one `justify-between` row so
-            the two groups can never overlap at any width, structurally
-            rather than by a padding value tuned to one viewport. Absolutely
-            positioned with its own fixed height, occupied whether or not
-            the history has any pips in it yet, so nothing below ever moves.
-            The card slot's own top margin (below) is what actually reserves
-            the clearance for this band, since an absolutely positioned
-            element claims no flow height of its own. */}
-        <div className="absolute inset-x-0 top-0 flex h-8 items-center justify-between gap-2">
-          {/* The roll history: a muted pair of pips per throw recorded so
-              far, reading straight from useDiceRoll's own `rolls` (handed up
-              through DiceRoller's onRollsChange) rather than a second count
-              kept here. No box, no border, no index number: the order
-              already says which roll is which, and the aria-live status
-              already announces the totals out loud, which is also why this
-              is aria-hidden and pointer-events-none. The gap *between* pairs
-              is `gap-2` (8px), not the `gap-3` (12px) it used to be: at three
-              pairs that saves the 8px a fifth toolbar button (share) needed
-              to fit; see TOOLBAR_BUTTON's own comment for the full row
-              arithmetic. The gap *within* a pair (the two dice of one roll)
-              is untouched, since that pairing is what the gap is for. */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none flex shrink-0 items-center gap-2 opacity-60"
-          >
-            {rolls.map(([a, b], i) => (
-              <motion.div
-                key={i}
-                variants={itemVariants}
-                initial={reducedMotion ? false : "hidden"}
-                animate="visible"
-                className="flex items-center gap-1"
-              >
-                <Pips value={a} className="h-3 w-3" />
-                <Pips value={b} className="h-3 w-3" />
-              </motion.div>
-            ))}
-          </div>
+      {/* The plate: a dashed frame with registration crosses, drawn around
+          the card and the pill, so the two read as one sheet rather than
+          two things stacked. The card's actions sit in its top-right
+          margin, outside the rule; the roll history is inside it, in the
+          gap between the card and the pill, because the outcomes belong to
+          the throw and read best where the throw happens. See PlateFrame
+          for why printing marks belong on this feature specifically.
 
+          The three labels are real: the serial is the card's own once a
+          roll has produced one, and says so when it has not. The plate
+          ratio used to sit top-right and is gone, since that corner now
+          holds the card's actions, and a label competing with a control
+          for the same corner is a label losing. */}
+      <PlateFrame
+        topLeft="// specimen"
+        topRight={
+          <>
           {/* Edit, regenerate, download, share and mute: one grouped toolbar
               rather than five floating glyphs, which is what let a fifth
               control (share, moved up from a text link under the pill) join
@@ -677,8 +684,8 @@ export default function CardMinter({
               token Navbar's own control cluster uses) so the tight
               `gap-1` reads as one deliberate control rather than five
               cramped ones, and `TOOLBAR_BUTTON` shrinks each button's own
-              box to 28px visually while keeping the 44px tap target WCAG
-              2.5.5 wants via an invisible `before:-inset-2` expansion: see
+              box to 24px visually while keeping the 44px tap target WCAG
+              2.5.5 wants via an invisible `before:-inset-2.5` expansion: see
               that constant's own comment for the full row arithmetic. Edit,
               regenerate, download and share are rendered (not merely
               hidden) only once a card exists, which keeps them out of the
@@ -705,7 +712,7 @@ export default function CardMinter({
                         aria-label="Edit the name on the card"
                         className={TOOLBAR_BUTTON}
                       >
-                        <Pencil className="h-4 w-4" aria-hidden="true" />
+                        <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
                       </button>
                     </TooltipTrigger>
                     <TooltipContent>Edit name</TooltipContent>
@@ -718,7 +725,16 @@ export default function CardMinter({
                         aria-label="Start over with a new portrait and serial"
                         className={TOOLBAR_BUTTON}
                       >
-                        <RefreshCw className="h-4 w-4" aria-hidden="true" />
+                        {/* A person, not a refresh arrow. The circular
+                            arrow is the universal "reload this thing"
+                            glyph, and what this button reloads is not the
+                            page or the roll but the face on the card, which
+                            is the one thing on the stage a visitor might
+                            want to change without changing anything else.
+                            The tooltip and the aria-label carry the cost
+                            (the serial goes too); the icon just has to name
+                            the subject. */}
+                        <UserRound className="h-3.5 w-3.5" aria-hidden="true" />
                       </button>
                     </TooltipTrigger>
                     {/* Plainly what it costs, not "regenerate if you don't
@@ -736,7 +752,7 @@ export default function CardMinter({
                         aria-label="Download the card as a PNG"
                         className={TOOLBAR_BUTTON}
                       >
-                        <Download className="h-4 w-4" aria-hidden="true" />
+                        <Download className="h-3.5 w-3.5" aria-hidden="true" />
                       </button>
                     </TooltipTrigger>
                     <TooltipContent>Download PNG</TooltipContent>
@@ -749,7 +765,7 @@ export default function CardMinter({
                           aria-label="Share your card"
                           className={TOOLBAR_BUTTON}
                         >
-                          <Share2 className="h-4 w-4" aria-hidden="true" />
+                          <Share2 className="h-3.5 w-3.5" aria-hidden="true" />
                         </PopoverTrigger>
                       </TooltipTrigger>
                       <TooltipContent>Share</TooltipContent>
@@ -803,9 +819,9 @@ export default function CardMinter({
                     className={TOOLBAR_BUTTON}
                   >
                     {muted ? (
-                      <VolumeX className="h-4 w-4" aria-hidden="true" />
+                      <VolumeX className="h-3.5 w-3.5" aria-hidden="true" />
                     ) : (
-                      <Volume2 className="h-4 w-4" aria-hidden="true" />
+                      <Volume2 className="h-3.5 w-3.5" aria-hidden="true" />
                     )}
                   </button>
                 </TooltipTrigger>
@@ -846,11 +862,21 @@ export default function CardMinter({
               />
             </div>
           )}
-        </div>
-
-        {/* mt-16 clears the header band (its 32px, plus room to breathe;
-            loosened a step from mt-12) without needing the
-            band to claim any flow height itself. Below this, the gap to the
+          </>
+        }
+        bottomLeft="shashwa7.in"
+        bottomRight={data ? data.serial : "// unissued"}
+      >
+      {/* The stage inside the plate: the card and the pill, nothing else.
+          `select-none` because it is a control surface, not text to select
+          mid-tap. Still `relative`, which the deck and the flip build their
+          own stacking on. */}
+      <div className="relative mx-auto flex w-full max-w-[280px] select-none flex-col items-center">
+        {/* No top margin. This used to carry mt-16 to clear a header band
+            that overlaid the stage and claimed no flow height of its own.
+            The band is above the plate now and reserves its own, so the only
+            space above the card is the frame's own padding. Below this, the
+            gap to the
             pill is DiceRoller's own `mt-8` plus the `pt-4` wrapper around it
             further down, not a `justify-between` spread across a
             fixed-height panel: that used to leave roughly 150px of dead air
@@ -868,7 +894,7 @@ export default function CardMinter({
             deck offset extends past it), but nothing here clips: this div
             has no `overflow-hidden`, and that corner lands even further
             clear of the pill below now that its own gap grew too. */}
-        <div className="relative mt-16 flex h-[350px] w-full items-center justify-center">
+        <div className="relative flex h-[350px] w-full items-center justify-center">
           {/* The deck: two idle cards, always present, so the slot never
               looks empty before a roll. The back one is a plain bordered
               rectangle at the card's own aspect ratio, offset and rotated
@@ -1019,12 +1045,62 @@ export default function CardMinter({
           </AnimatePresence>
         </div>
 
-        {/* pt-4 on top of DiceRoller's own mt-8 (unchanged, dice skins are
-            off limits for this pass) loosens the card-to-pill gap a step,
-            from 32px to 48px, without editing TossDice/CubeDice: padding
-            here, unlike a second margin, cannot collapse with the child's
-            own top margin. */}
-        <div className="pt-4">
+        {/* pt-10 on top of DiceRoller's own mt-8 (unchanged, the dice skins
+            stay off limits) puts the card-to-pill gap at 72px, up from the
+            48px pt-4 gave it and the 32px of the margin alone. The extra
+            room is for the roll outcomes that now sit in this gap: at 48px
+            the pips cleared the card by 18px and the button by 18px, which
+            was enough to fit them and not enough to let them breathe.
+
+            Padding here rather than a second margin, because padding cannot
+            collapse with the child's own top margin. */}
+        <div className="relative pt-10">
+          {/* The roll history: a muted pair of pips per throw recorded so
+              far, reading straight from useDiceRoll's own `rolls` (handed up
+              through DiceRoller's onRollsChange) rather than a second count
+              kept here. No box, no border, no index number: the order
+              already says which roll is which, and the aria-live status
+              already announces the totals out loud, which is also why this
+              is aria-hidden and pointer-events-none.
+
+              Absolutely positioned in the gap between the card and the pill,
+              rather than in a row of its own above the plate. The outcomes
+              belong to the throw, so they read where the throw happens; up
+              in the margin they were the first thing on the page and the
+              last thing anyone would connect to the button at the bottom.
+              Absolute so they claim no flow height: an empty history and a
+              history of three both leave the card and the pill exactly where
+              they are.
+
+              The `h-[72px]` is that gap exactly, being the wrapper's own
+              `pt-10` plus DiceRoller's `mt-8` (see the comment above it), so
+              `items-center` centres the pips between the two rather than
+              hanging them off a tuned offset. Change either and this has to
+              change with them, which is why both are named here.
+
+              The gap *between* pairs
+              is `gap-2` (8px), not the `gap-3` (12px) it used to be: at three
+              pairs that saves the 8px a fifth toolbar button (share) needed
+              to fit; see TOOLBAR_BUTTON's own comment for the full row
+              arithmetic. The gap *within* a pair (the two dice of one roll)
+              is untouched, since that pairing is what the gap is for. */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 top-0 flex h-[72px] items-center justify-center gap-2 opacity-60"
+          >
+            {rolls.map(([a, b], i) => (
+              <motion.div
+                key={i}
+                variants={itemVariants}
+                initial={reducedMotion ? false : "hidden"}
+                animate="visible"
+                className="flex items-center gap-1"
+              >
+                <Pips value={a} className="h-3 w-3" />
+                <Pips value={b} className="h-3 w-3" />
+              </motion.div>
+            ))}
+          </div>
           <DiceRoller
             onComplete={setRoll}
             issueCaption={issueCaption}
@@ -1034,6 +1110,13 @@ export default function CardMinter({
         </div>
 
       </div>
+      </PlateFrame>
+
+      {/* Rendered here rather than from the page, because the page is a
+          server component and cannot know which issue is on screen. The
+          ladder marks the visitor's own row, which is what stops it reading
+          as a footnote under the thing it describes. */}
+      <IssueLadder card={data} />
     </div>
   );
 }

@@ -34,6 +34,33 @@ type RollPillProps = {
   children: ReactNode;
 };
 
+/**
+ * The caption under the button: exactly one line, always, whatever it says.
+ *
+ * `whitespace-nowrap` is the guarantee, and a fixed `h-4` is what makes the
+ * guarantee worth having. The caption changes as a visitor rolls (three
+ * different rolling forms, then the issue line) and a caption that wraps on
+ * one of them and not the others moves the whole plate under it every time
+ * it swaps. `leading-4` sets the line box to 16px and `h-4` matches it, so
+ * the single line fills the reserved height exactly and the height never
+ * depends on the string.
+ *
+ * A block, not a flex row. `text-overflow: ellipsis` needs inline content in
+ * a block container: inside a flex container the text becomes an anonymous
+ * flex item and the ellipsis silently never applies, which would have left
+ * the backstop below looking present and doing nothing.
+ *
+ * The width is the button's own, so the line centres on the control it
+ * describes. `truncate`'s ellipsis is a backstop, not the plan: the copy is
+ * written to a 38-character budget (see `buildIssueCaption` in CardMinter
+ * for the arithmetic), and if some future string exceeds it anyway, cutting
+ * it short is a smaller failure than pushing the layout around.
+ *
+ * Declared once because both the animated and the plain branch render it.
+ */
+const CAPTION =
+  "block h-4 w-[min(280px,calc(100vw-3rem))] overflow-hidden text-ellipsis whitespace-nowrap text-center font-mono text-2xs leading-4 uppercase tracking-label text-subtle";
+
 /** Forwards a ref to the underlying `<button>`: TossDice runs its own
  *  press-squash WAAPI animation directly on the button element, the same
  *  way it already reaches into its dice with refs, and that needs the real
@@ -62,7 +89,7 @@ const RollPill = forwardRef<HTMLButtonElement, RollPillProps>(function RollPill(
         disabled={disabled}
         aria-label={`${label}. ${caption}`}
         style={{ WebkitTapHighlightColor: "transparent" }}
-        className="group relative h-[60px] w-[min(340px,calc(100vw-3rem))] overflow-visible rounded-md bg-accent text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-70"
+        className="group relative h-[60px] w-[min(280px,calc(100vw-3rem))] overflow-visible rounded-md bg-accent text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-70"
       >
         {/* The fill: clipped to its own wrapper so it never spills past the
             pill's corners, while the pill itself stays overflow-visible so
@@ -96,11 +123,15 @@ const RollPill = forwardRef<HTMLButtonElement, RollPillProps>(function RollPill(
             ordinary button, too quiet for the only control on the stage.
 
             The pill widened from 240px to 340px to fit this at text-lg
-            without crowding the dock, but a fixed 340px overflows the
-            stage on real phones: it's `w-full max-w-[420px]` inside a
-            24px-each-side (`px-6`) container, so a 360px Android has only
-            312px to give and a 375px iPhone 327px. The width is now
-            `min(340px, 100vw - 3rem)`, tracking the viewport directly
+            without crowding the dock, then came back to 280px to match the
+            card's own width: the card and the only control on the stage
+            being two different widths was the inconsistency the owner
+            asked to close, and the card's size is fixed by what
+            drawTicket is handed. A fixed width overflows the stage on
+            real phones either way: it's inside a 24px-each-side (`px-6`)
+            container, so a 360px Android has only 312px to give and a
+            375px iPhone 327px. The width is now
+            `min(280px, 100vw - 3rem)`, tracking the viewport directly
             rather than a percentage of an ancestor: the pill's own box has
             no in-flow content (every child here is `absolute`), and every
             ancestor up to the stage sizes to content, so a percentage
@@ -117,7 +148,10 @@ const RollPill = forwardRef<HTMLButtonElement, RollPillProps>(function RollPill(
             DM Sans SemiBold, so centred in a button of width W its right
             edge lands at W/2 + 39. At the 320px-viewport floor, W is 272px:
             the dock's left edge is at 182px and the label's right edge at
-            175px, 7px of clearance, identical for both skins now that
+            175px, 7px of clearance. That floor is what the narrowing to
+            280px had to clear and does not change, since 272 is below both
+            the old cap and the new one; at the cap itself the clearance
+            goes from 41px to 11px, identical for both skins now that
             their docks match. At the 340px cap, the dock's left edge is at
             250px and the label's right edge at 209px, 41px of clearance,
             again the same for both. */}
@@ -142,12 +176,14 @@ const RollPill = forwardRef<HTMLButtonElement, RollPillProps>(function RollPill(
           variants={blurSwapVariants}
           initial="hidden"
           animate="visible"
-          className="font-mono text-2xs uppercase tracking-label text-subtle"
+          className={CAPTION}
         >
           {caption}
         </motion.p>
       ) : (
-        <p className="font-mono text-2xs uppercase tracking-label text-subtle">{caption}</p>
+        <p className={CAPTION}>
+          {caption}
+        </p>
       )}
     </div>
   );
