@@ -112,13 +112,31 @@ function today(): string {
   }).format(new Date());
 }
 
-/** RollPill's caption once a card exists: the issue, its odds, and what it
- *  took to earn it. A perfect 36 (double six, three times) gets a line of
- *  its own, since the running total alone doesn't say how it happened. */
+/**
+ * RollPill's caption once a card exists: the issue and its odds.
+ *
+ * Written to a budget. The caption is one line that never wraps (see
+ * `CAPTION` in RollPill), and at `text-2xs` in mono with `tracking-label`
+ * a character costs about 7px: 6px of advance plus 0.1em of tracking. The
+ * narrowest case is a 320px viewport, where the pill resolves to 272px, so
+ * the line has room for 38 characters and no more.
+ *
+ * Both of the previous forms broke that. "Commemorative · 30.9% per roll ·
+ * rolled 25" is 42, and a perfect roll produced "Inverted · 0.06% per roll ·
+ * rolled 36, a perfect double six three times" at 71, which wrapped to three
+ * lines and moved everything under it.
+ *
+ * The roll total is what went, in both. It is not lost: the pips sit directly above
+ * the button, and the card itself prints "rolled N" in its own footer. The
+ * odds stay phrased per roll rather than as a share of cards, which is the
+ * one thing about this line that is a claim rather than a decoration.
+ *
+ * Longest possible output is "Inverted · 0.06% per roll · perfect" at 35.
+ * "Commemorative" is the longest issue name and its normal form is 30.
+ */
 function buildIssueCaption(data: CardData): string {
-  const total = pipTotal(data.roll);
-  const line = `${data.issue.name} · ${data.issue.label} per roll · rolled ${total}`;
-  return isPerfect(data.roll) ? `${line}, a perfect double six three times` : line;
+  const line = `${data.issue.name} · ${data.issue.label} per roll`;
+  return isPerfect(data.roll) ? `${line} · perfect` : line;
 }
 
 /** The tweet/share body: names the real issue and its real per-roll odds,

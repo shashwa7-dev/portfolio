@@ -35,16 +35,31 @@ type RollPillProps = {
 };
 
 /**
- * The caption under the button, capped at the button's own width and
- * balanced rather than left to wrap ragged. The issue line
- * ("Commemorative, 30.9% per roll, rolled 25") is longer than 280px at this
- * size, and without these it broke wherever it ran out of room and left a
- * single word stranded on the second line, which reads as a layout fault
- * rather than as a caption. Declared once because both the animated and the
- * plain branch below render it.
+ * The caption under the button: exactly one line, always, whatever it says.
+ *
+ * `whitespace-nowrap` is the guarantee, and a fixed `h-4` is what makes the
+ * guarantee worth having. The caption changes as a visitor rolls (three
+ * different rolling forms, then the issue line) and a caption that wraps on
+ * one of them and not the others moves the whole plate under it every time
+ * it swaps. `leading-4` sets the line box to 16px and `h-4` matches it, so
+ * the single line fills the reserved height exactly and the height never
+ * depends on the string.
+ *
+ * A block, not a flex row. `text-overflow: ellipsis` needs inline content in
+ * a block container: inside a flex container the text becomes an anonymous
+ * flex item and the ellipsis silently never applies, which would have left
+ * the backstop below looking present and doing nothing.
+ *
+ * The width is the button's own, so the line centres on the control it
+ * describes. `truncate`'s ellipsis is a backstop, not the plan: the copy is
+ * written to a 38-character budget (see `buildIssueCaption` in CardMinter
+ * for the arithmetic), and if some future string exceeds it anyway, cutting
+ * it short is a smaller failure than pushing the layout around.
+ *
+ * Declared once because both the animated and the plain branch render it.
  */
 const CAPTION =
-  "max-w-[min(280px,calc(100vw-3rem))] text-balance text-center font-mono text-2xs uppercase tracking-label text-subtle";
+  "block h-4 w-[min(280px,calc(100vw-3rem))] overflow-hidden text-ellipsis whitespace-nowrap text-center font-mono text-2xs leading-4 uppercase tracking-label text-subtle";
 
 /** Forwards a ref to the underlying `<button>`: TossDice runs its own
  *  press-squash WAAPI animation directly on the button element, the same
