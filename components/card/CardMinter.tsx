@@ -154,7 +154,7 @@ function buildShareBody(data: CardData): string {
      going to post is the one the sentence would have been broken for.
      Checked rather than hardcoded, so a sixth issue cannot reintroduce it. */
   const article = /^[aeiou]/i.test(data.issue.name) ? "an" : "a";
-  return `I pulled ${article} ${data.issue.name} visitor card. ${data.issue.label} per roll.\n\nMint yourself one:`;
+  return `I pulled ${article} ${data.issue.name} souvenir card. ${data.issue.label} per roll.\n\nMint yourself one:`;
 }
 
 /**
@@ -168,7 +168,21 @@ function buildShareBody(data: CardData): string {
  * render the page's preview card under the post.
  */
 function buildShareText(data: CardData, cardUrl: string): string {
-  return `${buildShareBody(data)} ${cardUrl}`;
+  return `${buildShareBody(data)} ${shareUrl(data, cardUrl)}`;
+}
+
+/**
+ * The shared link, carrying the issue so the preview shows the edition this
+ * post is bragging about rather than the generic page card. See
+ * `generateMetadata` in app/card/page.tsx: the param names one of five
+ * committed images and is ignored if it names anything else.
+ *
+ * Only the issue. Not the serial, not the roll, and above all not the name,
+ * which is free text: nothing about a URL should be able to decide what an
+ * image served from this domain says.
+ */
+function shareUrl(data: CardData, cardUrl: string): string {
+  return `${cardUrl}?issue=${encodeURIComponent(data.issue.key)}`;
 }
 
 export default function CardMinter({
@@ -534,7 +548,7 @@ export default function CardMinter({
         type: "image/png",
       });
       if (!nav!.canShare({ files: [file] })) return false;
-      await nav!.share({ files: [file], text: buildShareText(data, cardUrl), url: cardUrl });
+      await nav!.share({ files: [file], text: buildShareText(data, cardUrl), url: shareUrl(data, cardUrl) });
       return true;
     } catch (err) {
       if (err instanceof DOMException && err.name === "AbortError") return true;
@@ -603,7 +617,7 @@ export default function CardMinter({
     if (!data) return;
     const intent = `https://twitter.com/intent/post?text=${encodeURIComponent(
       buildShareBody(data)
-    )}&url=${encodeURIComponent(cardUrl)}`;
+    )}&url=${encodeURIComponent(shareUrl(data, cardUrl))}`;
     window.open(intent, "_blank", "noopener,noreferrer");
     closeShareMenu();
   }, [buildData, cardUrl, closeShareMenu]);
@@ -1080,7 +1094,7 @@ export default function CardMinter({
                         role="img"
                         aria-label={
                           data
-                            ? `A ${data.issue.name} visitor card, serial ${data.serial}, issued to ${data.name}, from a roll of ${pipTotal(data.roll)}.`
+                            ? `A ${data.issue.name} souvenir card, serial ${data.serial}, issued to ${data.name}, from a roll of ${pipTotal(data.roll)}.`
                             : "The card's reserved space. It rises here once you roll three times."
                         }
                       />

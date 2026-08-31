@@ -4,11 +4,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { X } from "lucide-react";
 import { ISSUES } from "@/lib/card/issues";
-import { serialFrom } from "@/lib/card/seed";
+import { specimenData } from "@/lib/card/specimens";
 import { drawTicket, CARD_W, CARD_H } from "@/lib/card/ticket";
 import { CARD_FONTS } from "@/lib/card/fonts";
 import { backdropFadeVariants, layoutMorph } from "@/lib/motionVariants";
-import type { CardData, IssueKey, RollSet } from "@/lib/card/types";
+import type { CardData, IssueKey } from "@/lib/card/types";
 
 /**
  * The five issues as a rarity table, rarest first, each row showing the card
@@ -45,41 +45,6 @@ const MARK_SRC = "/brand-mark.png";
  */
 const MASTER_W = 720;
 const MASTER_H = Math.round((MASTER_W * CARD_H) / CARD_W);
-
-/* Fixed ids and rolls, one per issue, so every visitor sees the same five
-   specimens and each one prints a total that actually falls inside the range
-   printed beside it. */
-const SPECIMEN_ROLLS: Record<IssueKey, RollSet> = {
-  definitive: [[3, 4], [5, 2], [6, 1]],
-  commemorative: [[4, 4], [4, 4], [4, 4]],
-  firstDay: [[5, 4], [5, 4], [5, 4]],
-  misprint: [[6, 5], [6, 5], [5, 4]],
-  inverted: [[6, 6], [6, 6], [6, 5]],
-};
-
-const SPECIMENS: Record<IssueKey, { id: string; name: string; city: string; origin: string }> = {
-  definitive: { id: "specimen-definitive", name: "Maya", city: "Lisbon", origin: "Lisbon, PT" },
-  commemorative: { id: "specimen-commemorative", name: "Jonas", city: "Berlin", origin: "Berlin, DE" },
-  firstDay: { id: "specimen-firstday", name: "Priya", city: "Toronto", origin: "Toronto, CA" },
-  misprint: { id: "specimen-misprint", name: "Ade", city: "Lagos", origin: "Lagos, NG" },
-  inverted: { id: "specimen-inverted", name: "Ana", city: "Porto", origin: "Porto, PT" },
-};
-
-/** The specimen for an issue: its own issue, never the one its id happens to
- *  roll, and a fixed roll so the five never differ between visitors. */
-function specimenData(key: IssueKey): CardData {
-  const s = SPECIMENS[key];
-  return {
-    visitorId: s.id,
-    name: s.name,
-    serial: serialFrom(s.id),
-    issue: ISSUES[key],
-    roll: SPECIMEN_ROLLS[key],
-    origin: s.origin,
-    city: s.city,
-    date: "23 Aug 2026",
-  };
-}
 
 /**
  * What each issue changes about the card, checked against `drawTicket`
