@@ -1,6 +1,6 @@
 ---
 name: portfolio-design-system
-description: Design system for this portfolio (graphite+indigo tokens, Fraunces/Inter/JetBrains Mono type, Container/Section/Bento/Divider primitives, usage rules). Use when building or restyling UI in this repo.
+description: Design system for this portfolio (warm paper/ink tokens, DM Sans + IBM Plex Mono type, Container/Section/Band/Rails/Bento primitives, usage rules). Use when building or restyling UI in this repo.
 ---
 
 Full reference: `docs/design-system.md`. This skill gives you the fast rules.
@@ -15,7 +15,7 @@ Full reference: `docs/design-system.md`. This skill gives you the fast rules.
 
 ## Typography
 
-- Headings: `font-serif` (Fraunces). Display: `text-[clamp(2rem,5vw,2.75rem)] font-medium tracking-[-0.02em]`. Section h2: `text-2xl md:text-[1.75rem]`.
+- Headings: `font-sans` (DM Sans). There is NO serif face in this repo and `font-serif` fails `scripts/verify-simplification.sh` (C03). Display: `text-[clamp(2rem,5vw,2.75rem)] font-medium tracking-[-0.02em]`. Section h2: `text-2xl md:text-3xl`.
 - Body: `font-sans` (Inter). Default size `text-base`, secondary text in `text-muted-foreground`.
 - Labels / eyebrows / code: `font-mono` (JetBrains Mono). Label component: `text-[11px] uppercase tracking-[0.16em] text-subtle`.
 - No em-dashes in copy. Restructure sentences instead.
@@ -25,15 +25,16 @@ Full reference: `docs/design-system.md`. This skill gives you the fast rules.
 Every major section follows this structure:
 
 ```tsx
-<Section number="01" label="Label" title="Serif section title" width="reading">
+<Section number="01" of="06" label="Label" title="Section title" width="reading">
   {/* content */}
 </Section>
-<Divider />
 ```
 
-- `Section` handles `py-10 md:py-14` vertical rhythm and the `Container` wrapper.
-- `Divider` goes between every section (faded hairline, matches homepage).
-- Number is `text-accent-hover`; title is `font-serif text-2xl md:text-[1.75rem]`.
+- `Section` opens with a full-bleed `Band` carrying `[ 01 / 06 ] · LABEL`, then a `Container` holding the title and content at `py-10 md:py-14`.
+- The band IS the divider. There is no `Divider` component, and importing one fails the gate (C13).
+- `of` is opt-in: pass it only where the route really is a sequence of known length (homepage, `/shelf`). A blog post is not a sequence.
+- Secondary routes open with `<PageBand id="Blog" name="12 posts" />` as the first child of `<main>`, which carries `pb-8 md:pb-12`.
+- Never draw a band by hand. It means "a labelled division starts here" and stops meaning it the moment it is used for emphasis.
 
 ## Layout primitives (all in `components/layout/`)
 
@@ -43,9 +44,10 @@ Every major section follows this structure:
 | `Container width="wide"` | Full layouts, hero sections (1080px max) |
 | `Section` | Any major content block needing the numbered eyebrow + title |
 | `Bento` | Grid of feature cards with hairline borders |
-| `Divider` | Between every section |
+| `Band` | The full-bleed labelled row that crosses the page rails |
+| `PageBand` | A secondary route's opening band, flush under the navbar |
+| `Rails` | The two page hairlines. Rendered ONCE from `app/layout.tsx`, never per page |
 | `Label` | Eyebrow text above headings |
-| `Reveal` | Wrap elements for fade-up animation on scroll |
 
 ## Bento pattern
 
@@ -71,7 +73,6 @@ Each cell needs `bg-card` so the 1px `bg-border` gap is visible as a hairline se
 
 - Easing: `--ease-out` = `cubic-bezier(0.22, 1, 0.36, 1)` for entrances.
 - Duration: 200ms hover micro / 300-400ms reveal / ~60ms stagger per item.
-- Wrap elements in `<Reveal>` for scroll-triggered fade-up.
 - Hover lift: `whileHover={{ y: -2 }}` on cards.
 - Always respect `prefers-reduced-motion` (handled globally in `globals.css`).
 

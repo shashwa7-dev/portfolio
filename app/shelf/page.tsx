@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import Container from "@/components/layout/Container";
+import PageBand from "@/components/layout/PageBand";
 import Section from "@/components/layout/Section";
 import RoasterPicker from "@/components/shelf/RoasterPicker";
 import GearTimeline from "@/components/shelf/GearTimeline";
@@ -65,8 +66,28 @@ const SHOW_BOOKMARKS = false;
 export default async function ShelfPage() {
   const tracks = await getPlaylist();
 
+  /**
+   * The section numbers are derived, never written down.
+   *
+   * Two of the five parts are conditional: Sound renders only when the
+   * playlist feed returns something, and Bookmarks sits behind SHOW_BOOKMARKS.
+   * A hardcoded `of="05"` therefore promised five parts on a page that shows
+   * three, and the counter is the one element whose whole job is to be true.
+   */
+  const parts = [
+    "coffee",
+    "desk",
+    "scent",
+    ...(tracks.length > 0 ? ["sound"] : []),
+    ...(SHOW_BOOKMARKS ? ["bookmarks"] : []),
+  ];
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const total = pad(parts.length);
+  const no = (key: string) => pad(parts.indexOf(key) + 1);
+
   return (
-    <main className="py-8 md:py-12">
+    <main className="pb-8 md:pb-12">
+      <PageBand id="Shelf" name={`${parts.length} parts`} />
       <script
         type="application/ld+json"
         suppressHydrationWarning
@@ -89,7 +110,7 @@ export default async function ShelfPage() {
         </p>
       </Container>
 
-      <Section number="01" label="Coffee" title="What I drink" width="reading">
+      <Section number={no("coffee")} of={total} label="Coffee" title="What I drink" width="reading">
         {/* The taste note sits above the picker, not below it. Underneath, it
             moved every time someone switched to a roaster with a different
             number of beans, which is a layout shift caused by nothing the
@@ -241,7 +262,7 @@ export default async function ShelfPage() {
 
 
 
-      <Section number="02" label="Desk" title="Everyday setup" width="reading">
+      <Section number={no("desk")} of={total} label="Desk" title="Everyday setup" width="reading">
         <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
           The rest of the desk. No shopping links on this one, on purpose.
         </p>
@@ -267,7 +288,7 @@ export default async function ShelfPage() {
         </ul>
       </Section>
 
-      <Section number="03" label="Scent" title="What I wear" width="reading">
+      <Section number={no("scent")} of={total} label="Scent" title="What I wear" width="reading">
         <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
           Two, and I rotate between them. I am not a collector.
         </p>
@@ -293,7 +314,7 @@ export default async function ShelfPage() {
           should take this section with it rather than leave a heading over
           nothing. */}
       {tracks.length > 0 && (
-        <Section number="04" label="Sound" title="On repeat" width="reading">
+        <Section number={no("sound")} of={total} label="Sound" title="On repeat" width="reading">
           <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
             What I have had on while working, cooking, or walking somewhere. It
             changes often. Press a sleeve for fifteen seconds of one.
@@ -318,7 +339,7 @@ export default async function ShelfPage() {
           in order, and restoring it appends 05 rather than reopening a gap in
           the middle of the page. */}
       {SHOW_BOOKMARKS && (
-        <Section number="05" label="Bookmarks" title="Worth keeping" width="reading">
+        <Section number={no("bookmarks")} of={total} label="Bookmarks" title="Worth keeping" width="reading">
           <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
             Links I come back to. Every one carries a reason, or it does not go in.
           </p>

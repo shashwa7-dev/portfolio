@@ -122,7 +122,7 @@ const categories: Category[] = [
  */
 const TechStack = () => {
   return (
-    <Section id="tech_stack" number="03" label="Toolkit" title="Tools I reach for" width="reading">
+    <Section id="tech_stack" number="03" of="06" label="Toolkit" title="Tools I reach for" width="reading">
       {/* `divide-y` rather than a border on the wrapper plus one per row: it
           draws only between children, so the rules that boxed the section in at
           the top and bottom are gone and only the internal grouping remains.

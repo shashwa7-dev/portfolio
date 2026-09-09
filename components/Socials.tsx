@@ -13,7 +13,7 @@ const ICONS = {
 
 const Socials = () => {
   return (
-    <Section number="06" label="Contact" title="Let's build something good" width="reading">
+    <Section number="06" of="06" label="Contact" title="Let's build something good" width="reading">
       <div>
         {/* The two things on offer, side by side and the same height: write
             to him, or take a card. `flex-wrap` so the card drops onto its own

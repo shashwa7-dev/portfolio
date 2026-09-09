@@ -14,6 +14,7 @@ export default function ExperienceWork() {
     <Section
       id="experience"
       number="01"
+      of="06"
       label="Experience & Work"
       title="Where I've worked, and what I shipped"
       width="reading"

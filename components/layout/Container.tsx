@@ -20,7 +20,10 @@ export default function Container({
       id={id}
       className={cn(
         "mx-auto w-full px-6",
-        width === "reading" ? "max-w-[760px]" : "max-w-[1080px]",
+        // Through the token, not a literal: `Rails` draws the page's two
+        // hairlines at this exact value, so the measure has to live in one
+        // place or the lines and the column they describe will drift apart.
+        width === "reading" ? "max-w-[var(--measure)]" : "max-w-[1080px]",
         className
       )}
     >

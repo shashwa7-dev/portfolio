@@ -3,6 +3,7 @@ import path from "path";
 import Image from "next/image";
 import { Download, Scissors } from "lucide-react";
 import Container from "@/components/layout/Container";
+import PageBand from "@/components/layout/PageBand";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl, breadcrumbLd } from "@/lib/seo";
 import { parseCv, inlineHtml, type CvBlock } from "@/lib/cv";
@@ -224,7 +225,8 @@ export default function CvPage() {
   const cv = parseCv(md);
 
   return (
-    <main className="py-8 md:py-12">
+    <main className="pb-8 md:pb-12">
+      <PageBand id="CV" name="Shashwat Tripathi" />
       <script
         type="application/ld+json"
         suppressHydrationWarning
