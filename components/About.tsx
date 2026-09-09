@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Check, ArrowRight, Mail } from "lucide-react";
 import Container from "@/components/layout/Container";
 import AvatarHover from "@/components/AvatarHover";
@@ -5,6 +6,7 @@ import LocalTime from "@/components/LocalTime";
 import Label from "@/components/layout/Label";
 import { cn } from "@/lib/utils";
 import { stats } from "@/lib/stats";
+import { clients } from "@/lib/clients";
 
 /**
  * The hero.
@@ -42,7 +44,7 @@ import { stats } from "@/lib/stats";
  */
 export default function About() {
   return (
-    <header className="pt-10 pb-10 md:pt-14 md:pb-14">
+    <header className="pt-10 pb-8 md:pt-14 md:pb-12">
       <Container width="reading">
         <div className="space-y-7 sm:space-y-8">
           {/* Identity, on one row.
@@ -184,6 +186,63 @@ export default function About() {
           </div>
         </Container>
       </div>
+
+      {/* Worked with.
+
+          One line, not cards. A card per brand was tried and dropped: five
+          bordered boxes under a band that is itself a row of bordered cells
+          turned the foot of the hero into a second grid, and the hero's whole
+          problem was too many containers.
+
+          It is also not the five-card row this repo removed once before. That
+          row put each brand's contribution in a tooltip, which a touch device
+          cannot reach, so its strongest fact was the one nobody on a phone
+          could get to. Here the names are plain text, and the row links to the
+          section where each contribution is written out.
+
+          `alt=""` on the logos is correct rather than lazy: the names sit in
+          text in the same link, so labelling the images too would make a screen
+          reader announce each brand twice. */}
+      <Container width="reading">
+        <a href="/#experience" className="group mt-6 block text-center md:mt-8">
+          <span className="flex items-center justify-center">
+            {clients.map((c, i) => (
+              <span
+                key={c.name}
+                className={cn(
+                  "relative h-11 w-11 shrink-0 overflow-hidden rounded-full bg-secondary outline outline-1 outline-border ring-2 ring-background",
+                  i > 0 && "-ml-2.5"
+                )}
+              >
+                {/* Explicit dimensions, well above the 44px this renders at,
+                    rather than `fill` with `sizes="32px"`.
+
+                    That was the pixelation: `sizes` tells the browser how much
+                    space the image occupies, so a fixed `32px` had it request a
+                    32-pixel-wide file, which a 2x display then upscaled. The
+                    sources are 367 to 400px square, so nothing was ever wrong
+                    with the artwork. Asking for 128 gives every reasonable
+                    display more pixels than it needs, and these files are 4 to
+                    24KB, so the margin is free. */}
+                <Image
+                  src={c.img}
+                  alt=""
+                  width={128}
+                  height={128}
+                  quality={90}
+                  className="h-full w-full object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
+                />
+              </span>
+            ))}
+          </span>
+          <span className="mt-3 block font-mono text-2xs uppercase tracking-label text-subtle">
+            Worked with
+          </span>
+          <span className="mt-1 block text-sm text-muted-foreground transition-colors duration-fast ease-out group-hover:text-foreground">
+            {clients.map((c) => c.name).join(", ")}
+          </span>
+        </a>
+      </Container>
     </header>
   );
 }
