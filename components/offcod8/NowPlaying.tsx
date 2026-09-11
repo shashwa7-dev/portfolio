@@ -146,13 +146,20 @@ export default function NowPlaying() {
   }, [start]);
 
   /**
-   * Crossing the threshold.
+   * Crossing the threshold. The only thing that ever dismisses the curtain.
    *
    * The ask has been going out on a timer since the frame loaded, so on a
    * browser that allows autoplay the song is already audible by the time this
-   * runs and this changes only what is on screen. Where it was refused, this is
-   * the one gesture the page can count on: a real click, so the unmute runs
-   * with activation behind it rather than hoping for it.
+   * runs and this changes only what is on screen. The curtain stays up anyway.
+   * It briefly lifted itself in that case, on the reasoning that a door someone
+   * has already walked through has nothing left to ask for, and it looked like
+   * a glitch: an overlay appearing and then leaving without being touched reads
+   * as something misfiring, not as something being polite. Whether the song is
+   * already playing is the browser's business, not a reason to take the
+   * greeting away from a reader who has not finished reading it.
+   *
+   * Where the unmute was refused, this is the one gesture the page can count
+   * on: a real click, so it runs with activation behind it rather than hoping.
    */
   const enter = useCallback(() => {
     // First, and synchronously. The browser grants audio for the length of the
@@ -161,19 +168,6 @@ export default function NowPlaying() {
     start();
     setLeaving(true);
   }, [start]);
-
-  /**
-   * If the sound is already out, the curtain has nothing left to ask for.
-   *
-   * The page keeps asking for audio from the moment the frame loads, and some
-   * browsers say yes: Chrome grants autoplay outright once its Media Engagement
-   * score for an origin is high enough, and any browser grants it if the visitor
-   * has allowed sound for the site. When that happens the reader is looking at a
-   * door they have already walked through, so it opens itself.
-   */
-  useEffect(() => {
-    if (playing) setLeaving(true);
-  }, [playing]);
 
   /**
    * Unmount once the fade has had its time.

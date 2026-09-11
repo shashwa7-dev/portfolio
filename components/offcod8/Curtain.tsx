@@ -26,20 +26,23 @@ import { DoorOpen } from "@phosphor-icons/react/ssr";
  * Server-rendered rather than raised after hydration, so there is no moment
  * where the letter is visible behind it and then covered.
  *
- * It leaves on a fade, and only on a fade, in both the cases that dismiss it: a
- * reader pressing Enter, and a browser that turned out to allow sound on its
- * own, where the curtain has nothing left to ask for and gets out of the way by
- * itself. An earlier pass carried the brand mark from the middle of this into
- * its slot on the letter, measuring both and closing the gap. It worked and it
- * was still the wrong amount of ceremony in front of a letter that opens by
- * saying it does not know how to start.
+ * It leaves on a fade, and only when it is pressed. An earlier pass carried the
+ * brand mark from the middle of this into its slot on the letter, measuring
+ * both and closing the gap, and another lifted the curtain on its own once the
+ * browser allowed sound. Both worked. Both were the wrong amount of ceremony in
+ * front of a letter that opens by saying its writer does not know how to start,
+ * and the second one read as a glitch besides: an overlay that leaves without
+ * being touched looks like something misfiring.
  */
 
 export default function Curtain({
   leaving,
   onEnter,
 }: {
-  /** Fading out. The parent unmounts once the transition has had its time. */
+  /**
+   * Fading out, which only ever follows a press. The parent unmounts once the
+   * transition has had its time.
+   */
   leaving: boolean;
   onEnter: () => void;
 }) {
