@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { stackLabel, type StackName } from "./stackLabels";
 import { cn } from "@/lib/utils";
 import {
   Tooltip,
@@ -58,65 +59,6 @@ import {
   siVitest,
 } from "simple-icons";
 
-export type StackName =
-  | "python"
-  | "sqlite"
-  | "html"
-  | "css"
-  | "typescript"
-  | "react"
-  | "next"
-  | "tailwind"
-  | "express"
-  | "shadcn"
-  | "gsap"
-  | "motion"
-  | "reactQuery"
-  | "apollo"
-  | "zustand"
-  | "node"
-  | "graphql"
-  | "websocket"
-  | "webrtc"
-  | "postgres"
-  | "mongodb"
-  | "firebase"
-  | "aws"
-  | "docker"
-  | "solana"
-  | "web3js"
-  | "wagmi"
-  | "styledComponents"
-  | "chakraui"
-  | "electron"
-  | "googleGemini"
-  | "javascript"
-  | "bun"
-  | "vercel"
-  | "cloudflare"
-  | "supabase"
-  | "postgress"
-  | "vscode"
-  | "notion"
-  | "git"
-  | "github"
-  | "postman"
-  | "figma"
-  | "canva"
-  | "openai"
-  | "claude"
-  | "spotify"
-  | "youtube"
-  | "restAPI"
-  | "playstation"
-  | "coffee"
-  | "opensea"
-  | "playwright"
-  | "vitest"
-  | "posthog"
-  | "sentry"
-  | "googleAnalytics"
-  | "vercelAnalytics";
 
 type SI = { path: string; title: string };
 
@@ -174,66 +116,6 @@ const iconMap: Partial<Record<StackName, SI>> = {
   // vercelAnalytics → text fallback (no simple-icons entry)
 };
 
-const labelMap: Record<StackName, string> = {
-  vscode: "VS Code",
-  restAPI: "REST API",
-  figma: "Figma",
-  playstation: "PlayStation",
-  canva: "Canva",
-  coffee: "Coffee",
-  openai: "OpenAI",
-  claude: "Claude",
-  postman: "Postman",
-  notion: "Notion",
-  html: "HTML5",
-  github: "GitHub",
-  spotify: "Spotify",
-  youtube: "YouTube",
-  python: "Python",
-  sqlite: "SQLite",
-  git: "Git",
-  css: "CSS3",
-  bun: "Bun",
-  javascript: "JavaScript",
-  typescript: "TypeScript",
-  googleGemini: "Google Gemini",
-  vercel: "Vercel",
-  zustand: "Zustand",
-  supabase: "Supabase",
-  mongodb: "MongoDB",
-  opensea: "OpenSea",
-  postgress: "PostgreSQL",
-  cloudflare: "Cloudflare",
-  chakraui: "Chakra UI",
-  electron: "Electron",
-  wagmi: "Wagmi",
-  solana: "Solana",
-  shadcn: "shadcn/ui",
-  react: "React",
-  express: "Express",
-  web3js: "Web3.js",
-  next: "Next.js",
-  styledComponents: "Styled Components",
-  tailwind: "Tailwind CSS",
-  gsap: "GSAP",
-  motion: "Framer Motion",
-  reactQuery: "React Query",
-  apollo: "Apollo GraphQL",
-  node: "Node.js",
-  graphql: "GraphQL",
-  websocket: "WebSocket",
-  webrtc: "WebRTC",
-  postgres: "PostgreSQL",
-  firebase: "Firebase",
-  aws: "AWS",
-  docker: "Docker",
-  playwright: "Playwright",
-  vitest: "Vitest",
-  posthog: "PostHog",
-  sentry: "Sentry",
-  googleAnalytics: "Google Analytics",
-  vercelAnalytics: "Vercel Analytics",
-};
 
 type StackProps = {
   name: StackName;
@@ -250,7 +132,7 @@ export default function StackIcon({
   showTooltip = false,
   className = "",
 }: StackProps) {
-  const label = labelMap[name];
+  const label = stackLabel(name);
   if (!label) return null;
 
   const si = iconMap[name];
@@ -308,3 +190,5 @@ export default function StackIcon({
     </span>
   );
 }
+
+export type { StackName };

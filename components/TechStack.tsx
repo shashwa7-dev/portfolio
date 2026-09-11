@@ -1,156 +1,164 @@
 import React from "react";
-import StackIcon, { StackName } from "./common/StackIcon";
+import StackIcon from "./common/StackIcon";
+import { stackLabel, type StackName } from "./common/stackLabels";
 import Section from "@/components/layout/Section";
 
-type Category = {
+type Tier = {
   label: string;
   items: StackName[];
 };
 
 /**
- * Four categories and forty-one tools, down from seven categories and
- * forty-four.
+ * Twenty-six tools in three tiers, down from forty-one in four categories.
  *
- * Seven headings over forty-four tools read as an inventory rather than a claim,
- * and three of them were thin enough to be rounding errors: "AI Stack" held three
- * items, "Protocols / APIs" four, "Tools" four. A heading that labels three things
- * costs a row to say almost nothing.
+ * The old section grouped by what a tool IS: Frontend, AI, Backend & data,
+ * Infra & tooling. Two problems came out of that, and they compounded.
  *
- * Three entries were also dropped, and for a reason that is about positioning
- * rather than space: `html` and `css` are table stakes for a senior frontend
- * engineer, so listing them beside `typescript` and `wagmi` invites the reader to
- * calibrate downwards. `notion` is not a technical tool. Everything remaining is
- * something a reader could reasonably ask a follow-up question about.
+ * Thirteen items sat under Frontend and fifteen under Infra, so two rows
+ * carried twenty-eight of the forty-one. At that length a row stops reading as
+ * a group and starts reading as a paragraph of nouns, which people skim the way
+ * they skim a footer.
  *
- * The merges are meant rather than convenient. Protocols moved in with backend
- * because they are how you talk to one. Testing, analytics and editors joined
- * devops because they are all things that surround shipping rather than things
- * the product is built from.
+ * And every entry was drawn at the same size, so TypeScript and VS Code had
+ * identical weight. A list where React and Postman look equally important tells
+ * a reader the author has no centre of gravity, which is the opposite of what
+ * this section is for.
  *
- * AI stayed separate at three items, alone among the small groups, because it is
- * the positioning in the hero ("AI-adaptive frontend engineer") and folding it
- * into Frontend would bury the one line that differentiates him.
+ * Grouping by frequency fixes both at once. It gives the rows a natural shape,
+ * six then eight then twelve, and it licenses three different weights, so the
+ * page can say which of these actually do the work. It also says something true
+ * that a category cannot: "Backend & data" tells you what Postgres is, which
+ * the reader already knew; "Every day" tells you what it is to him.
  *
- * Order is deliberate: the craft, then the differentiator, then the range, then
- * the breadth. It degrades gracefully, since a reader who stops after two rows
- * has still seen the part that matters.
+ * Fifteen entries were cut, and the argument is the one this file already made
+ * when it dropped `html` and `css`: listing table stakes invites the reader to
+ * calibrate downwards. Git, GitHub and VS Code are that. `restAPI` is not a
+ * tool but a shape of API. Two analytics entries are one and a half too many.
+ * `javascript` is implied by `typescript`. `chakraui` is superseded here by
+ * Tailwind and shadcn/ui, so keeping it suggests the list is historical rather
+ * than current. Of two test runners only `playwright` stays.
+ *
+ * `zustand`, `sentry`, `posthog` and `aws` are the borderline ones. They are
+ * real claims rather than table stakes, and they came out to keep the third
+ * tier at a length someone will actually finish reading. They are the first
+ * things to add back.
+ *
+ * Claude moved into the top tier deliberately. The hero sells "AI-adaptive
+ * frontend engineer" and the old layout gave that claim three small pills in
+ * its quietest row, which undercut the one line that differentiates him.
  */
-const categories: Category[] = [
+const tiers: Tier[] = [
   {
-    label: "Frontend",
+    label: "Every day",
+    items: ["typescript", "react", "next", "tailwind", "claude", "vercel"],
+  },
+  {
+    label: "Often",
     items: [
-      "javascript",
-      "typescript",
-      "react",
-      "next",
-      "tailwind",
-      "shadcn",
-      "chakraui",
-      "gsap",
       "motion",
+      "node",
+      "postgres",
+      "supabase",
+      "shadcn",
       "reactQuery",
-      "zustand",
       "wagmi",
-      "solana",
+      "gsap",
     ],
   },
-  { label: "AI", items: ["openai", "googleGemini", "claude"] },
   {
-    label: "Backend & data",
+    label: "Shipped with",
     items: [
-      "node",
+      "solana",
+      "openai",
+      "googleGemini",
       "bun",
-      "postgres",
       "mongodb",
       "firebase",
-      "supabase",
-      "restAPI",
       "graphql",
       "websocket",
       "webrtc",
-    ],
-  },
-  {
-    label: "Infra & tooling",
-    items: [
-      "git",
-      "github",
       "docker",
-      "aws",
       "cloudflare",
-      "vercel",
       "playwright",
-      "vitest",
-      "sentry",
-      "posthog",
-      "googleAnalytics",
-      "vercelAnalytics",
-      "vscode",
-      "figma",
-      "postman",
     ],
   },
 ];
 
 /**
- * The toolkit, as one row per category.
+ * Three tiers, three weights.
  *
- * It used to stack each category vertically: a label on its own line, a 10px gap,
- * then a wrapped row of pills, with 24px between categories. Seven categories
- * meant seven labels and six gaps costing roughly 250px of height before a single
- * pill was drawn, on a section that is a scan-and-move-on list rather than
- * something anyone reads. Merging to four categories removed most of the rest.
+ * The weights are the point. A tier that renders the same as the one above it
+ * is just a heading, and headings were what made the old version long. So the
+ * top tier gets real pills at `text-sm` on the strong border, the middle tier
+ * gets the compact pill this section used throughout, and the last tier gets no
+ * pills at all: twelve names as running text, which is how you list something
+ * you want on the page but do not need anyone to stop at.
  *
- * Putting the label in its own column takes that height to zero: the label now
- * sits beside the pills it names instead of above them, and a hairline between
- * rows does the grouping that whitespace was doing. Adapted from the `stack`
- * section in ncdai/chanhdai.com, minus its dashed column rule, since ruled
- * dividers are an aesthetic this project has already turned down.
+ * That last tier is also why `stackLabel` exists. Printing the names as text
+ * would otherwise mean a second hand-typed copy of strings `labelMap` already
+ * owns.
  *
- * Below `sm` it falls back to stacked, because a fixed label column plus wrapped
- * pills does not fit 375px without shrinking the pills past legibility.
+ * The count sits opposite each label rather than under it. It is the one number
+ * that tells a reader how much of the row is left, and it costs no height where
+ * it is.
  *
- * The pills are compacted through `className` rather than by changing StackIcon's
- * defaults. `cn` is tailwind-merge, so the passed utilities win over the
- * component's own, and the larger pill stays intact at its other call site on the
- * work case-study page.
- *
- * The tags are `rounded-sm`, not `rounded-full`. At roughly 20px tall a capsule
- * and a 10px `rounded-md` corner are the same shape, so the only way to make a tag
- * read as a rounded rectangle at this size is to go below the previous smallest
- * step. See the radius scale in docs/design-system.md.
+ * The pills are compacted through `className` rather than by changing
+ * StackIcon's defaults. `cn` is tailwind-merge, so the passed utilities win
+ * over the component's own, and the larger pill stays intact at its other call
+ * site on the work case-study page.
  */
 const TechStack = () => {
   return (
-    <Section id="tech_stack" number="03" of="06" label="Toolkit" title="Tools I reach for" width="reading">
-      {/* `divide-y` rather than a border on the wrapper plus one per row: it
-          draws only between children, so the rules that boxed the section in at
-          the top and bottom are gone and only the internal grouping remains.
-          `py-4` gives each row more air now that there is no frame holding it. */}
+    <Section
+      id="tech_stack"
+      number="03"
+      of="06"
+      label="Toolkit"
+      title="Tools I reach for"
+      width="reading"
+    >
       <div className="divide-y divide-border">
-        {categories.map((cat, i) => (
-          <div
-            key={cat.label}
-            className="grid items-start gap-y-2 py-4 first:pt-0 last:pb-0 sm:grid-cols-[8.5rem_1fr] sm:gap-x-4"
-          >
-            <div
-              className="gutter-index font-mono text-2xs uppercase leading-5 tracking-label text-subtle"
-              data-index={String(i + 1).padStart(2, "0")}
-            >
-              {cat.label}
+        {tiers.map((tier, i) => (
+          <div key={tier.label} className="py-5 first:pt-0 last:pb-0">
+            <div className="mb-3 flex items-baseline justify-between gap-4">
+              <span className="font-mono text-2xs uppercase tracking-label text-subtle">
+                {tier.label}
+              </span>
+              <span className="font-mono text-2xs text-border-strong">
+                {String(tier.items.length).padStart(2, "0")}
+              </span>
             </div>
-            <ul className="flex flex-wrap gap-1.5">
-              {cat.items.map((t) => (
-                <li key={t} className="flex">
-                  <StackIcon
-                    name={t}
-                    showLabel
-                    size={14}
-                    className="px-2 py-0.5 text-2xs"
-                  />
-                </li>
-              ))}
-            </ul>
+
+            {i === 0 && (
+              <ul className="flex flex-wrap gap-2">
+                {tier.items.map((t) => (
+                  <li key={t} className="flex">
+                    <StackIcon
+                      name={t}
+                      showLabel
+                      size={16}
+                      className="gap-2 rounded-md border-border-strong bg-card px-3 py-1.5 text-sm font-medium text-foreground"
+                    />
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {i === 1 && (
+              <ul className="flex flex-wrap gap-1.5">
+                {tier.items.map((t) => (
+                  <li key={t} className="flex">
+                    <StackIcon name={t} showLabel size={14} className="px-2 py-0.5" />
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {i === 2 && (
+              <p className="max-w-[62ch] text-sm leading-relaxed text-subtle">
+                {tier.items.map(stackLabel).join(", ")}.
+              </p>
+            )}
           </div>
         ))}
       </div>
