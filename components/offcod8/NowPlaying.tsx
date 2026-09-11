@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowUpRight, MusicNotes } from "@phosphor-icons/react/ssr";
+import Curtain from "@/components/offcod8/Curtain";
+import { duration } from "@/lib/motionVariants";
 
 /**
  * What is playing behind the letter, and a way to go listen to it properly.
@@ -99,6 +101,18 @@ export default function NowPlaying() {
    * and only the button can undo it.
    */
   const [dismissed, setDismissed] = useState(false);
+  /**
+   * Whether the reader has crossed the threshold in front of the letter.
+   *
+   * This decides what is on screen and nothing else. The song is not held back
+   * for it: the video is already playing behind the curtain, and a browser that
+   * would let the sound out should let it out then rather than wait to be asked
+   * a second time. Where the browser refuses, the click on the curtain is the
+   * activation that changes its mind, which is what the curtain is for.
+   */
+  const [entered, setEntered] = useState(false);
+  /** The curtain is on its way out. Still mounted, mid-fade. */
+  const [leaving, setLeaving] = useState(false);
 
   // Trust the player over ourselves whenever it is talking. If it never talks
   // (the protocol below is undocumented and could change under us) fall back
@@ -125,11 +139,54 @@ export default function NowPlaying() {
     if (hasActivation()) setAttempted(true);
   }, [send]);
 
-  /** The button, which both starts it and takes back a dismissal. */
+  /** The note beside the track name, which also takes back a dismissal. */
   const play = useCallback(() => {
     setDismissed(false);
     start();
   }, [start]);
+
+  /**
+   * Crossing the threshold. The only thing that ever dismisses the curtain.
+   *
+   * The ask has been going out on a timer since the frame loaded, so on a
+   * browser that allows autoplay the song is already audible by the time this
+   * runs and this changes only what is on screen. The curtain stays up anyway.
+   * It briefly lifted itself in that case, on the reasoning that a door someone
+   * has already walked through has nothing left to ask for, and it looked like
+   * a glitch: an overlay appearing and then leaving without being touched reads
+   * as something misfiring, not as something being polite. Whether the song is
+   * already playing is the browser's business, not a reason to take the
+   * greeting away from a reader who has not finished reading it.
+   *
+   * Where the unmute was refused, this is the one gesture the page can count
+   * on: a real click, so it runs with activation behind it rather than hoping.
+   */
+  const enter = useCallback(() => {
+    // First, and synchronously. The browser grants audio for the length of the
+    // click's own call stack, so anything that defers this hands the permission
+    // back before it is used.
+    start();
+    setLeaving(true);
+  }, [start]);
+
+  /**
+   * Unmount once the fade has had its time.
+   *
+   * The delay is `duration.curtain` from lib/motionVariants, the same token the
+   * `duration-curtain` classes on the curtain resolve to through
+   * `--duration-curtain`. Reading the token rather than writing 3000 twice is
+   * what stops the unmount landing mid-fade if the value is ever tuned: a
+   * shorter timer than transition tears the curtain away, a longer one leaves a
+   * dead invisible layer on the page.
+   */
+  useEffect(() => {
+    if (!leaving) return;
+    const timer = window.setTimeout(
+      () => setEntered(true),
+      duration.curtain * 1000,
+    );
+    return () => window.clearTimeout(timer);
+  }, [leaving]);
 
   /**
    * Silence it again.
@@ -253,11 +310,12 @@ export default function NowPlaying() {
    * was guaranteed to refuse it, and the song never started. `touchend` is the
    * fix.
    *
-   * Desktop keeps one genuine gap. A trackpad or wheel scroll fires nothing on
-   * the activation list at all, so there the song waits for the first click or
-   * keypress, which is what the control beside this is for. Scrolling by
-   * keyboard (space, arrows, page-down) does start it, because that is a
-   * `keydown`.
+   * All of it is a safety net now rather than the way in. The curtain's click
+   * is the gesture that starts the song, and it is a click, so it always
+   * carries activation. This stays because the click can still land before the
+   * player has finished loading, and a command sent to a frame that is not
+   * ready is dropped rather than refused: the next scroll or tap asks again,
+   * and by then the browser has been interacted with, so the ask is allowed.
    *
    * Everything keeps listening until the player reports itself unmuted, so a
    * refused attempt costs nothing but the next gesture.
@@ -290,7 +348,14 @@ export default function NowPlaying() {
   }, [playing, dismissed, start]);
 
   return (
-    <div className="flex items-center gap-4 font-mono text-2xs uppercase tracking-label">
+    <div className="flex items-center gap-4">
+      {/* The curtain lives here rather than in the page because this component
+          owns the player. The page is a server component, so it cannot hand a
+          click handler to a client one, and `enter` has to be the same function
+          that talks to the frame: the unmute only carries activation if it runs
+          inside the click's own call stack. */}
+      {!entered && <Curtain leaving={leaving} onEnter={enter} />}
+
       {/* Fixed, so the picture stays still while the letter scrolls over it,
           and `-z-10` so it sits behind the page without leaving the layout
           layer the rest of the route lives in.
@@ -346,11 +411,17 @@ export default function NowPlaying() {
         <MusicNotes aria-hidden="true" className="h-3 w-3" />
       </button>
 
+      {/* The song's own name, set the way a name is set: the page's sans face,
+          the case it is actually written in. It was in the mono label style
+          this site uses for eyebrows and coordinates, which is right for
+          "[ 02 / 06 ]" and wrong for "Home Again". A title is not a label, and
+          putting it in small caps made the one human thing in this row read as
+          part of the furniture. */}
       <a
         href={WATCH_URL}
         target="_blank"
         rel="noreferrer"
-        className="flex items-center gap-1 text-subtle transition-colors duration-fast ease-out hover:text-foreground"
+        className="flex items-center gap-1 text-sm text-subtle transition-colors duration-fast ease-out hover:text-foreground"
       >
         {TRACK}
         <ArrowUpRight aria-hidden="true" className="h-3 w-3 shrink-0" />

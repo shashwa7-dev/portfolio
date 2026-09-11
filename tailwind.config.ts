@@ -135,6 +135,7 @@ const config: Config = {
         base: "var(--duration-base)",
         med:  "var(--duration-med)",
         slow: "var(--duration-slow)",
+        curtain: "var(--duration-curtain)",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
