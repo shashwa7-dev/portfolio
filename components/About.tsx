@@ -376,13 +376,15 @@ export default function About() {
 
       {/* The proof points, as a band rather than a box.
 
-          `band-gutters` is the same class `Band` uses, so the dotted gutters
-          run beside the numbers exactly as they do beside every section label.
-          `relative` is not decoration here: the dots are absolutely positioned
-          pseudo-elements and need this element as their containing block.
+          No gutter dots, and no tick. Both of those are how a `Band` says "a
+          labelled division of the page starts here", and this is not one: it
+          is the last line of the hero, carrying four numbers. Dotting its
+          margins made it claim the same rank as section 01 directly beneath
+          it, so the page appeared to start twice.
 
-          There is no tick. That mark means "a labelled division starts here",
-          and this carries numbers rather than a label.
+          Which means no `relative` either. That was only ever here to give the
+          dots' absolutely positioned pseudo-elements a containing block, and
+          nothing inside this is positioned.
 
           Top border only, and the header has no bottom padding. The next thing
           on the page is section 01's band, which draws its own top rule, so a
@@ -395,7 +397,7 @@ export default function About() {
           between the two rows run edge to edge. Left inside the padded column
           it stopped 24px short at each end, which reads as a broken line
           sitting between two full-width ones. */}
-      <div className="band-gutters relative mt-10 border-t border-border md:mt-12">
+      <div className="mt-10 border-t border-border md:mt-12">
         <Container width="reading">
           <div className="-mx-6 grid grid-cols-2 md:mx-0 md:grid-cols-4">
             {stats.map((s, i) => (
