@@ -7,7 +7,7 @@ import LetterAudio from "@/components/offcod8/LetterAudio";
 
 export const metadata: Metadata = {
   title: "A small note",
-  description: "Thanks for stopping by.",
+  description: "Thanks for dropping by.",
   alternates: { canonical: `${baseUrl}offcod8` },
   /** Unlisted: nothing links here, and nothing should index it either. */
   robots: { index: false, follow: false },
@@ -46,108 +46,76 @@ export default function Offcod8Page() {
 
       <Container width="reading">
         <article className="space-y-6 text-lg leading-relaxed text-muted-foreground">
+          {/* The greeting is the h1, and the last line of the letter says it
+              again. That bookend is the writer's own move and the reason the
+              heading is a sentence rather than a title. */}
           <h1 className="text-[clamp(2rem,5vw,2.75rem)] font-medium tracking-tight text-foreground">
-            Hey, you.
+            Thanks for dropping by.
           </h1>
 
           <p>
-            If you&apos;re reading this, you probably came here looking for
-            something.
+            I&apos;ve been thinking lately about how strange all of this is. How
+            much of it we spend trying to figure out what comes next.
           </p>
 
           <p>
-            Maybe you&apos;re figuring things out. Maybe you&apos;re building
-            something. Maybe you&apos;re wondering if you&apos;re where
-            you&apos;re supposed to be by now.
+            We make plans, change them, make new ones. We chase things we once
+            wanted, then find out we want something else. We grow. We lose
+            things. We find people, and we lose people too. We turn into
+            versions of ourselves we couldn&apos;t have imagined a few years
+            ago.
           </p>
 
-          <p>I don&apos;t know your story.</p>
+          <p>
+            And in between all of that, there are the ordinary little moments:
+          </p>
 
-          <p>But I do know this:</p>
+          {/* The one place the line breaks carry meaning. Each line is a
+              separate moment, and running them together as a sentence turns a
+              list of small things into one long clause. */}
+          <p>
+            a song playing on the way home,
+            <br />
+            a late-night conversation,
+            <br />
+            coffee on a quiet morning,
+            <br />
+            laughing until it hurts,
+            <br />
+            watching the sky for no particular reason.
+          </p>
 
-          {/* The two lines the letter is actually about. They get the section
-              heading's size, which is the largest thing on the page after the
-              greeting, so they land as statements rather than as more of the
-              paragraph around them. */}
+          <p>I used to treat those as the gaps between the real thing.</p>
+
+          {/* The two lines the letter turns on. They get the section heading's
+              size, which is the largest thing on the page after the greeting,
+              so they land as statements rather than as more of the paragraph
+              around them. */}
           <p className="py-2 text-2xl font-medium leading-snug tracking-tight text-foreground md:text-3xl">
-            You don&apos;t have to have it all figured out.
+            I&apos;m starting to think they are the real thing.
           </p>
 
           <p>
-            Some days you&apos;ll feel like you&apos;re moving forward. Some
-            days you&apos;ll feel like you&apos;ve done nothing at all.
+            So I&apos;m trying to look up more often. To pay attention to the
+            people around me. To make time for things that don&apos;t need to
+            become anything. To stay in a good moment instead of immediately
+            wondering what&apos;s next.
           </p>
 
           <p>
-            Some people will seem miles ahead of you. You&apos;ll wonder if
-            you&apos;re falling behind.
-          </p>
-
-          <p>You&apos;re not.</p>
-
-          <p>
+            I don&apos;t know where any of this is going.{" "}
             <strong className="font-semibold text-foreground">
-              Life isn&apos;t a race, even though it really likes to make us
-              feel like it is.
+              Nobody does.
             </strong>
           </p>
 
-          <p>Take your time.</p>
-
           <p>
-            It&apos;s okay if the plan changes.
-            <br />
-            It&apos;s okay if you change.
-            <br />
-            It&apos;s okay to rest.
-            <br />
-            It&apos;s okay to start over.
-            <br />
-            It&apos;s okay to not be at your best every day.
-          </p>
-
-          <p>
-            You don&apos;t need to be productive every minute. You don&apos;t
-            need to turn every year into a success story.
-          </p>
-
-          <p>Sometimes, getting through the day is enough.</p>
-
-          <p>
-            And someday, you&apos;ll look back at a version of yourself that was
-            worried about everything you&apos;re worried about now, and
-            you&apos;ll realise:
+            So here&apos;s to the plans that never finished, the turns nobody
+            saw coming, the good days and the strange ones.
           </p>
 
           <p className="py-2 text-2xl font-medium leading-snug tracking-tight text-foreground md:text-3xl">
-            you were doing just fine.
-          </p>
-
-          <p>So keep going.</p>
-
-          <p>Not because you need to become someone else.</p>
-
-          <p>
-            But because there&apos;s still a lot of life left for you to live.
-          </p>
-
-          <p>
-            Take care of yourself.
-            <br />
-            Call someone you love.
-            <br />
-            Go outside.
-            <br />
-            Listen to good music.
-            <br />
-            Make mistakes.
-            <br />
-            Laugh a little more.
-          </p>
-
-          <p>
-            And don&apos;t forget to enjoy the life you&apos;re working so hard
-            to build.
+            Here&apos;s to being here.
           </p>
 
           {/* The sign-off, on the same hairline every band on the site uses.
@@ -160,7 +128,7 @@ export default function Offcod8Page() {
               them.
 
               `aria-hidden` on both. A screen reader announcing "hand waving"
-              ahead of "thanks for stopping by" adds a word and no meaning, and
+              ahead of "thanks for dropping by" adds a word and no meaning, and
               the nib would announce the signature as an object rather than
               reading it as one. */}
           <footer className="space-y-4 border-t border-border pt-7">
@@ -169,7 +137,7 @@ export default function Offcod8Page() {
                 aria-hidden="true"
                 className="h-5 w-5 shrink-0 text-subtle"
               />
-              Thanks for stopping by.
+              Thanks for dropping by. Keep going.
             </p>
             <p className="flex items-center gap-3 text-foreground">
               <PenNib
