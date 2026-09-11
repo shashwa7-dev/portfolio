@@ -41,6 +41,23 @@ const EMBED = `${ORIGIN}/embed/${VIDEO_ID}?${new URLSearchParams({
 }).toString()}`;
 
 /**
+ * How many times to ask for sound before the page has been touched.
+ *
+ * Some browsers will just say yes. Chrome keeps a Media Engagement score per
+ * origin and grants autoplay outright once a visitor has played enough media
+ * here, and any browser will grant it if the visitor has allowed sound for the
+ * site in their own settings. In those cases the song starts on load with no
+ * gesture at all, which is the whole point of asking.
+ *
+ * Where permission is not granted the ask is refused silently, so the budget is
+ * what stops a refusal from becoming a loop: the player reports its state
+ * several times a second once it is playing, and retrying on every report would
+ * mean thousands of doomed postMessages behind the letter. Four is enough to
+ * cover the player still warming up when the first ask goes out.
+ */
+const UNPROMPTED_TRIES = 4;
+
+/**
  * Did the browser grant audio permission for this call stack?
  *
  * Scrolling is the gesture this page listens for, and on a phone that works:
@@ -60,6 +77,7 @@ function hasActivation() {
 
 export default function NowPlaying() {
   const frame = useRef<HTMLIFrameElement | null>(null);
+  const unpromptedTries = useRef(0);
 
   /** The player's own answer, or null until it has given one. */
   const [reportedMuted, setReportedMuted] = useState<boolean | null>(null);
@@ -112,20 +130,53 @@ export default function NowPlaying() {
         return;
       }
 
+      const frameEvent = (data as { event?: unknown } | null)?.event;
       const info = (data as { info?: { muted?: unknown } } | null)?.info;
-      if (info && typeof info.muted === "boolean") setReportedMuted(info.muted);
+
+      if (info && typeof info.muted === "boolean") {
+        setReportedMuted(info.muted);
+        if (!info.muted) return;
+      }
+
+      // Still muted, and the player is now answering, so it is ready to be
+      // told what to do. Ask again, within the budget: the ask on `onLoad`
+      // often lands before the player has finished setting itself up, and a
+      // command sent then is dropped rather than refused.
+      if (frameEvent === "onReady" || info) {
+        if (unpromptedTries.current >= UNPROMPTED_TRIES) return;
+        unpromptedTries.current += 1;
+        start();
+      }
     };
 
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
-  }, []);
+  }, [start]);
 
-  const subscribe = useCallback(() => {
+  /**
+   * Open the channel the moment the frame exists, and ask for sound straight
+   * away rather than waiting to be touched.
+   *
+   * There is no trick available here and no way to force it: an unmute with no
+   * user activation behind it is decided entirely by the browser, and a browser
+   * that says no says nothing. What this does is make sure the question gets
+   * asked at the earliest possible moment, so that every visitor whose browser
+   * would say yes hears the song on load instead of on their first click.
+   *
+   * The frame itself still loads with `mute=1`. Muted autoplay is the one form
+   * of autoplay that is always permitted, so the video is already playing and
+   * buffered by the time any of this runs, and lifting the mute is instant
+   * whenever it is finally allowed. Asking for unmuted autoplay up front would
+   * trade that for a player sitting paused whenever the answer was no.
+   */
+  const onFrameLoad = useCallback(() => {
     frame.current?.contentWindow?.postMessage(
       JSON.stringify({ event: "listening", id: VIDEO_ID, channel: "widget" }),
       ORIGIN,
     );
-  }, []);
+    unpromptedTries.current += 1;
+    start();
+  }, [start]);
 
   /**
    * Scrolling is the interaction. Reading a letter means scrolling it, so the
@@ -190,7 +241,7 @@ export default function NowPlaying() {
         ref={frame}
         title="Music"
         src={EMBED}
-        onLoad={subscribe}
+        onLoad={onFrameLoad}
         allow="autoplay; encrypted-media"
         aria-hidden="true"
         tabIndex={-1}
