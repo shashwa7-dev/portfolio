@@ -119,10 +119,13 @@ const tiers: Tier[] = [
  * that tells a reader how much of the row is left, and it costs no height where
  * it is.
  *
- * The pills are compacted through `className` rather than by changing
- * StackIcon's defaults. `cn` is tailwind-merge, so the passed utilities win
- * over the component's own, and the larger pill stays intact at its other call
- * site on the work case-study page.
+ * The pills are sized through `className` rather than by changing StackIcon's
+ * defaults. `cn` is tailwind-merge, so the passed utilities win over the
+ * component's own, and the default pill stays intact at its other call sites.
+ *
+ * Only padding, type size and border colour are overridden here. The corner
+ * stays whatever StackIcon says it is, so the three sizes read as one component
+ * rather than three, and changing the radius is a one-line change in one file.
  */
 const TechStack = () => {
   return (
@@ -154,7 +157,7 @@ const TechStack = () => {
                       name={t}
                       showLabel
                       size={16}
-                      className="gap-2 rounded-md border-border-strong bg-card px-3 py-1.5 text-sm font-medium text-foreground"
+                      className="border-border-strong px-4 py-2 text-sm font-medium text-foreground"
                     />
                   </li>
                 ))}
@@ -165,7 +168,7 @@ const TechStack = () => {
               <ul className="flex flex-wrap gap-1.5">
                 {tier.items.map((t) => (
                   <li key={t} className="flex">
-                    <StackIcon name={t} showLabel size={14} className="px-2 py-0.5" />
+                    <StackIcon name={t} showLabel size={14} className="px-2.5 py-1" />
                   </li>
                 ))}
               </ul>
