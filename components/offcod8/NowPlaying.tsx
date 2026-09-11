@@ -313,7 +313,7 @@ export default function NowPlaying() {
   }, [entered, playing, dismissed, start]);
 
   return (
-    <div className="flex items-center gap-4 font-mono text-2xs uppercase tracking-label">
+    <div className="flex items-center gap-4">
       {/* The curtain lives here rather than in the page because this component
           owns the player. The page is a server component, so it cannot hand a
           click handler to a client one, and `enter` has to be the same function
@@ -376,11 +376,17 @@ export default function NowPlaying() {
         <MusicNotes aria-hidden="true" className="h-3 w-3" />
       </button>
 
+      {/* The song's own name, set the way a name is set: the page's sans face,
+          the case it is actually written in. It was in the mono label style
+          this site uses for eyebrows and coordinates, which is right for
+          "[ 02 / 06 ]" and wrong for "Home Again". A title is not a label, and
+          putting it in small caps made the one human thing in this row read as
+          part of the furniture. */}
       <a
         href={WATCH_URL}
         target="_blank"
         rel="noreferrer"
-        className="flex items-center gap-1 text-subtle transition-colors duration-fast ease-out hover:text-foreground"
+        className="flex items-center gap-1 text-sm text-subtle transition-colors duration-fast ease-out hover:text-foreground"
       >
         {TRACK}
         <ArrowUpRight aria-hidden="true" className="h-3 w-3 shrink-0" />

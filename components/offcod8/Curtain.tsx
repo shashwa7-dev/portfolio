@@ -108,21 +108,24 @@ export default function Curtain({ onEnter }: { onEnter: () => void }) {
               An open door rather than an arrow. The line above it says "come on
               in", so the page already has a better word for this than "next",
               and an arrow in a circle is the shape every site uses for every
-              destination. A door is the one this page actually means.
+              destination. A door is the one this page actually means. "Enter"
+              beside it because a glyph alone still asks the reader to guess,
+              and one plain word in the page's own face costs nothing: this is
+              the CTA, not an eyebrow, so it is sentence case in the sans
+              family rather than the mono small caps the site puts on labels.
 
-              Decoration rather than a control. The button is the whole overlay,
-              so a click anywhere still works and this only shows where to aim.
-              `aria-hidden` keeps it from being announced as a second thing to
-              press, and the lines above remain the button's accessible name.
+              Still not a second control. The button is the whole overlay, so a
+              click anywhere works and this only shows where to aim. It is not
+              hidden from assistive tech, though, so "Enter" joins the two lines
+              in the button's accessible name rather than being a word only
+              sighted readers get.
 
               It lights on hover of the overlay, not of itself, which is the
               other half of the message: the target is everything, not the
               circle. */}
-          <span
-            aria-hidden
-            className="mt-2 flex h-11 w-11 items-center justify-center rounded-full border border-border-strong text-foreground transition-colors duration-base ease-out group-hover:bg-muted"
-          >
-            <DoorOpen className="h-5 w-5" />
+          <span className="mt-2 flex items-center gap-2 rounded-full border border-border-strong px-5 py-2.5 text-sm font-medium text-foreground transition-colors duration-base ease-out group-hover:bg-muted">
+            <DoorOpen aria-hidden="true" className="h-4 w-4 shrink-0" />
+            Enter
           </span>
         </button>
       </div>
