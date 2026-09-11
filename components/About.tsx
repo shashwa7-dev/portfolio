@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Check, ArrowRight, Coffee } from "@phosphor-icons/react/ssr";
 import Container from "@/components/layout/Container";
 import AvatarHover from "@/components/AvatarHover";
@@ -104,10 +105,26 @@ export default function About() {
 
                 The whole avatar is the hover target, not just the band. It is a
                 far larger area to hit, and it keeps the band `pointer-events-none`
-                so it cannot swallow the hover that arms the avatar's own GIF. */}
+                so it cannot swallow the hover that arms the avatar's own GIF.
+
+                It is also a link, to /offcod8. Nothing else on the site points
+                there and nothing says it is there, which is the idea: the page
+                is a letter left for whoever pokes at the one thing on the
+                homepage that looks like a person rather than a control. The
+                accessible name is left to come from the contents, "Shashwat
+                Tripathi" and "Open to work", rather than being overridden with
+                an `aria-label` naming the destination. That keeps the name it
+                has today and keeps the surprise intact for everyone equally.
+
+                `block` because an `<a>` is inline by default. Flex would
+                blockify it here anyway, but the `overflow-hidden` that clips
+                the band to the rounded corners should not depend on that. */}
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="group relative shrink-0 overflow-hidden rounded-2xl border border-border-strong shadow-md shadow-black/10 dark:shadow-lg dark:shadow-black/40">
+                <Link
+                  href="/offcod8"
+                  className="group relative block shrink-0 overflow-hidden rounded-2xl border border-border-strong shadow-md shadow-black/10 dark:shadow-lg dark:shadow-black/40"
+                >
                   <AvatarHover />
                   <Shimmer className="absolute inset-x-0 bottom-0 block">
                     <span className="pointer-events-none flex items-center justify-center gap-1 bg-black/65 py-px font-mono text-2xs font-medium uppercase tracking-label text-white backdrop-blur-[2px]">
@@ -116,7 +133,7 @@ export default function About() {
                       <span className="sr-only">Open to work</span>
                     </span>
                   </Shimmer>
-                </div>
+                </Link>
               </TooltipTrigger>
               <TooltipContent>Open to work</TooltipContent>
             </Tooltip>
@@ -173,7 +190,6 @@ export default function About() {
                   half of the same question for a client in another timezone. */}
               <LocalTime />
             </div>
-
           </div>
 
           {/* The positioning statement. Still the line doing the selling, but a
@@ -197,8 +213,10 @@ export default function About() {
           {/* lede (no em-dashes, no org names — generic AI-adaptive positioning) */}
           <p className="max-w-[56ch] text-lg text-muted-foreground">
             I&apos;m Shashwat, an{" "}
-            <span className="text-foreground">AI-adaptive frontend engineer</span>.
-            Across 9+ production products with top AI and Web3 teams, I turn
+            <span className="text-foreground">
+              AI-adaptive frontend engineer
+            </span>
+            . Across 9+ production products with top AI and Web3 teams, I turn
             complex ideas into fast, polished, accessible UIs. Reach me at{" "}
             <a
               href="mailto:contact@shashwa7.in"
@@ -335,7 +353,7 @@ export default function About() {
                   key={c.name}
                   className={cn(
                     "relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-secondary outline outline-1 outline-border ring-2 ring-background",
-                    i > 0 && "-ml-2"
+                    i > 0 && "-ml-2",
                   )}
                 >
                   <Image
@@ -387,7 +405,7 @@ export default function About() {
                   "px-6 py-4 md:px-0",
                   i > 0 && "md:border-l md:border-border md:pl-4",
                   i % 2 === 1 && "border-l border-border",
-                  i >= 2 && "border-t border-border md:border-t-0"
+                  i >= 2 && "border-t border-border md:border-t-0",
                 )}
               >
                 <div className="text-xl font-medium tabular-nums tracking-tight text-foreground">
@@ -401,7 +419,6 @@ export default function About() {
           </div>
         </Container>
       </div>
-
     </header>
   );
 }

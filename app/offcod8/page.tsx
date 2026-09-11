@@ -17,9 +17,11 @@ export const metadata: Metadata = {
 /**
  * An unlisted letter, with a song behind it.
  *
- * Nothing links here: not `navLinks`, not `footerLinks`, not the sitemap, and
- * `robots` is noindex. The only way to arrive is to be told the URL, which is
- * the whole idea. It is a note left for whoever went looking.
+ * One way in, and it is not signposted: the avatar in the homepage hero. Not
+ * `navLinks`, not `footerLinks`, not the sitemap, and `robots` stays noindex
+ * even though the page is now linked, because a search result would give it
+ * away and the point is that you find it by poking at the one thing on the
+ * homepage that looks like a person rather than a control.
  *
  * The only route with no chrome: no navbar, no footer, no rails, no page band.
  * A letter arrives on its own, and a reader who has to get past a nav bar and
