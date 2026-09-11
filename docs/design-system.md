@@ -303,7 +303,8 @@ import StackIcon from "@/components/common/StackIcon";
 
 Supported names: `html`, `css`, `typescript`, `react`, `next`, `tailwind`, `motion`, `gsap`, `node`, `graphql`, `postgres`, `mongodb`, `firebase`, `docker`, `figma`, `vercel`, `git`, `github`, `supabase`, `shadcn`, `bun`, and more -- see `StackName` type in `components/common/StackIcon.tsx`.
 
-Icons use `simple-icons` for brand logos. UI icons use `lucide-react`.
+Icons use `simple-icons` for brand and technology marks. UI icons use
+`@phosphor-icons/react`, imported from its `/ssr` entry.
 
 ### Card surface
 
@@ -327,7 +328,8 @@ Icons use `simple-icons` for brand logos. UI icons use `lucide-react`.
 
 ## Icons
 
-- **UI icons**: `lucide-react` (outlined, consistent weight).
+- **UI icons**: `@phosphor-icons/react/ssr` (outlined, `regular` weight by
+  default; pass `weight="bold"` where lucide used `strokeWidth`).
 - **Brand / tech logos**: `simple-icons` accessed via the `StackIcon` component abstraction.
 - Do not use emoji as icons in components.
 

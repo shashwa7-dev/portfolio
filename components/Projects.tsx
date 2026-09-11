@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight } from "@phosphor-icons/react/ssr";
 import { sideProjects } from "@/lib/projectsData";
 import { sideProjectToCard } from "@/lib/projectCards";
 import ProjectPreviewCard from "./ProjectPreviewCard";

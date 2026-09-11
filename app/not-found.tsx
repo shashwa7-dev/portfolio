@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Home } from "lucide-react";
+import { ArrowLeft, House } from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/button";
 import Container from "@/components/layout/Container";
 import PageBand from "@/components/layout/PageBand";
@@ -64,7 +64,7 @@ export default function NotFound() {
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild>
               <Link href="/">
-                <Home />
+                <House />
                 Go home
               </Link>
             </Button>

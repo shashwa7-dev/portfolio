@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "@phosphor-icons/react/ssr";
 import Container from "@/components/layout/Container";
 import PageBand from "@/components/layout/PageBand";
 import Section from "@/components/layout/Section";

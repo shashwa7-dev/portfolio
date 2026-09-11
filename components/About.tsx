@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Check, ArrowRight, Mail } from "lucide-react";
+import { Check, ArrowRight, Envelope } from "@phosphor-icons/react/ssr";
 import Container from "@/components/layout/Container";
 import AvatarHover from "@/components/AvatarHover";
 import LocalTime from "@/components/LocalTime";
@@ -148,7 +148,7 @@ export default function About() {
                   role="img"
                   aria-label="Verified"
                 >
-                  <Check className="h-2.5 w-2.5" strokeWidth={3} />
+                  <Check className="h-2.5 w-2.5" weight="bold" />
                 </span>
               </div>
               {/* No margins on these two: `justify-between` on the column owns
@@ -218,7 +218,7 @@ export default function About() {
               href="mailto:contact@shashwa7.in"
               className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors duration-fast ease-out hover:text-foreground"
             >
-              <Mail className="h-4 w-4" /> Get in touch
+              <Envelope className="h-4 w-4" /> Get in touch
             </a>
           </div>
 

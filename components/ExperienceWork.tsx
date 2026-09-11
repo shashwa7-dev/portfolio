@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight } from "@phosphor-icons/react/ssr";
 import { organizations } from "@/lib/workData";
 import { formatPeriod, formatTenure } from "@/lib/tenure";
 import Section from "@/components/layout/Section";

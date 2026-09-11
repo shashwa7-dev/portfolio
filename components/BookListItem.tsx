@@ -1,5 +1,5 @@
 import { Book as BookProps } from "@/lib/books";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight } from "@phosphor-icons/react/ssr";
 import Image from "next/image";
 import Link from "next/link";
 

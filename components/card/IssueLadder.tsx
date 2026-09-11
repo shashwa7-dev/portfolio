@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { X } from "lucide-react";
+import { X } from "@phosphor-icons/react/ssr";
 import { ISSUES } from "@/lib/card/issues";
 import { specimenData } from "@/lib/card/specimens";
 import { drawTicket, CARD_W, CARD_H } from "@/lib/card/ticket";

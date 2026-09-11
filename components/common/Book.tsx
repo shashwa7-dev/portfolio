@@ -1,7 +1,7 @@
 "use client";
 
 import { Book as BookProps } from "@/lib/books";
-import { Check } from "lucide-react";
+import { Check } from "@phosphor-icons/react/ssr";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -59,7 +59,7 @@ export default function Book({
            the corner rather than flush, so it reads as placed on the cover
            rather than clipped by it. */
         <span className="absolute right-1.5 top-1.5 z-10 grid h-6 w-6 place-items-center rounded-full bg-foreground text-background ring-2 ring-card">
-          <Check className="h-3.5 w-3.5" strokeWidth={3} />
+          <Check className="h-3.5 w-3.5" weight="bold" />
         </span>
       )}
 

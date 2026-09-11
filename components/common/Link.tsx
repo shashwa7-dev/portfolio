@@ -1,4 +1,4 @@
-import { ExternalLink } from "lucide-react";
+import { ArrowSquareOut } from "@phosphor-icons/react/ssr";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -26,7 +26,7 @@ export const Link: React.FC<LinkProps> = ({
         {...props}
       >
         <span className="capitalize">{name}</span>
-        <ExternalLink className="size-4" />
+        <ArrowSquareOut className="size-4" />
       </a>
     </Button>
   );

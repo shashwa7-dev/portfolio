@@ -67,7 +67,7 @@ Each cell needs `bg-card` so the 1px `bg-border` gap is visible as a hairline se
 - **Card**: `rounded-2xl border border-border bg-card p-6`
 - **Badge**: `rounded-full bg-accent/15 text-accent font-mono text-[11px] uppercase tracking-[0.12em]`
 - **Inline link**: `underline decoration-accent/50 underline-offset-4 hover:decoration-accent`
-- **StackIcon**: `<StackIcon name="react" />` -- use for brand/tech icons; `lucide-react` for UI icons
+- **StackIcon**: `<StackIcon name="react" />` -- use for brand/tech icons; `@phosphor-icons/react/ssr` for UI icons
 
 ## Motion rules
 
@@ -78,7 +78,7 @@ Each cell needs `bg-card` so the 1px `bg-border` gap is visible as a hairline se
 
 ## Icons
 
-- UI icons: `lucide-react` (outlined).
+- UI icons: `@phosphor-icons/react/ssr` (outlined). Weight, not stroke width: Phosphor has no `strokeWidth` prop, it has `weight`.
 - Brand logos: `simple-icons` via `StackIcon` component. Do not import `simple-icons` directly.
 
 ## Copy rules

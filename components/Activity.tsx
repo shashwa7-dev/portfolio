@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight } from "@phosphor-icons/react/ssr";
 import { books } from "@/lib/books";
 import BookListItem from "./BookListItem";
 import Section from "@/components/layout/Section";

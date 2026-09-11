@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { ArrowUpRight, Play, Square } from "lucide-react";
+import { ArrowUpRight, Play, Square } from "@phosphor-icons/react/ssr";
 import { cn } from "@/lib/utils";
 import type { Track } from "@/lib/playlist";
 

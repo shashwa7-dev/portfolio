@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Copy, FileText } from "lucide-react";
+import { Check, Copy, FileText } from "@phosphor-icons/react/ssr";
 import { cn } from "@/lib/utils";
 import IconSwap from "@/components/common/IconSwap";
 

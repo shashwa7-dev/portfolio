@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Mail } from "lucide-react";
+import { Envelope } from "@phosphor-icons/react/ssr";
 import Container from "@/components/layout/Container";
 import { SVGS } from "./SVGS";
 import { footerLinks, socialLinks, contactEmail } from "@/lib/siteLinks";
@@ -173,7 +173,7 @@ const Footer = () => {
                   title={contactEmail}
                   className="grid h-11 w-11 place-items-center rounded-lg border border-border-strong text-muted-foreground transition-colors duration-fast ease-out hover:bg-elevated hover:text-foreground"
                 >
-                  <Mail aria-hidden="true" className="h-4 w-4" />
+                  <Envelope aria-hidden="true" className="h-4 w-4" />
                   <span className="sr-only">Email {contactEmail}</span>
                 </a>
               </li>

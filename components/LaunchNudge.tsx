@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "@phosphor-icons/react/ssr";
 
 const STORAGE_KEY = "nudge:mehfil:v1";
 const APPEAR_AFTER_MS = 2500;

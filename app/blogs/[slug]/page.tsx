@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "@phosphor-icons/react/ssr";
 import { CustomMDX } from "@/components/common/mdx";
 import StickyScrollSpyTOC from "@/components/common/StickyScrollSpyTOC";
 import { tocFromMdx } from "@/lib/toc";

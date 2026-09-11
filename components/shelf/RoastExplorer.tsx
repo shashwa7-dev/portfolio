@@ -2,7 +2,7 @@
 
 import { useId, useState, type CSSProperties } from "react";
 import Image from "next/image";
-import { Check, Minus, TriangleAlert } from "lucide-react";
+import { Check, Minus, Warning } from "@phosphor-icons/react/ssr";
 import { cn } from "@/lib/utils";
 import Scrubber from "@/components/ui/Scrubber";
 import { ROAST_STOPS, type Fit, type RoastStop } from "@/lib/roasts";
@@ -34,7 +34,7 @@ import { ROAST_STOPS, type Fit, type RoastStop } from "@/lib/roasts";
 const FIT: Record<Fit, { label: string; icon: typeof Check; className: string }> = {
   great: { label: "Great", icon: Check, className: "text-good" },
   works: { label: "Works", icon: Minus, className: "text-muted-foreground" },
-  tricky: { label: "Tricky", icon: TriangleAlert, className: "text-caution" },
+  tricky: { label: "Tricky", icon: Warning, className: "text-caution" },
 };
 
 export default function RoastExplorer() {

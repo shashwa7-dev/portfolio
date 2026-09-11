@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "@phosphor-icons/react/ssr";
 import { getSideProject, getAllSideProjects } from "@/lib/projectsData";
 import { baseUrl } from "@/app/sitemap";
 import Container from "@/components/layout/Container";

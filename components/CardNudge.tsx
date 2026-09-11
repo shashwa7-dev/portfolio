@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight } from "@phosphor-icons/react/ssr";
 import { cn } from "@/lib/utils";
 import { FAN_STOCKS } from "@/components/card/CardFan";
 

@@ -2,16 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import {
-  Check,
-  Copy,
-  Download,
-  Pencil,
-  UserRound,
-  Share2,
-  Volume2,
-  VolumeX,
-} from "lucide-react";
+import { Check, Copy, DownloadSimple, Pencil, User, ShareNetwork, SpeakerHigh, SpeakerSlash } from "@phosphor-icons/react/ssr";
 import { ISSUES } from "@/lib/card/issues";
 import { isPerfect, issueFromTotal, pipTotal } from "@/lib/card/dice";
 import { serialFrom } from "@/lib/card/seed";
@@ -792,7 +783,7 @@ export default function CardMinter({
                             The tooltip and the aria-label carry the cost
                             (the serial goes too); the icon just has to name
                             the subject. */}
-                        <UserRound className="h-3.5 w-3.5" aria-hidden="true" />
+                        <User className="h-3.5 w-3.5" aria-hidden="true" />
                       </button>
                     </TooltipTrigger>
                     {/* Plainly what it costs, not "regenerate if you don't
@@ -810,7 +801,7 @@ export default function CardMinter({
                         aria-label="Download the card as a PNG"
                         className={TOOLBAR_BUTTON}
                       >
-                        <Download className="h-3.5 w-3.5" aria-hidden="true" />
+                        <DownloadSimple className="h-3.5 w-3.5" aria-hidden="true" />
                       </button>
                     </TooltipTrigger>
                     <TooltipContent>Download PNG</TooltipContent>
@@ -823,7 +814,7 @@ export default function CardMinter({
                           aria-label="Share your card"
                           className={TOOLBAR_BUTTON}
                         >
-                          <Share2 className="h-3.5 w-3.5" aria-hidden="true" />
+                          <ShareNetwork className="h-3.5 w-3.5" aria-hidden="true" />
                         </PopoverTrigger>
                       </TooltipTrigger>
                       <TooltipContent>Share</TooltipContent>
@@ -832,7 +823,7 @@ export default function CardMinter({
                         file-carrying Web Share: see handleShareTrigger, and
                         in practice that means every laptop.
 
-                        The X mark is the real one from SVGS, not lucide's
+                        The X mark is the real one from SVGS, not Phosphor's
                         `X`, which is its close glyph. A dismiss cross
                         labelled "Share on X" was the wrong icon twice over:
                         wrong brand, and the one symbol in the menu that
@@ -877,9 +868,9 @@ export default function CardMinter({
                     className={TOOLBAR_BUTTON}
                   >
                     {muted ? (
-                      <VolumeX className="h-3.5 w-3.5" aria-hidden="true" />
+                      <SpeakerSlash className="h-3.5 w-3.5" aria-hidden="true" />
                     ) : (
-                      <Volume2 className="h-3.5 w-3.5" aria-hidden="true" />
+                      <SpeakerHigh className="h-3.5 w-3.5" aria-hidden="true" />
                     )}
                   </button>
                 </TooltipTrigger>
