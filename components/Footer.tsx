@@ -88,14 +88,20 @@ const Footer = () => {
               offcod8
             </span>
           </Link>
-          {/* Two lines, and the column decides what fits. At four tracks this
-              cell is about 148px wide, roughly twenty characters a line, so the
-              old `max-w-[34ch]` never engaged and the previous sentence ran to
-              four lines. Measured: this is the longest wording that lands on
-              two. The positioning belongs to the hero anyway; the footer only
-              needs to say what he does and where he is doing it. */}
+          {/* Role, then one tagline. Two lines, and the column decides what
+              fits: at four tracks this cell is 148px, roughly twenty characters
+              a line, which is why an earlier `max-w-[34ch]` never engaged and
+              the original sentence ran to four.
+
+              Measured against the rendered element rather than guessed. The
+              full hero line, "interfaces that ship and scale", runs to three
+              here; dropping "and scale" is what buys the second line back.
+
+              No employer. The current role is already in Experience and on the
+              org page, and a footer that names it becomes a thing to remember
+              to edit on the day it changes. */}
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            Frontend engineer. Currently at ShopOS.
+            Frontend engineer. Interfaces that ship.
           </p>
         </div>
 
