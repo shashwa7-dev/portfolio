@@ -21,10 +21,10 @@ import { ArrowUpRight, MusicNotes } from "@phosphor-icons/react/ssr";
  * listeners below never see it, so the one gesture that was going to lift the
  * mute would be the one gesture that could not.
  */
-const VIDEO_ID = "RkqCCWxv3ZU";
+const VIDEO_ID = "_Lo2gPHqfnI";
 const WATCH_URL = `https://www.youtube.com/watch?v=${VIDEO_ID}`;
-const TRACK = "Home Again";
-const ARTIST = "PJ Morton";
+const TRACK = "Home Again (Live)";
+const ARTIST = "PJ Morton, Afro Orleans";
 const ORIGIN = "https://www.youtube-nocookie.com";
 
 const EMBED = `${ORIGIN}/embed/${VIDEO_ID}?${new URLSearchParams({
@@ -241,15 +241,16 @@ export default function NowPlaying() {
   }, [playing, start]);
 
   return (
-    <div className="flex items-center gap-4 font-mono text-2xs uppercase tracking-label">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-2xs uppercase tracking-label">
       {/* Fixed, so the picture stays still while the letter scrolls over it,
           and `-z-10` so it sits behind the page without leaving the layout
           layer the rest of the route lives in.
 
-          A light scrim, 25% of the page background: enough to take the glare
-          off a bright frame and settle the video behind the page, not enough
-          to flatten it. The panel is still what carries the letter's
-          contrast, which is why this can stay this thin. */}
+          The scrim is the only thing between the letter and the video now
+          that the panel behind the text is gone, so it carries the contrast
+          on its own: 90% of the page background, the value the panel used to
+          hold. Being the page's own token is what lets one number serve both
+          themes, dimming towards paper in light and towards ink in dark. */}
       <div
         aria-hidden
         className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
@@ -264,7 +265,7 @@ export default function NowPlaying() {
           tabIndex={-1}
           className="embed-cover"
         />
-        <span className="absolute inset-0 bg-background/25" />
+        <span className="absolute inset-0 bg-background/90" />
       </div>
 
       <button
