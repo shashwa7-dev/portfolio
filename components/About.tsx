@@ -235,6 +235,17 @@ export default function About() {
               cells never were, and small enough to stay a footnote to the
               claim rather than competing with it.
 
+              Overlapped by 8px rather than spaced. An even row reads as five
+              separate marks; a stack reads as one group, which is what a list
+              of brands is. Spacing them out was tried while this row was
+              centred, where overlap made the cluster look off-axis, and that
+              reason went away when the row moved left with the rest of the
+              hero.
+
+              `ring-2 ring-background` comes back with the overlap. Its only job
+              is to cut a gap between circles that touch; without it the stack
+              reads as one smeared shape.
+
               `alt=""` is correct rather than lazy: the names sit in text in the
               same link, so labelling the images too would make a screen reader
               announce each brand twice. */}
@@ -245,11 +256,14 @@ export default function About() {
             <span className="font-mono text-2xs uppercase tracking-label text-subtle">
               Worked with
             </span>
-            <span className="flex items-center gap-2">
-              {clients.map((c) => (
+            <span className="flex items-center">
+              {clients.map((c, i) => (
                 <span
                   key={c.name}
-                  className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-secondary outline outline-1 outline-border"
+                  className={cn(
+                    "relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-secondary outline outline-1 outline-border ring-2 ring-background",
+                    i > 0 && "-ml-2"
+                  )}
                 >
                   <Image
                     src={c.img}
