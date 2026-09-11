@@ -200,12 +200,14 @@ export default function Offcod8Page() {
 
             <p>For a while, music was a big part of my life.</p>
 
-            {/* The cities are lifted the same way the school is, with
-                `<strong>`. That is the only emphasis device this codebase has:
-                there is no highlight, and `Marker.tsx` was deleted rather than
-                kept for exactly this sort of reach. Two in one sentence is
-                more than usual, but both are proper nouns the letter actually
-                turns on rather than a run of stressed prose. */}
+            {/* The city and the school are lifted with `<strong>`. That is the
+                only emphasis device this codebase has: there is no highlight,
+                and `Marker.tsx` was deleted rather than kept for exactly this
+                sort of reach. Two in one sentence is more than usual, but both
+                are proper nouns the letter actually turns on rather than a run
+                of stressed prose. The venues and the bands below stay plain:
+                the draft bolded those too, and four bolds in one section is
+                the run of stressed prose the rule is there to prevent. */}
             <p>
               I was in{" "}
               <strong className="font-semibold text-foreground">Bombay</strong>,
@@ -213,55 +215,82 @@ export default function Offcod8Page() {
               <strong className="font-semibold text-foreground">
                 True School of Music
               </strong>
-              , going to gigs, listening to bands, spending evenings at places
-              like Hard Rock Cafe, and discovering music that stayed with me.
+              , and spending a lot of time around people who were just as
+              obsessed with it as I was.
             </p>
+
+            <p>
+              I got to perform and help out at places like Hard Rock Cafe, The
+              Blue Frog, and several other venues. There were gigs, late-night
+              jams, rehearsals, and those little moments before and after a
+              performance that somehow stay with you.
+            </p>
+
+            <p>
+              I worked on a couple of jingle projects too. I helped a few
+              friends with their own music, sang raw vocals for some of their
+              projects, and got to see what it actually feels like to be part
+              of someone else&apos;s creative process.
+            </p>
+
+            {/* The draft hung the bands off this sentence on an em dash.
+                CLAUDE.md bans them, and the page already has a device for a
+                run of names: one per line, which carries them further than
+                the bold the draft reached for. */}
+            <p>And then there were the nights spent discovering music.</p>
 
             <p>
               Agnee.
               <br />
               The Local Train.
               <br />
-              And so many other artists and musicians I came across along the
-              way.
-            </p>
-
-            <p>More than anything, I remember the people.</p>
-
-            <p>
-              The friends I made.
-              <br />
-              The conversations.
-              <br />
-              The late nights.
-              <br />
-              The feeling of being around people who were simply passionate
-              about something.
+              And so many other artists and bands that became part of that
+              chapter of my life.
             </p>
 
             <p>
-              Some of those people are still a part of my life in one way or
-              another.
-            </p>
-
-            <p>
-              And looking back, I realize that chapter gave me much more than
+              Looking back, I think what I loved most wasn&apos;t just the
               music.
             </p>
 
-            <p>
-              It gave me people.
-              <br />
-              Experiences.
-              <br />
-              Memories.
+            {/* The sentence the section exists to arrive at, so it takes the
+                page's pivot size rather than the `<strong>` the draft put on
+                it. At this size the bold would be doing the same job twice. */}
+            <p className="py-2 text-2xl font-medium leading-snug tracking-tight text-foreground md:text-3xl">
+              It was being around people who cared deeply about something.
             </p>
 
             <p>
-              And maybe, without realizing it, it taught me how much I enjoy{" "}
+              Making something together.
+              <br />
+              Helping someone bring an idea to life.
+              <br />
+              Performing.
+              <br />
+              Learning.
+              <br />
+              Trying things without knowing exactly where they&apos;d lead.
+            </p>
+
+            <p>
+              I made some really good friends along the way, and even though
+              life took many of us in different directions, I&apos;m grateful
+              that our paths crossed.
+            </p>
+
+            <p>That chapter gave me a lot more than music.</p>
+
+            <p>
+              It gave me experiences, people, and a different way of looking at{" "}
               <strong className="font-semibold text-foreground">
-                creating something that didn&apos;t exist before.
+                creating something from nothing.
               </strong>
+            </p>
+
+            <p>
+              And maybe, without realizing it then,
+              <br />
+              that was already preparing me for what came next.
             </p>
           </section>
 

@@ -142,6 +142,7 @@ Coinbase, Polygon, Play AI, ShopOS
 - **Timezone:** IST, Asia/Kolkata. The homepage hero shows his current local time live next to the city, so if someone asks about overlap or working hours, answer from IST.
 - **Interests:** Music, Gym, Walking, Gaming, Cooking, Home Barista, Coffee Enthusiast
 - **Favorite series:** Big Bang Theory, Brooklyn 99, Silicon Valley, Breaking Bad, Young Sheldon
+- **Music background:** Before software, music was the main thing. Trained in Hindustani music at the True School of Music in Lower Parel, Mumbai, performed and helped out at venues including Hard Rock Cafe and The Blue Frog, worked on a couple of jingle projects, and sang raw vocals on friends' tracks. The letter at `/offcod8` tells that chapter in his own words.
 - **Music genres:** Hip-hop, Rock, Punk Rock, Indian Classical, Classical
 - **Top artists:** Kishore Kumar, Arijit Singh, Tame Impala, Kanye West, Tems, Kendrick Lamar, Ed Sheeran, Shreya Ghoshal, Adele
 - **Spotify:** https://open.spotify.com/user/buffer1000
