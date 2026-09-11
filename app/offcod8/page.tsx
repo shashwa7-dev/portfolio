@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: "A small note",
   description: "Thanks for dropping by.",
   alternates: { canonical: `${baseUrl}offcod8` },
-  /** Unlisted: nothing links here, and nothing should index it either. */
+  /** Unlisted. One link in, from the hero avatar, and no search result. */
   robots: { index: false, follow: false },
 };
 
@@ -44,10 +44,9 @@ export const metadata: Metadata = {
  * `scripts/verify-simplification.sh` fails check C03 on any serif utility.
  * Hierarchy here is carried by size and measure instead.
  *
- * Scrolling is what starts the song. Reading a letter means scrolling it, so
- * the music arrives while the reader is already inside the thing it is scored
- * to. `NowPlaying` carries the caveat: a scroll on a phone is a touch and
- * counts as a gesture, a trackpad scroll is not and does not.
+ * The song starts on its own where the browser allows it, and on the first
+ * scroll or touch where it does not. `NowPlaying` holds that whole negotiation,
+ * and the reasons it has to be a negotiation.
  *
  * `components/shelf/OnRepeat.tsx` deliberately refuses a YouTube iframe, and
  * that refusal still holds where it was made: paying for fifteen seconds of a
@@ -68,20 +67,15 @@ export default function Offcod8Page() {
       <Container width="reading" className="space-y-12 md:space-y-16">
         {/* The header.
 
-            A still JPEG, where this was a 1.19MB GIF. 193KB of source, and
-            optimised on the way out rather than served raw, since `unoptimized`
-            was only ever here to stop the optimizer flattening an animation
-            into a single frame. Nothing to preserve now, so Next re-encodes it
-            and emits a srcset.
+            `priority` because it is the first thing on the page, so it should
+            not queue behind the letter it opens, and intrinsic width and
+            height because those reserve its box and rule out a shift as it
+            loads. Both have to move whenever the picture does.
 
-            At 1200px the source is finally wide enough to matter. This column
-            renders near 712, so a 2x screen wants about 1424 and gets 1200,
-            which is close. The three headers before this one were under 750px
-            and had nothing beyond 1x to give.
-
-            `priority` because it is the first thing on the page, and intrinsic
-            width and height because those reserve its box and rule out a shift
-            as it loads. */}
+            Keep any replacement at 1200px or wider. This column renders near
+            712, so a 2x screen wants about 1424: below that the optimizer has
+            nothing to put in the srcset's 2x slot, since it will downscale a
+            source but never invent one. */}
         <Image
           src="/offcod8/cover.jpg"
           alt="Open countryside at golden hour, seen from under a broad tree: long meadow grass and wildflowers in the foreground, mown fields and hedgerows falling away to a hazy horizon."
@@ -91,8 +85,7 @@ export default function Offcod8Page() {
           className="w-full rounded-2xl border border-border bg-elevated"
         />
 
-        {/* The mark, and what is playing. The only two things on the page that
-            are not the letter.
+        {/* The mark, and what is playing.
 
             Masked rather than drawn as an <img>, the same way the navbar, the
             footer and the chat bubble draw it: `brand-mark.png` is a solid
