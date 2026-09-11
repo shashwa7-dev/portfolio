@@ -179,7 +179,16 @@ export default function StackIcon({
   return (
     <span
       className={cn(
-        "group inline-flex items-center gap-1.5 rounded-sm border border-border bg-secondary px-2.5 py-1 text-xs text-muted-foreground transition-colors duration-base ease-out hover:border-border-strong hover:text-foreground",
+        /* `bg-card`, not `bg-secondary`. In dark mode secondary is
+           hsl(30 6% 15%) and the border is hsl(30 6% 16%): one percent apart,
+           so the pill had no visible edge and read as a soft grey blob. Card is
+           hsl(30 7% 8.5%), darker than the border on a dark page and lighter
+           than it on a light one, so the outline does its job in both themes.
+
+           The rest is breathing room. 4px of vertical padding around a 14px
+           icon left a 26px pill with 18px of usable height, which is why these
+           felt cramped next to the same component's larger variants. */
+        "group inline-flex items-center gap-2 rounded-md border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground transition-colors duration-base ease-out hover:border-border-strong hover:bg-elevated hover:text-foreground",
         className
       )}
     >
