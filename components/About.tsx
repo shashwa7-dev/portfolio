@@ -29,11 +29,12 @@ import { clients } from "@/lib/clients";
  *
  * - The brand avatars in the stat cells. At 17px, greyscale, at 80% opacity,
  *   nobody can identify Coinbase or Polygon, so they did not read as proof,
- *   they read as smudges. The brands now get a row of their own below the stat
- *   band, at 44px, where they are actually legible. That row is the only place
- *   on the site the logos appear: the per-org `ClientStrip` inside Experience
- *   was showing the same five names a few hundred pixels further down, and it
- *   has been removed rather than left to repeat this one.
+ *   they read as smudges. The brands are a line of the hero's content stack
+ *   now, at 28px, where they can actually be recognised. The per-org
+ *   `ClientStrip` inside Experience still lists the same five names, and that
+ *   repetition is deliberate: this row says who, unscoped, as a footnote to
+ *   the claim above it; the strip says which of them belong to a specific
+ *   engagement and what was built for each.
  * - The bento box. A `rounded-2xl` bordered container with internal hairlines
  *   made no sense on a page whose structural idea is full-bleed bands crossing
  *   two rails. The stats are a band now, so the hero uses the page's own
@@ -220,6 +221,51 @@ export default function About() {
               <Mail className="h-4 w-4" /> Get in touch
             </a>
           </div>
+
+          {/* Worked with.
+
+              Part of the hero's content stack, not a block of its own. It was
+              tried as a standalone centred panel under the stat band and that
+              was the problem: a centred island below a full-bleed band read as
+              a third section rather than as a line of the hero, and it gave
+              five logos more of the page than a supporting fact deserves.
+
+              Ranged left on one line with everything above it, at 28px. Large
+              enough to recognise, which the 17px avatars buried in the old stat
+              cells never were, and small enough to stay a footnote to the
+              claim rather than competing with it.
+
+              `alt=""` is correct rather than lazy: the names sit in text in the
+              same link, so labelling the images too would make a screen reader
+              announce each brand twice. */}
+          <a
+            href="/#experience"
+            className="group flex flex-wrap items-center gap-x-3 gap-y-2"
+          >
+            <span className="font-mono text-2xs uppercase tracking-label text-subtle">
+              Worked with
+            </span>
+            <span className="flex items-center gap-2">
+              {clients.map((c) => (
+                <span
+                  key={c.name}
+                  className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-secondary outline outline-1 outline-border"
+                >
+                  <Image
+                    src={c.img}
+                    alt=""
+                    width={128}
+                    height={128}
+                    quality={90}
+                    className="h-full w-full object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
+                  />
+                </span>
+              ))}
+            </span>
+            <span className="text-sm text-muted-foreground transition-colors duration-fast ease-out group-hover:text-foreground">
+              {clients.map((c) => c.name).join(", ")}
+            </span>
+          </a>
         </div>
       </Container>
 
@@ -260,78 +306,6 @@ export default function About() {
         </Container>
       </div>
 
-      {/* Worked with.
-
-          One line, not cards. A card per brand was tried and dropped: five
-          bordered boxes under a band that is itself a row of bordered cells
-          turned the foot of the hero into a second grid, and the hero's whole
-          problem was too many containers.
-
-          It is also not the five-card row this repo removed once before. That
-          row put each brand's contribution in a tooltip, which a touch device
-          cannot reach, so its strongest fact was the one nobody on a phone
-          could get to. Here the names are plain text and nothing is gated
-          behind a pointer.
-
-          What this row does NOT carry is what was built for each brand. That
-          used to sit in the per-org strip inside Experience, which was removed
-          because it repeated these same five names a few hundred pixels below.
-          The contributions are still in `lib/clients.ts` and still published by
-          `app/markdown/route.ts`, so nothing is lost, but no visual surface
-          renders them today. Worth knowing before adding a sixth brand and
-          expecting the page to explain it.
-
-          `alt=""` on the logos is correct rather than lazy: the names sit in
-          text in the same link, so labelling the images too would make a screen
-          reader announce each brand twice. */}
-      <Container width="reading">
-        <a href="/#experience" className="group mt-6 block text-center md:mt-8">
-          {/* Spaced, not overlapped.
-
-              A stack of overlapping avatars is centred by its box but never
-              looks centred: each logo covers the one before it, so the visible
-              mass leans toward whichever end sits on top, and the group reads
-              as pushed off-axis even when the maths says otherwise. Even gaps
-              put every logo fully on show, which also makes five brands
-              recognisable rather than four slivers and a circle.
-
-              The `ring-2 ring-background` went with the overlap. Its only job
-              was to cut a halo between circles that touched. */}
-          <span className="flex items-center justify-center gap-3">
-            {clients.map((c) => (
-              <span
-                key={c.name}
-                className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full bg-secondary outline outline-1 outline-border"
-              >
-                {/* Explicit dimensions, well above the 44px this renders at,
-                    rather than `fill` with `sizes="32px"`.
-
-                    That was the pixelation: `sizes` tells the browser how much
-                    space the image occupies, so a fixed `32px` had it request a
-                    32-pixel-wide file, which a 2x display then upscaled. The
-                    sources are 367 to 400px square, so nothing was ever wrong
-                    with the artwork. Asking for 128 gives every reasonable
-                    display more pixels than it needs, and these files are 4 to
-                    24KB, so the margin is free. */}
-                <Image
-                  src={c.img}
-                  alt=""
-                  width={128}
-                  height={128}
-                  quality={90}
-                  className="h-full w-full object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
-                />
-              </span>
-            ))}
-          </span>
-          <span className="mt-3 block font-mono text-2xs uppercase tracking-label text-subtle">
-            Worked with
-          </span>
-          <span className="mt-1 block text-sm text-muted-foreground transition-colors duration-fast ease-out group-hover:text-foreground">
-            {clients.map((c) => c.name).join(", ")}
-          </span>
-        </a>
-      </Container>
     </header>
   );
 }

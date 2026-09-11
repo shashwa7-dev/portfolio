@@ -6,6 +6,7 @@ import { formatPeriod, formatTenure } from "@/lib/tenure";
 import Section from "@/components/layout/Section";
 import ProjectPreviewCard from "@/components/ProjectPreviewCard";
 import { workProjectToCard } from "@/lib/projectCards";
+import ClientStrip from "@/components/common/ClientStrip";
 import { EmploymentTag, OrgLinkChip, Tag } from "@/components/common/OrgChips";
 
 export default function ExperienceWork() {
@@ -132,6 +133,19 @@ export default function ExperienceWork() {
                     ))}
                   </ul>
                 )}
+
+                {/* Brands worked with under this org. Sits above the outcome
+                    bullets because it is a fact about the engagement, not an
+                    outcome of it. Renders nothing for orgs with no brands.
+
+                    This repeats the five names the hero also lists, and that is
+                    the point of difference: the hero says who, scoped to
+                    nobody, while this says which of them belong to THIS
+                    engagement and what was built for each. Removing it loses
+                    the only visual surface for `contribution`. */}
+                <div className="mt-3 empty:mt-0">
+                  <ClientStrip orgSlug={org.slug} />
+                </div>
 
                 <ul className="mt-3 space-y-1.5">
                   {org.highlights.slice(0, 2).map((h, i) => (
