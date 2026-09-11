@@ -602,4 +602,34 @@ table {
   body:has([data-bare]) .page-rails {
     display: none;
   }
+
+  /* The video behind the letter at /offcod8.
+
+     `object-fit: cover` cannot reach inside an iframe, so the frame is sized
+     past the edges instead. Width resolves to the larger of 100vw and
+     177.78vh, height to the larger of 56.25vw and 100vh: those are the same
+     16:9 ratio read in both directions, so whichever axis is short overflows
+     and the viewport is always covered. The translate keeps the middle of the
+     picture in the middle of the screen rather than the top left.
+
+     Under reduced motion the frame goes transparent rather than away. Hiding
+     it with `display` or `visibility` lets a browser treat the media as
+     off-screen and stop it, and the song is not the part anyone asked to be
+     spared: opacity leaves it playing behind a plain background. */
+  .embed-cover {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100vw;
+    height: 56.25vw;
+    min-width: 177.78vh;
+    min-height: 100vh;
+    transform: translate(-50%, -50%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .embed-cover {
+      opacity: 0;
+    }
+  }
 }

@@ -11,10 +11,15 @@ import { ArrowUpRight, MusicNotes } from "@phosphor-icons/react/ssr";
  * the video. Folding both into one control would mean a reader who wanted to
  * find the track had to start the audio to get there, or the other way round.
  *
- * The frame is here for its audio only, so it is positioned out of view rather
- * than laid out. `sr-only` would put it in the accessibility tree, and a 1x1
- * frame in the flow can still be tabbed into, so it gets `aria-hidden` and no
- * tab stop instead.
+ * The frame plays the video too, filling the viewport behind the letter under a
+ * scrim. It is still furniture rather than content: `aria-hidden` keeps it out
+ * of the accessibility tree and `tabIndex={-1}` keeps it out of the tab order,
+ * since there is nothing in it to read or operate.
+ *
+ * `pointer-events-none` on the layer is load-bearing, not tidiness. A click
+ * that lands inside a cross-origin iframe belongs to YouTube: the window
+ * listeners below never see it, so the one gesture that was going to lift the
+ * mute would be the one gesture that could not.
  */
 const VIDEO_ID = "RkqCCWxv3ZU";
 const WATCH_URL = `https://www.youtube.com/watch?v=${VIDEO_ID}`;
@@ -237,16 +242,30 @@ export default function NowPlaying() {
 
   return (
     <div className="flex items-center gap-4 font-mono text-2xs uppercase tracking-label">
-      <iframe
-        ref={frame}
-        title="Music"
-        src={EMBED}
-        onLoad={onFrameLoad}
-        allow="autoplay; encrypted-media"
-        aria-hidden="true"
-        tabIndex={-1}
-        className="pointer-events-none absolute h-px w-px opacity-0"
-      />
+      {/* Fixed, so the picture stays still while the letter scrolls over it,
+          and `-z-10` so it sits behind the page without leaving the layout
+          layer the rest of the route lives in.
+
+          The scrim is the site's own background at 85%, which is what lets one
+          value work in both themes: the video is dimmed towards paper in light
+          and towards ink in dark, and the letter keeps the same contrast it
+          has on a plain page either way. */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
+      >
+        <iframe
+          ref={frame}
+          title="Music"
+          src={EMBED}
+          onLoad={onFrameLoad}
+          allow="autoplay; encrypted-media"
+          aria-hidden="true"
+          tabIndex={-1}
+          className="embed-cover"
+        />
+        <span className="absolute inset-0 bg-background/85" />
+      </div>
 
       <button
         type="button"
