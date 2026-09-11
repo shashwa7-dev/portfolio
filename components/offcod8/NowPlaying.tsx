@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowUpRight, MusicNotes } from "@phosphor-icons/react/ssr";
+import Curtain from "@/components/offcod8/Curtain";
 
 /**
  * What is playing behind the letter, and a way to go listen to it properly.
@@ -99,6 +100,17 @@ export default function NowPlaying() {
    * and only the button can undo it.
    */
   const [dismissed, setDismissed] = useState(false);
+  /**
+   * Whether the reader has crossed the threshold in front of the letter.
+   *
+   * Nothing audible happens before this. The page could ask for sound on load
+   * and get it from the browsers that allow it, but then the curtain would be
+   * promising that the song starts when the reader is ready while the song was
+   * already playing behind it. The promise is worth more than the head start,
+   * and the click is a guaranteed activation, which no amount of asking early
+   * ever was.
+   */
+  const [entered, setEntered] = useState(false);
 
   // Trust the player over ourselves whenever it is talking. If it never talks
   // (the protocol below is undocumented and could change under us) fall back
@@ -125,9 +137,19 @@ export default function NowPlaying() {
     if (hasActivation()) setAttempted(true);
   }, [send]);
 
-  /** The button, which both starts it and takes back a dismissal. */
+  /** The note beside the track name, which also takes back a dismissal. */
   const play = useCallback(() => {
     setDismissed(false);
+    start();
+  }, [start]);
+
+  /**
+   * Crossing the threshold. The one gesture the whole page has been arranged
+   * around: a real click, so the unmute below runs with activation behind it
+   * rather than hoping for it.
+   */
+  const enter = useCallback(() => {
+    setEntered(true);
     start();
   }, [start]);
 
@@ -216,7 +238,7 @@ export default function NowPlaying() {
   }, [start]);
 
   useEffect(() => {
-    if (playing || dismissed) return;
+    if (!entered || playing || dismissed) return;
 
     ask();
     let left = UNPROMPTED_TRIES;
@@ -230,7 +252,7 @@ export default function NowPlaying() {
     }, 500);
 
     return () => window.clearInterval(timer);
-  }, [ask, playing, dismissed]);
+  }, [ask, entered, playing, dismissed]);
 
   /**
    * Scrolling is the interaction. Reading a letter means scrolling it, so the
@@ -253,17 +275,18 @@ export default function NowPlaying() {
    * was guaranteed to refuse it, and the song never started. `touchend` is the
    * fix.
    *
-   * Desktop keeps one genuine gap. A trackpad or wheel scroll fires nothing on
-   * the activation list at all, so there the song waits for the first click or
-   * keypress, which is what the control beside this is for. Scrolling by
-   * keyboard (space, arrows, page-down) does start it, because that is a
-   * `keydown`.
+   * All of it is a safety net now rather than the way in. The curtain's click
+   * is the gesture that starts the song, and it is a click, so it always
+   * carries activation. This stays because the click can still land before the
+   * player has finished loading, and a command sent to a frame that is not
+   * ready is dropped rather than refused: the next scroll or tap asks again,
+   * and by then the browser has been interacted with, so the ask is allowed.
    *
    * Everything keeps listening until the player reports itself unmuted, so a
    * refused attempt costs nothing but the next gesture.
    */
   useEffect(() => {
-    if (playing || dismissed) return;
+    if (!entered || playing || dismissed) return;
     const events = [
       "scroll",
       "wheel",
@@ -287,10 +310,17 @@ export default function NowPlaying() {
     );
     return () =>
       events.forEach((e) => window.removeEventListener(e, onGesture));
-  }, [playing, dismissed, start]);
+  }, [entered, playing, dismissed, start]);
 
   return (
     <div className="flex items-center gap-4 font-mono text-2xs uppercase tracking-label">
+      {/* The curtain lives here rather than in the page because this component
+          owns the player. The page is a server component, so it cannot hand a
+          click handler to a client one, and `enter` has to be the same function
+          that talks to the frame: the unmute only carries activation if it runs
+          inside the click's own call stack. */}
+      {!entered && <Curtain onEnter={enter} />}
+
       {/* Fixed, so the picture stays still while the letter scrolls over it,
           and `-z-10` so it sits behind the page without leaving the layout
           layer the rest of the route lives in.
