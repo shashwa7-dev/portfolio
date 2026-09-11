@@ -16,10 +16,10 @@ import { ArrowUpRight, MusicNotes } from "@phosphor-icons/react/ssr";
  * frame in the flow can still be tabbed into, so it gets `aria-hidden` and no
  * tab stop instead.
  */
-const VIDEO_ID = "6tjlU4w4fSo";
+const VIDEO_ID = "RkqCCWxv3ZU";
 const WATCH_URL = `https://www.youtube.com/watch?v=${VIDEO_ID}`;
-const TRACK = "Love Yourz";
-const ARTIST = "J. Cole";
+const TRACK = "Home Again";
+const ARTIST = "PJ Morton";
 const ORIGIN = "https://www.youtube-nocookie.com";
 
 const EMBED = `${ORIGIN}/embed/${VIDEO_ID}?${new URLSearchParams({
