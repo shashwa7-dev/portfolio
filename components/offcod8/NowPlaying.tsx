@@ -75,7 +75,7 @@ export default function NowPlaying() {
   const send = useCallback((func: string, args: unknown[] = []) => {
     frame.current?.contentWindow?.postMessage(
       JSON.stringify({ event: "command", func, args }),
-      ORIGIN
+      ORIGIN,
     );
   }, []);
 
@@ -123,7 +123,7 @@ export default function NowPlaying() {
   const subscribe = useCallback(() => {
     frame.current?.contentWindow?.postMessage(
       JSON.stringify({ event: "listening", id: VIDEO_ID, channel: "widget" }),
-      ORIGIN
+      ORIGIN,
     );
   }, []);
 
@@ -132,14 +132,42 @@ export default function NowPlaying() {
    * song arrives while the reader is already in the middle of the thing it is
    * scored to, rather than as a demand made before they have read a word.
    *
-   * The pointer and key listeners stay because of the wheel-scroll case above:
-   * where a scroll carries no activation, the next real click or keypress
-   * lifts the mute instead. They all keep firing until the player reports
-   * itself unmuted, so a refused attempt costs nothing but the next gesture.
+   * The list below is in two halves, and the split is the whole trick.
+   *
+   * `scroll` and `wheel` are what the page is about, and neither grants audio
+   * permission by itself: the spec's "activation triggering input event" list
+   * is pointer, mouse, touch-end, key and click, and no scrolling event of any
+   * kind is on it. They are still worth firing, because the attempt is free and
+   * because the document may already hold activation from something earlier.
+   *
+   * The rest ARE on that list, which is what makes a scroll work in practice.
+   * On a phone a scroll is touchstart, then touchmove, then touchend, and only
+   * the last of the three activates: lifting the finger is the gesture, not
+   * putting it down. This listened for `touchstart` before, so on a phone every
+   * scroll asked for the unmute at the one moment in the sequence the browser
+   * was guaranteed to refuse it, and the song never started. `touchend` is the
+   * fix.
+   *
+   * Desktop keeps one genuine gap. A trackpad or wheel scroll fires nothing on
+   * the activation list at all, so there the song waits for the first click or
+   * keypress, which is what the control beside this is for. Scrolling by
+   * keyboard (space, arrows, page-down) does start it, because that is a
+   * `keydown`.
+   *
+   * Everything keeps listening until the player reports itself unmuted, so a
+   * refused attempt costs nothing but the next gesture.
    */
   useEffect(() => {
     if (playing) return;
-    const events = ["scroll", "pointerdown", "keydown", "touchstart"] as const;
+    const events = [
+      "scroll",
+      "wheel",
+      "pointerdown",
+      "pointerup",
+      "touchend",
+      "keydown",
+      "click",
+    ] as const;
 
     const onGesture = (event: Event) => {
       // Only a real gesture, never a dispatched one. `isTrusted` is the same
@@ -150,7 +178,7 @@ export default function NowPlaying() {
     };
 
     events.forEach((e) =>
-      window.addEventListener(e, onGesture, { passive: true })
+      window.addEventListener(e, onGesture, { passive: true }),
     );
     return () =>
       events.forEach((e) => window.removeEventListener(e, onGesture));
