@@ -66,24 +66,26 @@ export default function Offcod8Page() {
           reads as a letter rather than as a card about one. The contrast it
           was providing moved to the scrim in `NowPlaying`. */}
       <Container width="reading" className="space-y-12 md:space-y-16">
-        {/* The header, and the only picture on the site that moves.
+        {/* The header.
 
-            `unoptimized` is not optional on a GIF. next/image would otherwise
-            hand it to the optimizer, which re-encodes to a still WebP and
-            silently returns a single frame: the file still loads, the layout
-            is unchanged, and the animation is just gone. Serve GIFs as GIFs.
+            A still JPEG, where this was a 1.19MB GIF: 60KB of source, and
+            optimised on the way out rather than served raw, since `unoptimized`
+            was only ever here to stop the optimizer flattening an animation
+            into a single frame. Nothing to preserve now, so Next re-encodes it
+            and emits a srcset.
 
-            Intrinsic `width`/`height` rather than `fill`, since the optimizer
-            is off and there is no srcset to size: the real 800x450 reserves
-            the right box and rules out any shift as it loads. `priority`
-            because it is the first thing on the page, so it should not be
-            queued behind the letter it opens. */}
+            One honest limit: the source is 736px wide and this column renders
+            it near 712, so a 2x screen gets no more detail than a 1x one. The
+            optimizer will not invent pixels, and neither will anything else.
+
+            `priority` because it is the first thing on the page, and intrinsic
+            width and height because those reserve its box and rule out a shift
+            as it loads. */}
         <Image
-          src="/offcod8/cover.gif"
-          alt="A balcony desk at sunset: an open laptop full of code, a mug beside it, rooftops and a radio tower beyond the railing."
-          width={750}
-          height={422}
-          unoptimized
+          src="/offcod8/cover.jpg"
+          alt="A cabin on a green hill under a cloudy sky, a path winding up to it past a bench, with the words LIFE IS MADE TO LIVE across the middle."
+          width={736}
+          height={414}
           priority
           className="w-full rounded-2xl border border-border bg-elevated"
         />
