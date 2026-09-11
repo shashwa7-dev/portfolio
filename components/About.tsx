@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Check, ArrowRight, PaperPlaneTilt } from "@phosphor-icons/react/ssr";
+import { Check, ArrowRight, Coffee } from "@phosphor-icons/react/ssr";
 import Container from "@/components/layout/Container";
 import AvatarHover from "@/components/AvatarHover";
 import LocalTime from "@/components/LocalTime";
@@ -225,9 +225,12 @@ export default function About() {
               padding is not enough; both buttons have to agree on whether they
               have a border at all.
 
-              `PaperPlaneTilt`, not `Envelope`. A closed envelope is a noun, the
-              thing a message arrives in; a paper plane is the verb, which is
-              what a button label asks for. */}
+              `Coffee`, not `Envelope` and not a paper plane. Both of those
+              describe the mechanism, and the mechanism is the least interesting
+              part of a mailto. Coffee names the thing being proposed, and it is
+              not a stock friendly gesture here: there is a whole /coffee page
+              and a shelf section behind it, so the icon points at something the
+              site can actually back up. */}
           <div className="flex flex-wrap items-center gap-3">
             <a
               href="/#experience"
@@ -239,7 +242,7 @@ export default function About() {
               href="mailto:contact@shashwa7.in"
               className="inline-flex items-center gap-2 rounded-md border border-border-strong px-5 py-2.5 text-sm font-medium text-foreground transition-[color,background-color,border-color,transform] duration-fast ease-out hover:border-foreground hover:bg-elevated active:scale-[0.97]"
             >
-              <PaperPlaneTilt className="h-4 w-4" /> Get in touch
+              <Coffee className="h-4 w-4" /> Get in touch
             </a>
           </div>
 
