@@ -78,9 +78,9 @@ export default function Offcod8Page() {
             queued behind the letter it opens. */}
         <Image
           src="/offcod8/cover.gif"
-          alt="A boy in a dark cape standing in a pink and blue desert at dusk, looking back over his shoulder."
-          width={800}
-          height={450}
+          alt="A balcony desk at sunset: an open laptop full of code, a mug beside it, rooftops and a radio tower beyond the railing."
+          width={750}
+          height={422}
           unoptimized
           priority
           className="w-full rounded-2xl border border-border bg-elevated"
