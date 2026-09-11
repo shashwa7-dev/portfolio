@@ -215,8 +215,9 @@ import Section from "@/components/layout/Section";
   `mx-auto`). Anything measured from the viewport instead lands a few pixels
   off, because `scrollbar-gutter: stable` means the viewport and the content
   box are different widths.
-- `Band` is the full-bleed row that crosses the rails, carrying the gutter dots
-  (`--dot-gap`) and the ink tick. Only `Section` and `PageBand` may draw one.
+- `Band` is the full-bleed row that crosses the rails, carrying the ink tick.
+  Only `Section` and `PageBand` may draw one. Its gutters are empty: dotted fill
+  was tried there and removed.
 - Every secondary route opens with a `PageBand` and carries `pb-8 md:pb-12`
   on its `<main>`; the band's own `mb-8 md:mb-12` supplies the rest.
 - All of it hides under 900px, where the gutters get narrower than a

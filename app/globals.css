@@ -38,10 +38,10 @@
      needs. `Container` reads --measure for its reading width, and the rails
      are drawn at that same value, so a line can never drift from the column
      it describes. --gutter is a percentage, so it resolves against whichever
-     element consumes it: on a full-bleed band that is the viewport. */
+     element consumes it: on a full-bleed band that is the viewport, which is
+     how `.band-tick` lands on the left rail. */
   --measure: 760px;
   --gutter: max(0px, calc((100% - var(--measure)) / 2));
-  --dot-gap: 7px;
 
   /* sugar-high consumes these DIRECTLY as `color: var(--sh-keyword)`, so unlike
      every other token here they must be complete colour values, not bare HSL
@@ -469,24 +469,6 @@ table {
  * ------------------------------------------------------------------------ */
 
 @layer components {
-  /* Dots fill the gutter beside a band, and only beside a band. A full-height
-     fill was the other option and it loses: under six sections of prose the
-     texture competes with the copy it is supposed to be framing. Scoped to the
-     bands, it punctuates the sequence instead. */
-  .band-gutters::before,
-  .band-gutters::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: var(--gutter);
-    background-image: radial-gradient(hsl(var(--border)) 0.75px, transparent 0.75px);
-    background-size: var(--dot-gap) var(--dot-gap);
-    pointer-events: none;
-  }
-  .band-gutters::before { left: 0; }
-  .band-gutters::after { right: 0; }
-
   /* The one mark in this system that carries weight, sitting on the left rail
      level with the label. It is `foreground` because this palette has no hue
      to spend: `--accent` IS the foreground here, so an ink tick is the accent,
@@ -516,8 +498,6 @@ table {
   /* One threshold for the whole system, expressed once. */
   @media (max-width: 899px) {
     .page-rails,
-    .band-gutters::before,
-    .band-gutters::after,
     .band-tick {
       display: none;
     }
