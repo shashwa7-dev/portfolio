@@ -246,7 +246,7 @@ export default function NowPlaying() {
           and `-z-10` so it sits behind the page without leaving the layout
           layer the rest of the route lives in.
 
-          The scrim is the site's own background at 85%, which is what lets one
+          The scrim is the site's own background at 90%, which is what lets one
           value work in both themes: the video is dimmed towards paper in light
           and towards ink in dark, and the letter keeps the same contrast it
           has on a plain page either way. */}
@@ -264,7 +264,7 @@ export default function NowPlaying() {
           tabIndex={-1}
           className="embed-cover"
         />
-        <span className="absolute inset-0 bg-background/85" />
+        <span className="absolute inset-0 bg-background/90" />
       </div>
 
       <button
