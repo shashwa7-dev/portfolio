@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { ArrowRight } from "@phosphor-icons/react/ssr";
 
 /**
  * The threshold in front of the letter.
@@ -13,9 +12,10 @@ import { ArrowRight } from "@phosphor-icons/react/ssr";
  *
  * Having to ask is not a cost here. A song that begins on its own is something
  * done to a reader; a song that begins because they said yes is an invitation
- * they accepted, and this page is an invitation. Six words and a button: the
- * greeting, the way in, and a warning that sound is coming, which is the
- * difference between a welcome and an ambush.
+ * they accepted, and this page is an invitation. Two lines and nothing else on
+ * it: the whole overlay is the door, so there is no label to write and no
+ * control to aim at, and whatever else might be said here is said better by the
+ * letter showing faintly underneath than by more type on top of it.
  *
  * It buys something technical too. The player needs a few seconds to load
  * before it will take commands, and a command sent early is dropped rather than
@@ -38,7 +38,8 @@ export default function Curtain({ onEnter }: { onEnter: () => void }) {
    * `autoFocus` as a JSX prop is unreliable here (React drops it in some
    * hydration paths), so the focus is taken explicitly. Without it the first
    * Tab goes somewhere in the letter underneath, which is the one place a
-   * reader at this moment has not agreed to be.
+   * reader at this moment has not agreed to be. With it, Enter or Space opens
+   * the letter, which is the keyboard equivalent of clicking anywhere.
    */
   useEffect(() => {
     button.current?.focus();
@@ -64,7 +65,7 @@ export default function Curtain({ onEnter }: { onEnter: () => void }) {
           underneath, faintly, so this reads as something laid over the page
           rather than as a different page that happens to come first.
 
-          No `backdrop-blur`. There is a video playing behind this, and a
+          No `backdrop-blur`. There is a video playing back there, and a
           viewport-sized backdrop filter over moving pixels re-rasterises every
           frame to soften something the scrim has already taken most of the
           detail out of. */}
@@ -72,37 +73,29 @@ export default function Curtain({ onEnter }: { onEnter: () => void }) {
         data-curtain
         role="dialog"
         aria-modal="true"
-        aria-labelledby="curtain-title"
-        className="fixed inset-0 z-50 flex items-center justify-center bg-background/85 px-6"
+        className="fixed inset-0 z-50 bg-background/85"
       >
-        <div className="flex w-full max-w-[30ch] flex-col items-center gap-6 text-center">
-          <h2
-            id="curtain-title"
-            className="text-2xl font-medium tracking-tight text-foreground md:text-3xl"
-          >
+        {/* The whole overlay is the way in, so there is nothing to aim at and
+            nothing that needs a label telling the reader what to do. It is a
+            real `<button>` rather than a div with a handler, so it is reachable
+            by keyboard and announces itself as something that can be pressed,
+            and its two lines are its accessible name. */}
+        <button
+          ref={button}
+          type="button"
+          onClick={onEnter}
+          className="flex h-full w-full flex-col items-center justify-center gap-4 px-6 text-center"
+        >
+          <span className="text-balance text-[clamp(2rem,5vw,2.75rem)] font-medium leading-tight tracking-tight text-foreground">
             I&apos;m glad you&apos;re here.
-          </h2>
-
-          <button
-            ref={button}
-            type="button"
-            onClick={onEnter}
-            className="group flex items-center gap-2 rounded-md border border-border-strong px-4 py-2.5 text-sm font-medium text-foreground transition-colors duration-fast ease-out hover:bg-muted"
-          >
-            Take me there
-            <ArrowRight
-              aria-hidden="true"
-              className="h-4 w-4 shrink-0 transition-transform duration-fast ease-out group-hover:translate-x-0.5"
-            />
-          </button>
-
-          {/* Two words, and they earn their place: sound is about to start, and
-              a reader who is somewhere they cannot have that should find out
-              before it happens rather than after. */}
-          <p className="font-mono text-2xs uppercase tracking-label text-subtle">
-            Plays with sound
-          </p>
-        </div>
+          </span>
+          {/* The second line is the invitation and the instruction at once. A
+              separate "click to continue" would be a third line saying what
+              this one already implies. */}
+          <span className="text-balance text-lg leading-relaxed text-muted-foreground">
+            Come on in, whenever you&apos;re ready.
+          </span>
+        </button>
       </div>
     </>
   );
