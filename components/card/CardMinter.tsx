@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { Check, Copy, DownloadSimple, Pencil, User, ShareNetwork, SpeakerHigh, SpeakerSlash } from "@phosphor-icons/react/ssr";
+import { Check, Copy, DownloadSimple, Pencil, User, ShareNetwork, SpeakerHigh, SpeakerSlash, XLogo } from "@phosphor-icons/react/ssr";
 import { ISSUES } from "@/lib/card/issues";
 import { isPerfect, issueFromTotal, pipTotal } from "@/lib/card/dice";
 import { serialFrom } from "@/lib/card/seed";
@@ -25,7 +25,6 @@ import IssueLadder from "@/components/card/IssueLadder";
 import PlaceholderCard from "@/components/card/PlaceholderCard";
 import Pips from "@/components/card/dice/Pips";
 import { indefiniteArticle } from "@/lib/card/issues";
-import { SVGS } from "@/components/SVGS";
 import { playChime } from "@/components/card/dice/diceSound";
 import { HAPTICS, safeHaptic } from "@/components/card/haptics";
 import { useSoundPreference } from "@/components/card/dice/soundPreference";
@@ -823,11 +822,12 @@ export default function CardMinter({
                         file-carrying Web Share: see handleShareTrigger, and
                         in practice that means every laptop.
 
-                        The X mark is the real one from SVGS, not Phosphor's
-                        `X`, which is its close glyph. A dismiss cross
-                        labelled "Share on X" was the wrong icon twice over:
-                        wrong brand, and the one symbol in the menu that
-                        already means "get rid of this".
+                        The mark is Phosphor's `XLogo`, the brand, NOT its
+                        `X`, which is a close glyph. That distinction is the
+                        whole reason this comment exists: a dismiss cross
+                        labelled "Share on X" is wrong twice over, wrong brand
+                        and the one symbol in this menu that already means
+                        "get rid of this". Autocomplete offers `X` first.
 
                         X is a link-only intent and cannot attach the PNG,
                         so copy sits beside it, putting the same words on the
@@ -839,7 +839,7 @@ export default function CardMinter({
                         onClick={shareToX}
                         className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm text-foreground transition-colors duration-fast ease-out hover:bg-accent hover:text-accent-foreground"
                       >
-                        <SVGS.Twitter className="h-4 w-4 shrink-0" aria-hidden="true" />
+                        <XLogo className="h-4 w-4 shrink-0" aria-hidden="true" />
                         Share on X
                       </button>
                       <button

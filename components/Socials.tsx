@@ -1,13 +1,13 @@
 import React from "react";
-import { SVGS } from "./SVGS";
+import { GithubLogo, LinkedinLogo, XLogo } from "@phosphor-icons/react/ssr";
 import Section from "@/components/layout/Section";
 import CardNudge from "@/components/CardNudge";
 import { socialLinks, contactEmail, location } from "@/lib/siteLinks";
 
 const ICONS = {
-  GitHub: SVGS.Github,
-  LinkedIn: SVGS.LinkedIn,
-  Twitter: SVGS.Twitter,
+  GitHub: GithubLogo,
+  LinkedIn: LinkedinLogo,
+  X: XLogo,
 } as const;
 
 

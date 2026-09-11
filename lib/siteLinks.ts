@@ -55,12 +55,12 @@ export const footerLinks: NavLink[] = [
 ];
 
 /** Named rather than keyed by icon, so the icon stays a rendering concern. */
-export type SocialLink = { name: "GitHub" | "LinkedIn" | "Twitter"; href: string };
+export type SocialLink = { name: "GitHub" | "LinkedIn" | "X"; href: string };
 
 export const socialLinks: SocialLink[] = [
   { name: "GitHub", href: "https://github.com/shashwa7-dev" },
   { name: "LinkedIn", href: "https://www.linkedin.com/in/shashwa7/" },
-  { name: "Twitter", href: "https://x.com/offcod8" },
+  { name: "X", href: "https://x.com/offcod8" },
 ];
 
 export const contactEmail = "contact@shashwa7.in";

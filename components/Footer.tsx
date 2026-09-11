@@ -1,14 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Envelope } from "@phosphor-icons/react/ssr";
+import { Envelope, GithubLogo, LinkedinLogo, XLogo } from "@phosphor-icons/react/ssr";
 import Container from "@/components/layout/Container";
-import { SVGS } from "./SVGS";
 import { footerLinks, socialLinks, contactEmail } from "@/lib/siteLinks";
 
 const SOCIAL_ICONS = {
-  GitHub: SVGS.Github,
-  LinkedIn: SVGS.LinkedIn,
-  Twitter: SVGS.Twitter,
+  GitHub: GithubLogo,
+  LinkedIn: LinkedinLogo,
+  X: XLogo,
 } as const;
 
 /**
