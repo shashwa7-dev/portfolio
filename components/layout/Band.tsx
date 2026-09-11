@@ -10,11 +10,6 @@ import Container from "./Container";
  * measure. That crossing is the whole effect: it is what makes the label read
  * as page furniture instead of as a caption sitting above a paragraph.
  *
- * The gutters are empty. Dotted fill was tried there and removed: it put
- * texture on both sides of every band, and beside the hero's stat rows it read
- * as a strip belonging to the numbers rather than to the page. The rules and
- * the tick carry the structure on their own.
- *
  * Used by `Section` for a numbered section and by `PageBand` for a route
  * header. Nothing else should draw a band: a band means "a labelled division
  * starts here", and it stops meaning that as soon as it is used for emphasis.
@@ -39,7 +34,7 @@ export default function Band({
   return (
     <div
       className={cn(
-        "relative border-b border-border",
+        "band-gutters relative border-b border-border",
         !flush && "border-t",
         className
       )}
