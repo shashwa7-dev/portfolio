@@ -177,8 +177,13 @@ export default function About() {
               to medium. At 48px and 600 it was shouting; the claim is stronger
               said quietly, and the smaller size leaves the emphasis span
               somewhere to go, which it had nowhere to do when the whole line
-              was already semibold. */}
-          <p className="text-[clamp(1.625rem,3.4vw,2.3rem)] font-medium leading-[1.08] tracking-tighter text-foreground">
+              was already semibold.
+
+              `text-balance` because the natural break left "millions." alone on
+              a line under eight words, and a one-word last line reads as a
+              mistake at this size. Balance evens the two lines instead of
+              filling the first and dropping the remainder. */}
+          <p className="text-balance text-[clamp(1.625rem,3.4vw,2.3rem)] font-medium leading-[1.08] tracking-tighter text-foreground">
             I build interfaces that{" "}
             <span className="font-semibold">ship and scale</span> to millions.
           </p>
@@ -271,14 +276,22 @@ export default function About() {
           reader announce each brand twice. */}
       <Container width="reading">
         <a href="/#experience" className="group mt-6 block text-center md:mt-8">
-          <span className="flex items-center justify-center">
-            {clients.map((c, i) => (
+          {/* Spaced, not overlapped.
+
+              A stack of overlapping avatars is centred by its box but never
+              looks centred: each logo covers the one before it, so the visible
+              mass leans toward whichever end sits on top, and the group reads
+              as pushed off-axis even when the maths says otherwise. Even gaps
+              put every logo fully on show, which also makes five brands
+              recognisable rather than four slivers and a circle.
+
+              The `ring-2 ring-background` went with the overlap. Its only job
+              was to cut a halo between circles that touched. */}
+          <span className="flex items-center justify-center gap-3">
+            {clients.map((c) => (
               <span
                 key={c.name}
-                className={cn(
-                  "relative h-11 w-11 shrink-0 overflow-hidden rounded-full bg-secondary outline outline-1 outline-border ring-2 ring-background",
-                  i > 0 && "-ml-2.5"
-                )}
+                className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full bg-secondary outline outline-1 outline-border"
               >
                 {/* Explicit dimensions, well above the 44px this renders at,
                     rather than `fill` with `sizes="32px"`.
