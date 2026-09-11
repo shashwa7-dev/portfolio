@@ -23,8 +23,7 @@ import { ArrowUpRight, MusicNotes } from "@phosphor-icons/react/ssr";
  */
 const VIDEO_ID = "_Lo2gPHqfnI";
 const WATCH_URL = `https://www.youtube.com/watch?v=${VIDEO_ID}`;
-const TRACK = "Home Again (Live)";
-const ARTIST = "PJ Morton, Afro Orleans";
+const TRACK = "Home Again";
 const ORIGIN = "https://www.youtube-nocookie.com";
 
 const EMBED = `${ORIGIN}/embed/${VIDEO_ID}?${new URLSearchParams({
@@ -291,7 +290,7 @@ export default function NowPlaying() {
   }, [playing, dismissed, start]);
 
   return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-2xs uppercase tracking-label">
+    <div className="flex items-center gap-4 font-mono text-2xs uppercase tracking-label">
       {/* Fixed, so the picture stays still while the letter scrolls over it,
           and `-z-10` so it sits behind the page without leaving the layout
           layer the rest of the route lives in.
@@ -354,8 +353,6 @@ export default function NowPlaying() {
         className="flex items-center gap-1 text-subtle transition-colors duration-fast ease-out hover:text-foreground"
       >
         {TRACK}
-        <span className="px-1 text-border-strong">·</span>
-        {ARTIST}
         <ArrowUpRight aria-hidden="true" className="h-3 w-3 shrink-0" />
       </a>
     </div>
