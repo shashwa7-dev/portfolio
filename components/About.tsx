@@ -34,8 +34,8 @@ import { socialLinks } from "@/lib/siteLinks";
  *   nobody can identify Coinbase or Polygon, so they did not read as proof,
  *   they read as smudges. The brands are a line of the hero's content stack
  *   now, at 28px, where they can actually be recognised. The per-org
- *   `ClientStrip` inside Experience still lists the same five names, and that
- *   repetition is deliberate: this row says who, unscoped, as a footnote to
+ *   `ClientStrip` inside Experience lists the same names per engagement, and
+ *   that repetition is deliberate: this row says who, unscoped, as a footnote to
  *   the claim above it; the strip says which of them belong to a specific
  *   engagement and what was built for each.
  * - The bento box. A `rounded-2xl` bordered container with internal hairlines
@@ -319,14 +319,14 @@ export default function About() {
               tried as a standalone centred panel under the stat band and that
               was the problem: a centred island below a full-bleed band read as
               a third section rather than as a line of the hero, and it gave
-              five logos more of the page than a supporting fact deserves.
+              the logos more of the page than a supporting fact deserves.
 
               Ranged left on one line with everything above it, at 28px. Large
               enough to recognise, which the 17px avatars buried in the old stat
               cells never were, and small enough to stay a footnote to the
               claim rather than competing with it.
 
-              Overlapped by 8px rather than spaced. An even row reads as five
+              Overlapped by 8px rather than spaced. An even row reads as
               separate marks; a stack reads as one group, which is what a list
               of brands is. Spacing them out was tried while this row was
               centred, where overlap made the cluster look off-axis, and that
@@ -339,7 +339,18 @@ export default function About() {
 
               `alt=""` is correct rather than lazy: the names sit in text in the
               same link, so labelling the images too would make a screen reader
-              announce each brand twice. */}
+              announce each brand twice. The tooltip is the same bargain from
+              the other side. It names a mark for a pointer that has stopped on
+              one, and it is `TooltipTrigger asChild` on a span rather than
+              Radix's default button, so nothing focusable ends up nested inside
+              this anchor. `ClientStrip` does the same thing for the same
+              reason.
+
+              Colour is per mark now, not per row. `group-hover` lit all four
+              from anywhere in the link, which said "these are one group" at the
+              exact moment the reader was asking about one of them. `hover:z-10`
+              goes with it: the stack overlaps left to right, so without it the
+              mark being looked at stays pinned under its neighbour's ring. */}
           <a
             href="/#experience"
             className="group flex flex-wrap items-center gap-x-3 gap-y-2"
@@ -349,22 +360,27 @@ export default function About() {
             </span>
             <span className="flex items-center">
               {clients.map((c, i) => (
-                <span
-                  key={c.name}
-                  className={cn(
-                    "relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-secondary outline outline-1 outline-border ring-2 ring-background",
-                    i > 0 && "-ml-2",
-                  )}
-                >
-                  <Image
-                    src={c.img}
-                    alt=""
-                    width={128}
-                    height={128}
-                    quality={90}
-                    className="h-full w-full object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
-                  />
-                </span>
+                <Tooltip key={c.name}>
+                  <TooltipTrigger asChild>
+                    <span
+                      className={cn(
+                        "relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-secondary outline outline-1 outline-border ring-2 ring-background transition-[filter] duration-base ease-out hover:z-10 hover:grayscale-0",
+                        "grayscale",
+                        i > 0 && "-ml-2",
+                      )}
+                    >
+                      <Image
+                        src={c.img}
+                        alt=""
+                        width={128}
+                        height={128}
+                        quality={90}
+                        className="h-full w-full object-cover"
+                      />
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>{c.name}</TooltipContent>
+                </Tooltip>
               ))}
             </span>
             <span className="text-sm text-muted-foreground transition-colors duration-fast ease-out group-hover:text-foreground">
