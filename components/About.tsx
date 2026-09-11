@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Check, ArrowRight, Envelope } from "@phosphor-icons/react/ssr";
+import { Check, ArrowRight, PaperPlaneTilt } from "@phosphor-icons/react/ssr";
 import Container from "@/components/layout/Container";
 import AvatarHover from "@/components/AvatarHover";
 import LocalTime from "@/components/LocalTime";
@@ -206,19 +206,40 @@ export default function About() {
             .
           </p>
 
-          {/* One action that looks like an action, and one that does not. */}
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+          {/* A filled action and an outlined one.
+
+              The second was a bare text link for a while, on the argument that
+              two buttons of equal weight is no decision. It read as an
+              afterthought beside a solid button: contacting him is half the
+              point of the page, and a link with no edge did not look like
+              something to press. An outline is the middle setting. Fill still
+              beats border, so the hierarchy survives, but both now look
+              pressable and the pair reads as a set rather than a button with a
+              stray link next to it.
+
+              Same `rounded-md` and `px-5 py-2.5` as the primary, deliberately,
+              and the primary carries `border border-transparent` for the same
+              reason. Without it the outlined button stood 42px against the
+              filled one's 40: with `box-sizing: border-box` and an auto height,
+              a 1px border still adds its two pixels to the box. Matching
+              padding is not enough; both buttons have to agree on whether they
+              have a border at all.
+
+              `PaperPlaneTilt`, not `Envelope`. A closed envelope is a noun, the
+              thing a message arrives in; a paper plane is the verb, which is
+              what a button label asks for. */}
+          <div className="flex flex-wrap items-center gap-3">
             <a
               href="/#experience"
-              className="inline-flex items-center gap-2 rounded-md bg-accent px-5 py-2.5 text-sm font-medium text-accent-foreground transition-[color,background-color,transform] duration-fast ease-out hover:bg-accent-hover active:scale-[0.97]"
+              className="inline-flex items-center gap-2 rounded-md border border-transparent bg-accent px-5 py-2.5 text-sm font-medium text-accent-foreground transition-[color,background-color,transform] duration-fast ease-out hover:bg-accent-hover active:scale-[0.97]"
             >
               View selected work <ArrowRight className="h-4 w-4" />
             </a>
             <a
               href="mailto:contact@shashwa7.in"
-              className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors duration-fast ease-out hover:text-foreground"
+              className="inline-flex items-center gap-2 rounded-md border border-border-strong px-5 py-2.5 text-sm font-medium text-foreground transition-[color,background-color,border-color,transform] duration-fast ease-out hover:border-foreground hover:bg-elevated active:scale-[0.97]"
             >
-              <Envelope className="h-4 w-4" /> Get in touch
+              <PaperPlaneTilt className="h-4 w-4" /> Get in touch
             </a>
           </div>
 
