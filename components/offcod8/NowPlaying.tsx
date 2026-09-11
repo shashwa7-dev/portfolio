@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowUpRight, Pause, Play } from "@phosphor-icons/react/ssr";
+import { ArrowUpRight, MusicNotes } from "@phosphor-icons/react/ssr";
 
 /**
  * What is playing behind the letter, and a way to go listen to it properly.
@@ -46,21 +46,25 @@ const EMBED = `${ORIGIN}/embed/${VIDEO_ID}?${new URLSearchParams({
 }).toString()}`;
 
 /**
- * How many times to ask for sound before the page has been touched.
+ * How many follow-up asks go out before the page has been touched, at 500ms
+ * each.
  *
  * Some browsers will just say yes. Chrome keeps a Media Engagement score per
  * origin and grants autoplay outright once a visitor has played enough media
  * here, and any browser will grant it if the visitor has allowed sound for the
- * site in their own settings. In those cases the song starts on load with no
- * gesture at all, which is the whole point of asking.
+ * site in their own settings. In those cases the song starts with no gesture at
+ * all, which is the whole point of asking.
  *
- * Where permission is not granted the ask is refused silently, so the budget is
- * what stops a refusal from becoming a loop: the player reports its state
- * several times a second once it is playing, and retrying on every report would
- * mean thousands of doomed postMessages behind the letter. Four is enough to
- * cover the player still warming up when the first ask goes out.
+ * Retries are needed because the early asks land nowhere rather than being
+ * refused: a postMessage to a frame that has not finished loading is dropped,
+ * not queued. Eight covers about four seconds, which is enough for the player
+ * to come up on a slow connection.
+ *
+ * The budget exists because a genuine refusal is silent and indistinguishable
+ * from a dropped message. Without a limit, a page whose browser simply says no
+ * would keep asking for as long as it was open.
  */
-const UNPROMPTED_TRIES = 4;
+const UNPROMPTED_TRIES = 8;
 
 /**
  * Did the browser grant audio permission for this call stack?
@@ -82,7 +86,6 @@ function hasActivation() {
 
 export default function NowPlaying() {
   const frame = useRef<HTMLIFrameElement | null>(null);
-  const unpromptedTries = useRef(0);
 
   /** The player's own answer, or null until it has given one. */
   const [reportedMuted, setReportedMuted] = useState<boolean | null>(null);
@@ -168,38 +171,36 @@ export default function NowPlaying() {
         return;
       }
 
-      const frameEvent = (data as { event?: unknown } | null)?.event;
       const info = (data as { info?: { muted?: unknown } } | null)?.info;
-
-      if (info && typeof info.muted === "boolean") {
-        setReportedMuted(info.muted);
-        if (!info.muted) return;
-      }
-
-      // Still muted, and the player is now answering, so it is ready to be
-      // told what to do. Ask again, within the budget: the ask on `onLoad`
-      // often lands before the player has finished setting itself up, and a
-      // command sent then is dropped rather than refused.
-      if (frameEvent === "onReady" || info) {
-        if (dismissed || unpromptedTries.current >= UNPROMPTED_TRIES) return;
-        unpromptedTries.current += 1;
-        start();
-      }
+      if (info && typeof info.muted === "boolean") setReportedMuted(info.muted);
     };
 
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
-  }, [dismissed, start]);
+  }, []);
 
   /**
-   * Open the channel the moment the frame exists, and ask for sound straight
-   * away rather than waiting to be touched.
+   * Open the channel, and ask for sound without waiting to be touched.
    *
-   * There is no trick available here and no way to force it: an unmute with no
-   * user activation behind it is decided entirely by the browser, and a browser
-   * that says no says nothing. What this does is make sure the question gets
-   * asked at the earliest possible moment, so that every visitor whose browser
-   * would say yes hears the song on load instead of on their first click.
+   * `onLoad` alone was not enough, and that is why the song was not starting
+   * by itself. The iframe is server-rendered with its `src` already set, so the
+   * browser begins fetching it with the rest of the document and it can finish
+   * before React has hydrated: the `load` event fires while nothing is
+   * listening, React attaches its handler afterwards, and a handler attached
+   * after the event is a handler that never runs. So this also runs on mount
+   * and keeps asking on a timer.
+   *
+   * The timer is not impatience. A postMessage sent to a frame that has not
+   * finished loading is dropped on the floor rather than queued, so the first
+   * ask usually lands nowhere, and the player only starts reporting its state
+   * once the `listening` handshake has got through. Both go out together, every
+   * 500ms, until the player says it is unmuted or the budget runs out.
+   *
+   * There is no trick available beyond that and no way to force it: an unmute
+   * with no user activation behind it is decided entirely by the browser, and a
+   * browser that says no says nothing. What this does is make sure the question
+   * is actually asked, so that every visitor whose browser would say yes hears
+   * the song on load rather than on their first click.
    *
    * The frame itself still loads with `mute=1`. Muted autoplay is the one form
    * of autoplay that is always permitted, so the video is already playing and
@@ -207,14 +208,30 @@ export default function NowPlaying() {
    * whenever it is finally allowed. Asking for unmuted autoplay up front would
    * trade that for a player sitting paused whenever the answer was no.
    */
-  const onFrameLoad = useCallback(() => {
+  const ask = useCallback(() => {
     frame.current?.contentWindow?.postMessage(
       JSON.stringify({ event: "listening", id: VIDEO_ID, channel: "widget" }),
       ORIGIN,
     );
-    unpromptedTries.current += 1;
     start();
   }, [start]);
+
+  useEffect(() => {
+    if (playing || dismissed) return;
+
+    ask();
+    let left = UNPROMPTED_TRIES;
+    const timer = window.setInterval(() => {
+      if (left <= 0) {
+        window.clearInterval(timer);
+        return;
+      }
+      left -= 1;
+      ask();
+    }, 500);
+
+    return () => window.clearInterval(timer);
+  }, [ask, playing, dismissed]);
 
   /**
    * Scrolling is the interaction. Reading a letter means scrolling it, so the
@@ -292,7 +309,7 @@ export default function NowPlaying() {
           ref={frame}
           title="Music"
           src={EMBED}
-          onLoad={onFrameLoad}
+          onLoad={ask}
           allow="autoplay; encrypted-media"
           aria-hidden="true"
           tabIndex={-1}
@@ -301,30 +318,33 @@ export default function NowPlaying() {
         <span className="absolute inset-0 bg-background/90" />
       </div>
 
-      {/* Deliberately tiny: 10px, the size of the text beside it, with no
-          circle and no border. It is there for the reader who wants the music
-          off, not to be the first thing they see on a page whose first thing
-          is a letter.
+      {/* One glyph, and it never changes. The music is meant to arrive on its
+          own, so a play triangle would be advertising a job nobody has to do:
+          what the reader wants to know is that the sound is the page's doing
+          and where to make it stop. A note says both. State is carried by
+          colour instead, lit while it is sounding and subtle while it is not.
+
+          Deliberately tiny, 12px, barely larger than the text beside it. It is
+          there for the reader who wants the music off, not to be the first
+          thing they see on a page whose first thing is a letter.
 
           Small to look at, not small to hit. `-m-2 p-2` grows the target to
-          26px without moving anything: the padding takes the clicks and the
+          28px without moving anything: the padding takes the clicks and the
           negative margin gives the layout back the space it took.
 
-          Icon only, so the label has to live in `aria-label`. A button with no
-          text has no accessible name, and "button" is all a screen reader
-          would otherwise have to announce. The label is also the part that
-          changes, since the icon carries the state for everyone else. */}
+          The label has to live in `aria-label`, since a button with no text
+          has no accessible name and "button" is all a screen reader would
+          otherwise have to announce. It is also the part that changes, because
+          the glyph deliberately does not. */}
       <button
         type="button"
         onClick={playing ? silence : play}
-        aria-label={playing ? "Pause the music" : "Play the music"}
-        className="-m-2 flex shrink-0 p-2 text-subtle transition-colors duration-fast ease-out hover:text-foreground"
+        aria-label={playing ? "Turn the music off" : "Turn the music on"}
+        className={`-m-2 flex shrink-0 p-2 transition-colors duration-fast ease-out hover:text-foreground ${
+          playing ? "text-foreground" : "text-subtle"
+        }`}
       >
-        {playing ? (
-          <Pause aria-hidden="true" className="h-2.5 w-2.5" weight="fill" />
-        ) : (
-          <Play aria-hidden="true" className="h-2.5 w-2.5" weight="fill" />
-        )}
+        <MusicNotes aria-hidden="true" className="h-3 w-3" />
       </button>
 
       <a
