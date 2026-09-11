@@ -624,18 +624,11 @@ table {
     height: 56.25vw;
     min-width: 177.78vh;
     min-height: 100vh;
-    /* The video is a lyric video, so left sharp it puts a second block of
-       text on screen competing with the letter. Blurred it stops being
-       something to read and becomes what it was wanted for: colour that
-       moves. This is also what lets the panel over it be plain translucent
-       paper instead of a backdrop-filter, since a translucent surface over an
-       already-blurred backdrop looks identical to a frosted one and costs
-       nothing to scroll. */
-    filter: blur(14px);
-    /* Blur samples past an element's edge, so a frame sized exactly to the
-       viewport feathers out at the sides. The scale pushes that fade beyond
-       the screen. */
-    transform: translate(-50%, -50%) scale(1.08);
+    /* No blur and no overshoot. Both were here for the same reason: the blur
+       softened the lyric video's text, and the 1.08 scale only existed to
+       push the blur's feathered edge off screen. Sharp, the frame covers the
+       viewport exactly, so nothing is cropped that does not have to be. */
+    transform: translate(-50%, -50%);
   }
 
   @media (prefers-reduced-motion: reduce) {

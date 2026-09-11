@@ -246,12 +246,10 @@ export default function NowPlaying() {
           and `-z-10` so it sits behind the page without leaving the layout
           layer the rest of the route lives in.
 
-          No scrim over it any more. Dimming the whole viewport and then
-          putting the letter on its own paper was doing the same job twice,
-          and the half of it that was visible was the half spent flattening
-          the video in the margins, where there is nothing to protect. The
-          panel carries the contrast now; the blur in `globals.css` is what
-          keeps the lyrics from being readable. */}
+          A light scrim, 25% of the page background: enough to take the glare
+          off a bright frame and settle the video behind the page, not enough
+          to flatten it. The panel is still what carries the letter's
+          contrast, which is why this can stay this thin. */}
       <div
         aria-hidden
         className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
@@ -266,6 +264,7 @@ export default function NowPlaying() {
           tabIndex={-1}
           className="embed-cover"
         />
+        <span className="absolute inset-0 bg-background/25" />
       </div>
 
       <button
