@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { ArrowRight } from "@phosphor-icons/react/ssr";
 
 /**
  * The threshold in front of the letter.
@@ -84,7 +85,7 @@ export default function Curtain({ onEnter }: { onEnter: () => void }) {
           ref={button}
           type="button"
           onClick={onEnter}
-          className="flex h-full w-full flex-col items-center justify-center gap-4 px-6 text-center"
+          className="group flex h-full w-full flex-col items-center justify-center gap-4 px-6 text-center"
         >
           <span className="text-balance text-[clamp(2rem,5vw,2.75rem)] font-medium leading-tight tracking-tight text-foreground">
             I&apos;m glad you&apos;re here.
@@ -94,6 +95,29 @@ export default function Curtain({ onEnter }: { onEnter: () => void }) {
               this one already implies. */}
           <span className="text-balance text-lg leading-relaxed text-muted-foreground">
             Come on in, whenever you&apos;re ready.
+          </span>
+
+          {/* The part that says this is a thing you press.
+
+              Two warm lines are an invitation, not an affordance: nothing in
+              them looks like it can be clicked, and on a phone there is no
+              hover to discover it with either. A circled arrow is the one shape
+              that reads as "continue" without a word attached to it, at rest,
+              on any device.
+
+              Decoration rather than a control. The button is the whole overlay,
+              so a click anywhere still works and this only shows where to aim.
+              `aria-hidden` keeps it from being announced as a second thing to
+              press, and the lines above remain the button's accessible name.
+
+              It lights on hover of the overlay, not of itself, which is the
+              other half of the message: the target is everything, not the
+              circle. */}
+          <span
+            aria-hidden
+            className="mt-2 flex h-11 w-11 items-center justify-center rounded-full border border-border-strong text-foreground transition-colors duration-base ease-out group-hover:bg-muted"
+          >
+            <ArrowRight className="h-4 w-4 transition-transform duration-base ease-out group-hover:translate-x-0.5" />
           </span>
         </button>
       </div>
