@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { ArrowRight } from "@phosphor-icons/react/ssr";
+import { DoorOpen } from "@phosphor-icons/react/ssr";
 
 /**
  * The threshold in front of the letter.
@@ -101,9 +101,14 @@ export default function Curtain({ onEnter }: { onEnter: () => void }) {
 
               Two warm lines are an invitation, not an affordance: nothing in
               them looks like it can be clicked, and on a phone there is no
-              hover to discover it with either. A circled arrow is the one shape
-              that reads as "continue" without a word attached to it, at rest,
-              on any device.
+              hover to discover it with either. The circle is what makes this
+              read as a thing to press; the glyph inside it is what says where
+              pressing goes.
+
+              An open door rather than an arrow. The line above it says "come on
+              in", so the page already has a better word for this than "next",
+              and an arrow in a circle is the shape every site uses for every
+              destination. A door is the one this page actually means.
 
               Decoration rather than a control. The button is the whole overlay,
               so a click anywhere still works and this only shows where to aim.
@@ -117,7 +122,7 @@ export default function Curtain({ onEnter }: { onEnter: () => void }) {
             aria-hidden
             className="mt-2 flex h-11 w-11 items-center justify-center rounded-full border border-border-strong text-foreground transition-colors duration-base ease-out group-hover:bg-muted"
           >
-            <ArrowRight className="h-4 w-4 transition-transform duration-base ease-out group-hover:translate-x-0.5" />
+            <DoorOpen className="h-5 w-5" />
           </span>
         </button>
       </div>
