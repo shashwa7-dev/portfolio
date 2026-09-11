@@ -40,7 +40,7 @@ Concrete triggers that REQUIRE a memory-file update:
 | Stat update (users, mints, products shipped) | "Proof points" section |
 | Personal info (interests, location, contact) | "Personal" + "Contact" sections |
 | New tech in the stack | "Tech stack" section |
-| Brand added to clients | "Worked with" section |
+| Brand added to or dropped from clients | "Worked with" section |
 | Bio rewrite in `About.tsx` lede | "Who Shashwat is" section |
 
 ---
