@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { HandWaving, PenNib } from "@phosphor-icons/react/ssr";
+import { HandWaving, PenNib, Smiley } from "@phosphor-icons/react/ssr";
 import { baseUrl } from "@/app/sitemap";
 import Container from "@/components/layout/Container";
 import NowPlaying from "@/components/offcod8/NowPlaying";
@@ -454,7 +454,7 @@ export default function Offcod8Page() {
             <p>
               To my{" "}
               <strong className="font-semibold text-foreground">
-                mom, dad, and sister
+                Maa, dad, and sister
               </strong>
               : thank you for standing by me, believing in me, and giving me
               more support than I could ever properly put into words.
@@ -510,8 +510,21 @@ export default function Offcod8Page() {
 
             <p>And honestly,</p>
 
+            {/* The one glyph in the body of the letter, and it closes the
+                last line of it.
+
+                Inline rather than a flex row, so it stays in the text and
+                wraps with it: as a flex item beside a line that goes to two on
+                a phone it would sit off to the side, centred against a block
+                rather than following a sentence. Sized in `em` for the same
+                reason the line is sized in two steps, so it grows with the
+                type at `md` without a second class to keep in sync. */}
             <p className="py-2 text-2xl font-medium leading-snug tracking-tight text-foreground md:text-3xl">
-              I&apos;m excited to find out.
+              I&apos;m excited to find out.{" "}
+              <Smiley
+                aria-hidden="true"
+                className="inline h-[0.9em] w-[0.9em] align-[-0.1em] text-subtle"
+              />
             </p>
           </section>
 
