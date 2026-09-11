@@ -1,19 +1,14 @@
 import Link from "next/link";
-import { Envelope, GithubLogo, LinkedinLogo, XLogo } from "@phosphor-icons/react/ssr";
+import { Envelope } from "@phosphor-icons/react/ssr";
 import Container from "@/components/layout/Container";
 import Label from "@/components/layout/Label";
+import { SOCIAL_ICONS } from "@/components/common/socialIcons";
 import {
   footerLinks,
   socialLinks,
   contactEmail,
   location,
 } from "@/lib/siteLinks";
-
-const SOCIAL_ICONS = {
-  GitHub: GithubLogo,
-  LinkedIn: LinkedinLogo,
-  Twitter: XLogo,
-} as const;
 
 /**
  * The footer, as labelled columns closed by a specimen plate.
