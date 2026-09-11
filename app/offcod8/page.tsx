@@ -92,33 +92,69 @@ export default function Offcod8Page() {
         </div>
 
         <article className="space-y-6 text-lg leading-relaxed text-muted-foreground">
-          {/* The greeting is the h1, and the last line of the letter says it
-              again. That bookend is the writer's own move and the reason the
-              heading is a sentence rather than a title. */}
+          {/* The greeting is the h1, and the letter says it again at the foot.
+              That bookend is the writer's own move and the reason the heading
+              is a sentence rather than a title. */}
           <h1 className="text-[clamp(2rem,5vw,2.75rem)] font-medium tracking-tight text-foreground">
             Thanks for dropping by.
           </h1>
 
+          {/* The line breaks are the writer's, kept as written.
+
+              They are not soft wrapping and they are not decoration: the letter
+              was set out this way, a phrase to a line, and running the phrases
+              back together into justified paragraphs would change its pace.
+              `<br />` rather than a paragraph each, because a line and a
+              paragraph are different amounts of silence and the draft uses
+              both. */}
           <p>
-            I&apos;ve been thinking lately about how strange all of this is. How
-            much of it we spend trying to figure out what comes next.
+            I&apos;ve been thinking lately about how strange this whole thing
+            called life is.
           </p>
 
           <p>
-            We make plans, change them, make new ones. We chase things we once
-            wanted, then find out we want something else. We grow. We lose
-            things. We find people, and we lose people too. We turn into
-            versions of ourselves we couldn&apos;t have imagined a few years
-            ago.
+            How we spend so much of it
+            <br />
+            trying to figure out what comes next.
           </p>
 
           <p>
-            And in between all of that, there are the ordinary little moments:
+            We make plans.
+            <br />
+            Change them.
+            <br />
+            Make new ones.
           </p>
 
-          {/* The one place the line breaks carry meaning. Each line is a
-              separate moment, and running them together as a sentence turns a
-              list of small things into one long clause. */}
+          <p>
+            We chase things we once wanted,
+            <br />
+            then sometimes realize we want something else.
+          </p>
+
+          <p>
+            We grow.
+            <br />
+            We lose things.
+            <br />
+            We find people.
+            <br />
+            We lose people.
+            <br />
+            We become versions of ourselves
+            <br />
+            we couldn&apos;t have imagined a few years ago.
+          </p>
+
+          {/* One of the three em dashes in the draft. CLAUDE.md bans them in
+              user-facing copy, and a colon is what this one was doing anyway:
+              announcing the list that follows. */}
+          <p>
+            And somewhere in between all of that,
+            <br />
+            there are ordinary little moments:
+          </p>
+
           <p>
             a song playing on the way home,
             <br />
@@ -131,47 +167,76 @@ export default function Offcod8Page() {
             watching the sky for no particular reason.
           </p>
 
-          <p>I used to treat those as the gaps between the real thing.</p>
+          <p>
+            I&apos;ve started to think
+            <br />
+            maybe those moments aren&apos;t the things
+            <br />
+            that happen between life.
+          </p>
 
           {/* The two lines the letter turns on. They get the section heading's
-              size, which is the largest thing on the page after the greeting,
-              so they land as statements rather than as more of the paragraph
-              around them. */}
+              size, the largest thing on the page after the greeting, so they
+              land as statements rather than as more of the paragraph around
+              them. */}
           <p className="py-2 text-2xl font-medium leading-snug tracking-tight text-foreground md:text-3xl">
-            I&apos;m starting to think they are the real thing.
+            Maybe they are life.
           </p>
 
-          <p>
-            So I&apos;m trying to look up more often. To pay attention to the
-            people around me. To make time for things that don&apos;t need to
-            become anything. To stay in a good moment instead of immediately
-            wondering what&apos;s next.
-          </p>
+          <p>So I&apos;m trying to remember to look up more often.</p>
 
           <p>
-            I don&apos;t know where any of this is going.{" "}
-            <strong className="font-semibold text-foreground">
-              Nobody does.
-            </strong>
+            To care about the people around me.
+            <br />
+            To make time for things that don&apos;t need to become anything.
+            <br />
+            To be present when something feels good
+            <br />
+            instead of immediately wondering what&apos;s next.
           </p>
 
+          <p>I don&apos;t know where all of this is going.</p>
+
+          <p>None of us really do.</p>
+
+          <p>And maybe that&apos;s what makes it interesting.</p>
+
           <p>
-            So here&apos;s to the plans that never finished, the turns nobody
-            saw coming, the good days and the strange ones.
+            So here&apos;s to the unfinished plans,
+            <br />
+            the unexpected turns,
+            <br />
+            the good days,
+            <br />
+            the strange days,
+            <br />
+            and everything in between.
           </p>
 
           <p className="py-2 text-2xl font-medium leading-snug tracking-tight text-foreground md:text-3xl">
             Here&apos;s to being here.
           </p>
 
+          {/* The second em dash. A comma carries the same pause into the line
+              below it. */}
+          <p>
+            And while we&apos;re here,
+            <br />
+            might as well make it count.
+          </p>
+
           {/* The sign-off, on the same hairline every band on the site uses.
 
-              One glyph per line, sized to the text beside it: a wave for the
+              A glyph on the greeting and a glyph on the name: a wave for the
               goodbye, a nib for the signature. Those are the two gestures a
               handwritten letter actually ends with, which is what earns them a
               place on a page that is otherwise unbroken prose. They sit at
               `text-subtle` so they close the words rather than compete with
-              them.
+              them, and the line between takes `pl-8` (the glyph plus its gap)
+              so all three lines start at the same edge.
+
+              The nib is also the third em dash. "- Shash" is what a signature
+              line is for, so the dash goes and the glyph says it instead.
 
               `aria-hidden` on both. A screen reader announcing "hand waving"
               ahead of "thanks for dropping by" adds a word and no meaning, and
@@ -183,8 +248,9 @@ export default function Offcod8Page() {
                 aria-hidden="true"
                 className="h-5 w-5 shrink-0 text-subtle"
               />
-              Thanks for dropping by. Keep going.
+              Thanks for dropping by.
             </p>
+            <p className="pl-8">Keep living. Keep wondering. Keep going.</p>
             <p className="flex items-center gap-3 text-foreground">
               <PenNib
                 aria-hidden="true"
