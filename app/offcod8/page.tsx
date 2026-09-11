@@ -67,20 +67,38 @@ export default function Offcod8Page() {
       <Container width="reading" className="space-y-12 md:space-y-16">
         {/* The header.
 
+            An AVIF source at 5504x3072, which is the first one on this page
+            with real pixels to spare: the column renders near 712, a 2x screen
+            wants about 1424, and everything before this was under 1200 and had
+            nothing to put in the srcset's 2x slot. The optimizer will downscale
+            a source but never invent one, so the floor for any replacement is
+            1200px wide and more is better.
+
+            Served through the optimizer rather than raw, and the AVIF is the
+            source rather than the output. Next re-encodes it per width and
+            negotiates the format from the request, so a browser gets WebP at
+            the size it actually needs: about 48KB at 1920 against 186KB for
+            the original. Raw would also mean every phone decoding all 16.9
+            megapixels of it to paint a 712px column.
+
             `priority` because it is the first thing on the page, so it should
             not queue behind the letter it opens, and intrinsic width and
             height because those reserve its box and rule out a shift as it
-            loads. Both have to move whenever the picture does.
-
-            Keep any replacement at 1200px or wider. This column renders near
-            712, so a 2x screen wants about 1424: below that the optimizer has
-            nothing to put in the srcset's 2x slot, since it will downscale a
-            source but never invent one. */}
+            loads. Both have to move whenever the picture does. */}
         <Image
-          src="/offcod8/cover.jpg"
-          alt="Open countryside at golden hour, seen from under a broad tree: long meadow grass and wildflowers in the foreground, mown fields and hedgerows falling away to a hazy horizon."
-          width={1200}
-          height={794}
+          src="/offcod8/cover.avif"
+          alt="Misty green hills at dawn, a farmhouse and cypresses on a ridge, captioned &ldquo;the sun will rise and I will try again.&rdquo;"
+          width={5504}
+          height={3072}
+          /* Without this, Next builds the srcset from `width` and ships one
+             3840px candidate to everybody, which is a 16.9 megapixel source
+             downscaled to almost nothing on a phone. `sizes` switches it to
+             width descriptors and describes the box the picture actually
+             lands in: the reading measure less the Container's `px-6` above
+             760, and the viewport less that same padding below it. The browser
+             multiplies by its own DPR from there, so a 2x screen asks for
+             about 1424 rather than being handed 3840 or fobbed off with 712. */
+          sizes="(min-width: 760px) 712px, calc(100vw - 48px)"
           priority
           className="w-full rounded-2xl border border-border bg-elevated"
         />
