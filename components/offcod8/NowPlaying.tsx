@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowUpRight, MusicNotes } from "@phosphor-icons/react/ssr";
+import { ArrowUpRight, Pause, Play } from "@phosphor-icons/react/ssr";
 
 /**
  * What is playing behind the letter, and a way to go listen to it properly.
@@ -88,6 +88,15 @@ export default function NowPlaying() {
   const [reportedMuted, setReportedMuted] = useState<boolean | null>(null);
   /** Whether an unmute has gone out on a gesture the browser honoured. */
   const [attempted, setAttempted] = useState(false);
+  /**
+   * Whether the reader has silenced it on purpose.
+   *
+   * Without this the page argues with them: the gesture listeners below re-arm
+   * the moment the song stops, so the very next scroll would start it again and
+   * the pause button would look broken. Turning the music off is a decision,
+   * and only the button can undo it.
+   */
+  const [dismissed, setDismissed] = useState(false);
 
   // Trust the player over ourselves whenever it is talking. If it never talks
   // (the protocol below is undocumented and could change under us) fall back
@@ -112,6 +121,30 @@ export default function NowPlaying() {
     send("setVolume", [100]);
     send("playVideo");
     if (hasActivation()) setAttempted(true);
+  }, [send]);
+
+  /** The button, which both starts it and takes back a dismissal. */
+  const play = useCallback(() => {
+    setDismissed(false);
+    start();
+  }, [start]);
+
+  /**
+   * Silence it again.
+   *
+   * Mute rather than pause, so the picture behind the letter keeps moving: the
+   * video is the page's background, and freezing it would look like a fault
+   * rather than like a choice the reader made. What they hear stops either
+   * way, which is what the control is about.
+   *
+   * This is not optional politeness. The page starts audio without being
+   * asked wherever the browser allows it, and audio that plays by itself for
+   * more than a few seconds has to come with a way to stop it.
+   */
+  const silence = useCallback(() => {
+    send("mute");
+    setAttempted(false);
+    setDismissed(true);
   }, [send]);
 
   /**
@@ -148,7 +181,7 @@ export default function NowPlaying() {
       // often lands before the player has finished setting itself up, and a
       // command sent then is dropped rather than refused.
       if (frameEvent === "onReady" || info) {
-        if (unpromptedTries.current >= UNPROMPTED_TRIES) return;
+        if (dismissed || unpromptedTries.current >= UNPROMPTED_TRIES) return;
         unpromptedTries.current += 1;
         start();
       }
@@ -156,7 +189,7 @@ export default function NowPlaying() {
 
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
-  }, [start]);
+  }, [dismissed, start]);
 
   /**
    * Open the channel the moment the frame exists, and ask for sound straight
@@ -214,7 +247,7 @@ export default function NowPlaying() {
    * refused attempt costs nothing but the next gesture.
    */
   useEffect(() => {
-    if (playing) return;
+    if (playing || dismissed) return;
     const events = [
       "scroll",
       "wheel",
@@ -238,7 +271,7 @@ export default function NowPlaying() {
     );
     return () =>
       events.forEach((e) => window.removeEventListener(e, onGesture));
-  }, [playing, start]);
+  }, [playing, dismissed, start]);
 
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-2xs uppercase tracking-label">
@@ -268,25 +301,29 @@ export default function NowPlaying() {
         <span className="absolute inset-0 bg-background/90" />
       </div>
 
+      {/* Deliberately tiny: 10px, the size of the text beside it, with no
+          circle and no border. It is there for the reader who wants the music
+          off, not to be the first thing they see on a page whose first thing
+          is a letter.
+
+          Small to look at, not small to hit. `-m-2 p-2` grows the target to
+          26px without moving anything: the padding takes the clicks and the
+          negative margin gives the layout back the space it took.
+
+          Icon only, so the label has to live in `aria-label`. A button with no
+          text has no accessible name, and "button" is all a screen reader
+          would otherwise have to announce. The label is also the part that
+          changes, since the icon carries the state for everyone else. */}
       <button
         type="button"
-        onClick={start}
-        aria-live="polite"
-        className="flex items-center gap-2.5 text-subtle transition-colors duration-fast ease-out hover:text-foreground"
+        onClick={playing ? silence : play}
+        aria-label={playing ? "Pause the music" : "Play the music"}
+        className="-m-2 flex shrink-0 p-2 text-subtle transition-colors duration-fast ease-out hover:text-foreground"
       >
-        <span
-          aria-hidden
-          className={`h-1.5 w-1.5 shrink-0 rounded-full bg-current ${
-            playing ? "note-pulse" : ""
-          }`}
-        />
         {playing ? (
-          <>
-            <MusicNotes aria-hidden="true" className="h-3 w-3 shrink-0" />
-            Now playing
-          </>
+          <Pause aria-hidden="true" className="h-2.5 w-2.5" weight="fill" />
         ) : (
-          "Play the music"
+          <Play aria-hidden="true" className="h-2.5 w-2.5" weight="fill" />
         )}
       </button>
 

@@ -229,11 +229,6 @@
      transition. A die that finishes its arc in 300ms reads as a glyph being
      swapped rather than an object being thrown. */
   --duration-throw: 700ms;
-
-  /* The "now playing" blink on /offcod8. Far outside the UI budget on purpose:
-     it is an ambient loop, not a response, and a pulse that completes in a
-     third of a second reads as an alarm rather than as a heartbeat. */
-  --duration-pulse: 1800ms;
 }
 
 /* The dice on /card. The dice are made of the card's own paper. These
@@ -509,32 +504,6 @@ table {
     transform: translateY(-50%);
     background: hsl(var(--foreground));
     pointer-events: none;
-  }
-
-  /* The soft blink beside "let the music play" on /offcod8.
-
-     Opacity and transform only, so it composites on its own layer and costs no
-     layout. It is the one moving thing on a page that is otherwise a letter,
-     and it is there to say the sound is live rather than to decorate. */
-  .note-pulse {
-    animation: note-pulse var(--duration-pulse) ease-in-out infinite;
-  }
-  @keyframes note-pulse {
-    0%,
-    100% {
-      opacity: 0.25;
-      transform: scale(0.8);
-    }
-    50% {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .note-pulse {
-      animation: none;
-      opacity: 0.6;
-    }
   }
 
   /* The footer's specimen plate.
