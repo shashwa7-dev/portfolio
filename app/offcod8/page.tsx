@@ -117,6 +117,7 @@ export default function Offcod8Page() {
           >
             <span
               aria-hidden
+              data-brand-slot
               className="block h-8 w-8 bg-foreground"
               style={{
                 WebkitMaskImage: "url(/brand-mark.png)",

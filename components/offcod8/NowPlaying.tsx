@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowUpRight, MusicNotes } from "@phosphor-icons/react/ssr";
 import Curtain from "@/components/offcod8/Curtain";
+import { duration } from "@/lib/motionVariants";
 
 /**
  * What is playing behind the letter, and a way to go listen to it properly.
@@ -103,14 +104,15 @@ export default function NowPlaying() {
   /**
    * Whether the reader has crossed the threshold in front of the letter.
    *
-   * Nothing audible happens before this. The page could ask for sound on load
-   * and get it from the browsers that allow it, but then the curtain would be
-   * promising that the song starts when the reader is ready while the song was
-   * already playing behind it. The promise is worth more than the head start,
-   * and the click is a guaranteed activation, which no amount of asking early
-   * ever was.
+   * This decides what is on screen and nothing else. The song is not held back
+   * for it: the video is already playing behind the curtain, and a browser that
+   * would let the sound out should let it out then rather than wait to be asked
+   * a second time. Where the browser refuses, the click on the curtain is the
+   * activation that changes its mind, which is what the curtain is for.
    */
   const [entered, setEntered] = useState(false);
+  /** The curtain is on its way out. Still mounted, mid-fade. */
+  const [leaving, setLeaving] = useState(false);
 
   // Trust the player over ourselves whenever it is talking. If it never talks
   // (the protocol below is undocumented and could change under us) fall back
@@ -144,14 +146,53 @@ export default function NowPlaying() {
   }, [start]);
 
   /**
-   * Crossing the threshold. The one gesture the whole page has been arranged
-   * around: a real click, so the unmute below runs with activation behind it
-   * rather than hoping for it.
+   * Crossing the threshold.
+   *
+   * The ask has been going out on a timer since the frame loaded, so on a
+   * browser that allows autoplay the song is already audible by the time this
+   * runs and this changes only what is on screen. Where it was refused, this is
+   * the one gesture the page can count on: a real click, so the unmute runs
+   * with activation behind it rather than hoping for it.
    */
   const enter = useCallback(() => {
-    setEntered(true);
+    // First, and synchronously. The browser grants audio for the length of the
+    // click's own call stack, so anything that defers this hands the permission
+    // back before it is used.
     start();
+    setLeaving(true);
   }, [start]);
+
+  /**
+   * If the sound is already out, the curtain has nothing left to ask for.
+   *
+   * The page keeps asking for audio from the moment the frame loads, and some
+   * browsers say yes: Chrome grants autoplay outright once its Media Engagement
+   * score for an origin is high enough, and any browser grants it if the visitor
+   * has allowed sound for the site. When that happens the reader is looking at a
+   * door they have already walked through, so it opens itself.
+   */
+  useEffect(() => {
+    if (playing) setLeaving(true);
+  }, [playing]);
+
+  /**
+   * Unmount once the fade has had its time.
+   *
+   * The delay is `duration.curtain` from lib/motionVariants, the same token the
+   * `duration-curtain` classes on the curtain resolve to through
+   * `--duration-curtain`. Reading the token rather than writing 3000 twice is
+   * what stops the unmount landing mid-fade if the value is ever tuned: a
+   * shorter timer than transition tears the curtain away, a longer one leaves a
+   * dead invisible layer on the page.
+   */
+  useEffect(() => {
+    if (!leaving) return;
+    const timer = window.setTimeout(
+      () => setEntered(true),
+      duration.curtain * 1000,
+    );
+    return () => window.clearTimeout(timer);
+  }, [leaving]);
 
   /**
    * Silence it again.
@@ -238,7 +279,7 @@ export default function NowPlaying() {
   }, [start]);
 
   useEffect(() => {
-    if (!entered || playing || dismissed) return;
+    if (playing || dismissed) return;
 
     ask();
     let left = UNPROMPTED_TRIES;
@@ -252,7 +293,7 @@ export default function NowPlaying() {
     }, 500);
 
     return () => window.clearInterval(timer);
-  }, [ask, entered, playing, dismissed]);
+  }, [ask, playing, dismissed]);
 
   /**
    * Scrolling is the interaction. Reading a letter means scrolling it, so the
@@ -286,7 +327,7 @@ export default function NowPlaying() {
    * refused attempt costs nothing but the next gesture.
    */
   useEffect(() => {
-    if (!entered || playing || dismissed) return;
+    if (playing || dismissed) return;
     const events = [
       "scroll",
       "wheel",
@@ -310,7 +351,7 @@ export default function NowPlaying() {
     );
     return () =>
       events.forEach((e) => window.removeEventListener(e, onGesture));
-  }, [entered, playing, dismissed, start]);
+  }, [playing, dismissed, start]);
 
   return (
     <div className="flex items-center gap-4">
@@ -319,7 +360,7 @@ export default function NowPlaying() {
           click handler to a client one, and `enter` has to be the same function
           that talks to the frame: the unmute only carries activation if it runs
           inside the click's own call stack. */}
-      {!entered && <Curtain onEnter={enter} />}
+      {!entered && <Curtain leaving={leaving} onEnter={enter} />}
 
       {/* Fixed, so the picture stays still while the letter scrolls over it,
           and `-z-10` so it sits behind the page without leaving the layout

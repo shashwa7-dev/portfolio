@@ -13,10 +13,10 @@ import { DoorOpen } from "@phosphor-icons/react/ssr";
  *
  * Having to ask is not a cost here. A song that begins on its own is something
  * done to a reader; a song that begins because they said yes is an invitation
- * they accepted, and this page is an invitation. Two lines and nothing else on
- * it: the whole overlay is the door, so there is no label to write and no
- * control to aim at, and whatever else might be said here is said better by the
- * letter showing faintly underneath than by more type on top of it.
+ * they accepted, and this page is an invitation. Two lines and a door on it: the
+ * whole overlay is the way in, so there is no control to aim at, and whatever
+ * else might be said is said better by the letter showing faintly underneath
+ * than by more type on top of it.
  *
  * It buys something technical too. The player needs a few seconds to load
  * before it will take commands, and a command sent early is dropped rather than
@@ -25,16 +25,41 @@ import { DoorOpen } from "@phosphor-icons/react/ssr";
  *
  * Server-rendered rather than raised after hydration, so there is no moment
  * where the letter is visible behind it and then covered.
+ *
+ * It leaves on a fade in both the cases that dismiss it: a reader pressing
+ * Enter, and a browser that turned out to allow sound on its own, where the
+ * curtain has nothing left to ask for and gets out of the way by itself.
  */
-export default function Curtain({ onEnter }: { onEnter: () => void }) {
+
+/**
+ * The mark, drawn the way the navbar, the footer and the chat bubble draw it.
+ * `brand-mark.png` is a solid shape, so tinting it through a mask is what lets
+ * one file serve both themes.
+ */
+const MARK: React.CSSProperties = {
+  WebkitMaskImage: "url(/brand-mark.png)",
+  maskImage: "url(/brand-mark.png)",
+  WebkitMaskSize: "contain",
+  maskSize: "contain",
+  WebkitMaskRepeat: "no-repeat",
+  maskRepeat: "no-repeat",
+  WebkitMaskPosition: "center",
+  maskPosition: "center",
+};
+
+export default function Curtain({
+  leaving,
+  onEnter,
+}: {
+  /** Fading out. The parent unmounts once the transition has had its time. */
+  leaving: boolean;
+  onEnter: () => void;
+}) {
   const button = useRef<HTMLButtonElement | null>(null);
+  const mark = useRef<HTMLSpanElement | null>(null);
 
   /**
-   * Focus the one control, and hold the page still behind it.
-   *
-   * The scroll lock is not a nicety. Scrolling is one of the things that starts
-   * the song, so a page that could be scrolled behind this would let the music
-   * begin while the invitation to begin it was still on screen.
+   * Focus the one control.
    *
    * `autoFocus` as a JSX prop is unreliable here (React drops it in some
    * hydration paths), so the focus is taken explicitly. Without it the first
@@ -44,14 +69,67 @@ export default function Curtain({ onEnter }: { onEnter: () => void }) {
    */
   useEffect(() => {
     button.current?.focus();
+  }, []);
 
+  /**
+   * Hold the page still, and let go the moment the curtain starts leaving.
+   *
+   * Locking is not a nicety: scrolling is one of the things that starts the
+   * song, so a page that could be scrolled behind this would let the music
+   * begin with the invitation to begin it still on screen.
+   *
+   * Releasing on `leaving` rather than on unmount matters just as much. The
+   * fade runs for three seconds, and a page that ignored the scroll wheel for
+   * three seconds after a click would read as broken rather than as gentle.
+   */
+  useEffect(() => {
+    if (leaving) return;
     const root = document.documentElement;
     const previous = root.style.overflow;
     root.style.overflow = "hidden";
     return () => {
       root.style.overflow = previous;
     };
-  }, []);
+  }, [leaving]);
+
+  /**
+   * Fly the mark into the slot it occupies on the letter.
+   *
+   * The same logo is in both places, so this measures where it is and where it
+   * is going and closes the gap, rather than cross-fading one copy out while
+   * another appears. Centre to centre, because a transform's origin is the
+   * centre by default: translating corners would need the origin moved with
+   * them, and this way the scale and the travel cannot disagree.
+   *
+   * Measured on the way out rather than up front. The page is scroll-locked at
+   * the top until this moment, so the destination's rectangle is only certain
+   * once the reader has actually asked to go there.
+   *
+   * Under `prefers-reduced-motion` the mark stays put and only the fade runs.
+   * Throwing an object across the viewport is exactly the sort of large
+   * positional movement that preference exists to refuse, and nothing is lost:
+   * the copy it was flying towards is already sitting there underneath.
+   */
+  useEffect(() => {
+    if (!leaving) return;
+
+    const flying = mark.current;
+    const slot = document.querySelector<HTMLElement>("[data-brand-slot]");
+    if (!flying || !slot) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const from = flying.getBoundingClientRect();
+    const to = slot.getBoundingClientRect();
+    // A hidden or unmeasured element would divide by zero and send the mark
+    // somewhere off screen. Better to leave it where it is.
+    if (!from.width || !to.width) return;
+
+    const dx = to.left + to.width / 2 - (from.left + from.width / 2);
+    const dy = to.top + to.height / 2 - (from.top + from.height / 2);
+    flying.style.transform = `translate(${dx}px, ${dy}px) scale(${
+      to.width / from.width
+    })`;
+  }, [leaving]);
 
   return (
     <>
@@ -62,70 +140,87 @@ export default function Curtain({ onEnter }: { onEnter: () => void }) {
         <style>{`[data-curtain]{display:none!important}`}</style>
       </noscript>
 
-      {/* An overlay, not a wall. At 85% the letter and the video carry on
-          underneath, faintly, so this reads as something laid over the page
-          rather than as a different page that happens to come first.
-
-          No `backdrop-blur`. There is a video playing back there, and a
-          viewport-sized backdrop filter over moving pixels re-rasterises every
-          frame to soften something the scrim has already taken most of the
-          detail out of. */}
       <div
         data-curtain
         role="dialog"
         aria-modal="true"
-        className="fixed inset-0 z-50 bg-background/85"
+        className={`fixed inset-0 z-50 ${leaving ? "pointer-events-none" : ""}`}
       >
+        {/* The ground, on a layer of its own so it can fade while the mark
+            above it keeps its opacity the whole way across.
+
+            An overlay, not a wall: at 85% the letter and the video carry on
+            underneath, faintly, so this reads as something laid over the page
+            rather than as a different page that happens to come first.
+
+            No `backdrop-blur`. There is a video playing back there, and a
+            viewport-sized backdrop filter over moving pixels re-rasterises
+            every frame to soften something the scrim has already taken most of
+            the detail out of. */}
+        <span
+          aria-hidden
+          className={`absolute inset-0 bg-background/85 transition-opacity duration-curtain ease-out ${
+            leaving ? "opacity-0" : "opacity-100"
+          }`}
+        />
+
         {/* The whole overlay is the way in, so there is nothing to aim at and
-            nothing that needs a label telling the reader what to do. It is a
-            real `<button>` rather than a div with a handler, so it is reachable
-            by keyboard and announces itself as something that can be pressed,
-            and its two lines are its accessible name. */}
+            nothing that needs a label telling the reader what to do. A real
+            `<button>` rather than a div with a handler, so it is reachable by
+            keyboard and announces itself as pressable. */}
         <button
           ref={button}
           type="button"
           onClick={onEnter}
-          className="group flex h-full w-full flex-col items-center justify-center gap-4 px-6 text-center"
+          className="group relative flex h-full w-full flex-col items-center justify-center gap-7 px-6 text-center"
         >
-          <span className="text-balance text-[clamp(2rem,5vw,2.75rem)] font-medium leading-tight tracking-tight text-foreground">
-            I&apos;m glad you&apos;re here.
-          </span>
-          {/* The second line is the invitation and the instruction at once. A
-              separate "click to continue" would be a third line saying what
-              this one already implies. */}
-          <span className="text-balance text-lg leading-relaxed text-muted-foreground">
-            Come on in, whenever you&apos;re ready.
-          </span>
+          <span
+            ref={mark}
+            aria-hidden
+            className="block h-16 w-16 shrink-0 bg-foreground transition-transform duration-curtain ease-out"
+            style={MARK}
+          />
 
-          {/* The part that says this is a thing you press.
+          {/* Everything except the mark leaves with the ground. The mark is the
+              one thing that belongs to both screens, so it is the one thing
+              that travels instead of disappearing. */}
+          <span
+            className={`flex flex-col items-center gap-4 transition-opacity duration-curtain ease-out ${
+              leaving ? "opacity-0" : "opacity-100"
+            }`}
+          >
+            <span className="text-balance text-[clamp(2rem,5vw,2.75rem)] font-medium leading-tight tracking-tight text-foreground">
+              I&apos;m glad you&apos;re here.
+            </span>
 
-              Two warm lines are an invitation, not an affordance: nothing in
-              them looks like it can be clicked, and on a phone there is no
-              hover to discover it with either. The circle is what makes this
-              read as a thing to press; the glyph inside it is what says where
-              pressing goes.
+            {/* The second line is the invitation and the instruction at once. A
+                separate "click to continue" would be a third line saying what
+                this one already implies. */}
+            <span className="text-balance text-lg leading-relaxed text-muted-foreground">
+              Come on in, whenever you&apos;re ready.
+            </span>
 
-              An open door rather than an arrow. The line above it says "come on
-              in", so the page already has a better word for this than "next",
-              and an arrow in a circle is the shape every site uses for every
-              destination. A door is the one this page actually means. "Enter"
-              beside it because a glyph alone still asks the reader to guess,
-              and one plain word in the page's own face costs nothing: this is
-              the CTA, not an eyebrow, so it is sentence case in the sans
-              family rather than the mono small caps the site puts on labels.
+            {/* The part that says this is a thing you press.
 
-              Still not a second control. The button is the whole overlay, so a
-              click anywhere works and this only shows where to aim. It is not
-              hidden from assistive tech, though, so "Enter" joins the two lines
-              in the button's accessible name rather than being a word only
-              sighted readers get.
+                Two warm lines are an invitation, not an affordance: nothing in
+                them looks like it can be clicked, and on a phone there is no
+                hover to discover it with either. The pill is what makes this
+                read as pressable; the glyph inside it says where pressing goes.
 
-              It lights on hover of the overlay, not of itself, which is the
-              other half of the message: the target is everything, not the
-              circle. */}
-          <span className="mt-2 flex items-center gap-2 rounded-full border border-border-strong px-5 py-2.5 text-sm font-medium text-foreground transition-colors duration-base ease-out group-hover:bg-muted">
-            <DoorOpen aria-hidden="true" className="h-4 w-4 shrink-0" />
-            Enter
+                An open door rather than an arrow. The line above says "come on
+                in", so the page already has a better word for this than "next",
+                and an arrow in a circle is the shape every site uses for every
+                destination. "Enter" beside it because a glyph alone still asks
+                the reader to guess, and one plain word costs nothing: this is
+                the CTA, not an eyebrow, so it is sentence case in the sans
+                family rather than the mono small caps the site puts on labels.
+
+                Still not a second control. The button is the whole overlay, so
+                a click anywhere works and this only shows where to aim. */}
+            <span className="mt-2 flex items-center gap-2 rounded-full border border-border-strong px-5 py-2.5 text-sm font-medium text-foreground transition-colors duration-base ease-out group-hover:bg-muted">
+              <DoorOpen aria-hidden="true" className="h-4 w-4 shrink-0" />
+              Enter
+            </span>
           </span>
         </button>
       </div>
