@@ -29,9 +29,11 @@ import { clients } from "@/lib/clients";
  *
  * - The brand avatars in the stat cells. At 17px, greyscale, at 80% opacity,
  *   nobody can identify Coinbase or Polygon, so they did not read as proof,
- *   they read as smudges. `ClientStrip` already shows those logos at a legible
- *   size attached to the engagement that earned them, which is both more
- *   credible and the arrangement this repo already settled on.
+ *   they read as smudges. The brands now get a row of their own below the stat
+ *   band, at 44px, where they are actually legible. That row is the only place
+ *   on the site the logos appear: the per-org `ClientStrip` inside Experience
+ *   was showing the same five names a few hundred pixels further down, and it
+ *   has been removed rather than left to repeat this one.
  * - The bento box. A `rounded-2xl` bordered container with internal hairlines
  *   made no sense on a page whose structural idea is full-bleed bands crossing
  *   two rails. The stats are a band now, so the hero uses the page's own
@@ -268,8 +270,16 @@ export default function About() {
           It is also not the five-card row this repo removed once before. That
           row put each brand's contribution in a tooltip, which a touch device
           cannot reach, so its strongest fact was the one nobody on a phone
-          could get to. Here the names are plain text, and the row links to the
-          section where each contribution is written out.
+          could get to. Here the names are plain text and nothing is gated
+          behind a pointer.
+
+          What this row does NOT carry is what was built for each brand. That
+          used to sit in the per-org strip inside Experience, which was removed
+          because it repeated these same five names a few hundred pixels below.
+          The contributions are still in `lib/clients.ts` and still published by
+          `app/markdown/route.ts`, so nothing is lost, but no visual surface
+          renders them today. Worth knowing before adding a sixth brand and
+          expecting the page to explain it.
 
           `alt=""` on the logos is correct rather than lazy: the names sit in
           text in the same link, so labelling the images too would make a screen

@@ -18,7 +18,7 @@ Project memory for Claude Code agents (and any other coding-LLM-driven sessions)
 | File | What it contains | Updated by |
 |---|---|---|
 | `lib/workData.ts` | Organizations (ShopOS, Dehidden, …), roles, employment type, projects | Manually as work history evolves |
-| `lib/clients.ts` | Brand affiliations, rendered by `components/common/ClientStrip.tsx` on each org's Experience entry. There is no standalone brand row and no Clients section: a five-card row above the work history was built and deliberately removed, because it claimed proximity to five logos without saying what was built for any of them. Do not re-add one. | Manually when a new brand is added |
+| `lib/clients.ts` | Brand affiliations. Rendered in exactly one visual place: the centred logo row in the `About.tsx` hero, under the stat band. `ClientStrip` (per-org, inside Experience) was deleted because it repeated the same five names a few hundred pixels lower. The `contribution` field is no longer shown anywhere on screen; it still ships via `app/markdown/route.ts`. | Manually when a new brand is added |
 | `lib/diaryData.ts` | Long-form contributions log per org (the `/work/<org>` diary entries) | Manually when a notable contribution ships |
 | `components/About.tsx` | Hero: identity row, headline, lede copy, and the full-bleed stat band | Manually when positioning changes |
 | **`data/agent-memory.md`** | **Truffy chat assistant's system prompt** | **MUST be updated whenever any of the above changes** |
