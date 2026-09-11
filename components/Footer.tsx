@@ -88,9 +88,14 @@ const Footer = () => {
               offcod8
             </span>
           </Link>
-          <p className="mt-3 max-w-[34ch] text-sm leading-relaxed text-muted-foreground">
-            Frontend engineer building AI-first product surfaces, currently at
-            ShopOS.
+          {/* Two lines, and the column decides what fits. At four tracks this
+              cell is about 148px wide, roughly twenty characters a line, so the
+              old `max-w-[34ch]` never engaged and the previous sentence ran to
+              four lines. Measured: this is the longest wording that lands on
+              two. The positioning belongs to the hero anyway; the footer only
+              needs to say what he does and where he is doing it. */}
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+            Frontend engineer. Currently at ShopOS.
           </p>
         </div>
 
