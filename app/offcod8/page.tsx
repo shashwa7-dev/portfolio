@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { HandWaving, PenNib } from "@phosphor-icons/react/ssr";
+import { HandWaving, PenNib, Smiley } from "@phosphor-icons/react/ssr";
 import { baseUrl } from "@/app/sitemap";
 import Container from "@/components/layout/Container";
 import NowPlaying from "@/components/offcod8/NowPlaying";
@@ -150,142 +150,413 @@ export default function Offcod8Page() {
               `<br />` rather than a paragraph each, because a line and a
               paragraph are different amounts of silence and the draft uses
               both. */}
+          <p>I don&apos;t really know how to start this.</p>
+
+          <p>Maybe with the fact that I&apos;m still figuring things out.</p>
+
+          {/* One of the draft's em dashes. CLAUDE.md bans them in user-facing
+              copy, and this one was joining two independent clauses, which is
+              what a full stop is for. */}
           <p>
-            I&apos;ve been thinking lately about how strange this whole thing
-            called life is.
+            There are times in life when you can be so sure about something,
+            give it years of your time, your energy, your heart. And then one
+            day you pause and wonder:
           </p>
 
-          <p>
-            How we spend so much of it
-            <br />
-            trying to figure out what comes next.
-          </p>
-
-          <p>
-            We make plans.
-            <br />
-            Change them.
-            <br />
-            Make new ones.
-          </p>
-
-          <p>
-            We chase things we once wanted,
-            <br />
-            then sometimes realize we want something else.
-          </p>
-
-          <p>
-            We grow.
-            <br />
-            We lose things.
-            <br />
-            We find people.
-            <br />
-            We lose people.
-            <br />
-            We become versions of ourselves
-            <br />
-            we couldn&apos;t have imagined a few years ago.
-          </p>
-
-          {/* One of the three em dashes in the draft. CLAUDE.md bans them in
-              user-facing copy, and a colon is what this one was doing anyway:
-              announcing the list that follows. */}
-          <p>
-            And somewhere in between all of that,
-            <br />
-            there are ordinary little moments:
-          </p>
-
-          <p>
-            a song playing on the way home,
-            <br />
-            a late-night conversation,
-            <br />
-            coffee on a quiet morning,
-            <br />
-            laughing until it hurts,
-            <br />
-            watching the sky for no particular reason.
-          </p>
-
-          <p>
-            I&apos;ve started to think
-            <br />
-            maybe those moments aren&apos;t the things
-            <br />
-            that happen between life.
-          </p>
-
-          {/* The two lines the letter turns on. They get the section heading's
-              size, the largest thing on the page after the greeting, so they
-              land as statements rather than as more of the paragraph around
-              them. */}
+          {/* The four lines the letter turns on, here and in the three
+              sections below. They take the largest size on the page after the
+              greeting, above even a section heading, because they are the
+              sentences the paragraphs around them exist to arrive at. */}
           <p className="py-2 text-2xl font-medium leading-snug tracking-tight text-foreground md:text-3xl">
-            Maybe they are life.
+            What am I actually doing with my life?
           </p>
 
-          <p>So I&apos;m trying to remember to look up more often.</p>
+          <p>I&apos;ve had those moments.</p>
+
+          <p>And honestly, I think it&apos;s okay.</p>
 
           <p>
-            To care about the people around me.
+            It&apos;s okay to be confused sometimes.
             <br />
-            To make time for things that don&apos;t need to become anything.
+            It&apos;s okay to question things.
             <br />
-            To be present when something feels good
+            It&apos;s okay to not have an answer.
             <br />
-            instead of immediately wondering what&apos;s next.
+            It&apos;s okay to change your mind.
           </p>
 
-          <p>I don&apos;t know where all of this is going.</p>
+          <p>We&apos;re not supposed to know everything, all the time.</p>
 
-          <p>None of us really do.</p>
+          {/* Each part opens on the hairline the sign-off uses, standing in for
+              the rule the draft wrote as `---`. No `Band`: a band means a
+              labelled division of the page starts there, and it stops meaning
+              that the moment it is borrowed for emphasis. `space-y-6` on the
+              article supplies the air above the rule, `pt-10` the air below,
+              so the heading never needs to out-specify the stack it sits in. */}
+          <section className="space-y-6 border-t border-border pt-10">
+            <h2 className="text-xl font-medium tracking-tight text-foreground md:text-2xl">
+              Before software, there was music.
+            </h2>
 
-          <p>And maybe that&apos;s what makes it interesting.</p>
+            <p>For a while, music was a big part of my life.</p>
 
-          <p>
-            So here&apos;s to the unfinished plans,
-            <br />
-            the unexpected turns,
-            <br />
-            the good days,
-            <br />
-            the strange days,
-            <br />
-            and everything in between.
-          </p>
+            {/* The cities are lifted the same way the school is, with
+                `<strong>`. That is the only emphasis device this codebase has:
+                there is no highlight, and `Marker.tsx` was deleted rather than
+                kept for exactly this sort of reach. Two in one sentence is
+                more than usual, but both are proper nouns the letter actually
+                turns on rather than a run of stressed prose. */}
+            <p>
+              I was in{" "}
+              <strong className="font-semibold text-foreground">Bombay</strong>,
+              learning music at the{" "}
+              <strong className="font-semibold text-foreground">
+                True School of Music
+              </strong>
+              , going to gigs, listening to bands, spending evenings at places
+              like Hard Rock Cafe, and discovering music that stayed with me.
+            </p>
 
-          <p className="py-2 text-2xl font-medium leading-snug tracking-tight text-foreground md:text-3xl">
-            Here&apos;s to being here.
-          </p>
+            <p>
+              Agnee.
+              <br />
+              The Local Train.
+              <br />
+              And so many other artists and musicians I came across along the
+              way.
+            </p>
 
-          {/* The second em dash. A comma carries the same pause into the line
-              below it. */}
-          <p>
-            And while we&apos;re here,
-            <br />
-            might as well make it count.
-          </p>
+            <p>More than anything, I remember the people.</p>
 
-          {/* The sign-off, on the same hairline every band on the site uses.
+            <p>
+              The friends I made.
+              <br />
+              The conversations.
+              <br />
+              The late nights.
+              <br />
+              The feeling of being around people who were simply passionate
+              about something.
+            </p>
+
+            <p>
+              Some of those people are still a part of my life in one way or
+              another.
+            </p>
+
+            <p>
+              And looking back, I realize that chapter gave me much more than
+              music.
+            </p>
+
+            <p>
+              It gave me people.
+              <br />
+              Experiences.
+              <br />
+              Memories.
+            </p>
+
+            <p>
+              And maybe, without realizing it, it taught me how much I enjoy{" "}
+              <strong className="font-semibold text-foreground">
+                creating something that didn&apos;t exist before.
+              </strong>
+            </p>
+          </section>
+
+          <section className="space-y-6 border-t border-border pt-10">
+            <h2 className="text-xl font-medium tracking-tight text-foreground md:text-2xl">
+              Then came tech.
+            </h2>
+
+            <p>
+              Somewhere along the way, that curiosity found its way into
+              software.
+            </p>
+
+            <p>
+              And I&apos;ve spent the last few years building things, breaking
+              things, learning, figuring things out, and trying to become better
+              at what I do.
+            </p>
+
+            <p>I&apos;ve met some incredible people along the way.</p>
+
+            <p>
+              And just a few months ago, I moved to{" "}
+              <strong className="font-semibold text-foreground">
+                Bangalore
+              </strong>{" "}
+              after spending a long time working remotely.
+            </p>
+
+            <p>
+              I got the chance to work alongside an amazing team here, with some
+              incredibly talented people.
+            </p>
+
+            <p>I learned a lot from them.</p>
+
+            <p>Not just about software.</p>
+
+            <p>
+              About working with people.
+              <br />
+              About building something together.
+              <br />
+              About myself.
+            </p>
+
+            <p>And I&apos;m genuinely grateful for that chapter.</p>
+          </section>
+
+          <section className="space-y-6 border-t border-border pt-10">
+            <h2 className="text-xl font-medium tracking-tight text-foreground md:text-2xl">
+              But lately, I&apos;ve been thinking again.
+            </h2>
+
+            <p>
+              I don&apos;t enjoy software engineering in quite the same way I
+              used to.
+            </p>
+
+            <p>
+              And that&apos;s probably one of the hardest things for me to
+              admit.
+            </p>
+
+            <p>
+              Because when you&apos;ve spent years becoming something, it&apos;s
+              strange to suddenly wonder if that&apos;s still what you want to
+              be.
+            </p>
+
+            <p>Maybe I&apos;ll find my way back to it.</p>
+
+            <p>
+              Maybe I&apos;ll discover a different part of it that I
+              haven&apos;t seen yet.
+            </p>
+
+            <p>Maybe I&apos;ll end up doing something completely different.</p>
+
+            <p>
+              <strong className="font-semibold text-foreground">
+                I honestly don&apos;t know.
+              </strong>
+            </p>
+
+            <p>And for once, I&apos;m trying to be okay with not knowing.</p>
+
+            <p>I&apos;m still trying to rediscover myself.</p>
+
+            <p>
+              What I want to build.
+              <br />
+              What I want to learn.
+              <br />
+              What makes me curious.
+              <br />
+              What makes me feel alive.
+            </p>
+
+            <p>Maybe I&apos;ll remain an engineer.</p>
+
+            <p>Maybe I&apos;ll become something else.</p>
+
+            <p>
+              Whatever it is, I want to give myself the freedom to find out.
+            </p>
+          </section>
+
+          <section className="space-y-6 border-t border-border pt-10">
+            <h2 className="text-xl font-medium tracking-tight text-foreground md:text-2xl">
+              And maybe that&apos;s what life is.
+            </h2>
+
+            <p>Not having a perfectly written plan.</p>
+
+            <p>
+              It&apos;s the unexpected turns.
+              <br />
+              The people who come into our lives.
+              <br />
+              The things we fall in love with.
+              <br />
+              The things we eventually outgrow.
+              <br />
+              The songs we keep coming back to.
+              <br />
+              The random conversations we remember years later.
+              <br />
+              The coffee on a quiet morning.
+              <br />
+              The nights that somehow become memories.
+              <br />
+              The things we create.
+              <br />
+              The places we go.
+              <br />
+              The people we become.
+            </p>
+
+            <p>Maybe those aren&apos;t just things happening along the way.</p>
+
+            <p className="py-2 text-2xl font-medium leading-snug tracking-tight text-foreground md:text-3xl">
+              Maybe they are the way.
+            </p>
+
+            <p>So I don&apos;t know exactly where I&apos;m headed from here.</p>
+
+            <p>But I know I have the ability to figure it out.</p>
+
+            <p>
+              And whatever comes next, I&apos;ll meet it with the same curiosity
+              that brought me here in the first place.
+            </p>
+
+            <p>
+              I want to believe that I can build whatever I truly decide to
+              build.
+            </p>
+
+            <p>Maybe not immediately.</p>
+
+            <p>Maybe not exactly how I imagined it.</p>
+
+            <p>But I&apos;ll get there.</p>
+
+            <p>
+              <strong className="font-semibold text-foreground">
+                I have to believe that.
+              </strong>
+            </p>
+
+            <p>
+              Because no matter how confusing things get, no matter how
+              difficult life becomes,
+            </p>
+
+            <p className="py-2 text-2xl font-medium leading-snug tracking-tight text-foreground md:text-3xl">
+              I&apos;m going to rise.
+            </p>
+
+            <p>Maybe I&apos;ll stumble.</p>
+
+            <p>Maybe I&apos;ll take a few wrong turns.</p>
+
+            <p>Maybe I&apos;ll have to start over.</p>
+
+            <p>But I&apos;ll rise.</p>
+          </section>
+
+          <section className="space-y-6 border-t border-border pt-10">
+            {/* The draft ended this heading on an em dash. A comma carries the
+                same lean into the line under it. */}
+            <h2 className="text-xl font-medium tracking-tight text-foreground md:text-2xl">
+              And for everything that has brought me here,
+            </h2>
+
+            <p>I&apos;m incredibly grateful.</p>
+
+            {/* Two more em dashes gone. Both were introducing the thing being
+                said to someone, which is a colon's job. */}
+            <p>
+              To my{" "}
+              <strong className="font-semibold text-foreground">
+                Maa, dad, and sister
+              </strong>
+              : thank you for standing by me, believing in me, and giving me
+              more support than I could ever properly put into words.
+            </p>
+
+            <p>
+              To my closest friends: thank you for the conversations, the
+              laughter, the memories, and simply being there.
+            </p>
+
+            <p>
+              To the people I&apos;ve met along the way, even the ones who were
+              only part of one particular chapter: thank you.
+            </p>
+
+            <p>
+              Every person, every place, every experience has left something
+              behind.
+            </p>
+
+            <p>
+              And when I look at my life, I realize how lucky I am to have had
+              all of it.
+            </p>
+          </section>
+
+          <section className="space-y-6 border-t border-border pt-10">
+            <p>So, I don&apos;t really know what&apos;s next.</p>
+
+            <p>
+              More music.
+              <br />
+              More things to build.
+              <br />
+              More things to learn.
+              <br />
+              More places to see.
+              <br />
+              More people to meet.
+            </p>
+
+            <p>Maybe more tech.</p>
+
+            <p>Maybe something completely different.</p>
+
+            <p>
+              <strong className="font-semibold text-foreground">
+                Let&apos;s see where life takes me.
+              </strong>
+            </p>
+
+            <p>I&apos;m still figuring it out.</p>
+
+            <p>And honestly,</p>
+
+            {/* The one glyph in the body of the letter, and it closes the
+                last line of it.
+
+                Inline rather than a flex row, so it stays in the text and
+                wraps with it: as a flex item beside a line that goes to two on
+                a phone it would sit off to the side, centred against a block
+                rather than following a sentence. Sized in `em` for the same
+                reason the line is sized in two steps, so it grows with the
+                type at `md` without a second class to keep in sync. */}
+            <p className="py-2 text-2xl font-medium leading-snug tracking-tight text-foreground md:text-3xl">
+              I&apos;m excited to find out.{" "}
+              <Smiley
+                aria-hidden="true"
+                className="inline h-[0.9em] w-[0.9em] align-[-0.1em] text-subtle"
+              />
+            </p>
+          </section>
+
+          {/* The sign-off, on the same hairline every part of the letter opens
+              with.
 
               A glyph on the greeting and a glyph on the name: a wave for the
               goodbye, a nib for the signature. Those are the two gestures a
               handwritten letter actually ends with, which is what earns them a
               place on a page that is otherwise unbroken prose. They sit at
               `text-subtle` so they close the words rather than compete with
-              them, and the line between takes `pl-8` (the glyph plus its gap)
-              so all three lines start at the same edge.
+              them.
 
-              The nib is also the third em dash. "- Shash" is what a signature
+              The nib is also the last em dash. "- Shash" is what a signature
               line is for, so the dash goes and the glyph says it instead.
 
               `aria-hidden` on both. A screen reader announcing "hand waving"
               ahead of "thanks for dropping by" adds a word and no meaning, and
               the nib would announce the signature as an object rather than
               reading it as one. */}
-          <footer className="space-y-4 border-t border-border pt-7">
+          <footer className="space-y-4 border-t border-border pt-10">
             <p className="flex items-center gap-3">
               <HandWaving
                 aria-hidden="true"
@@ -293,7 +564,6 @@ export default function Offcod8Page() {
               />
               Thanks for dropping by.
             </p>
-            <p className="pl-8">Keep living. Keep wondering. Keep going.</p>
             <p className="flex items-center gap-3 text-foreground">
               <PenNib
                 aria-hidden="true"
