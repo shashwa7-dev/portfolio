@@ -552,4 +552,57 @@ table {
       display: none;
     }
   }
+
+  /* The letter at /offcod8 runs bare: no navbar, no footer, no rails.
+
+     Those three are rendered once from app/layout.tsx, a server component with
+     no idea which route sits below it. Reading the pathname there would make
+     every page on the site dynamic in order to strip chrome from one of them,
+     and giving that route its own root layout means moving every other route
+     into a group and duplicating the theme script, the fonts and the JSON-LD.
+     So the page marks itself with `data-bare` and the chrome selects on it
+     from here: no JavaScript, so nothing flashes before hydration, and no
+     other page loses its static render.
+
+     This is the only route allowed to do it. A second one means it is not an
+     easter egg any more, it is a layout, and a layout belongs in a layout. */
+  body:has([data-bare]) .site-navbar,
+  body:has([data-bare]) .site-footer,
+  body:has([data-bare]) .page-rails {
+    display: none;
+  }
+
+  /* The video behind the letter at /offcod8.
+
+     `object-fit: cover` cannot reach inside an iframe, so the frame is sized
+     past the edges instead. Width resolves to the larger of 100vw and
+     177.78vh, height to the larger of 56.25vw and 100vh: those are the same
+     16:9 ratio read in both directions, so whichever axis is short overflows
+     and the viewport is always covered. The translate keeps the middle of the
+     picture in the middle of the screen rather than the top left.
+
+     Under reduced motion the frame goes transparent rather than away. Hiding
+     it with `display` or `visibility` lets a browser treat the media as
+     off-screen and stop it, and the song is not the part anyone asked to be
+     spared: opacity leaves it playing behind a plain background. */
+  .embed-cover {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100vw;
+    height: 56.25vw;
+    min-width: 177.78vh;
+    min-height: 100vh;
+    /* No blur and no overshoot. Both were here for the same reason: the blur
+       softened the lyric video's text, and the 1.08 scale only existed to
+       push the blur's feathered edge off screen. Sharp, the frame covers the
+       viewport exactly, so nothing is cropped that does not have to be. */
+    transform: translate(-50%, -50%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .embed-cover {
+      opacity: 0;
+    }
+  }
 }
