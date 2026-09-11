@@ -59,7 +59,21 @@
   --sh-entity: hsl(180 40% 30%);
 }
 
-  .dark {
+  /* `[data-bare]` rides this block on purpose rather than restating it.
+
+     /offcod8 is a dark page in both themes: it is mostly a video, and the scrim
+     over that video has to be dark for the picture to read as a picture rather
+     than as a wash. Once the ground is dark in both themes the ink has to be
+     too, so the route takes the whole dark palette rather than a handful of
+     overrides.
+
+     Sharing the selector is what keeps the two honest. A separate block listing
+     its own hex values would be a second copy of this palette, and the copy
+     would drift the first time a token here was tuned. Redefining tokens rather
+     than restyling components is also what saves every element inside the route
+     from carrying a `dark:` variant. */
+  .dark,
+  [data-bare] {
     /* Paper (dark) */
     --background: 30 7% 5%;
     --foreground: 35 6% 94%;
@@ -570,6 +584,14 @@ table {
   body:has([data-bare]) .site-footer,
   body:has([data-bare]) .page-rails {
     display: none;
+  }
+
+  /* The body is outside the route's element, so it never sees the dark tokens
+     the route sets on itself. The video's scrim covers the viewport and hides
+     it at rest, but an overscroll bounce pulls past that and would show a strip
+     of light paper under a dark page. This is the dark `--background`. */
+  body:has([data-bare]) {
+    background: hsl(30 7% 5%);
   }
 
   /* The video behind the letter at /offcod8.
