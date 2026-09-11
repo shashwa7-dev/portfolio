@@ -386,19 +386,28 @@ export default function About() {
           dots' absolutely positioned pseudo-elements a containing block, and
           nothing inside this is positioned.
 
-          Top border only, and the header has no bottom padding. The next thing
-          on the page is section 01's band, which draws its own top rule, so a
-          bottom border here would stack two hairlines a pixel apart and any
-          padding would leave a strip of dead page between two rules. The
-          section band's top rule closes the stats instead.
+          The rule above the numbers moves onto the Container, so it stops at
+          the measure instead of running the full width of the page. Full bleed
+          is what made it read as a band: a hairline crossing the rails is the
+          page announcing a division, and this is the last line of the hero. Cut
+          to the reading column it lands between the rails rather than through
+          them, and reads as what it is, the line the numbers sit on.
+
+          On a phone the Container is the viewport, so the rule is edge to edge
+          there anyway. That is correct and not an accident of this change:
+          below 900px the rails are not drawn at all, so there is nothing for a
+          full-width line to cut across.
+
+          Nothing closes the stats from below, and nothing needs to. The next
+          thing on the page is section 01's band, which draws its own top rule.
 
           The grid pulls itself out of the Container's `px-6` on mobile and
           hands that padding to the cells instead. That is what makes the rule
           between the two rows run edge to edge. Left inside the padded column
           it stopped 24px short at each end, which reads as a broken line
           sitting between two full-width ones. */}
-      <div className="mt-10 border-t border-border md:mt-12">
-        <Container width="reading">
+      <div className="mt-10 md:mt-12">
+        <Container width="reading" className="border-t border-border">
           <div className="-mx-6 grid grid-cols-2 md:mx-0 md:grid-cols-4">
             {stats.map((s, i) => (
               <div
