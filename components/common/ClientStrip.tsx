@@ -33,7 +33,15 @@ import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip
  *    back as a hover reward solves it from the other direction.
  */
 export default function ClientStrip({ orgSlug }: { orgSlug: string }) {
-  const owned = clients.filter((c) => c.org === orgSlug);
+  // An organisation cannot be a brand it worked with. ShopOS is in the list so
+  // that the hero row can name it, and without this it would also appear on
+  // /work/shopos as a client of itself. Matching the name against the slug
+  // rather than reading `organizations` keeps this file's only data import the
+  // one it renders.
+  const owned = clients.filter(
+    (c) =>
+      c.org === orgSlug && c.name.toLowerCase().replace(/\s+/g, "") !== orgSlug,
+  );
   if (owned.length === 0) return null;
 
   return (

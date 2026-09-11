@@ -126,7 +126,7 @@ so plainly if someone asks directly.
 
 ## Worked with (brands he's shipped for)
 
-Play AI, Polygon, Coinbase, Sentient, NodeOps
+Coinbase, Polygon, Play AI, ShopOS
 
 ## Contact
 
