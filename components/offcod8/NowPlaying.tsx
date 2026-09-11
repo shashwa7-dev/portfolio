@@ -246,10 +246,12 @@ export default function NowPlaying() {
           and `-z-10` so it sits behind the page without leaving the layout
           layer the rest of the route lives in.
 
-          The scrim is the site's own background at 90%, which is what lets one
-          value work in both themes: the video is dimmed towards paper in light
-          and towards ink in dark, and the letter keeps the same contrast it
-          has on a plain page either way. */}
+          No scrim over it any more. Dimming the whole viewport and then
+          putting the letter on its own paper was doing the same job twice,
+          and the half of it that was visible was the half spent flattening
+          the video in the margins, where there is nothing to protect. The
+          panel carries the contrast now; the blur in `globals.css` is what
+          keeps the lyrics from being readable. */}
       <div
         aria-hidden
         className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
@@ -264,7 +266,6 @@ export default function NowPlaying() {
           tabIndex={-1}
           className="embed-cover"
         />
-        <span className="absolute inset-0 bg-background/90" />
       </div>
 
       <button

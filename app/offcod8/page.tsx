@@ -68,8 +68,14 @@ export default function Offcod8Page() {
             one. It is also the only version that stays cheap. This column runs
             several thousand pixels tall, and a backdrop-filter that size has
             to re-rasterise its backdrop as the page moves over a playing
-            video, which is exactly the shape of a scroll stutter. */}
-        <div className="space-y-12 rounded-2xl border border-border bg-background/80 p-5 md:space-y-16 md:p-10">
+            video, which is exactly the shape of a scroll stutter.
+
+            90% rather than the 80% it carried while a scrim was also dimming
+            the viewport. With the scrim gone this is the only thing between
+            the letter and a bright video, so it has to hold the contrast on
+            its own. Everything on the page sits inside it, the mark and the
+            now-playing line included, so nothing is left unprotected. */}
+        <div className="space-y-12 rounded-2xl border border-border bg-background/90 p-5 md:space-y-16 md:p-10">
           {/* The header, and the only picture on the site that moves.
 
             `unoptimized` is not optional on a GIF. next/image would otherwise
