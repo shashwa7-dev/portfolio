@@ -10,9 +10,11 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
+import { SOCIAL_ICONS } from "@/components/common/socialIcons";
 import { cn } from "@/lib/utils";
 import { stats } from "@/lib/stats";
 import { clients } from "@/lib/clients";
+import { socialLinks } from "@/lib/siteLinks";
 
 /**
  * The hero.
@@ -57,7 +59,7 @@ export default function About() {
   return (
     <header className="pt-10 md:pt-14">
       <Container width="reading">
-        <div className="space-y-7 sm:space-y-8">
+        <div className="relative space-y-7 sm:space-y-8">
           <div className="flex items-start gap-3.5">
             {/* Availability rides the avatar, LinkedIn style, instead of taking a
                 row of its own as a pill.
@@ -171,6 +173,7 @@ export default function About() {
                   half of the same question for a client in another timezone. */}
               <LocalTime />
             </div>
+
           </div>
 
           {/* The positioning statement. Still the line doing the selling, but a
@@ -245,6 +248,52 @@ export default function About() {
               <Coffee className="h-4 w-4" /> Get in touch
             </a>
           </div>
+
+          {/* Socials, desktop only.
+
+              Two phone placements were tried and both were worse than nothing.
+              Hung off the identity row it read as orphaned, indented into the
+              middle of the block with dead space beside it. Moved under the
+              actions it became a third row of controls in a hero that already
+              has two. The footer carries all three on a phone, in full, with
+              labels, which is where a reader looks for them anyway.
+
+              It stays below the actions in source order rather than back up in
+              the identity row: that is the reading order it would take if it
+              ever returned to the flow, and `top-0` of this stack is the
+              identity row's top edge either way.
+
+              From `sm` it lifts out of the flow to the stack's top right
+              corner, level with the portrait. No magic numbers hold that
+              alignment, so changing the row's height cannot break it.
+
+              `!mt-0` is not a shortcut. `space-y-7` sets `margin-top` through
+              `.space-y-7 > :not([hidden]) ~ :not([hidden])`, which outranks a
+              plain `mt-0` on specificity, and on an absolutely positioned box
+              that margin offsets it below the `top-0` it was just given.
+
+              Icon only, because this is a corner and the footer already lists
+              them by name. Each still carries an `sr-only` name and a `title`,
+              so nothing is reachable only by a pointer. */}
+          <ul className="hidden items-center gap-0.5 sm:absolute sm:right-0 sm:top-0 sm:flex sm:!mt-0">
+            {socialLinks.map(({ name, href }) => {
+              const Icon = SOCIAL_ICONS[name];
+              return (
+                <li key={name}>
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={name}
+                    className="grid h-8 w-8 place-items-center rounded-md text-subtle transition-colors duration-fast ease-out hover:bg-elevated hover:text-foreground"
+                  >
+                    <Icon aria-hidden="true" className="h-4 w-4" />
+                    <span className="sr-only">{name}</span>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
 
           {/* Worked with.
 
