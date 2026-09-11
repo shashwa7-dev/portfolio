@@ -9,7 +9,7 @@ type Tier = {
 };
 
 /**
- * Twenty-six tools in three tiers, down from forty-one in four categories.
+ * Twenty-seven tools in three tiers, down from forty-one in four categories.
  *
  * The old section grouped by what a tool IS: Frontend, AI, Backend & data,
  * Infra & tooling. Two problems came out of that, and they compounded.
@@ -30,7 +30,7 @@ type Tier = {
  * that a category cannot: "Backend & data" tells you what Postgres is, which
  * the reader already knew; "Every day" tells you what it is to him.
  *
- * Fifteen entries were cut, and the argument is the one this file already made
+ * Fourteen entries were cut, and the argument is the one this file already made
  * when it dropped `html` and `css`: listing table stakes invites the reader to
  * calibrate downwards. Git, GitHub and VS Code are that. `restAPI` is not a
  * tool but a shape of API. Two analytics entries are one and a half too many.
@@ -38,10 +38,17 @@ type Tier = {
  * Tailwind and shadcn/ui, so keeping it suggests the list is historical rather
  * than current. Of two test runners only `playwright` stays.
  *
- * `zustand`, `sentry`, `posthog` and `aws` are the borderline ones. They are
- * real claims rather than table stakes, and they came out to keep the third
- * tier at a length someone will actually finish reading. They are the first
- * things to add back.
+ * `zustand`, `sentry` and `posthog` are the borderline ones. They are real
+ * claims rather than table stakes, and they came out to keep the third tier at
+ * a length someone will actually finish reading. They are the first things to
+ * add back.
+ *
+ * `aws` renders as a text-only pill beside eight that carry glyphs, and that
+ * cannot be fixed by wiring up an icon: simple-icons ships 3,436 marks and none
+ * of them is Amazon's, which was pulled from the set over trademark policy. So
+ * the options are a hand-vendored path, a different label, or living with one
+ * wordmark among nine. Living with it, since the top tier is a claim about what
+ * gets used rather than a logo wall.
  *
  * Claude moved into the top tier deliberately. The hero sells "AI-adaptive
  * frontend engineer" and the old layout gave that claim three small pills in
@@ -50,7 +57,19 @@ type Tier = {
 const tiers: Tier[] = [
   {
     label: "Every day",
-    items: ["typescript", "react", "next", "tailwind", "claude", "vercel"],
+    // Ordered the way the work moves: language, UI, framework, styling,
+    // components, then the AI in the loop, then where it ships and runs.
+    items: [
+      "typescript",
+      "react",
+      "next",
+      "tailwind",
+      "shadcn",
+      "claude",
+      "vercel",
+      "cloudflare",
+      "aws",
+    ],
   },
   {
     label: "Often",
@@ -59,7 +78,6 @@ const tiers: Tier[] = [
       "node",
       "postgres",
       "supabase",
-      "shadcn",
       "reactQuery",
       "wagmi",
       "gsap",
@@ -78,7 +96,6 @@ const tiers: Tier[] = [
       "websocket",
       "webrtc",
       "docker",
-      "cloudflare",
       "playwright",
     ],
   },
