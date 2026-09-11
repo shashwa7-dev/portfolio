@@ -68,24 +68,25 @@ export default function Offcod8Page() {
       <Container width="reading" className="space-y-12 md:space-y-16">
         {/* The header.
 
-            A still JPEG, where this was a 1.19MB GIF: 37KB of source, and
+            A still JPEG, where this was a 1.19MB GIF. 151KB of source, and
             optimised on the way out rather than served raw, since `unoptimized`
             was only ever here to stop the optimizer flattening an animation
             into a single frame. Nothing to preserve now, so Next re-encodes it
             and emits a srcset.
 
-            One honest limit: the source is 749px wide and this column renders
-            it near 712, so a 2x screen gets no more detail than a 1x one. The
-            optimizer will not invent pixels, and neither will anything else.
+            At 1200px the source is finally wide enough to matter. This column
+            renders near 712, so a 2x screen wants about 1424 and gets 1200,
+            which is close. The three headers before this one were under 750px
+            and had nothing beyond 1x to give.
 
             `priority` because it is the first thing on the page, and intrinsic
             width and height because those reserve its box and rule out a shift
             as it loads. */}
         <Image
           src="/offcod8/cover.jpg"
-          alt="A small seaside railway platform under a clear sky, a yellow and white train stopped at it, the sea filling the horizon behind."
-          width={749}
-          height={513}
+          alt="A film still: someone sitting alone on a harbour wall at dusk, watching fishing boats on a calm sea, subtitled &ldquo;in the end, we all become stories.&rdquo;"
+          width={1200}
+          height={800}
           priority
           className="w-full rounded-2xl border border-border bg-elevated"
         />
