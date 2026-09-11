@@ -68,7 +68,7 @@ export default function Offcod8Page() {
       <Container width="reading" className="space-y-12 md:space-y-16">
         {/* The header.
 
-            A still JPEG, where this was a 1.19MB GIF. 151KB of source, and
+            A still JPEG, where this was a 1.19MB GIF. 193KB of source, and
             optimised on the way out rather than served raw, since `unoptimized`
             was only ever here to stop the optimizer flattening an animation
             into a single frame. Nothing to preserve now, so Next re-encodes it
@@ -84,9 +84,9 @@ export default function Offcod8Page() {
             as it loads. */}
         <Image
           src="/offcod8/cover.jpg"
-          alt="A film still: someone sitting alone on a harbour wall at dusk, watching fishing boats on a calm sea, subtitled &ldquo;in the end, we all become stories.&rdquo;"
+          alt="Open countryside at golden hour, seen from under a broad tree: long meadow grass and wildflowers in the foreground, mown fields and hedgerows falling away to a hazy horizon."
           width={1200}
-          height={800}
+          height={794}
           priority
           className="w-full rounded-2xl border border-border bg-elevated"
         />
