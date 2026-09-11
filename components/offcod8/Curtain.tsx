@@ -13,9 +13,9 @@ import { ArrowRight } from "@phosphor-icons/react/ssr";
  *
  * Having to ask is not a cost here. A song that begins on its own is something
  * done to a reader; a song that begins because they said yes is an invitation
- * they accepted, and this page is an invitation. So the copy says what is about
- * to happen rather than hiding it, which is also the difference between a
- * welcome and an ambush.
+ * they accepted, and this page is an invitation. Six words and a button: the
+ * greeting, the way in, and a warning that sound is coming, which is the
+ * difference between a welcome and an ambush.
  *
  * It buys something technical too. The player needs a few seconds to load
  * before it will take commands, and a command sent early is dropped rather than
@@ -60,14 +60,22 @@ export default function Curtain({ onEnter }: { onEnter: () => void }) {
         <style>{`[data-curtain]{display:none!important}`}</style>
       </noscript>
 
+      {/* An overlay, not a wall. At 85% the letter and the video carry on
+          underneath, faintly, so this reads as something laid over the page
+          rather than as a different page that happens to come first.
+
+          No `backdrop-blur`. There is a video playing behind this, and a
+          viewport-sized backdrop filter over moving pixels re-rasterises every
+          frame to soften something the scrim has already taken most of the
+          detail out of. */}
       <div
         data-curtain
         role="dialog"
         aria-modal="true"
         aria-labelledby="curtain-title"
-        className="fixed inset-0 z-50 flex items-center justify-center bg-background px-6"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-background/85 px-6"
       >
-        <div className="w-full max-w-[38ch] space-y-5 text-center">
+        <div className="flex w-full max-w-[30ch] flex-col items-center gap-6 text-center">
           <h2
             id="curtain-title"
             className="text-2xl font-medium tracking-tight text-foreground md:text-3xl"
@@ -75,29 +83,25 @@ export default function Curtain({ onEnter }: { onEnter: () => void }) {
             I&apos;m glad you&apos;re here.
           </h2>
 
-          <p className="text-lg leading-relaxed text-muted-foreground">
-            There&apos;s something I wanted to write down, and a song that goes
-            with it. They start together, whenever you&apos;re ready.
-          </p>
+          <button
+            ref={button}
+            type="button"
+            onClick={onEnter}
+            className="group flex items-center gap-2 rounded-md border border-border-strong px-4 py-2.5 text-sm font-medium text-foreground transition-colors duration-fast ease-out hover:bg-muted"
+          >
+            Take me there
+            <ArrowRight
+              aria-hidden="true"
+              className="h-4 w-4 shrink-0 transition-transform duration-fast ease-out group-hover:translate-x-0.5"
+            />
+          </button>
 
-          {/* `justify-center` on a block of its own rather than leaning on the
-              parent's `text-center`. An inline-level button and a line of text
-              share a line box, so centring the text centres the pair and leaves
-              the button off-centre on its own. */}
-          <div className="flex justify-center pt-2">
-            <button
-              ref={button}
-              type="button"
-              onClick={onEnter}
-              className="group flex items-center gap-2 rounded-md border border-border-strong px-4 py-2.5 text-sm font-medium text-foreground transition-colors duration-fast ease-out hover:bg-muted"
-            >
-              Take me there
-              <ArrowRight
-                aria-hidden="true"
-                className="h-4 w-4 shrink-0 transition-transform duration-fast ease-out group-hover:translate-x-0.5"
-              />
-            </button>
-          </div>
+          {/* Two words, and they earn their place: sound is about to start, and
+              a reader who is somewhere they cannot have that should find out
+              before it happens rather than after. */}
+          <p className="font-mono text-2xs uppercase tracking-label text-subtle">
+            Plays with sound
+          </p>
         </div>
       </div>
     </>
