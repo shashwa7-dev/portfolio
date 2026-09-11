@@ -583,4 +583,23 @@ table {
       display: none;
     }
   }
+
+  /* The letter at /offcod8 runs bare: no navbar, no footer, no rails.
+
+     Those three are rendered once from app/layout.tsx, a server component with
+     no idea which route sits below it. Reading the pathname there would make
+     every page on the site dynamic in order to strip chrome from one of them,
+     and giving that route its own root layout means moving every other route
+     into a group and duplicating the theme script, the fonts and the JSON-LD.
+     So the page marks itself with `data-bare` and the chrome selects on it
+     from here: no JavaScript, so nothing flashes before hydration, and no
+     other page loses its static render.
+
+     This is the only route allowed to do it. A second one means it is not an
+     easter egg any more, it is a layout, and a layout belongs in a layout. */
+  body:has([data-bare]) .site-navbar,
+  body:has([data-bare]) .site-footer,
+  body:has([data-bare]) .page-rails {
+    display: none;
+  }
 }

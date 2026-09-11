@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { HandWaving, PenNib } from "@phosphor-icons/react/ssr";
 import { baseUrl } from "@/app/sitemap";
 import Container from "@/components/layout/Container";
-import PageBand from "@/components/layout/PageBand";
-import LetterAudio from "@/components/offcod8/LetterAudio";
+import NowPlaying from "@/components/offcod8/NowPlaying";
 
 export const metadata: Metadata = {
   title: "A small note",
@@ -20,11 +20,19 @@ export const metadata: Metadata = {
  * `robots` is noindex. The only way to arrive is to be told the URL, which is
  * the whole idea. It is a note left for whoever went looking.
  *
- * It keeps the site's chrome, its rails and its page band rather than taking
- * the screen over. An earlier pass did the opposite, a full-bleed video with
- * the copy floating on a scrim, and it read as a different website wearing the
- * same domain. A letter that arrives on the same paper as everything else is
- * the more personal version, not the less.
+ * The only route with no chrome: no navbar, no footer, no rails, no page band.
+ * A letter arrives on its own, and a reader who has to get past a nav bar and
+ * a site footer to reach one is reading a web page about a letter. The mark in
+ * the corner is the whole of the branding and the way back to the site.
+ *
+ * `data-bare` on the `<main>` is what hides the three global pieces, via the
+ * rule in `app/globals.css`. They are rendered once from `app/layout.tsx`,
+ * which is a server component with no idea which route sits below it: reading
+ * the pathname there would make every page on the site dynamic in order to
+ * strip chrome from one of them, and giving this route its own root layout
+ * means moving every other route into a group and duplicating the theme
+ * script, the fonts and the JSON-LD. A selector costs nothing, runs before
+ * hydration so nothing flashes, and leaves every other page static.
  *
  * Set in `font-sans` like every other heading here. The reference this came
  * from used Libre Baskerville, and a serif would suit a letter, but there is no
@@ -32,6 +40,11 @@ export const metadata: Metadata = {
  * that headings are separated by weight and size rather than typeface, and
  * `scripts/verify-simplification.sh` fails check C03 on any serif utility.
  * Hierarchy here is carried by size and measure instead.
+ *
+ * Scrolling is what starts the song. Reading a letter means scrolling it, so
+ * the music arrives while the reader is already inside the thing it is scored
+ * to. `NowPlaying` carries the caveat: a scroll on a phone is a touch and
+ * counts as a gesture, a trackpad scroll is not and does not.
  *
  * `components/shelf/OnRepeat.tsx` deliberately refuses a YouTube iframe, and
  * that refusal still holds where it was made: paying for fifteen seconds of a
@@ -41,10 +54,43 @@ export const metadata: Metadata = {
  */
 export default function Offcod8Page() {
   return (
-    <main className="pb-8 md:pb-12">
-      <PageBand id="Off code" name="A small note" />
+    // Not the `pb-8 md:pb-12` every other route carries. That convention pairs
+    // with a PageBand whose own margin supplies the top half, and there is no
+    // band here.
+    <main data-bare className="py-10 md:py-16">
+      <Container width="reading" className="space-y-12 md:space-y-16">
+        {/* The mark, and what is playing. The only two things on the page that
+            are not the letter.
 
-      <Container width="reading">
+            Masked rather than drawn as an <img>, the same way the navbar, the
+            footer and the chat bubble draw it: `brand-mark.png` is a solid
+            shape, so tinting it with `bg-foreground` through a mask is what
+            lets one file serve both themes. */}
+        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
+          <Link
+            href="/"
+            aria-label="offcod8, home"
+            className="flex shrink-0 opacity-80 transition-opacity duration-base ease-out hover:opacity-100"
+          >
+            <span
+              aria-hidden
+              className="block h-8 w-8 bg-foreground"
+              style={{
+                WebkitMaskImage: "url(/brand-mark.png)",
+                maskImage: "url(/brand-mark.png)",
+                WebkitMaskSize: "contain",
+                maskSize: "contain",
+                WebkitMaskRepeat: "no-repeat",
+                maskRepeat: "no-repeat",
+                WebkitMaskPosition: "center",
+                maskPosition: "center",
+              }}
+            />
+          </Link>
+
+          <NowPlaying />
+        </div>
+
         <article className="space-y-6 text-lg leading-relaxed text-muted-foreground">
           {/* The greeting is the h1, and the last line of the letter says it
               again. That bookend is the writer's own move and the reason the
@@ -148,12 +194,6 @@ export default function Offcod8Page() {
             </p>
           </footer>
         </article>
-
-        {/* Under the letter, not over it. The song is the last thing offered
-            rather than the first thing demanded. */}
-        <div className="mt-12 border-t border-border pt-7">
-          <LetterAudio />
-        </div>
       </Container>
     </main>
   );

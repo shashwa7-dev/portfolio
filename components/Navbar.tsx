@@ -31,7 +31,7 @@ export default function Navbar() {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/70 backdrop-blur-xl">
+    <header className="site-navbar sticky top-0 z-40 border-b border-border bg-background/70 backdrop-blur-xl">
       {/* The same measure as the page below it. The bar used to run to
           1080px while every route's content stopped at 760, so the mark and
           the nav sat outside the column they belong to and the site read as

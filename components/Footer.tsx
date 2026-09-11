@@ -53,7 +53,7 @@ const Footer = () => {
   const navSecondary = footerLinks.slice(half);
 
   return (
-    <footer className="mt-24 border-t border-border">
+    <footer className="site-footer mt-24 border-t border-border">
       <Container className="grid grid-cols-2 gap-x-10 gap-y-9 pt-10 md:grid-cols-4">
         <div className="col-span-2 md:col-span-1">
           <Label className="mb-3 block">Studio</Label>
