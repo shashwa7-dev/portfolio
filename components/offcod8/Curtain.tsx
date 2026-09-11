@@ -26,26 +26,14 @@ import { DoorOpen } from "@phosphor-icons/react/ssr";
  * Server-rendered rather than raised after hydration, so there is no moment
  * where the letter is visible behind it and then covered.
  *
- * It leaves on a fade in both the cases that dismiss it: a reader pressing
- * Enter, and a browser that turned out to allow sound on its own, where the
- * curtain has nothing left to ask for and gets out of the way by itself.
+ * It leaves on a fade, and only on a fade, in both the cases that dismiss it: a
+ * reader pressing Enter, and a browser that turned out to allow sound on its
+ * own, where the curtain has nothing left to ask for and gets out of the way by
+ * itself. An earlier pass carried the brand mark from the middle of this into
+ * its slot on the letter, measuring both and closing the gap. It worked and it
+ * was still the wrong amount of ceremony in front of a letter that opens by
+ * saying it does not know how to start.
  */
-
-/**
- * The mark, drawn the way the navbar, the footer and the chat bubble draw it.
- * `brand-mark.png` is a solid shape, so tinting it through a mask is what lets
- * one file serve both themes.
- */
-const MARK: React.CSSProperties = {
-  WebkitMaskImage: "url(/brand-mark.png)",
-  maskImage: "url(/brand-mark.png)",
-  WebkitMaskSize: "contain",
-  maskSize: "contain",
-  WebkitMaskRepeat: "no-repeat",
-  maskRepeat: "no-repeat",
-  WebkitMaskPosition: "center",
-  maskPosition: "center",
-};
 
 export default function Curtain({
   leaving,
@@ -56,7 +44,6 @@ export default function Curtain({
   onEnter: () => void;
 }) {
   const button = useRef<HTMLButtonElement | null>(null);
-  const mark = useRef<HTMLSpanElement | null>(null);
 
   /**
    * Focus the one control.
@@ -79,8 +66,9 @@ export default function Curtain({
    * begin with the invitation to begin it still on screen.
    *
    * Releasing on `leaving` rather than on unmount matters just as much. The
-   * fade runs for three seconds, and a page that ignored the scroll wheel for
-   * three seconds after a click would read as broken rather than as gentle.
+   * fade outlasts the click by more than a second, and a page that ignored the
+   * scroll wheel that long after being pressed would read as broken rather than
+   * as gentle.
    */
   useEffect(() => {
     if (leaving) return;
@@ -90,45 +78,6 @@ export default function Curtain({
     return () => {
       root.style.overflow = previous;
     };
-  }, [leaving]);
-
-  /**
-   * Fly the mark into the slot it occupies on the letter.
-   *
-   * The same logo is in both places, so this measures where it is and where it
-   * is going and closes the gap, rather than cross-fading one copy out while
-   * another appears. Centre to centre, because a transform's origin is the
-   * centre by default: translating corners would need the origin moved with
-   * them, and this way the scale and the travel cannot disagree.
-   *
-   * Measured on the way out rather than up front. The page is scroll-locked at
-   * the top until this moment, so the destination's rectangle is only certain
-   * once the reader has actually asked to go there.
-   *
-   * Under `prefers-reduced-motion` the mark stays put and only the fade runs.
-   * Throwing an object across the viewport is exactly the sort of large
-   * positional movement that preference exists to refuse, and nothing is lost:
-   * the copy it was flying towards is already sitting there underneath.
-   */
-  useEffect(() => {
-    if (!leaving) return;
-
-    const flying = mark.current;
-    const slot = document.querySelector<HTMLElement>("[data-brand-slot]");
-    if (!flying || !slot) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    const from = flying.getBoundingClientRect();
-    const to = slot.getBoundingClientRect();
-    // A hidden or unmeasured element would divide by zero and send the mark
-    // somewhere off screen. Better to leave it where it is.
-    if (!from.width || !to.width) return;
-
-    const dx = to.left + to.width / 2 - (from.left + from.width / 2);
-    const dy = to.top + to.height / 2 - (from.top + from.height / 2);
-    flying.style.transform = `translate(${dx}px, ${dy}px) scale(${
-      to.width / from.width
-    })`;
   }, [leaving]);
 
   return (
@@ -174,16 +123,9 @@ export default function Curtain({
           onClick={onEnter}
           className="group relative flex h-full w-full flex-col items-center justify-center gap-7 px-6 text-center"
         >
-          <span
-            ref={mark}
-            aria-hidden
-            className="block h-16 w-16 shrink-0 bg-foreground transition-transform duration-curtain ease-out"
-            style={MARK}
-          />
-
-          {/* Everything except the mark leaves with the ground. The mark is the
-              one thing that belongs to both screens, so it is the one thing
-              that travels instead of disappearing. */}
+          {/* The copy fades with the ground rather than on its own layer. There
+              is nothing on this overlay that carries over to the letter, so
+              there is nothing that has to survive the transition. */}
           <span
             className={`flex flex-col items-center gap-4 transition-opacity duration-curtain ease-out ${
               leaving ? "opacity-0" : "opacity-100"

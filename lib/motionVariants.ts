@@ -29,17 +29,20 @@ export const duration = {
   /** 404 page sequence only. The one sanctioned exception. */
   hero: 0.5,
   /**
-   * The curtain lifting on /offcod8, and the mark flying from the middle of it
-   * into its slot on the letter. Far outside the sub-300ms UI budget, and the
-   * usual defence does not apply: this one IS a response to a click.
+   * The curtain fading off /offcod8. Far outside the sub-300ms UI budget, and
+   * the usual defence does not apply: this one IS a response to a click.
    *
-   * It is allowed because the click is not a command, it is consent. Nothing is
-   * waiting on the transition either: the curtain stops taking pointer events
-   * and the page unlocks the moment it starts, so the letter is readable and
-   * scrollable while the mark is still travelling. What the three seconds buy is
-   * the handover reading as one object moving rather than two swapping.
+   * It is allowed because the click is not a command, it is consent, and
+   * because nothing waits on it. The curtain stops taking pointer events and
+   * the page unlocks the moment the fade starts, so the letter is readable and
+   * scrollable while the overlay is still on its way out.
+   *
+   * 1.2s, down from three. Three was long enough that the decelerating curve
+   * became the problem: `ease.out` spends most of its time near the end, so a
+   * three second fade went almost transparent quickly and then hung there,
+   * which reads as lingering rather than as leaving.
    */
-  curtain: 3,
+  curtain: 1.2,
   /**
    * The dice throw. Outside the sub-300ms UI budget: a response to input,
    * but justified as physics rather than a transition. A die that completes

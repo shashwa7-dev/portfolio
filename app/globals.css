@@ -254,7 +254,7 @@
      lib/motionVariants.ts, which the unmount timer reads: the fade and the
      timer that ends it have to be one number or the curtain is torn away
      mid-transition. See that file for why three seconds is allowed. */
-  --duration-curtain: 3000ms;
+  --duration-curtain: 1200ms;
 }
 
 /* The dice on /card. The dice are made of the card's own paper. These
@@ -592,15 +592,6 @@ table {
 
      This is the only route allowed to do it. A second one means it is not an
      easter egg any more, it is a layout, and a layout belongs in a layout. */
-  /* While the curtain is up, the mark it is going to fly into is hidden. The
-     flying copy lands exactly on this one, so without it the same logo is on
-     screen twice for the length of the transition: one travelling, one already
-     sitting at the destination. The curtain unmounts as the flight ends, which
-     is the moment this stops matching. */
-  body:has([data-curtain]) [data-brand-slot] {
-    opacity: 0;
-  }
-
   body:has([data-bare]) .site-navbar,
   body:has([data-bare]) .site-footer,
   body:has([data-bare]) .page-rails {
