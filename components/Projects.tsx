@@ -4,13 +4,14 @@ import { sideProjects } from "@/lib/projectsData";
 import { sideProjectToCard } from "@/lib/projectCards";
 import ProjectPreviewCard from "./ProjectPreviewCard";
 import Section from "@/components/layout/Section";
+import { HOMEPAGE_SECTION_TOTAL } from "@/lib/sections";
 
 export default function Projects() {
   return (
     <Section
       id="projects"
       number="02"
-      of="06"
+      of={HOMEPAGE_SECTION_TOTAL}
       label="Side Projects"
       title="Things I build for fun"
       width="reading"

@@ -4,6 +4,7 @@ import { ArrowRight } from "@phosphor-icons/react/ssr";
 import { organizations } from "@/lib/workData";
 import { formatPeriod, formatTenure } from "@/lib/tenure";
 import Section from "@/components/layout/Section";
+import { HOMEPAGE_SECTION_TOTAL } from "@/lib/sections";
 import ProjectPreviewCard from "@/components/ProjectPreviewCard";
 import { workProjectToCard } from "@/lib/projectCards";
 import ClientStrip from "@/components/common/ClientStrip";
@@ -14,7 +15,7 @@ export default function ExperienceWork() {
     <Section
       id="experience"
       number="01"
-      of="06"
+      of={HOMEPAGE_SECTION_TOTAL}
       label="Experience & Work"
       title="Where I've worked, and what I shipped"
       width="reading"

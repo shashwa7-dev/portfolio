@@ -2,6 +2,7 @@ import React from "react";
 import StackIcon from "./common/StackIcon";
 import { stackLabel, type StackName } from "./common/stackLabels";
 import Section from "@/components/layout/Section";
+import { HOMEPAGE_SECTION_TOTAL } from "@/lib/sections";
 
 type Tier = {
   label: string;
@@ -132,7 +133,7 @@ const TechStack = () => {
     <Section
       id="tech_stack"
       number="03"
-      of="06"
+      of={HOMEPAGE_SECTION_TOTAL}
       label="Toolkit"
       title="Tools I reach for"
       width="reading"

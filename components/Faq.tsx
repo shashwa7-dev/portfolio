@@ -5,6 +5,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import Section from "@/components/layout/Section";
+import { HOMEPAGE_SECTION_TOTAL } from "@/lib/sections";
 import { faqLd } from "@/lib/seo";
 
 const faqs = [
@@ -17,7 +18,7 @@ const faqs = [
 
 export default function Faq() {
   return (
-    <Section id="faq" number="05" of="06" label="FAQ" title="Questions, answered" width="reading">
+    <Section id="faq" number="05" of={HOMEPAGE_SECTION_TOTAL} label="FAQ" title="Questions, answered" width="reading">
       <script
         type="application/ld+json"
         suppressHydrationWarning
