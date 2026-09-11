@@ -198,9 +198,22 @@ export default function StackIcon({
         className
       )}
     >
-      <span className="text-subtle transition-colors group-hover:text-foreground">
-        {glyph}
-      </span>
+      {/* Only when there is something to draw.
+
+          Rendering the wrapper unconditionally left an empty span on the left
+          of every icon-less pill, and the parent's `gap-2` still applied to it,
+          so the label sat 8px right of where the padding put it and the text
+          read as off-centre in its own chip. Nine of the fifty-eight entries
+          have no mark in `iconMap` (AWS, OpenAI, Playwright, Zustand, REST API,
+          VS Code, Vercel Analytics, Canva, Coffee), and several are
+          unfixable rather than unfinished: simple-icons has no Amazon mark at
+          all, having pulled it over trademark policy. So this is the normal
+          case for a real slice of the set, not a fallback. */}
+      {glyph && (
+        <span className="text-subtle transition-colors group-hover:text-foreground">
+          {glyph}
+        </span>
+      )}
       <span>{label}</span>
     </span>
   );
