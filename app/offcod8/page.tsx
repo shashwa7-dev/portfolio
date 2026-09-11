@@ -200,8 +200,16 @@ export default function Offcod8Page() {
 
             <p>For a while, music was a big part of my life.</p>
 
+            {/* The cities are lifted the same way the school is, with
+                `<strong>`. That is the only emphasis device this codebase has:
+                there is no highlight, and `Marker.tsx` was deleted rather than
+                kept for exactly this sort of reach. Two in one sentence is
+                more than usual, but both are proper nouns the letter actually
+                turns on rather than a run of stressed prose. */}
             <p>
-              I was in Bombay, learning music at the{" "}
+              I was in{" "}
+              <strong className="font-semibold text-foreground">Bombay</strong>,
+              learning music at the{" "}
               <strong className="font-semibold text-foreground">
                 True School of Music
               </strong>
@@ -276,8 +284,11 @@ export default function Offcod8Page() {
             <p>I&apos;ve met some incredible people along the way.</p>
 
             <p>
-              And just a few months ago, I moved to Bangalore after spending a
-              long time working remotely.
+              And just a few months ago, I moved to{" "}
+              <strong className="font-semibold text-foreground">
+                Bangalore
+              </strong>{" "}
+              after spending a long time working remotely.
             </p>
 
             <p>
