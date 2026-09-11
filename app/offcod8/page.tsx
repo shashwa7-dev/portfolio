@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { HandWaving, PenNib } from "@phosphor-icons/react/ssr";
 import { baseUrl } from "@/app/sitemap";
 import Container from "@/components/layout/Container";
 import PageBand from "@/components/layout/PageBand";
@@ -149,10 +150,34 @@ export default function Offcod8Page() {
             to build.
           </p>
 
-          {/* The sign-off, on the same hairline every band on the site uses. */}
+          {/* The sign-off, on the same hairline every band on the site uses.
+
+              One glyph per line, sized to the text beside it: a wave for the
+              goodbye, a nib for the signature. Those are the two gestures a
+              handwritten letter actually ends with, which is what earns them a
+              place on a page that is otherwise unbroken prose. They sit at
+              `text-subtle` so they close the words rather than compete with
+              them.
+
+              `aria-hidden` on both. A screen reader announcing "hand waving"
+              ahead of "thanks for stopping by" adds a word and no meaning, and
+              the nib would announce the signature as an object rather than
+              reading it as one. */}
           <footer className="space-y-4 border-t border-border pt-7">
-            <p>Thanks for stopping by.</p>
-            <p className="text-foreground">Shash</p>
+            <p className="flex items-center gap-3">
+              <HandWaving
+                aria-hidden="true"
+                className="h-5 w-5 shrink-0 text-subtle"
+              />
+              Thanks for stopping by.
+            </p>
+            <p className="flex items-center gap-3 text-foreground">
+              <PenNib
+                aria-hidden="true"
+                className="h-5 w-5 shrink-0 text-subtle"
+              />
+              Shash
+            </p>
           </footer>
         </article>
 
