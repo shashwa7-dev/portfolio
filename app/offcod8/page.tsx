@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { HandWaving, PenNib } from "@phosphor-icons/react/ssr";
 import { baseUrl } from "@/app/sitemap";
@@ -59,6 +60,28 @@ export default function Offcod8Page() {
     // band here.
     <main data-bare className="py-10 md:py-16">
       <Container width="reading" className="space-y-12 md:space-y-16">
+        {/* The header, and the only picture on the site that moves.
+
+            `unoptimized` is not optional on a GIF. next/image would otherwise
+            hand it to the optimizer, which re-encodes to a still WebP and
+            silently returns a single frame: the file still loads, the layout
+            is unchanged, and the animation is just gone. Serve GIFs as GIFs.
+
+            Intrinsic `width`/`height` rather than `fill`, since the optimizer
+            is off and there is no srcset to size: the real 800x450 reserves
+            the right box and rules out any shift as it loads. `priority`
+            because it is the first thing on the page, so it should not be
+            queued behind the letter it opens. */}
+        <Image
+          src="/offcod8/cover.gif"
+          alt="A boy in a dark cape standing in a pink and blue desert at dusk, looking back over his shoulder."
+          width={800}
+          height={450}
+          unoptimized
+          priority
+          className="w-full rounded-2xl border border-border bg-elevated"
+        />
+
         {/* The mark, and what is playing. The only two things on the page that
             are not the letter.
 
