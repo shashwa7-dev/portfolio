@@ -271,9 +271,13 @@ export default function About() {
 
       {/* The proof points, as a band rather than a box.
 
-          No gutter dots and no tick. Both of those belong to `Band`, which
-          marks a labelled division; this carries numbers, so it borrows the
-          full-bleed rule and nothing else.
+          `band-gutters` is the same class `Band` uses, so the dotted gutters
+          run beside the numbers exactly as they do beside every section label.
+          `relative` is not decoration here: the dots are absolutely positioned
+          pseudo-elements and need this element as their containing block.
+
+          There is no tick. That mark means "a labelled division starts here",
+          and this carries numbers rather than a label.
 
           Top border only, and the header has no bottom padding. The next thing
           on the page is section 01's band, which draws its own top rule, so a
@@ -286,7 +290,7 @@ export default function About() {
           between the two rows run edge to edge. Left inside the padded column
           it stopped 24px short at each end, which reads as a broken line
           sitting between two full-width ones. */}
-      <div className="mt-10 border-t border-border md:mt-12">
+      <div className="band-gutters relative mt-10 border-t border-border md:mt-12">
         <Container width="reading">
           <div className="-mx-6 grid grid-cols-2 md:mx-0 md:grid-cols-4">
             {stats.map((s, i) => (
