@@ -72,15 +72,18 @@ export default function Offcod8Page() {
             height because those reserve its box and rule out a shift as it
             loads. Both have to move whenever the picture does.
 
-            Keep any replacement at 1200px or wider. This column renders near
-            712, so a 2x screen wants about 1424: below that the optimizer has
-            nothing to put in the srcset's 2x slot, since it will downscale a
-            source but never invent one. */}
+            Ideally keep any replacement at 1200px or wider. This column
+            renders near 712, so a 2x screen wants about 1424: below that the
+            optimizer has nothing to put in the srcset's 2x slot, since it will
+            downscale a source but never invent one. The file here is 736px and
+            does not meet that, which is a deliberate trade for the picture
+            rather than an oversight: it will look slightly soft on a retina
+            screen, and a larger original is the only thing that fixes it. */}
         <Image
           src="/offcod8/cover.jpg"
-          alt="Open countryside at golden hour, seen from under a broad tree: long meadow grass and wildflowers in the foreground, mown fields and hedgerows falling away to a hazy horizon."
-          width={1200}
-          height={794}
+          alt="Misty green hills at dawn, a farmhouse and cypresses on a ridge, captioned &ldquo;the sun will rise and I will try again.&rdquo;"
+          width={736}
+          height={414}
           priority
           className="w-full rounded-2xl border border-border bg-elevated"
         />
