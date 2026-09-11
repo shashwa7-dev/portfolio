@@ -38,11 +38,15 @@ const SOCIAL_ICONS = {
  * does with type. `public/footer-panther.jpg` is no longer referenced by
  * anything.
  *
- * Three facts move down here from the hero: the address, the location and the
- * availability. All three were in the identity row, which is the most crowded
- * block on the page, and a footer is where a reader looks for them anyway. The
- * hero keeps its own availability pill on the portrait; this is the written
- * version for someone who has scrolled the whole page.
+ * Two facts move down here from the hero: the address and the location. Both
+ * were in the identity row, the most crowded block on the page, and a footer is
+ * where a reader looks for them anyway.
+ *
+ * Availability deliberately did NOT come with them. The hero already says it,
+ * on the portrait, where it is the first thing a visitor sees; repeating it at
+ * the foot of the page made the same claim twice and put a second green dot on
+ * a palette that allows exactly one. The footer states where he is and how to
+ * reach him, and leaves whether he is looking to the top of the page.
  */
 const Footer = () => {
   // Six links, split down the middle so neither column runs longer than the
@@ -172,15 +176,6 @@ const Footer = () => {
           <p className="text-sm text-muted-foreground">{location.name}</p>
         </div>
 
-        <div>
-          <Label className="mb-3 block">Status</Label>
-          <p className="inline-flex items-center gap-2 text-sm text-muted-foreground">
-            {/* Green is the dot and nothing else, the same rule the hero's
-                availability band follows. */}
-            <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-good" />
-            Open to work
-          </p>
-        </div>
       </Container>
 
       {/* The plate.
