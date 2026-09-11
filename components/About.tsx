@@ -55,7 +55,7 @@ import { clients } from "@/lib/clients";
  */
 export default function About() {
   return (
-    <header className="pt-10 pb-8 md:pt-14 md:pb-12">
+    <header className="pt-10 md:pt-14">
       <Container width="reading">
         <div className="space-y-7 sm:space-y-8">
           <div className="flex items-start gap-3.5">
@@ -271,17 +271,22 @@ export default function About() {
 
       {/* The proof points, as a band rather than a box.
 
-          `band-gutters` is the same class `Band` uses, so the dotted gutters
-          match every section header on the site. There is no tick: that mark
-          means "a labelled division starts here", and this band carries numbers
-          rather than a label.
+          No gutter dots and no tick. Both of those belong to `Band`, which
+          marks a labelled division; this carries numbers, so it borrows the
+          full-bleed rule and nothing else.
+
+          Top border only, and the header has no bottom padding. The next thing
+          on the page is section 01's band, which draws its own top rule, so a
+          bottom border here would stack two hairlines a pixel apart and any
+          padding would leave a strip of dead page between two rules. The
+          section band's top rule closes the stats instead.
 
           The grid pulls itself out of the Container's `px-6` on mobile and
           hands that padding to the cells instead. That is what makes the rule
           between the two rows run edge to edge. Left inside the padded column
           it stopped 24px short at each end, which reads as a broken line
           sitting between two full-width ones. */}
-      <div className="band-gutters relative mt-10 border-y border-border md:mt-12">
+      <div className="mt-10 border-t border-border md:mt-12">
         <Container width="reading">
           <div className="-mx-6 grid grid-cols-2 md:mx-0 md:grid-cols-4">
             {stats.map((s, i) => (
