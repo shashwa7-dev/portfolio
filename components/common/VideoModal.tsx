@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { X } from "lucide-react";
+import { X } from "@phosphor-icons/react/ssr";
 import { backdropFadeVariants, dialogPopVariants } from "@/lib/motionVariants";
 
 interface VideoModalProps {

@@ -1,8 +1,9 @@
 import fs from "fs";
 import path from "path";
 import Image from "next/image";
-import { Download, Scissors } from "lucide-react";
+import { DownloadSimple, Scissors } from "@phosphor-icons/react/ssr";
 import Container from "@/components/layout/Container";
+import PageBand from "@/components/layout/PageBand";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl, breadcrumbLd } from "@/lib/seo";
 import { parseCv, inlineHtml, type CvBlock } from "@/lib/cv";
@@ -224,7 +225,8 @@ export default function CvPage() {
   const cv = parseCv(md);
 
   return (
-    <main className="py-8 md:py-12">
+    <main className="pb-8 md:pb-12">
+      <PageBand id="CV" name="Shashwat Tripathi" />
       <script
         type="application/ld+json"
         suppressHydrationWarning
@@ -256,7 +258,7 @@ export default function CvPage() {
                treatment rather than the outlined secondary one. */
             className="inline-flex items-center gap-2 rounded-md bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground transition-[color,background-color,transform] duration-150 ease-out hover:bg-accent-hover active:scale-[0.97]"
           >
-            <Download aria-hidden className="h-4 w-4" />
+            <DownloadSimple aria-hidden className="h-4 w-4" />
             Download PDF
           </a>
         </div>

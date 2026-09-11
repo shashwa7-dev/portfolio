@@ -1,12 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight } from "@phosphor-icons/react/ssr";
 import { organizations } from "@/lib/workData";
 import { formatPeriod, formatTenure } from "@/lib/tenure";
 import Section from "@/components/layout/Section";
+import { HOMEPAGE_SECTION_TOTAL } from "@/lib/sections";
 import ProjectPreviewCard from "@/components/ProjectPreviewCard";
-import ClientStrip from "@/components/common/ClientStrip";
 import { workProjectToCard } from "@/lib/projectCards";
+import ClientStrip from "@/components/common/ClientStrip";
 import { EmploymentTag, OrgLinkChip, Tag } from "@/components/common/OrgChips";
 
 export default function ExperienceWork() {
@@ -14,6 +15,7 @@ export default function ExperienceWork() {
     <Section
       id="experience"
       number="01"
+      of={HOMEPAGE_SECTION_TOTAL}
       label="Experience & Work"
       title="Where I've worked, and what I shipped"
       width="reading"
@@ -135,7 +137,13 @@ export default function ExperienceWork() {
 
                 {/* Brands worked with under this org. Sits above the outcome
                     bullets because it is a fact about the engagement, not an
-                    outcome of it. Renders nothing for orgs with no brands. */}
+                    outcome of it. Renders nothing for orgs with no brands.
+
+                    This repeats the five names the hero also lists, and that is
+                    the point of difference: the hero says who, scoped to
+                    nobody, while this says which of them belong to THIS
+                    engagement and what was built for each. Removing it loses
+                    the only visual surface for `contribution`. */}
                 <div className="mt-3 empty:mt-0">
                   <ClientStrip orgSlug={org.slug} />
                 </div>

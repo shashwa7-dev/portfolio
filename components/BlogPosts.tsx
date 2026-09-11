@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "@phosphor-icons/react/ssr";
 import { formatDate, getBlogPosts } from "@/app/blogs/utils";
 import { readingTime } from "@/lib/readingTime";
 

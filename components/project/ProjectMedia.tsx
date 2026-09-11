@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Play } from "lucide-react";
+import { Play } from "@phosphor-icons/react/ssr";
 import VideoModal from "@/components/common/VideoModal";
 
 export default function ProjectMedia({

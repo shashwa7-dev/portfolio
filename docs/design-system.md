@@ -159,9 +159,13 @@ All primitives live in `components/layout/` and are server-safe (no hooks).
 ```tsx
 import Container from "@/components/layout/Container";
 
-<Container width="reading">  {/* max-w-[760px], centered */}
+<Container width="reading">  {/* max-w-[var(--measure)], 760px, centered */}
 <Container width="wide">     {/* max-w-[1080px], centered */}
 ```
+
+The reading width is the token, never the literal. `Rails` draws the page's two
+hairlines at that same `--measure`, so writing `760px` into a component is how
+the lines and the column they describe drift apart.
 
 Props: `as` (HTML tag, default `div`), `width` (`"reading"` | `"wide"`, default `"reading"`), `className`, `id`, `children`.
 
@@ -174,6 +178,7 @@ import Section from "@/components/layout/Section";
 
 <Section
   number="01"
+  of="06"
   label="Color"
   title="Paper"
   width="reading"
@@ -183,10 +188,39 @@ import Section from "@/components/layout/Section";
 </Section>
 ```
 
-- Renders a `<section>` with `py-10 md:py-14` rhythm.
-- The numbered eyebrow is rendered via the `Label` component. Number shows in `text-foreground`, separator ` / `, then label text.
-- Title is a `text-2xl md:text-[1.75rem] text-foreground` h2.
+- Opens with a full-bleed `Band` carrying `[ 01 / 06 ] · COLOR`, then a
+  `Container` holding the title and content at `py-10 md:py-14`.
+- The band replaced the in-column eyebrow. A caption describes the paragraph
+  under it; a band that crosses the page rails divides the page, which is what
+  a numbered section actually does.
+- `of` is opt-in. It asserts the route is a sequence of known length, which is
+  true of the homepage and `/shelf` and false of a blog post.
+- `action` renders on the band's right side.
+- Title is a `text-2xl md:text-3xl text-foreground` h2, and stays in the column
+  with the content rather than in the band.
 - `width` is passed to the inner `Container`.
+
+### Rails, Band, PageBand
+
+```tsx
+<Rails />                                      {/* app/layout.tsx ONLY */}
+<PageBand id="Blog" name="12 posts" />         {/* first child of <main> */}
+```
+
+- `Rails` draws two vertical hairlines at the edges of `--measure`, rendered
+  once from `app/layout.tsx` inside the `relative` wrapper around navbar,
+  children and footer, so they span the document. Per-page imports are
+  forbidden, the same rule the Navbar follows.
+- It centres the way `Container` centres (`left-0 right-0` + `max-width` +
+  `mx-auto`). Anything measured from the viewport instead lands a few pixels
+  off, because `scrollbar-gutter: stable` means the viewport and the content
+  box are different widths.
+- `Band` is the full-bleed row that crosses the rails, carrying the gutter dots
+  (`--dot-gap`) and the ink tick. Only `Section` and `PageBand` may draw one.
+- Every secondary route opens with a `PageBand` and carries `pb-8 md:pb-12`
+  on its `<main>`; the band's own `mb-8 md:mb-12` supplies the rest.
+- All of it hides under 900px, where the gutters get narrower than a
+  Container's `px-6` and the rails would sit inside the text's own padding.
 
 ### Bento
 
@@ -269,7 +303,8 @@ import StackIcon from "@/components/common/StackIcon";
 
 Supported names: `html`, `css`, `typescript`, `react`, `next`, `tailwind`, `motion`, `gsap`, `node`, `graphql`, `postgres`, `mongodb`, `firebase`, `docker`, `figma`, `vercel`, `git`, `github`, `supabase`, `shadcn`, `bun`, and more -- see `StackName` type in `components/common/StackIcon.tsx`.
 
-Icons use `simple-icons` for brand logos. UI icons use `lucide-react`.
+Icons use `simple-icons` for brand and technology marks. UI icons use
+`@phosphor-icons/react`, imported from its `/ssr` entry.
 
 ### Card surface
 
@@ -293,7 +328,8 @@ Icons use `simple-icons` for brand logos. UI icons use `lucide-react`.
 
 ## Icons
 
-- **UI icons**: `lucide-react` (outlined, consistent weight).
+- **UI icons**: `@phosphor-icons/react/ssr` (outlined, `regular` weight by
+  default; pass `weight="bold"` where lucide used `strokeWidth`).
 - **Brand / tech logos**: `simple-icons` accessed via the `StackIcon` component abstraction.
 - Do not use emoji as icons in components.
 

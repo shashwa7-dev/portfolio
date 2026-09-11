@@ -1,10 +1,11 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { ExternalLink } from "lucide-react";
+import { ArrowSquareOut } from "@phosphor-icons/react/ssr";
 import { organizations, getOrganization } from "@/lib/workData";
 import { getDiary } from "@/lib/diaryData";
 import { baseUrl } from "@/app/sitemap";
 import Container from "@/components/layout/Container";
+import PageBand from "@/components/layout/PageBand";
 import Label from "@/components/layout/Label";
 import ProjectShowcaseCard from "@/components/ProjectShowcaseCard";
 import { workProjectToCard } from "@/lib/projectCards";
@@ -47,7 +48,8 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
   const diary = getDiary(orgSlug);
 
   return (
-    <main className="py-8 md:py-12">
+    <main className="pb-8 md:pb-12">
+      <PageBand id="Work" name={org.name} />
       <script
         type="application/ld+json"
         suppressHydrationWarning
@@ -78,7 +80,7 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
                 <h1 className="text-3xl font-medium tracking-tight">{org.name}</h1>
                 {org.link && (
                   <a href={org.link} target="_blank" rel="noopener noreferrer" className="text-muted-foreground transition-colors hover:text-foreground">
-                    <ExternalLink className="h-4 w-4" />
+                    <ArrowSquareOut className="h-4 w-4" />
                   </a>
                 )}
               </div>

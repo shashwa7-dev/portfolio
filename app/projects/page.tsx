@@ -1,6 +1,7 @@
 import { sideProjects } from "@/lib/projectsData";
 import { baseUrl } from "@/app/sitemap";
 import Container from "@/components/layout/Container";
+import PageBand from "@/components/layout/PageBand";
 import Label from "@/components/layout/Label";
 import ProjectsIndex from "@/components/ProjectsIndex";
 import { ogUrl } from "@/lib/seo";
@@ -24,7 +25,8 @@ export const metadata = {
 
 export default function ProjectsPage() {
   return (
-    <main className="py-8 md:py-12">
+    <main className="pb-8 md:pb-12">
+      <PageBand id="Projects" name={`${sideProjects.length} shipped`} />
       <Container width="reading" className="space-y-8">
         <div className="space-y-2">
           <Label>Projects</Label>

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { ChevronUp, X } from "lucide-react";
+import { CaretUp, X } from "@phosphor-icons/react/ssr";
 import { cn } from "@/lib/utils";
 import { blurSwapVariants } from "@/lib/motionVariants";
 import { goToSection, type TocSection } from "@/app/hooks/useActiveSection";
@@ -195,7 +195,7 @@ export default function MobileChapters({
             </motion.span>
           </AnimatePresence>
         </span>
-        <ChevronUp aria-hidden className="h-3.5 w-3.5 shrink-0 text-subtle" />
+        <CaretUp aria-hidden className="h-3.5 w-3.5 shrink-0 text-subtle" />
       </button>
       </div>
 

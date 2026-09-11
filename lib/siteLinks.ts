@@ -60,6 +60,11 @@ export type SocialLink = { name: "GitHub" | "LinkedIn" | "Twitter"; href: string
 export const socialLinks: SocialLink[] = [
   { name: "GitHub", href: "https://github.com/shashwa7-dev" },
   { name: "LinkedIn", href: "https://www.linkedin.com/in/shashwa7/" },
+  /* Named "Twitter" on purpose, against both the mark and the URL. The icon
+     is Phosphor's `XLogo` and the link goes to x.com, but the word people still
+     search for and recognise is Twitter, so that is what the label says. It is
+     the accessible name on an icon-only link in the footer and the Contact
+     section. Deliberate: do not "fix" it to match the logo. */
   { name: "Twitter", href: "https://x.com/offcod8" },
 ];
 

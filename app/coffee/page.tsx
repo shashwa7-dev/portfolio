@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Container from "@/components/layout/Container";
+import PageBand from "@/components/layout/PageBand";
 import { cn } from "@/lib/utils";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl, breadcrumbLd } from "@/lib/seo";
@@ -298,7 +299,8 @@ export default function CoffeePage() {
     /* `pb-28` on small screens leaves room for the chapter pill, which is
        fixed to the bottom of the viewport and would otherwise sit on top of
        the last thing on the page. The rail replaces it at `xl`. */
-    <main className="py-8 pb-28 md:py-12 md:pb-28 xl:pb-12">
+    <main className="pb-28 md:pb-28 xl:pb-12">
+      <PageBand id="Coffee" name="Brewing notes" />
       <StickyScrollSpyTOC sections={TOC} />
       <script
         type="application/ld+json"

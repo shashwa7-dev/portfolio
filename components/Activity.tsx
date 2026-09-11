@@ -1,13 +1,14 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight } from "@phosphor-icons/react/ssr";
 import { books } from "@/lib/books";
 import BookListItem from "./BookListItem";
 import Section from "@/components/layout/Section";
+import { HOMEPAGE_SECTION_TOTAL } from "@/lib/sections";
 import Bento from "@/components/layout/Bento";
 
 export default function Activity() {
   return (
-    <Section id="activity" number="04" label="Now" title="What I'm up to" width="reading">
+    <Section id="activity" number="04" of={HOMEPAGE_SECTION_TOTAL} label="Now" title="What I'm up to" width="reading">
       <Bento className="grid-cols-1 sm:grid-cols-2">
         <div className="bg-card p-5">
           <p className="mb-2.5 font-mono text-2xs uppercase tracking-label text-subtle">Writing</p>

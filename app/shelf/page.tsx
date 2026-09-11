@@ -1,13 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "@phosphor-icons/react/ssr";
 import Container from "@/components/layout/Container";
+import PageBand from "@/components/layout/PageBand";
 import Section from "@/components/layout/Section";
 import RoasterPicker from "@/components/shelf/RoasterPicker";
 import GearTimeline from "@/components/shelf/GearTimeline";
 import { bookmarks } from "@/lib/bookmarks";
 import { getPlaylist, PLAYLIST_URL } from "@/lib/playlist";
 import OnRepeat from "@/components/shelf/OnRepeat";
+import { SpecList, SpecRow } from "@/components/shelf/SpecList";
 import { setup, scents } from "@/lib/everyday";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl, breadcrumbLd } from "@/lib/seo";
@@ -65,8 +67,27 @@ const SHOW_BOOKMARKS = false;
 export default async function ShelfPage() {
   const tracks = await getPlaylist();
 
+  /**
+   * The section numbers are derived, never written down.
+   *
+   * Bookmarks sits behind SHOW_BOOKMARKS, so a hardcoded total would promise a
+   * part the page does not show, and the counter is the one element whose whole
+   * job is to be true. Sound no longer appears here at all: it is a row inside
+   * Everyday, so an empty playlist costs the page one row rather than
+   * renumbering everything after it.
+   */
+  const parts = [
+    "coffee",
+    "everyday",
+    ...(SHOW_BOOKMARKS ? ["bookmarks"] : []),
+  ];
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const total = pad(parts.length);
+  const no = (key: string) => pad(parts.indexOf(key) + 1);
+
   return (
-    <main className="py-8 md:py-12">
+    <main className="pb-8 md:pb-12">
+      <PageBand id="Shelf" name={`${parts.length} parts`} />
       <script
         type="application/ld+json"
         suppressHydrationWarning
@@ -80,16 +101,31 @@ export default async function ShelfPage() {
         }}
       />
 
-      <Container width="reading" className="space-y-4">
-        <h1 className="text-3xl font-semibold tracking-tight">Things I&apos;m into</h1>
+      {/* The page header.
+
+          It carries its own bottom padding rather than leaning on whatever
+          follows, because what follows is a Section whose band draws a
+          full-bleed rule across the page: with nothing between them the lede's
+          last line sat directly on that rule. The value is Section's own
+          `py-10 md:py-14`, so the air above band 01 is the same air every other
+          band gets, and the header reads as part of the same rhythm rather than
+          as something dropped in above it.
+
+          The display size is the one in `docs/design-system.md`, matching
+          /blogs and /projects. This page was on `text-3xl font-semibold`, half
+          a step smaller and a weight heavier than every other route's h1. */}
+      <Container width="reading" className="space-y-4 pb-10 md:pb-14">
+        <h1 className="text-[clamp(2rem,5vw,2.75rem)] font-medium tracking-tight">
+          Things I&apos;m into
+        </h1>
         <p className="max-w-[62ch] text-muted-foreground">
-          Coffee I drink, the gear that got me here, and links worth keeping.
-          Updated whenever there is something to add, which is the only honest
-          promise a page like this can make.
+          Coffee I drink, the gear that got me here, and what is on while I
+          work. Updated whenever there is something to add, which is the only
+          honest promise a page like this can make.
         </p>
       </Container>
 
-      <Section number="01" label="Coffee" title="What I drink" width="reading">
+      <Section number={no("coffee")} of={total} label="Coffee" title="What I drink" width="reading">
         {/* The taste note sits above the picker, not below it. Underneath, it
             moved every time someone switched to a roaster with a different
             number of beans, which is a layout shift caused by nothing the
@@ -241,84 +277,83 @@ export default async function ShelfPage() {
 
 
 
-      <Section number="02" label="Desk" title="Everyday setup" width="reading">
-        <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
-          The rest of the desk. No shopping links on this one, on purpose.
-        </p>
-        <ul className="space-y-5">
-          {setup.map((item) => (
-            <li
-              key={item.name}
-              className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:gap-6"
-            >
-              <span className="font-mono text-2xs uppercase tracking-label text-subtle sm:w-24 sm:shrink-0">
-                {item.role}
-              </span>
-              <span className="min-w-0">
-                <span className="block font-medium text-foreground">{item.name}</span>
-                {item.note && (
-                  <span className="mt-1 block max-w-[58ch] text-sm text-muted-foreground">
-                    {item.note}
-                  </span>
-                )}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </Section>
+      {/* Desk, scent and sound are one section, not three.
 
-      <Section number="03" label="Scent" title="What I wear" width="reading">
+          Three rows, two rows, and a strip of album art each used to carry a
+          band, a title and `py-10 md:py-14` of their own, which is roughly
+          200px of apparatus around 80px of content. Merged into a spec sheet
+          the labels survive as the key column, and the page stops clearing its
+          throat between every short list. */}
+      <Section
+        number={no("everyday")}
+        of={total}
+        label="Everyday"
+        title="Desk, scent, sound"
+        width="reading"
+      >
         <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
-          Two, and I rotate between them. I am not a collector.
+          What I work on, what I wear, and what is playing while I do. No
+          shopping links on any of it, on purpose.
         </p>
-        <ul className="space-y-5">
+
+        <SpecList>
+          {setup.map((item) => (
+            <SpecRow key={item.name} label={item.role}>
+              <span className="block font-medium text-foreground">{item.name}</span>
+              {item.note && (
+                <span className="mt-1 block max-w-[58ch] text-sm text-muted-foreground">
+                  {item.note}
+                </span>
+              )}
+            </SpecRow>
+          ))}
+
           {scents.map((s) => (
-            <li key={s.name}>
-              <p className="font-medium text-foreground">
+            <SpecRow key={s.name} label="Scent">
+              <span className="block font-medium text-foreground">
                 {s.name}
                 <span className="ml-2 font-mono text-2xs uppercase tracking-label text-subtle">
                   {s.house}
                 </span>
-              </p>
-              <p className="mt-1 max-w-[62ch] text-sm text-muted-foreground">
+              </span>
+              <span className="mt-1 block max-w-[58ch] text-sm text-muted-foreground">
                 {s.note}
-              </p>
-            </li>
+              </span>
+            </SpecRow>
           ))}
-        </ul>
+
+          {/* Still conditional on the feed. YouTube is a third party, and a
+              playlist that is unreachable, emptied or made private should take
+              its row with it rather than leave a label over nothing. It is a
+              row now rather than a section, so losing it costs the page one
+              entry instead of a whole numbered part. */}
+          {tracks.length > 0 && (
+            <SpecRow label="On repeat">
+              <p className="mb-3 max-w-[58ch] text-sm text-muted-foreground">
+                What I have had on while working, cooking, or walking somewhere.
+                Press a sleeve for fifteen seconds of one.
+              </p>
+              <OnRepeat tracks={tracks} />
+              <a
+                href={PLAYLIST_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 inline-flex items-center gap-1.5 font-mono text-2xs uppercase tracking-label text-subtle transition-colors duration-fast ease-out hover:text-foreground"
+              >
+                The whole playlist
+                <ArrowUpRight className="h-3 w-3" />
+              </a>
+            </SpecRow>
+          )}
+        </SpecList>
       </Section>
-
-      {/* Rendered only when the feed returns something. YouTube is a third
-          party, and a playlist that is unreachable, emptied or made private
-          should take this section with it rather than leave a heading over
-          nothing. */}
-      {tracks.length > 0 && (
-        <Section number="04" label="Sound" title="On repeat" width="reading">
-          <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
-            What I have had on while working, cooking, or walking somewhere. It
-            changes often. Press a sleeve for fifteen seconds of one.
-          </p>
-
-          <OnRepeat tracks={tracks} />
-
-          <a
-            href={PLAYLIST_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-4 inline-flex items-center gap-1.5 font-mono text-2xs uppercase tracking-label text-subtle transition-colors duration-fast ease-out hover:text-foreground"
-          >
-            The whole playlist
-            <ArrowUpRight className="h-3 w-3" />
-          </a>
-        </Section>
-      )}
 
       {/* Parked, not deleted. Flip SHOW_BOOKMARKS at the top of this file to
           bring it back. It sits last so that hiding it leaves 01 to 04 running
           in order, and restoring it appends 05 rather than reopening a gap in
           the middle of the page. */}
       {SHOW_BOOKMARKS && (
-        <Section number="05" label="Bookmarks" title="Worth keeping" width="reading">
+        <Section number={no("bookmarks")} of={total} label="Bookmarks" title="Worth keeping" width="reading">
           <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
             Links I come back to. Every one carries a reason, or it does not go in.
           </p>

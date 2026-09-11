@@ -34,6 +34,15 @@
   --input: 36 16% 89.5%;
   --ring: 35 9% 30%;
   --radius: 0.75rem;
+  /* The page measure, and the two derived values the rail-and-band system
+     needs. `Container` reads --measure for its reading width, and the rails
+     are drawn at that same value, so a line can never drift from the column
+     it describes. --gutter is a percentage, so it resolves against whichever
+     element consumes it: on a full-bleed band that is the viewport. */
+  --measure: 760px;
+  --gutter: max(0px, calc((100% - var(--measure)) / 2));
+  --dot-gap: 7px;
+
   /* sugar-high consumes these DIRECTLY as `color: var(--sh-keyword)`, so unlike
      every other token here they must be complete colour values, not bare HSL
      triplets waiting for an hsl() wrapper. Left unwrapped they resolve to an
@@ -445,4 +454,102 @@ table {
 
 .title {
   text-wrap: balance;
+}
+
+/* ── Section rails and bands ──────────────────────────────────────────────
+ * The page draws two continuous vertical hairlines at the edges of the
+ * reading measure, and every numbered section opens with a full-bleed band
+ * carrying its label. `components/layout/Rails.tsx` paints the rails;
+ * everything below dresses the band.
+ *
+ * All of it switches off under 900px. Below that the gutters are narrower
+ * than the `px-6` a Container already holds, so the rails stop reading as
+ * margin and start hugging the text. The band survives as a plain border-y
+ * row, which still separates sections cleanly on a phone.
+ * ------------------------------------------------------------------------ */
+
+@layer components {
+  /* Dots fill the gutter beside a band, and only beside a band. A full-height
+     fill was the other option and it loses: under six sections of prose the
+     texture competes with the copy it is supposed to be framing. Scoped to the
+     bands, it punctuates the sequence instead. */
+  .band-gutters::before,
+  .band-gutters::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: var(--gutter);
+    background-image: radial-gradient(hsl(var(--border)) 0.75px, transparent 0.75px);
+    background-size: var(--dot-gap) var(--dot-gap);
+    pointer-events: none;
+  }
+  .band-gutters::before { left: 0; }
+  .band-gutters::after { right: 0; }
+
+  /* The one mark in this system that carries weight, sitting on the left rail
+     level with the label. It is `foreground` because this palette has no hue
+     to spend: `--accent` IS the foreground here, so an ink tick is the accent,
+     not a substitute for one. */
+  .band-tick {
+    position: absolute;
+    left: var(--gutter);
+    top: 50%;
+    /* The rail is 1px wide and drawn as a border on the inside of the measure,
+       so the tick is pulled back one pixel to sit centred on it rather than
+       one pixel outside it. */
+    margin-left: -1px;
+    width: 3px;
+    height: 15px;
+    transform: translateY(-50%);
+    background: hsl(var(--foreground));
+    pointer-events: none;
+  }
+
+  /* The footer's specimen plate.
+
+     Outline type, so the wordmark reads as a drawing of itself rather than as
+     a second logo competing with the one in the navbar. Same family as the
+     visitor card: a plate, a measure rule, corner crosshairs.
+
+     `-webkit-text-stroke` has no standard equivalent and never got one, so the
+     `@supports` block is not optional: without it a browser that ignores the
+     property renders `color: transparent` and the wordmark vanishes entirely
+     rather than degrading. */
+  .plate-wordmark {
+    color: transparent;
+    -webkit-text-stroke: 1px hsl(var(--border-strong));
+  }
+  @supports not (-webkit-text-stroke: 1px currentColor) {
+    .plate-wordmark {
+      color: hsl(var(--border-strong));
+      -webkit-text-stroke: 0;
+    }
+  }
+
+  /* The dashed measure rules above and below the wordmark. */
+  .plate-rule {
+    background-image: repeating-linear-gradient(
+      to right,
+      hsl(var(--border)) 0 1px,
+      transparent 1px 9px
+    );
+  }
+
+  /* The rails. A `<span>` is inline by default, so this is what makes the box
+     that carries the two borders. Declared here rather than as a Tailwind
+     variant: see the note in `components/layout/Rails.tsx`. */
+  .page-rails {
+    display: block;
+  }
+
+  /* One threshold for the whole system, expressed once. */
+  @media (max-width: 899px) {
+    .page-rails,
+    .band-gutters::before,
+    .band-gutters::after,
+    .band-tick {
+      display: none;
+    }
+  }
 }

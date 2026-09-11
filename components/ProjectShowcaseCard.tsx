@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, ArrowUpRight, Play } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Play } from "@phosphor-icons/react/ssr";
 import type { ProjectCardData } from "@/lib/projectCards";
 import StackIcon, { type StackName } from "@/components/common/StackIcon";
 import Shimmer from "@/components/common/Shimmer";

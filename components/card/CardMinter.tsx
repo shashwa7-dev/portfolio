@@ -2,16 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import {
-  Check,
-  Copy,
-  Download,
-  Pencil,
-  UserRound,
-  Share2,
-  Volume2,
-  VolumeX,
-} from "lucide-react";
+import { Check, Copy, DownloadSimple, Pencil, User, ShareNetwork, SpeakerHigh, SpeakerSlash, XLogo } from "@phosphor-icons/react/ssr";
 import { ISSUES } from "@/lib/card/issues";
 import { isPerfect, issueFromTotal, pipTotal } from "@/lib/card/dice";
 import { serialFrom } from "@/lib/card/seed";
@@ -34,7 +25,6 @@ import IssueLadder from "@/components/card/IssueLadder";
 import PlaceholderCard from "@/components/card/PlaceholderCard";
 import Pips from "@/components/card/dice/Pips";
 import { indefiniteArticle } from "@/lib/card/issues";
-import { SVGS } from "@/components/SVGS";
 import { playChime } from "@/components/card/dice/diceSound";
 import { HAPTICS, safeHaptic } from "@/components/card/haptics";
 import { useSoundPreference } from "@/components/card/dice/soundPreference";
@@ -792,7 +782,7 @@ export default function CardMinter({
                             The tooltip and the aria-label carry the cost
                             (the serial goes too); the icon just has to name
                             the subject. */}
-                        <UserRound className="h-3.5 w-3.5" aria-hidden="true" />
+                        <User className="h-3.5 w-3.5" aria-hidden="true" />
                       </button>
                     </TooltipTrigger>
                     {/* Plainly what it costs, not "regenerate if you don't
@@ -810,7 +800,7 @@ export default function CardMinter({
                         aria-label="Download the card as a PNG"
                         className={TOOLBAR_BUTTON}
                       >
-                        <Download className="h-3.5 w-3.5" aria-hidden="true" />
+                        <DownloadSimple className="h-3.5 w-3.5" aria-hidden="true" />
                       </button>
                     </TooltipTrigger>
                     <TooltipContent>Download PNG</TooltipContent>
@@ -823,7 +813,7 @@ export default function CardMinter({
                           aria-label="Share your card"
                           className={TOOLBAR_BUTTON}
                         >
-                          <Share2 className="h-3.5 w-3.5" aria-hidden="true" />
+                          <ShareNetwork className="h-3.5 w-3.5" aria-hidden="true" />
                         </PopoverTrigger>
                       </TooltipTrigger>
                       <TooltipContent>Share</TooltipContent>
@@ -832,11 +822,12 @@ export default function CardMinter({
                         file-carrying Web Share: see handleShareTrigger, and
                         in practice that means every laptop.
 
-                        The X mark is the real one from SVGS, not lucide's
-                        `X`, which is its close glyph. A dismiss cross
-                        labelled "Share on X" was the wrong icon twice over:
-                        wrong brand, and the one symbol in the menu that
-                        already means "get rid of this".
+                        The mark is Phosphor's `XLogo`, the brand, NOT its
+                        `X`, which is a close glyph. That distinction is the
+                        whole reason this comment exists: a dismiss cross
+                        labelled "Share on X" is wrong twice over, wrong brand
+                        and the one symbol in this menu that already means
+                        "get rid of this". Autocomplete offers `X` first.
 
                         X is a link-only intent and cannot attach the PNG,
                         so copy sits beside it, putting the same words on the
@@ -848,7 +839,7 @@ export default function CardMinter({
                         onClick={shareToX}
                         className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm text-foreground transition-colors duration-fast ease-out hover:bg-accent hover:text-accent-foreground"
                       >
-                        <SVGS.Twitter className="h-4 w-4 shrink-0" aria-hidden="true" />
+                        <XLogo className="h-4 w-4 shrink-0" aria-hidden="true" />
                         Share on X
                       </button>
                       <button
@@ -877,9 +868,9 @@ export default function CardMinter({
                     className={TOOLBAR_BUTTON}
                   >
                     {muted ? (
-                      <VolumeX className="h-3.5 w-3.5" aria-hidden="true" />
+                      <SpeakerSlash className="h-3.5 w-3.5" aria-hidden="true" />
                     ) : (
-                      <Volume2 className="h-3.5 w-3.5" aria-hidden="true" />
+                      <SpeakerHigh className="h-3.5 w-3.5" aria-hidden="true" />
                     )}
                   </button>
                 </TooltipTrigger>

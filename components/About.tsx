@@ -1,39 +1,63 @@
 import Image from "next/image";
-import { Check, ArrowRight, Mail } from "lucide-react";
+import { Check, ArrowRight, Coffee } from "@phosphor-icons/react/ssr";
 import Container from "@/components/layout/Container";
 import AvatarHover from "@/components/AvatarHover";
 import LocalTime from "@/components/LocalTime";
 import Shimmer from "@/components/common/Shimmer";
 import Label from "@/components/layout/Label";
-import Bento from "@/components/layout/Bento";
-import Marker from "@/components/common/Marker";
-import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 import { stats } from "@/lib/stats";
+import { clients } from "@/lib/clients";
 
+/**
+ * The hero.
+ *
+ * It was not unpolished, it was overpopulated: eight visual devices competing
+ * inside one screen. A rounded portrait with a dark availability band and a
+ * shadow, a circular verified mark, two mono caps lines stacked to the
+ * portrait's height, the headline, a hand-drawn marker scribble under the
+ * email, a bordered bento with internal hairlines, five 17px brand avatars
+ * floating in the stat cells, and two buttons of identical weight. Premium
+ * reads as fewer devices and more space, so most of the work here is deletion.
+ *
+ * What went, and why:
+ *
+ * - The brand avatars in the stat cells. At 17px, greyscale, at 80% opacity,
+ *   nobody can identify Coinbase or Polygon, so they did not read as proof,
+ *   they read as smudges. The brands are a line of the hero's content stack
+ *   now, at 28px, where they can actually be recognised. The per-org
+ *   `ClientStrip` inside Experience still lists the same five names, and that
+ *   repetition is deliberate: this row says who, unscoped, as a footnote to
+ *   the claim above it; the strip says which of them belong to a specific
+ *   engagement and what was built for each.
+ * - The bento box. A `rounded-2xl` bordered container with internal hairlines
+ *   made no sense on a page whose structural idea is full-bleed bands crossing
+ *   two rails. The stats are a band now, so the hero uses the page's own
+ *   device instead of inventing a second one.
+ * - The marker scribble. It was the least premium element on the screen and
+ *   the only remaining use of `components/common/Marker.tsx`.
+ * - The second button's fill. Two solid-looking buttons side by side is not a
+ *   decision; the primary action is now the only thing that looks like one.
+ *
+ * What deliberately stayed: the name is still the h1 (the ProfilePage JSON-LD
+ * declares this person the page's main entity, and the slogan outranking them
+ * contradicted it), the verified mark, the live local time, and every number.
+ *
+ * The identity row is the original, restored. An earlier pass here flattened it
+ * onto one line and moved availability off the portrait into a text chip; it
+ * was reverted on sight. The portrait keeps its band, its shadow and its
+ * `min-h-[4rem]` column, and the reasoning for each is in the comments below.
+ */
 export default function About() {
   return (
-    <header className="pt-12 pb-10 md:pt-16">
+    <header className="pt-10 md:pt-14">
       <Container width="reading">
-        <div className="space-y-5 sm:space-y-7">
-          {/* Identity block.
-
-              The avatar stays 64px and the copy is fitted to it, rather than the
-              other way round: growing the image to the copy's height made a
-              supporting portrait the loudest thing in the hero.
-
-              Alignment is by construction, not by arithmetic. The text column is
-              pinned to the avatar's exact height with `justify-between`, so the
-              first row's top and the last row's bottom sit on the avatar's edges
-              whatever the type sizes turn out to be. An earlier version summed
-              the three rows by hand to land near 64px; that held only until any
-              one size changed, and a near-match reads as a mistake in a way a
-              deliberate difference does not.
-
-              `leading-none` on the name is load-bearing. At `leading-tight` its
-              glyphs sit inside a line box about a quarter taller, so the
-              half-leading pushed the letters below the avatar's top edge even
-              when the boxes themselves lined up. Aligning boxes is not the same
-              as aligning what you can see. */}
+        <div className="space-y-7 sm:space-y-8">
           <div className="flex items-start gap-3.5">
             {/* Availability rides the avatar, LinkedIn style, instead of taking a
                 row of its own as a pill.
@@ -124,7 +148,7 @@ export default function About() {
                   role="img"
                   aria-label="Verified"
                 >
-                  <Check className="h-2.5 w-2.5" strokeWidth={3} />
+                  <Check className="h-2.5 w-2.5" weight="bold" />
                 </span>
               </div>
               {/* No margins on these two: `justify-between` on the column owns
@@ -149,15 +173,22 @@ export default function About() {
             </div>
           </div>
 
-          {/* The positioning statement. Still the visually dominant line and
-              still the thing doing the selling, but a `p` rather than the h1: a
-              page gets one h1 and it is the person, not the slogan. Sized down
-              slightly from clamp(2.2rem, 5.5vw, 3.4rem) so the name above has
-              room to read as the heading it now is. */}
-          <p className="text-[clamp(2rem,5vw,3rem)] font-semibold leading-[1.02] tracking-tighter text-foreground">
+          {/* The positioning statement. Still the line doing the selling, but a
+              `p` rather than the h1: a page gets one h1 and it is the person.
+
+              Sized down from clamp(2rem, 5vw, 3rem) and dropped from semibold
+              to medium. At 48px and 600 it was shouting; the claim is stronger
+              said quietly, and the smaller size leaves the emphasis span
+              somewhere to go, which it had nowhere to do when the whole line
+              was already semibold.
+
+              `text-balance` because the natural break left "millions." alone on
+              a line under eight words, and a one-word last line reads as a
+              mistake at this size. Balance evens the two lines instead of
+              filling the first and dropping the remainder. */}
+          <p className="text-balance text-[clamp(1.625rem,3.4vw,2.3rem)] font-medium leading-[1.08] tracking-tighter text-foreground">
             I build interfaces that{" "}
-            <span className="font-semibold text-foreground">ship and scale</span> to
-            millions.
+            <span className="font-semibold">ship and scale</span> to millions.
           </p>
 
           {/* lede (no em-dashes, no org names — generic AI-adaptive positioning) */}
@@ -166,67 +197,162 @@ export default function About() {
             <span className="text-foreground">AI-adaptive frontend engineer</span>.
             Across 9+ production products with top AI and Web3 teams, I turn
             complex ideas into fast, polished, accessible UIs. Reach me at{" "}
-            <a href="mailto:contact@shashwa7.in" className="text-foreground">
-              <Marker>contact@shashwa7.in</Marker>
+            <a
+              href="mailto:contact@shashwa7.in"
+              className="text-foreground underline decoration-border-strong underline-offset-4 transition-colors duration-fast ease-out hover:decoration-foreground"
+            >
+              contact@shashwa7.in
             </a>
             .
           </p>
 
-          {/* stats — overlapping brand avatars float top-right (always greyscale),
-              smaller on mobile, tooltips name them */}
-          <Bento className="grid-cols-2 sm:grid-cols-4">
-            {stats.map((s) => (
-              <div
-                key={s.c}
-                className="relative flex h-full flex-col bg-card px-4 py-3.5"
-              >
-                {s.orgs && s.orgs.length > 0 && (
-                  <div className="absolute right-2 top-2 flex items-center sm:right-2.5 sm:top-2.5">
-                    {s.orgs.map((org, i) => (
-                      <Tooltip key={org.name}>
-                        <TooltipTrigger asChild>
-                          <span
-                            className={`relative h-4 w-4 shrink-0 overflow-hidden rounded-full bg-secondary outline outline-1 outline-border ring-2 ring-card sm:h-5 sm:w-5 ${
-                              i > 0 ? "-ml-1" : ""
-                            }`}
-                          >
-                            <Image
-                              src={org.img}
-                              alt={org.name}
-                              fill
-                              sizes="(max-width: 640px) 16px, 20px"
-                              className="object-cover grayscale opacity-80 transition-[filter] duration-base ease-out hover:grayscale-0"
-                            />
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent>{org.name}</TooltipContent>
-                      </Tooltip>
-                    ))}
-                  </div>
-                )}
-                <div className="text-2xl font-semibold text-foreground">{s.n}</div>
-                <div className="mt-1 text-xs text-muted-foreground">{s.c}</div>
-              </div>
-            ))}
-          </Bento>
+          {/* A filled action and an outlined one.
 
-          {/* CTAs */}
+              The second was a bare text link for a while, on the argument that
+              two buttons of equal weight is no decision. It read as an
+              afterthought beside a solid button: contacting him is half the
+              point of the page, and a link with no edge did not look like
+              something to press. An outline is the middle setting. Fill still
+              beats border, so the hierarchy survives, but both now look
+              pressable and the pair reads as a set rather than a button with a
+              stray link next to it.
+
+              Same `rounded-md` and `px-5 py-2.5` as the primary, deliberately,
+              and the primary carries `border border-transparent` for the same
+              reason. Without it the outlined button stood 42px against the
+              filled one's 40: with `box-sizing: border-box` and an auto height,
+              a 1px border still adds its two pixels to the box. Matching
+              padding is not enough; both buttons have to agree on whether they
+              have a border at all.
+
+              `Coffee`, not `Envelope` and not a paper plane. Both of those
+              describe the mechanism, and the mechanism is the least interesting
+              part of a mailto. Coffee names the thing being proposed, and it is
+              not a stock friendly gesture here: there is a whole /coffee page
+              and a shelf section behind it, so the icon points at something the
+              site can actually back up. */}
           <div className="flex flex-wrap items-center gap-3">
             <a
               href="/#experience"
-              className="inline-flex items-center gap-2 rounded-md bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground transition-[color,background-color,transform] duration-150 ease-out hover:bg-accent-hover active:scale-[0.97]"
+              className="inline-flex items-center gap-2 rounded-md border border-transparent bg-accent px-5 py-2.5 text-sm font-medium text-accent-foreground transition-[color,background-color,transform] duration-fast ease-out hover:bg-accent-hover active:scale-[0.97]"
             >
               View selected work <ArrowRight className="h-4 w-4" />
             </a>
             <a
               href="mailto:contact@shashwa7.in"
-              className="inline-flex items-center gap-2 rounded-md border border-border-strong px-5 py-2.5 text-sm font-semibold text-foreground transition-[color,background-color,transform] duration-150 ease-out hover:bg-elevated active:scale-[0.97]"
+              className="inline-flex items-center gap-2 rounded-md border border-border-strong px-5 py-2.5 text-sm font-medium text-foreground transition-[color,background-color,border-color,transform] duration-fast ease-out hover:border-foreground hover:bg-elevated active:scale-[0.97]"
             >
-              <Mail className="h-4 w-4" /> Get in touch
+              <Coffee className="h-4 w-4" /> Get in touch
             </a>
           </div>
+
+          {/* Worked with.
+
+              Part of the hero's content stack, not a block of its own. It was
+              tried as a standalone centred panel under the stat band and that
+              was the problem: a centred island below a full-bleed band read as
+              a third section rather than as a line of the hero, and it gave
+              five logos more of the page than a supporting fact deserves.
+
+              Ranged left on one line with everything above it, at 28px. Large
+              enough to recognise, which the 17px avatars buried in the old stat
+              cells never were, and small enough to stay a footnote to the
+              claim rather than competing with it.
+
+              Overlapped by 8px rather than spaced. An even row reads as five
+              separate marks; a stack reads as one group, which is what a list
+              of brands is. Spacing them out was tried while this row was
+              centred, where overlap made the cluster look off-axis, and that
+              reason went away when the row moved left with the rest of the
+              hero.
+
+              `ring-2 ring-background` comes back with the overlap. Its only job
+              is to cut a gap between circles that touch; without it the stack
+              reads as one smeared shape.
+
+              `alt=""` is correct rather than lazy: the names sit in text in the
+              same link, so labelling the images too would make a screen reader
+              announce each brand twice. */}
+          <a
+            href="/#experience"
+            className="group flex flex-wrap items-center gap-x-3 gap-y-2"
+          >
+            <span className="font-mono text-2xs uppercase tracking-label text-subtle">
+              Worked with
+            </span>
+            <span className="flex items-center">
+              {clients.map((c, i) => (
+                <span
+                  key={c.name}
+                  className={cn(
+                    "relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-secondary outline outline-1 outline-border ring-2 ring-background",
+                    i > 0 && "-ml-2"
+                  )}
+                >
+                  <Image
+                    src={c.img}
+                    alt=""
+                    width={128}
+                    height={128}
+                    quality={90}
+                    className="h-full w-full object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
+                  />
+                </span>
+              ))}
+            </span>
+            <span className="text-sm text-muted-foreground transition-colors duration-fast ease-out group-hover:text-foreground">
+              {clients.map((c) => c.name).join(", ")}
+            </span>
+          </a>
         </div>
       </Container>
+
+      {/* The proof points, as a band rather than a box.
+
+          `band-gutters` is the same class `Band` uses, so the dotted gutters
+          run beside the numbers exactly as they do beside every section label.
+          `relative` is not decoration here: the dots are absolutely positioned
+          pseudo-elements and need this element as their containing block.
+
+          There is no tick. That mark means "a labelled division starts here",
+          and this carries numbers rather than a label.
+
+          Top border only, and the header has no bottom padding. The next thing
+          on the page is section 01's band, which draws its own top rule, so a
+          bottom border here would stack two hairlines a pixel apart and any
+          padding would leave a strip of dead page between two rules. The
+          section band's top rule closes the stats instead.
+
+          The grid pulls itself out of the Container's `px-6` on mobile and
+          hands that padding to the cells instead. That is what makes the rule
+          between the two rows run edge to edge. Left inside the padded column
+          it stopped 24px short at each end, which reads as a broken line
+          sitting between two full-width ones. */}
+      <div className="band-gutters relative mt-10 border-t border-border md:mt-12">
+        <Container width="reading">
+          <div className="-mx-6 grid grid-cols-2 md:mx-0 md:grid-cols-4">
+            {stats.map((s, i) => (
+              <div
+                key={s.c}
+                className={cn(
+                  "px-6 py-4 md:px-0",
+                  i > 0 && "md:border-l md:border-border md:pl-4",
+                  i % 2 === 1 && "border-l border-border",
+                  i >= 2 && "border-t border-border md:border-t-0"
+                )}
+              >
+                <div className="text-xl font-medium tabular-nums tracking-tight text-foreground">
+                  {s.n}
+                </div>
+                <div className="mt-1.5 font-mono text-2xs uppercase tracking-label text-subtle">
+                  {s.c}
+                </div>
+              </div>
+            ))}
+          </div>
+        </Container>
+      </div>
+
     </header>
   );
 }

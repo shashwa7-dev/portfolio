@@ -3,12 +3,13 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, ArrowUpRight, ExternalLink, Play } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, ArrowSquareOut, Play } from "@phosphor-icons/react/ssr";
 import {  getOrganization, getProjectFromOrg } from "@/lib/workData";
 import { ActiveBadge } from "@/components/common/ActiveBadge";
 import StackIcon from "@/components/common/StackIcon";
 import VideoModal from "@/components/common/VideoModal";
 import Container from "@/components/layout/Container";
+import PageBand from "@/components/layout/PageBand";
 import { motion } from "motion/react";
 import { useState } from "react";
 import { slideUpVariants, stagger } from "@/lib/motionVariants";
@@ -30,7 +31,8 @@ export default function WorkProjectPage({
   const stack = [...(project.stack.fe || []), ...(project.stack.be || [])];
 
   return (
-    <main className="min-h-screen py-8 md:py-12">
+    <main className="min-h-screen pb-8 md:pb-12">
+      <PageBand id="Work" name={`${org.name} / ${project.title}`} />
       <Container width="reading" className="space-y-8">
         {/* Back link */}
         <Link
@@ -175,7 +177,7 @@ export default function WorkProjectPage({
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 rounded-md bg-secondary px-4 py-2 text-sm transition-[color,background-color,transform] duration-fast ease-out hover:bg-secondary/80 active:scale-[0.97]"
                   >
-                    <ExternalLink className="w-4 h-4" />
+                    <ArrowSquareOut className="w-4 h-4" />
                     Visit Website
                   </a>
                 )}
@@ -186,7 +188,7 @@ export default function WorkProjectPage({
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 rounded-md bg-secondary px-4 py-2 text-sm transition-[color,background-color,transform] duration-fast ease-out hover:bg-secondary/80 active:scale-[0.97]"
                   >
-                    <ExternalLink className="w-4 h-4" />
+                    <ArrowSquareOut className="w-4 h-4" />
                     GitHub
                   </a>
                 )}
@@ -197,7 +199,7 @@ export default function WorkProjectPage({
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 rounded-md bg-secondary px-4 py-2 text-sm transition-[color,background-color,transform] duration-fast ease-out hover:bg-secondary/80 active:scale-[0.97]"
                   >
-                    <ExternalLink className="w-4 h-4" />
+                    <ArrowSquareOut className="w-4 h-4" />
                     Twitter
                   </a>
                 )}
@@ -208,7 +210,7 @@ export default function WorkProjectPage({
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 rounded-md bg-secondary px-4 py-2 text-sm transition-[color,background-color,transform] duration-fast ease-out hover:bg-secondary/80 active:scale-[0.97]"
                   >
-                    <ExternalLink className="w-4 h-4" />
+                    <ArrowSquareOut className="w-4 h-4" />
                     OpenSea
                   </a>
                 )}

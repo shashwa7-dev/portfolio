@@ -2,11 +2,12 @@ import { books, type Book } from "@/lib/books";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { Check } from "lucide-react";
+import { Check } from "@phosphor-icons/react/ssr";
 import { Link as LinkCTA } from "@/components/common/Link";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl, breadcrumbLd } from "@/lib/seo";
 import Container from "@/components/layout/Container";
+import PageBand from "@/components/layout/PageBand";
 
 type Props = {
   params: { slug: string };
@@ -96,7 +97,8 @@ export default function BookPage({ params }: Props) {
   const { read: completedCount, finished: isComplete } = readProgress(book);
 
   return (
-    <main className="min-h-screen py-8 md:py-12">
+    <main className="min-h-screen pb-8 md:pb-12">
+      <PageBand id="Books" name={book.name} />
       <script
         type="application/ld+json"
         suppressHydrationWarning
@@ -201,7 +203,7 @@ export default function BookPage({ params }: Props) {
                 {chapter.completed && (
                   <Check
                     className="h-3.5 w-3.5 shrink-0 text-muted-foreground"
-                    strokeWidth={2.5}
+                    weight="bold"
                     aria-label="Completed"
                   />
                 )}

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
-import { X, Command } from "lucide-react";
+import { X, Command } from "@phosphor-icons/react/ssr";
 import { backdropFadeVariants } from "@/lib/motionVariants";
 import { useDarkMode } from "@/app/hooks/useDarkMode";
 import { goToShortcuts, shortcutGroups, MOD_KEY } from "@/lib/shortcutsData";
@@ -137,7 +137,7 @@ export default function KeyboardShortcuts() {
                               key={i}
                               className="grid h-6 min-w-[24px] place-items-center rounded-md border border-border-strong bg-card px-1.5 font-mono text-xs text-muted-foreground"
                             >
-                              {/* The command key is lucide's icon rather than the
+                              {/* The command key is Phosphor's icon rather than the
                                   ⌘ character, so it shares a stroke weight with
                                   the rest of the UI instead of rendering at
                                   whatever the first font with that codepoint

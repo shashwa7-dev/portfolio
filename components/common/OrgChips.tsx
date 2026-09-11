@@ -1,4 +1,4 @@
-import { ExternalLink, ArrowUpRight } from "lucide-react";
+import { ArrowSquareOut, ArrowUpRight } from "@phosphor-icons/react/ssr";
 
 /**
  * Small inline pill that labels an org's engagement type. Renders nothing
@@ -54,7 +54,7 @@ export function OrgLinkChip({
   label: string;
   icon?: "arrow" | "external";
 }) {
-  const Icon = icon === "external" ? ExternalLink : ArrowUpRight;
+  const Icon = icon === "external" ? ArrowSquareOut : ArrowUpRight;
   return (
     <a
       href={href}

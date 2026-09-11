@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { X, Send, Copy, Check, ArrowDown, ArrowRight } from "lucide-react";
+import { X, PaperPlaneTilt, Copy, Check, ArrowDown, ArrowRight } from "@phosphor-icons/react/ssr";
 import { motion, AnimatePresence } from "motion/react";
 import MarkdownMessage from "./chat/MarkdownMessage";
 import { cn } from "@/lib/utils";
@@ -609,7 +609,7 @@ const S7Bot = () => {
                   disabled={isStreaming || !message.trim()}
                   className="flex items-center justify-center h-9 w-9 rounded-lg bg-accent text-accent-foreground hover:opacity-90 transition-[opacity,transform] duration-150 ease-out disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0 active:scale-[0.94]"
                 >
-                  <Send className="h-4 w-4" />
+                  <PaperPlaneTilt className="h-4 w-4" />
                 </button>
               </div>
             </form>
