@@ -7,7 +7,7 @@ import { footerLinks, socialLinks, contactEmail } from "@/lib/siteLinks";
 const SOCIAL_ICONS = {
   GitHub: GithubLogo,
   LinkedIn: LinkedinLogo,
-  X: XLogo,
+  Twitter: XLogo,
 } as const;
 
 /**
