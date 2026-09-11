@@ -59,21 +59,27 @@
   --sh-entity: hsl(180 40% 30%);
 }
 
-  /* `[data-bare]` rides this block on purpose rather than restating it.
+  /* /offcod8, and nothing else.
 
-     /offcod8 is a dark page in both themes: it is mostly a video, and the scrim
-     over that video has to be dark for the picture to read as a picture rather
-     than as a wash. Once the ground is dark in both themes the ink has to be
-     too, so the route takes the whole dark palette rather than a handful of
-     overrides.
+     That route is mostly a video, and the scrim over it has to be dark for the
+     picture to read as a picture rather than as a wash, whatever theme the
+     visitor is in. A dark ground needs light ink, so the route takes the whole
+     dark palette rather than a dark scrim with light-mode type under it.
 
-     Sharing the selector is what keeps the two honest. A separate block listing
-     its own hex values would be a second copy of this palette, and the copy
-     would drift the first time a token here was tuned. Redefining tokens rather
-     than restyling components is also what saves every element inside the route
-     from carrying a `dark:` variant. */
+     `body:has([data-bare])` is the scope, and `data-bare` is on exactly one
+     element in this codebase: the `<main>` of app/offcod8/page.tsx. Every other
+     page still follows the visitor's theme, because there is nothing on them
+     for this to match. Setting the tokens on `body` rather than on the route's
+     own element is also what makes the ground itself dark, so an overscroll
+     bounce cannot pull past the scrim and flash a strip of paper.
+
+     It rides `.dark`'s declarations rather than restating them. A separate
+     block with its own values would be a second copy of this palette, and the
+     copy would drift the first time a token here was tuned. Redefining tokens
+     rather than restyling components is also what saves every element inside
+     the route from carrying a `dark:` variant. */
   .dark,
-  [data-bare] {
+  body:has([data-bare]) {
     /* Paper (dark) */
     --background: 30 7% 5%;
     --foreground: 35 6% 94%;
@@ -584,14 +590,6 @@ table {
   body:has([data-bare]) .site-footer,
   body:has([data-bare]) .page-rails {
     display: none;
-  }
-
-  /* The body is outside the route's element, so it never sees the dark tokens
-     the route sets on itself. The video's scrim covers the viewport and hides
-     it at rest, but an overscroll bounce pulls past that and would show a strip
-     of light paper under a dark page. This is the dark `--background`. */
-  body:has([data-bare]) {
-    background: hsl(30 7% 5%);
   }
 
   /* The video behind the letter at /offcod8.
