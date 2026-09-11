@@ -506,6 +506,36 @@ table {
     pointer-events: none;
   }
 
+  /* The footer's specimen plate.
+
+     Outline type, so the wordmark reads as a drawing of itself rather than as
+     a second logo competing with the one in the navbar. Same family as the
+     visitor card: a plate, a measure rule, corner crosshairs.
+
+     `-webkit-text-stroke` has no standard equivalent and never got one, so the
+     `@supports` block is not optional: without it a browser that ignores the
+     property renders `color: transparent` and the wordmark vanishes entirely
+     rather than degrading. */
+  .plate-wordmark {
+    color: transparent;
+    -webkit-text-stroke: 1px hsl(var(--border-strong));
+  }
+  @supports not (-webkit-text-stroke: 1px currentColor) {
+    .plate-wordmark {
+      color: hsl(var(--border-strong));
+      -webkit-text-stroke: 0;
+    }
+  }
+
+  /* The dashed measure rules above and below the wordmark. */
+  .plate-rule {
+    background-image: repeating-linear-gradient(
+      to right,
+      hsl(var(--border)) 0 1px,
+      transparent 1px 9px
+    );
+  }
+
   /* The rails. A `<span>` is inline by default, so this is what makes the box
      that carries the two borders. Declared here rather than as a Tailwind
      variant: see the note in `components/layout/Rails.tsx`. */
