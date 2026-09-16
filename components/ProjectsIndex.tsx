@@ -43,8 +43,8 @@ export default function ProjectsIndex({ projects }: { projects: TSideProject[] }
           transition={{ duration: duration.fast, ease: ease.out }}
           className="grid grid-cols-1 gap-5 md:grid-cols-2"
         >
-          {shown.map((p) => (
-            <ProjectShowcaseCard key={p.id} project={sideProjectToCard(p)} />
+          {shown.map((p, i) => (
+            <ProjectShowcaseCard key={p.id} project={sideProjectToCard(p)} index={i} />
           ))}
         </motion.div>
       </AnimatePresence>

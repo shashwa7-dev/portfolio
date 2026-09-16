@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "@phosphor-icons/react/ssr";
 import { formatDate, getBlogPosts } from "@/app/blogs/utils";
 import { readingTime } from "@/lib/readingTime";
+import { tilt, tint } from "@/lib/candy";
 
 /**
  * The blog index.
@@ -26,15 +27,15 @@ export function BlogPosts() {
     // pure decoration at one post, since there is nothing between to separate.
     // `divide-y` draws between children, so it renders nothing today and starts
     // grouping on its own once there is a second post.
-    <ul className="divide-y divide-border">
-      {posts.map((post) => (
+    <ul className="divide-y divide-border candy:divide-y-0">
+      {posts.map((post, i) => (
         <li key={post.slug}>
           <Link
             href={`/blogs/${post.slug}`}
-            className="group flex flex-col gap-3 py-4 transition-colors duration-base ease-out sm:flex-row sm:items-start sm:gap-4"
+            className="group flex flex-col gap-3 py-4 transition-colors duration-base ease-out sm:flex-row sm:items-start sm:gap-4 candy:py-[18px]"
           >
             {post.metadata.image && (
-              <span className="relative block aspect-[16/9] w-full shrink-0 overflow-hidden rounded-lg bg-elevated ring-1 ring-border sm:w-[9.5rem]">
+              <span className={`relative block aspect-[16/9] w-full shrink-0 overflow-hidden rounded-lg bg-elevated ring-1 ring-border sm:w-[9.5rem] sticker sticker-sm candy:rounded-tile candy:ring-0 candy:border-white ${tint(i)} ${tilt(i)}`}>
                 {/* Greyscale until hover, matching the org and brand logos, so
                     one idiom covers every image on the site. */}
                 <Image
@@ -74,7 +75,7 @@ export function BlogPosts() {
                 {JSON.parse(post.metadata.tags).map((tag: string, i: number) => (
                   <span
                     key={i}
-                    className="rounded-sm border border-border px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-muted-foreground"
+                    className={`rounded-sm border border-border px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-muted-foreground sticker sticker-sm sticker-flat candy:rounded-tag candy:font-semibold candy:text-foreground ${tint(i)}`}
                   >
                     {tag}
                   </span>

@@ -138,7 +138,7 @@ const TechStack = () => {
       title="Tools I reach for"
       width="reading"
     >
-      <div className="divide-y divide-border">
+      <div className="divide-y divide-border candy:divide-y-0">
         {tiers.map((tier, i) => (
           <div key={tier.label} className="py-5 first:pt-0 last:pb-0">
             <div className="mb-3 flex items-baseline justify-between gap-4">
@@ -158,7 +158,7 @@ const TechStack = () => {
                       name={t}
                       showLabel
                       size={16}
-                      className="border-border-strong px-4 py-2 text-sm font-medium text-foreground"
+                      className="border-border-strong px-4 py-2 text-sm font-medium text-foreground candy:h-10"
                     />
                   </li>
                 ))}
@@ -169,7 +169,7 @@ const TechStack = () => {
               <ul className="flex flex-wrap gap-1.5">
                 {tier.items.map((t) => (
                   <li key={t} className="flex">
-                    <StackIcon name={t} showLabel size={14} className="px-2.5 py-1" />
+                    <StackIcon name={t} showLabel size={14} className="px-2.5 py-1 sticker-sm" />
                   </li>
                 ))}
               </ul>

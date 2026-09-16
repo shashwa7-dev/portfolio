@@ -130,7 +130,7 @@ export default async function ShelfPage() {
             moved every time someone switched to a roaster with a different
             number of beans, which is a layout shift caused by nothing the
             reader did on purpose. */}
-        <div className="mb-6 rounded-2xl border border-border bg-card p-5">
+        <div className="mb-6 rounded-2xl border border-border bg-card p-5 sticker candy:rounded-sticker candy:border-white">
           <p className="text-sm leading-relaxed text-muted-foreground">
             <span className="font-semibold text-foreground">
               Where my taste sits.
@@ -155,7 +155,7 @@ export default async function ShelfPage() {
             than being left at the bottom of a 3,000 word article. */}
         <Link
           href="/coffee#roast-picker"
-          className="group relative mt-6 block overflow-hidden rounded-2xl border border-border bg-card p-5 transition-colors duration-base ease-out hover:border-border-strong"
+          className="group relative mt-6 block overflow-hidden rounded-2xl border border-border bg-card p-5 transition-colors duration-base ease-out hover:border-border-strong sticker candy:rounded-sticker candy:border-white candy:hover:border-white"
         >
           {/* The three beans as a backdrop, fanned light to dark left to
               right, which is the same order the slider runs in. Held well back
@@ -225,7 +225,7 @@ export default async function ShelfPage() {
         <div className="mt-8">
           <Link
             href="/coffee"
-            className="group relative block overflow-hidden rounded-2xl border border-border bg-card"
+            className="group relative block overflow-hidden rounded-2xl border border-border bg-card sticker candy:rounded-sticker candy:border-white candy:hover:border-white"
           >
             <Image
               src="/shelf/coffee-backdrop.webp"
@@ -388,7 +388,7 @@ export default async function ShelfPage() {
       <Container width="reading" className="pb-10">
         <Link
           href="/books"
-          className="group flex items-center justify-between gap-4 rounded-2xl border border-border bg-card p-5"
+          className="group flex items-center justify-between gap-4 rounded-2xl border border-border bg-card p-5 sticker candy:rounded-sticker candy:border-white candy:hover:border-white"
         >
           <span>
             <span className="block font-mono text-2xs uppercase tracking-label text-subtle">

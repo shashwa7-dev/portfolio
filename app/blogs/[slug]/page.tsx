@@ -160,7 +160,7 @@ export default function Blog({ params }: any) {
             description for someone else's artwork. Decorative is the honest
             value. */}
         {post.metadata.image && (
-          <div className="relative mt-6 aspect-[16/9] w-full overflow-hidden rounded-lg border border-border bg-elevated">
+          <div className="relative mt-6 aspect-[16/9] w-full overflow-hidden rounded-lg border border-border bg-elevated sticker candy:rounded-tile candy:border-white candy:bg-candy-sky tilt-g">
             <Image
               src={post.metadata.image}
               alt=""
@@ -191,12 +191,12 @@ export default function Blog({ params }: any) {
         {(newer || older) && (
           <nav
             aria-label="More posts"
-            className="mt-12 grid gap-3 border-t border-border pt-6 sm:grid-cols-2"
+            className="mt-12 grid gap-3 border-t border-border pt-6 sm:grid-cols-2 candy:border-0"
           >
             {newer ? (
               <Link
                 href={`/blogs/${newer.slug}`}
-                className="group flex flex-col gap-1 rounded-lg border border-border bg-card p-3.5 transition-colors duration-base ease-out hover:border-border-strong"
+                className="group flex flex-col gap-1 rounded-lg border border-border bg-card p-3.5 transition-colors duration-base ease-out hover:border-border-strong sticker sticker-sm candy:rounded-tile candy:border-white candy:hover:border-white candy:bg-candy-sky tilt-c"
               >
                 <span className="flex items-center gap-1.5 font-mono text-2xs uppercase tracking-label text-subtle">
                   <ArrowLeft className="h-3 w-3" /> Newer
@@ -212,7 +212,7 @@ export default function Blog({ params }: any) {
             {older && (
               <Link
                 href={`/blogs/${older.slug}`}
-                className="group flex flex-col gap-1 rounded-lg border border-border bg-card p-3.5 text-right transition-colors duration-base ease-out hover:border-border-strong sm:col-start-2"
+                className="group flex flex-col gap-1 rounded-lg border border-border bg-card p-3.5 text-right transition-colors duration-base ease-out hover:border-border-strong sm:col-start-2 sticker sticker-sm candy:rounded-tile candy:border-white candy:hover:border-white candy:bg-candy-butter tilt-b"
               >
                 <span className="flex items-center justify-end gap-1.5 font-mono text-2xs uppercase tracking-label text-subtle">
                   Older <ArrowRight className="h-3 w-3" />

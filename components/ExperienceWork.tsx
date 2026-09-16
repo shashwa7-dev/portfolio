@@ -39,7 +39,7 @@ export default function ExperienceWork() {
                   href={`/work/${org.slug}`}
                   className="group/orglink flex min-w-0 items-center gap-3"
                 >
-                  <span className="relative h-6 w-6 shrink-0 overflow-hidden rounded-md bg-elevated ring-1 ring-border">
+                  <span className="relative h-6 w-6 shrink-0 overflow-hidden rounded-md bg-elevated ring-1 ring-border candy:rounded-tag candy:ring-0 candy:outline candy:outline-2 candy:outline-foreground tilt-i">
                     {/* Greyscale until hover. Same treatment as the brand logos
                         in ClientStrip and the post thumbnails on the blog, so
                         one idiom covers every logo on the site. */}
@@ -78,7 +78,7 @@ export default function ExperienceWork() {
                   by side. Shortening the rail needs no mask, so it also cannot
                   drift out of alignment or depend on a box matching the page
                   background in both themes. */}
-              <div className="relative pl-9 pt-2 before:absolute before:left-3 before:top-0 before:bottom-[1.625rem] before:w-px before:bg-border">
+              <div className="relative pl-9 pt-2 before:absolute before:left-3 before:top-0 before:bottom-[1.625rem] before:w-px before:bg-border candy:before:hidden">
                 {/* Role metadata as a real description list, so each value says
                     what it is to a screen reader and to the markdown renditions.
                     Values carry `whitespace-nowrap` so a narrow column wraps
@@ -127,9 +127,9 @@ export default function ExperienceWork() {
 
                 {org.skills && org.skills.length > 0 && (
                   <ul className="mt-2.5 flex flex-wrap gap-1.5">
-                    {org.skills.map((s) => (
+                    {org.skills.map((s, i) => (
                       <li key={s} className="flex">
-                        <Tag>{s}</Tag>
+                        <Tag index={i}>{s}</Tag>
                       </li>
                     ))}
                   </ul>
@@ -154,7 +154,7 @@ export default function ExperienceWork() {
                       key={i}
                       className="flex gap-2.5 text-sm text-muted-foreground"
                     >
-                      <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-subtle" />
+                      <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-subtle candy:h-2 candy:w-2 candy:bg-candy-pink candy:outline candy:outline-[1.5px] candy:outline-foreground" />
                       {h}
                     </li>
                   ))}
@@ -164,13 +164,13 @@ export default function ExperienceWork() {
                   (org.links.web || org.links.app || org.links.twitter) && (
                     <div className="mt-3 flex flex-wrap items-center gap-1.5">
                       {org.links.web && (
-                        <OrgLinkChip href={org.links.web} label="Site" />
+                        <OrgLinkChip href={org.links.web} label="Site" index={0} />
                       )}
                       {org.links.app && (
-                        <OrgLinkChip href={org.links.app} label="App" />
+                        <OrgLinkChip href={org.links.app} label="App" index={1} />
                       )}
                       {org.links.twitter && (
-                        <OrgLinkChip href={org.links.twitter} label="X" />
+                        <OrgLinkChip href={org.links.twitter} label="X" index={2} />
                       )}
                     </div>
                   )}
@@ -190,10 +190,11 @@ export default function ExperienceWork() {
                       </Link>
                     </div>
                     <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-                      {featured.map((p) => (
+                      {featured.map((p, i) => (
                         <ProjectPreviewCard
                           key={p.id}
                           project={workProjectToCard(org.slug, p)}
+                          index={i}
                         />
                       ))}
                     </div>
@@ -208,7 +209,7 @@ export default function ExperienceWork() {
                 <div className="mt-5">
                   <Link
                     href={`/work/${org.slug}`}
-                    className="group inline-flex items-baseline gap-1.5 text-sm text-foreground underline decoration-border-strong underline-offset-4 transition-colors hover:decoration-foreground"
+                    className="group inline-flex items-baseline gap-1.5 text-sm text-foreground underline decoration-border-strong underline-offset-4 transition-colors hover:decoration-foreground candy:no-underline candy:font-semibold candy:bg-[linear-gradient(transparent_55%,hsl(var(--candy-mint))_55%)]"
                   >
                     <span>See what I built at {org.name}</span>
                     <ArrowRight className="h-3.5 w-3.5 self-center transition-transform duration-base ease-out group-hover:translate-x-0.5" />
@@ -222,7 +223,7 @@ export default function ExperienceWork() {
                     are the same two the rail above uses. */}
                 <span
                   aria-hidden
-                  className="pointer-events-none absolute bottom-2.5 left-3 h-4 w-4 rounded-bl-md border-b border-l border-border"
+                  className="pointer-events-none absolute bottom-2.5 left-3 h-4 w-4 rounded-bl-md border-b border-l border-border candy:hidden"
                 />
               </div>
             </div>

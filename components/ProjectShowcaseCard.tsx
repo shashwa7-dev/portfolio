@@ -4,14 +4,15 @@ import { ArrowRight, ArrowUpRight, Play } from "@phosphor-icons/react/ssr";
 import type { ProjectCardData } from "@/lib/projectCards";
 import StackIcon, { type StackName } from "@/components/common/StackIcon";
 import Shimmer from "@/components/common/Shimmer";
+import { tiltMd, tint } from "@/lib/candy";
 
-export default function ProjectShowcaseCard({ project }: { project: ProjectCardData }) {
+export default function ProjectShowcaseCard({ project, index = 0 }: { project: ProjectCardData; index?: number }) {
   return (
     <Link
       href={project.href}
-      className="group block overflow-hidden rounded-2xl border border-border bg-card transition-[transform,border-color] duration-base ease-out hover:-translate-y-0.5 hover:border-border-strong active:scale-[0.99]"
+      className={`group block overflow-hidden rounded-2xl border border-border bg-card transition-[transform,border-color] duration-base ease-out hover:-translate-y-0.5 hover:border-border-strong active:scale-[0.99] sticker candy:rounded-sticker candy:border-white candy:hover:border-white ${tiltMd(index + 6)}`}
     >
-      <div className="relative aspect-[16/10] overflow-hidden bg-elevated">
+      <div className={`relative aspect-[16/10] overflow-hidden bg-elevated candy:border-b-2 candy:border-foreground ${tint(index)}`}>
         <Image
           src={project.thumbnail}
           alt={project.title}
@@ -25,7 +26,7 @@ export default function ProjectShowcaseCard({ project }: { project: ProjectCardD
         {project.badge && (
           <Shimmer
             tone="surface"
-            className="absolute left-3 top-3 inline-block rounded-sm border border-border-strong bg-background/80 backdrop-blur"
+            className="absolute left-3 top-3 inline-block rounded-sm border border-border-strong bg-background/80 backdrop-blur candy:rounded-tag candy:border-foreground candy:bg-white tilt-a"
           >
             <span className="block px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-foreground">
               {project.badge}
@@ -33,12 +34,12 @@ export default function ProjectShowcaseCard({ project }: { project: ProjectCardD
           </Shimmer>
         )}
         {project.metric && (
-          <span className="absolute bottom-3 left-3 rounded-sm border border-border-strong bg-background/80 px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-foreground backdrop-blur">
+          <span className="absolute bottom-3 left-3 rounded-sm border border-border-strong bg-background/80 px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-foreground backdrop-blur candy:rounded-tag candy:border-foreground candy:bg-candy-butter candy:text-foreground tilt-d">
             {project.metric}
           </span>
         )}
         {project.preview && (
-          <span className="absolute bottom-3 right-3 grid h-7 w-7 place-items-center rounded-full bg-background/80 text-foreground backdrop-blur">
+          <span className="absolute bottom-3 right-3 grid h-7 w-7 place-items-center rounded-full bg-background/80 text-foreground backdrop-blur candy:bg-candy-pink candy:text-foreground candy:border-2 candy:border-foreground candy:shadow-sticker-1">
             <Play className="h-3.5 w-3.5 fill-current" />
           </span>
         )}
@@ -55,7 +56,7 @@ export default function ProjectShowcaseCard({ project }: { project: ProjectCardD
               <StackIcon key={t} name={t as StackName} size={16} showLabel={false} showTooltip />
             ))}
           </div>
-          {project.caseStudy && <span className="inline-flex items-center gap-1 text-sm text-foreground">Case study <ArrowRight className="h-3.5 w-3.5" /></span>}
+          {project.caseStudy && <span className="inline-flex items-center gap-1 text-sm text-foreground candy:font-semibold candy:bg-[linear-gradient(transparent_55%,hsl(var(--candy-mint))_55%)]">Case study <ArrowRight className="h-3.5 w-3.5" /></span>}
         </div>
       </div>
     </Link>

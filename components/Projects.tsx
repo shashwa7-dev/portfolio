@@ -28,8 +28,8 @@ export default function Projects() {
       }
     >
       <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-        {sideProjects.map((p) => (
-          <ProjectPreviewCard key={p.id} project={sideProjectToCard(p)} />
+        {sideProjects.map((p, i) => (
+          <ProjectPreviewCard key={p.id} project={sideProjectToCard(p)} index={i} />
         ))}
       </div>
     </Section>
