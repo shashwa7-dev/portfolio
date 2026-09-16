@@ -39,7 +39,7 @@ export default function BookListItem({
           alt={`Cover of ${name}`}
           fill
           sizes="40px"
-          className="object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
+          className="object-cover grayscale candy:grayscale-0 transition-[filter] duration-base ease-out group-hover:grayscale-0"
         />
       </div>
 

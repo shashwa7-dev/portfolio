@@ -49,7 +49,7 @@ export default function ProjectPreviewCard({ project, index = 0 }: { project: Pr
           alt=""
           fill
           sizes="80px"
-          className="object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
+          className="object-cover grayscale candy:grayscale-0 transition-[filter] duration-base ease-out group-hover:grayscale-0"
         />
       </span>
 

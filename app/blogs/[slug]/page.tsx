@@ -171,7 +171,7 @@ export default function Blog({ params }: any) {
                  viewport less the same 48px of gutter. Overstating this makes
                  next/image serve the next bucket up for no benefit. */
               sizes="(max-width: 760px) calc(100vw - 48px), 712px"
-              className="object-cover grayscale transition-[filter] duration-base ease-out hover:grayscale-0"
+              className="object-cover grayscale candy:grayscale-0 transition-[filter] duration-base ease-out hover:grayscale-0"
             />
           </div>
         )}

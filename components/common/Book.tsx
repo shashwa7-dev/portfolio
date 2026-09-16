@@ -75,7 +75,7 @@ export default function Book({
         src={cover}
         alt={`Cover of ${name}`}
         fill
-        className="object-cover opacity-90 grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
+        className="object-cover opacity-90 grayscale candy:grayscale-0 transition-[filter] duration-base ease-out group-hover:grayscale-0"
         sizes="(max-width: 640px) 45vw, (max-width: 768px) 30vw, 180px"
         priority={false}
         onLoadingComplete={() => setLoaded(true)}

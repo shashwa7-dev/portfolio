@@ -64,7 +64,7 @@ export default function AvatarHover() {
       <img
         src="/images/avatar.png"
         alt="Shashwat Tripathi"
-        className="h-full w-full object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
+        className="h-full w-full object-cover grayscale candy:grayscale-0 transition-[filter] duration-base ease-out group-hover:grayscale-0"
       />
       {armed && (
         // eslint-disable-next-line @next/next/no-img-element
@@ -72,7 +72,7 @@ export default function AvatarHover() {
           src="/images/avatar-hover.gif"
           alt=""
           aria-hidden
-          className="absolute inset-0 h-full w-full object-cover grayscale opacity-0 transition-[opacity,filter] duration-base ease-out group-hover:grayscale-0 group-hover:opacity-100 motion-reduce:hidden"
+          className="absolute inset-0 h-full w-full object-cover grayscale candy:grayscale-0 opacity-0 transition-[opacity,filter] duration-base ease-out group-hover:grayscale-0 group-hover:opacity-100 motion-reduce:hidden"
         />
       )}
     </div>

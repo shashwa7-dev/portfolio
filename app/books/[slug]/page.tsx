@@ -123,7 +123,7 @@ export default function BookPage({ params }: Props) {
               src={book.cover}
               alt={book.name}
               fill
-              className="object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
+              className="object-cover grayscale candy:grayscale-0 transition-[filter] duration-base ease-out group-hover:grayscale-0"
               priority
               sizes="(max-width: 768px) 144px, 160px"
             />

@@ -81,7 +81,7 @@ export default function WorkProjectPage({
                 alt={org.name}
                 fill
                 sizes="20px"
-                className="object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
+                className="object-cover grayscale candy:grayscale-0 transition-[filter] duration-base ease-out group-hover:grayscale-0"
               />
             </span>
             <span className="text-sm text-muted-foreground transition-colors group-hover:text-foreground">
@@ -103,7 +103,7 @@ export default function WorkProjectPage({
             src={project.thumbnail}
             alt={project.title}
             fill
-            className="object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
+            className="object-cover grayscale candy:grayscale-0 transition-[filter] duration-base ease-out group-hover:grayscale-0"
             priority
           />
           {project.preview && (

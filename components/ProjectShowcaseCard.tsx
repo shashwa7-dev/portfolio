@@ -18,7 +18,7 @@ export default function ProjectShowcaseCard({ project, index = 0 }: { project: P
           alt={project.title}
           fill
           sizes="(max-width: 760px) 100vw, 380px"
-          className="object-cover grayscale transition-[transform,filter] duration-base ease-out group-hover:scale-[1.03] group-hover:grayscale-0"
+          className="object-cover grayscale candy:grayscale-0 transition-[transform,filter] duration-base ease-out group-hover:scale-[1.03] group-hover:grayscale-0"
         />
         {/* `tone="surface"`, not `media`, despite sitting over the thumbnail: the
             chip has its own `bg-background/80` fill, so the sheen crosses a

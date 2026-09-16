@@ -43,7 +43,7 @@ export function BlogPosts() {
                   alt={post.metadata.title}
                   fill
                   sizes="(max-width: 640px) 100vw, 152px"
-                  className="object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
+                  className="object-cover grayscale candy:grayscale-0 transition-[filter] duration-base ease-out group-hover:grayscale-0"
                 />
               </span>
             )}

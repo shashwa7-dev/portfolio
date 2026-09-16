@@ -21,7 +21,7 @@ Candy was distilled from a Simpsons concept website on Behance. Only the system 
 | Dividers | None. No bands, rails, ticks, hairlines between rows, dashed cut lines. Sections separate by whitespace. |
 | Background | Line grid: 1px `#ece7d8` lines every 40px on `#fffdf7`. Fixed to the page, not the viewport. |
 | Section chrome | The band label survives as a sticker; the band strip, rails and tick are hidden in Candy. |
-| Thumbnails | Stay greyscale until hover, as today. Thumb wells sit on candy tints. |
+| Thumbnails | Always in colour in Candy (no greyscale at rest). Paper keeps greyscale until hover. Thumb wells sit on candy tints. |
 | Pages left on Paper | The souvenir card canvas (`/card`, `lib/card/*`) and the OG image route keep their fixed colours. The `/offcod8` route keeps its forced dark palette. |
 | New article pieces | Prose CSS for `blockquote`, `figure` and `figcaption`, which markdown already emits. No new MDX component. |
 | Tilt | Deterministic, seeded by index, never random. Caps in section 7. |

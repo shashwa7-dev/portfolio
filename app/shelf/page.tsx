@@ -237,7 +237,7 @@ export default async function ShelfPage() {
                  slot that never exceeds the reading container's 712px. */
               sizes="(max-width: 760px) 100vw, 712px"
               aria-hidden
-              className="pointer-events-none absolute inset-x-0 bottom-0 w-full select-none object-cover opacity-[0.13] grayscale transition-opacity duration-med ease-out group-hover:opacity-[0.2] dark:opacity-[0.08] dark:group-hover:opacity-[0.14]"
+              className="pointer-events-none absolute inset-x-0 bottom-0 w-full select-none object-cover opacity-[0.13] grayscale candy:grayscale-0 transition-opacity duration-med ease-out group-hover:opacity-[0.2] dark:opacity-[0.08] dark:group-hover:opacity-[0.14]"
             />
             {/* The top padding is what makes this card tall, and it is doing a
                 job: the backdrop is anchored to the bottom edge, so the type has

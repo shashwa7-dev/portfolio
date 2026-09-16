@@ -366,7 +366,7 @@ export default function About() {
                     <span
                       className={cn(
                         "relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-secondary outline outline-1 outline-border ring-2 ring-background transition-[filter] duration-base ease-out hover:z-10 hover:grayscale-0 candy:outline-foreground candy:outline-[1.5px] candy:ring-0",
-                        "grayscale",
+                        "grayscale candy:grayscale-0",
                         i > 0 && "-ml-2",
                       )}
                     >
