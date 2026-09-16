@@ -34,12 +34,12 @@ export default function Band({
   return (
     <div
       className={cn(
-        "band-gutters relative border-b border-border",
+        "band-gutters relative border-b border-border candy:border-0",
         !flush && "border-t",
         className
       )}
     >
-      <span aria-hidden className="band-tick" />
+      <span aria-hidden className="band-tick candy:hidden" />
       <Container className="flex items-center justify-between gap-4 py-3">
         {children}
       </Container>

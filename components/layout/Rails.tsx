@@ -31,7 +31,7 @@ export default function Rails() {
   return (
     <span
       aria-hidden
-      className="page-rails pointer-events-none absolute inset-0 mx-auto max-w-[var(--measure)] border-x border-border"
+      className="page-rails pointer-events-none absolute inset-0 mx-auto max-w-[var(--measure)] border-x border-border candy:hidden"
     />
   );
 }

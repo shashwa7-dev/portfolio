@@ -599,6 +599,11 @@ table {
   .band-gutters::before { left: 0; }
   .band-gutters::after { right: 0; }
 
+  [data-theme="candy"] .band-gutters::before,
+  [data-theme="candy"] .band-gutters::after {
+    display: none;
+  }
+
   /* The one mark in this system that carries weight, sitting on the left rail
      level with the label. It is `foreground` because this palette has no hue
      to spend: `--accent` IS the foreground here, so an ink tick is the accent,
@@ -646,6 +651,12 @@ table {
       hsl(var(--border)) 0 1px,
       transparent 1px 9px
     );
+  }
+
+  [data-theme="candy"] .plate-wordmark {
+    color: #fff;
+    -webkit-text-stroke: 3px hsl(var(--foreground));
+    text-shadow: 10px 10px 0 hsl(var(--candy-pink));
   }
 
   /* The rails. A `<span>` is inline by default, so this is what makes the box
