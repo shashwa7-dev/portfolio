@@ -12,12 +12,14 @@ Full reference: `docs/design-system.md`. This skill gives you the fast rules.
 - Brand / accent: `bg-accent` for CTAs; `hover:bg-accent-hover` on hover; `text-accent` for inline highlights
 - Borders: `border-border` (default hairline); `border-border-strong` (emphasis, button outlines)
 - Never use raw hex. Dark mode is the default (`dark` class on `<html>`).
+- Three themes: light, dark, candy. Candy classes use the `candy:` variant and are inert elsewhere.
+- No dividers in Candy.
 
 ## Typography
 
 - Headings: `font-sans` (DM Sans). There is NO serif face in this repo and `font-serif` fails `scripts/verify-simplification.sh` (C03). Display: `text-[clamp(2rem,5vw,2.75rem)] font-medium tracking-[-0.02em]`. Section h2: `text-2xl md:text-3xl`.
-- Body: `font-sans` (Inter). Default size `text-base`, secondary text in `text-muted-foreground`.
-- Labels / eyebrows / code: `font-mono` (JetBrains Mono). Label component: `text-[11px] uppercase tracking-[0.16em] text-subtle`.
+- Body: `font-sans` (DM Sans). Default size `text-base`, secondary text in `text-muted-foreground`.
+- Labels / eyebrows / code: `font-mono` (IBM Plex Mono). Label component: `text-[11px] uppercase tracking-[0.16em] text-subtle`.
 - No em-dashes in copy. Restructure sentences instead.
 
 ## Section pattern
@@ -71,7 +73,7 @@ Each cell needs `bg-card` so the 1px `bg-border` gap is visible as a hairline se
 
 ## Motion rules
 
-- Easing: `--ease-out` = `cubic-bezier(0.22, 1, 0.36, 1)` for entrances.
+- Easing: `--ease-out` = `cubic-bezier(0.23, 1, 0.32, 1)` for entrances.
 - Duration: 200ms hover micro / 300-400ms reveal / ~60ms stagger per item.
 - Hover lift: `whileHover={{ y: -2 }}` on cards.
 - Always respect `prefers-reduced-motion` (handled globally in `globals.css`).

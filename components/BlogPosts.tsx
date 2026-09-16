@@ -35,7 +35,7 @@ export function BlogPosts() {
             className="group flex flex-col gap-3 py-4 transition-colors duration-base ease-out sm:flex-row sm:items-start sm:gap-4 candy:py-[18px]"
           >
             {post.metadata.image && (
-              <span className={`relative block aspect-[16/9] w-full shrink-0 overflow-hidden rounded-lg bg-elevated ring-1 ring-border sm:w-[9.5rem] sticker sticker-sm candy:rounded-tile candy:ring-0 candy:border-white ${tint(i)} ${tilt(i)}`}>
+              <span className={`relative block aspect-[16/9] w-full shrink-0 overflow-hidden rounded-lg bg-elevated ring-1 ring-border sm:w-[9.5rem] sticker sticker-sm candy:rounded-tile candy:ring-0 candy:shadow-sticker-1 candy:border-white ${tint(i)} ${tilt(i)}`}>
                 {/* Greyscale until hover, matching the org and brand logos, so
                     one idiom covers every image on the site. */}
                 <Image

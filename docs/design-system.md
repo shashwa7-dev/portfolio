@@ -30,6 +30,42 @@ All colors are CSS custom properties (defined in `app/globals.css`, HSL triples 
 
 The palette is a warm, near-neutral ramp (low saturation, warm hue around 30-40 degrees). There is no separate brand hue: `--accent` sits at (or very near) `--foreground`, so emphasis comes from weight and contrast, not color.
 
+### Candy
+
+A third theme, opt-in via `data-theme="candy"` on `<html>`. It redefines the same semantic tokens above under `:root[data-theme="candy"]`: paper `48 100% 98.4%`, ink `0 0% 10.2%`, sticker white `0 0% 100%` for `--card`, and a pink `--ring` at `346 100% 86%`. `--radius` becomes `1rem`, so `rounded-lg` is 16px, `rounded-md` 14px, `rounded-sm` 12px. A `--grid-line` / `--grid-size` pair (`45 34% 89%`, `40px`) draws graph paper behind every page.
+
+Five candy-only tints, exposed as `bg-candy-*`:
+
+| Token | Tailwind class | HSL | Hue |
+|---|---|---|---|
+| `--candy-pink` | `bg-candy-pink` | `348 100% 86%` | 348 |
+| `--candy-mint` | `bg-candy-mint` | `154 65% 83%` | 154 |
+| `--candy-butter` | `bg-candy-butter` | `50 100% 82%` | 50 |
+| `--candy-sky` | `bg-candy-sky` | `203 100% 87%` | 203 |
+| `--candy-lavender` | `bg-candy-lavender` | `263 100% 92%` | 263 |
+
+None sits at hue 241 or 242 (verify gate C14, no indigo). Ink on every tint holds 4.5:1 contrast or better.
+
+Sticker shadow and radius scale, both Candy-only:
+
+| Token | Tailwind class | Value | Used by |
+|---|---|---|---|
+| `--sticker-shadow-1` | `shadow-sticker-1` | `2px 2px 0 ink` | chips, org link chips |
+| `--sticker-shadow-2` | `shadow-sticker-2` | `3px 3px 0 ink` | small pills, nav controls, tags |
+| `--sticker-shadow-3` | `shadow-sticker-3` | `4px 4px 0 ink` | buttons, preview cards |
+| `--sticker-shadow-4` | `shadow-sticker-4` | `7px 7px 0 ink` | showcase cards, bento, FAQ open item, hero image |
+| `--sticker-shadow-press` | `shadow-sticker-press` | `1px 1px 0 ink` | pressed state |
+| `--sticker-radius-card` | `rounded-sticker` | `22px` | showcase, bento, FAQ, shelf |
+| `--sticker-radius-tile` | `rounded-tile` | `16px` | preview cards, code block, table |
+| `--sticker-radius-tag` | `rounded-tag` | `8px` | rectangular tags, org link chips |
+
+Pill radius stays `rounded-full`, unchanged from Paper.
+
+Two rules:
+
+- Every Candy-specific utility (`bg-candy-*`, `rounded-sticker`, `rounded-tile`, `rounded-tag`, `shadow-sticker-*`, and every other Candy class) is written behind the `candy:` variant, never bare, so it stays harmless in Paper and dark. The one exception is `sticker`, `sticker-sm`, `sticker-flat`, `sticker-hover`, `tilt-*` and `tilt-md-*`: those are written without the `candy:` prefix because they are scoped by their own `[data-theme="candy"]` selector in `globals.css`, so they are already no-ops outside Candy.
+- No dividers in Candy: no rails, bands, ticks, dot gutters, or row hairlines (`divide-y`). Sections separate on whitespace alone.
+
 ### Rules
 
 - Always use semantic tokens, never raw hex or HSL literals in components.
@@ -44,10 +80,11 @@ The palette is a warm, near-neutral ramp (low saturation, warm hue around 30-40 
 
 | Family | CSS var | Tailwind class | Use |
 |---|---|---|---|
-| DM Sans | `--font-sans` | `font-sans` | Headings, body copy, UI labels, navigation |
-| IBM Plex Mono | `--font-mono` | `font-mono` | Code blocks, eyebrow labels, monospace UI |
+| DM Sans | `--font-sans` | `font-sans` | Body: headings, body copy, UI labels, navigation in Paper and dark |
+| IBM Plex Mono | `--font-mono` | `font-mono` | Code: code blocks, eyebrow labels, monospace UI |
+| Fredoka | `--font-display` | `font-display` | Display, Candy only: headings, section titles, page titles, card titles, stat numbers, the footer wordmark |
 
-Fonts are loaded via Next.js font optimization (`next/font/google`) in `app/layout.tsx`. `font-display: swap` is implicit. There is no serif family and no `font-serif` Tailwind key: headings use `font-sans` like everything else, distinguished by weight and size, not typeface.
+Fonts are loaded via Next.js font optimization (`next/font/google`) in `app/layout.tsx`. `font-display: swap` is implicit. There is no serif family and no `font-serif` Tailwind key: in Paper and dark, headings use `font-sans` like everything else, distinguished by weight and size, not typeface. In Candy, the same heading elements switch to `font-display` (Fredoka 700); body, lede and prose stay on DM Sans.
 
 All heading elements (`h1`-`h6`) default to the sans stack via the global base styles in `globals.css` (`font-weight: 600`, `line-height: 1.1`, `letter-spacing: -0.02em`).
 
@@ -221,6 +258,11 @@ import Section from "@/components/layout/Section";
   on its `<main>`; the band's own `mb-8 md:mb-12` supplies the rest.
 - All of it hides under 900px, where the gutters get narrower than a
   Container's `px-6` and the rails would sit inside the text's own padding.
+- Candy: `Rails` and `Band` render nothing, so their lines, the ink tick and the
+  dot gutters are hidden on every route regardless of width. `Section` and
+  `PageBand` still show their `BandLabel` and `action`, in a plain flex row
+  above the title; the label itself renders as a sticker pill instead of mono
+  caps in a band.
 
 ### Bento
 
@@ -267,6 +309,8 @@ Renders a `<span>` with `font-mono text-xs uppercase tracking-label text-subtle`
 </button>
 ```
 
+Candy: a pink sticker pill, shadow 3, 44px tall.
+
 ### Ghost button
 
 ```tsx
@@ -274,6 +318,8 @@ Renders a `<span>` with `font-mono text-xs uppercase tracking-label text-subtle`
   Label
 </button>
 ```
+
+Candy: a white sticker pill, shadow 3, 44px tall.
 
 ### Inline link (prose style)
 
@@ -283,6 +329,8 @@ Renders a `<span>` with `font-mono text-xs uppercase tracking-label text-subtle`
 </a>
 ```
 
+Candy: a butter highlight link, no underline; a butter `linear-gradient` block under the text that fills pink on hover.
+
 ### Badge / pill
 
 ```tsx
@@ -290,6 +338,8 @@ Renders a `<span>` with `font-mono text-xs uppercase tracking-label text-subtle`
   Badge
 </span>
 ```
+
+Candy: a tinted tag, one of the five candy tints by index, no shadow.
 
 ### StackIcon chip
 
@@ -313,6 +363,8 @@ Icons use `simple-icons` for brand and technology marks. UI icons use
   content
 </div>
 ```
+
+Candy: a sticker card, white with a 3px ink cut, shadow scaled to the card's role.
 
 ### Elevated card
 
@@ -368,6 +420,32 @@ Rules: exits animate faster than enters; keyboard surfaces (command palette, sho
 ### Reduced motion
 
 `app/layout.tsx` wraps the app in `<MotionConfig reducedMotion="user">`, so every Motion animation respects the visitor's OS-level `prefers-reduced-motion` setting automatically. CSS animations and transitions are separately collapsed under `@media (prefers-reduced-motion: reduce)` in `globals.css`: movement (transforms) is dropped, opacity and color transitions are kept because they aid comprehension without triggering motion sickness.
+
+### Candy tilt
+
+`lib/candy.ts` exports deterministic pickers so the server and client always
+agree, keeping hydration safe:
+
+- `tilt(i)` cycles `tilt-a` through `tilt-g` by `index % 7`, max 2 degrees.
+  Used for chips, tags, badges and decorative stickers.
+- `tiltMd(i)` cycles only `tilt-md-f` and `tilt-md-g` by `index % 2`, at 0.8
+  degrees. Used for cards.
+- `tilt-h` (4deg) and `tilt-i` (-4deg) are not part of either cycle; they are
+  written as literal classes on the avatar and the brand marks only.
+- `sticker`, `sticker-sm`, `sticker-flat`, `sticker-hover`, `tilt-*` and
+  `tilt-md-*` are the one exception to the `candy:` convention (see Color
+  Tokens, Candy): they carry no `candy:` prefix because they are scoped by
+  their own `[data-theme="candy"]` selector in `globals.css`, so they are
+  already inert in Paper and dark.
+- Hover on a tilted card or button removes the tilt (`rotate(0)`), lifts by
+  1px and steps the shadow up one size, on `duration.fast` and `--ease-out`.
+  Press collapses the shadow to `--sticker-shadow-press` and translates by the
+  difference.
+- Under 640px, cards and buttons stop tilting; stat stickers and tags keep
+  theirs.
+- Under `prefers-reduced-motion`, tilts stay static (they are not animated
+  in the first place); the hover lift's shadow and colour step still run
+  because they carry no motion; the press translate is dropped.
 
 ---
 
