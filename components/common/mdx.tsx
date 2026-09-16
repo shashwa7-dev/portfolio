@@ -79,7 +79,7 @@ function RoundedImage(props: RoundedImageProps) {
     // directly above the element it suppresses, so it goes last.
     // eslint-disable-next-line jsx-a11y/alt-text
     <Image
-      className="rounded-lg grayscale transition-[filter] duration-base ease-out hover:grayscale-0"
+      className="rounded-lg grayscale transition-[filter] duration-base ease-out hover:grayscale-0 sticker candy:rounded-tile candy:border-white tilt-md-g"
       {...props}
     />
   );

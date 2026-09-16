@@ -531,6 +531,111 @@ a {
   margin-bottom: 1.25em !important;
 }
 
+/* Candy prose. Scoped to the theme attribute; the Paper rules above still
+   apply and these override the few that differ. No new elements: blockquote,
+   figure and figcaption are what markdown already emits, they simply had no
+   rules before. */
+[data-theme="candy"] .prose a {
+  text-decoration: none;
+  font-weight: 600;
+  background-image: linear-gradient(transparent 55%, hsl(var(--candy-butter)) 55%);
+  transition: background-image var(--duration-fast) var(--ease-out);
+}
+[data-theme="candy"] .prose a:hover {
+  background-image: linear-gradient(transparent 0%, hsl(var(--candy-pink)) 0%);
+}
+[data-theme="candy"] .prose .anchor:after {
+  color: hsl(var(--foreground));
+  background: hsl(var(--candy-pink));
+  border-radius: 6px;
+  padding: 0 6px;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 600;
+}
+[data-theme="candy"] .prose code {
+  background: hsl(var(--candy-butter));
+  border: 1.5px solid hsl(var(--foreground));
+  border-radius: 6px;
+  padding: 2px 7px;
+}
+[data-theme="candy"] .prose pre {
+  background: #fff;
+  border: 3px solid #fff;
+  outline: 2px solid hsl(var(--foreground));
+  border-radius: var(--sticker-radius-tile);
+  box-shadow: var(--sticker-shadow-3);
+  padding: 14px 16px;
+}
+[data-theme="candy"] .prose pre code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+[data-theme="candy"] .prose ul li::marker {
+  color: hsl(var(--candy-pink));
+}
+[data-theme="candy"] .prose ol li::marker {
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+[data-theme="candy"] .prose .table-scroll {
+  background: #fff;
+  border: 3px solid #fff;
+  outline: 2px solid hsl(var(--foreground));
+  border-radius: var(--sticker-radius-tile);
+  box-shadow: var(--sticker-shadow-3);
+}
+[data-theme="candy"] .prose th {
+  background: hsl(var(--candy-butter));
+  border-bottom: 2px solid hsl(var(--foreground));
+  padding: 10px 14px;
+}
+[data-theme="candy"] .prose td {
+  border-bottom: 1px solid hsl(var(--secondary));
+  padding: 10px 14px;
+}
+[data-theme="candy"] .prose blockquote {
+  position: relative;
+  margin: 1.5rem 0;
+  padding: 22px 22px 18px;
+  background: hsl(var(--candy-pink));
+  border: 4px solid #fff;
+  outline: 2px solid hsl(var(--foreground));
+  border-radius: var(--sticker-radius-card);
+  box-shadow: var(--sticker-shadow-4);
+  font-weight: 600;
+  transform: rotate(-1deg);
+}
+[data-theme="candy"] .prose blockquote::before {
+  content: "\201C";
+  position: absolute;
+  left: 14px;
+  top: -12px;
+  font-family: var(--font-display);
+  font-size: 54px;
+  line-height: 1;
+  color: #fff;
+  -webkit-text-stroke: 2px hsl(var(--foreground));
+}
+[data-theme="candy"] .prose blockquote p {
+  margin: 0;
+}
+[data-theme="candy"] .prose figure {
+  margin: 1.5rem 0;
+}
+[data-theme="candy"] .prose figcaption {
+  margin-top: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: hsl(var(--subtle));
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="candy"] .prose blockquote {
+    transform: none;
+  }
+}
+
 pre::-webkit-scrollbar {
   display: none;
 }
