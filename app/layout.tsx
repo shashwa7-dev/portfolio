@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Sans } from "next/font/google";
+import { DM_Sans, Fredoka } from "next/font/google";
 import dynamic from "next/dynamic";
 import { MotionConfig } from "motion/react";
 import "./globals.css";
@@ -27,6 +27,13 @@ const dmSans = DM_Sans({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-sans",
+});
+
+const fredoka = Fredoka({
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  display: "swap",
+  variable: "--font-display",
 });
 
 /**
@@ -122,7 +129,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`bg-background text-foreground border-border ${dmSans.variable} ${plexMono.variable} ${cardHand.variable} ${cardSticker.variable} font-sans`}
+        className={`bg-background text-foreground border-border ${dmSans.variable} ${fredoka.variable} ${plexMono.variable} ${cardHand.variable} ${cardSticker.variable} font-sans`}
       >
         <NoScript />
         <MotionConfig reducedMotion="user">
