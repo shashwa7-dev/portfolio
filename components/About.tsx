@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { stats } from "@/lib/stats";
 import { clients } from "@/lib/clients";
 import { socialLinks } from "@/lib/siteLinks";
+import { tint, tilt } from "@/lib/candy";
 
 /**
  * The hero.
@@ -123,7 +124,7 @@ export default function About() {
               <TooltipTrigger asChild>
                 <Link
                   href="/offcod8"
-                  className="group relative block shrink-0 overflow-hidden rounded-2xl border border-border-strong shadow-md shadow-black/10 dark:shadow-lg dark:shadow-black/40"
+                  className="group relative block shrink-0 overflow-hidden rounded-2xl border border-border-strong shadow-md shadow-black/10 dark:shadow-lg dark:shadow-black/40 sticker candy:rounded-full candy:shadow-none tilt-i"
                 >
                   <AvatarHover />
                   <Shimmer className="absolute inset-x-0 bottom-0 block">
@@ -159,7 +160,7 @@ export default function About() {
                   Shashwat Tripathi
                 </h1>
                 <span
-                  className="grid h-4 w-4 shrink-0 place-items-center rounded-full bg-foreground text-background"
+                  className="grid h-4 w-4 shrink-0 place-items-center rounded-full bg-foreground text-background candy:h-[18px] candy:w-[18px] candy:bg-candy-mint candy:text-foreground candy:outline candy:outline-[1.5px] candy:outline-foreground"
                   title="Verified engineer"
                   /* `role="img"` is load-bearing, not decoration: `aria-label`
                      on a bare span is a prohibited attribute, so without a role
@@ -207,7 +208,7 @@ export default function About() {
               filling the first and dropping the remainder. */}
           <p className="text-balance text-[clamp(1.625rem,3.4vw,2.3rem)] font-medium leading-[1.08] tracking-tighter text-foreground">
             I build interfaces that{" "}
-            <span className="font-semibold">ship and scale</span> to millions.
+            <span className="font-semibold candy:bg-candy-butter candy:px-2 candy:rounded-tag candy:[box-decoration-break:clone]">ship and scale</span> to millions.
           </p>
 
           {/* lede (no em-dashes, no org names — generic AI-adaptive positioning) */}
@@ -220,7 +221,7 @@ export default function About() {
             complex ideas into fast, polished, accessible UIs. Reach me at{" "}
             <a
               href="mailto:contact@shashwa7.in"
-              className="text-foreground underline decoration-border-strong underline-offset-4 transition-colors duration-fast ease-out hover:decoration-foreground"
+              className="text-foreground underline decoration-border-strong underline-offset-4 transition-colors duration-fast ease-out hover:decoration-foreground candy:no-underline candy:bg-[linear-gradient(transparent_55%,hsl(var(--candy-butter))_55%)] candy:font-semibold candy:hover:bg-[linear-gradient(transparent_0%,hsl(var(--candy-pink))_0%)]"
             >
               contact@shashwa7.in
             </a>
@@ -255,13 +256,13 @@ export default function About() {
           <div className="flex flex-wrap items-center gap-3">
             <a
               href="/#experience"
-              className="inline-flex items-center gap-2 rounded-md border border-transparent bg-accent px-5 py-2.5 text-sm font-medium text-accent-foreground transition-[color,background-color,transform] duration-fast ease-out hover:bg-accent-hover active:scale-[0.97]"
+              className="inline-flex items-center gap-2 rounded-md border border-transparent bg-accent px-5 py-2.5 text-sm font-medium text-accent-foreground transition-[color,background-color,transform] duration-fast ease-out hover:bg-accent-hover active:scale-[0.97] sticker candy:rounded-full candy:border-white candy:bg-candy-pink candy:text-foreground candy:font-bold candy:hover:bg-candy-pink tilt-md-e"
             >
               View selected work <ArrowRight className="h-4 w-4" />
             </a>
             <a
               href="mailto:contact@shashwa7.in"
-              className="inline-flex items-center gap-2 rounded-md border border-border-strong px-5 py-2.5 text-sm font-medium text-foreground transition-[color,background-color,border-color,transform] duration-fast ease-out hover:border-foreground hover:bg-elevated active:scale-[0.97]"
+              className="inline-flex items-center gap-2 rounded-md border border-border-strong px-5 py-2.5 text-sm font-medium text-foreground transition-[color,background-color,border-color,transform] duration-fast ease-out hover:border-foreground hover:bg-elevated active:scale-[0.97] sticker candy:rounded-full candy:font-bold candy:hover:bg-white candy:hover:border-white tilt-md-b"
             >
               <Coffee className="h-4 w-4" /> Get in touch
             </a>
@@ -303,7 +304,7 @@ export default function About() {
                     target="_blank"
                     rel="noopener noreferrer"
                     title={name}
-                    className="grid h-8 w-8 place-items-center rounded-md text-subtle transition-colors duration-fast ease-out hover:bg-elevated hover:text-foreground"
+                    className="grid h-8 w-8 place-items-center rounded-md text-subtle transition-colors duration-fast ease-out hover:bg-elevated hover:text-foreground sticker sticker-sm candy:rounded-full candy:text-foreground candy:hover:bg-white"
                   >
                     <Icon aria-hidden="true" className="h-4 w-4" />
                     <span className="sr-only">{name}</span>
@@ -364,7 +365,7 @@ export default function About() {
                   <TooltipTrigger asChild>
                     <span
                       className={cn(
-                        "relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-secondary outline outline-1 outline-border ring-2 ring-background transition-[filter] duration-base ease-out hover:z-10 hover:grayscale-0",
+                        "relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-secondary outline outline-1 outline-border ring-2 ring-background transition-[filter] duration-base ease-out hover:z-10 hover:grayscale-0 candy:outline-foreground candy:outline-[1.5px] candy:ring-0",
                         "grayscale",
                         i > 0 && "-ml-2",
                       )}
@@ -423,8 +424,8 @@ export default function About() {
           it stopped 24px short at each end, which reads as a broken line
           sitting between two full-width ones. */}
       <div className="mt-10 md:mt-12">
-        <Container width="reading" className="border-t border-border">
-          <div className="-mx-6 grid grid-cols-2 md:mx-0 md:grid-cols-4">
+        <Container width="reading" className="border-t border-border candy:border-0">
+          <div className="-mx-6 grid grid-cols-2 md:mx-0 md:grid-cols-4 candy:mx-0 candy:gap-4 candy:px-1">
             {stats.map((s, i) => (
               <div
                 key={s.c}
@@ -433,12 +434,15 @@ export default function About() {
                   i > 0 && "md:border-l md:border-border md:pl-4",
                   i % 2 === 1 && "border-l border-border",
                   i >= 2 && "border-t border-border md:border-t-0",
+                  "candy:border-0 sticker candy:rounded-full candy:aspect-square candy:flex candy:flex-col candy:items-center candy:justify-center candy:p-3 candy:text-center",
+                  tint(i),
+                  tilt(i + 7),
                 )}
               >
-                <div className="text-xl font-medium tabular-nums tracking-tight text-foreground">
+                <div className="text-xl font-medium tabular-nums tracking-tight text-foreground candy:font-display candy:text-3xl candy:font-bold">
                   {s.n}
                 </div>
-                <div className="mt-1.5 font-mono text-2xs uppercase tracking-label text-subtle">
+                <div className="mt-1.5 font-mono text-2xs uppercase tracking-label text-subtle candy:font-sans candy:normal-case candy:tracking-normal candy:text-xs candy:font-bold candy:text-foreground">
                   {s.c}
                 </div>
               </div>

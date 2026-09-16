@@ -1,4 +1,5 @@
 import { ArrowSquareOut, ArrowUpRight } from "@phosphor-icons/react/ssr";
+import { tilt, tint } from "@/lib/candy";
 
 /**
  * Small inline pill that labels an org's engagement type. Renders nothing
@@ -16,7 +17,7 @@ export function EmploymentTag({
   if (!employment) return null;
   const label = employment === "full-time" ? "Full-time" : "Contract";
   return (
-    <span className="inline-flex items-center rounded-sm border border-border-strong px-1.5 py-0.5 font-mono text-2xs uppercase tracking-label text-muted-foreground">
+    <span className="inline-flex items-center rounded-sm border border-border-strong px-1.5 py-0.5 font-mono text-2xs uppercase tracking-label text-muted-foreground sticker sticker-sm sticker-flat candy:rounded-tag candy:font-semibold candy:text-foreground">
       {label}
     </span>
   );
@@ -32,9 +33,9 @@ export function EmploymentTag({
  * Merging them would need a `tone` prop that exists only to keep two unrelated
  * meanings in one component.
  */
-export function Tag({ children }: { children: React.ReactNode }) {
+export function Tag({ children, index = 0 }: { children: React.ReactNode; index?: number }) {
   return (
-    <span className="inline-flex items-center rounded-sm border border-border bg-elevated px-2 py-0.5 font-mono text-2xs text-muted-foreground">
+    <span className={`inline-flex items-center rounded-sm border border-border bg-elevated px-2 py-0.5 font-mono text-2xs text-muted-foreground sticker sticker-sm sticker-flat candy:rounded-full candy:text-foreground ${tint(index)}`}>
       {children}
     </span>
   );
@@ -49,10 +50,12 @@ export function OrgLinkChip({
   href,
   label,
   icon = "arrow",
+  index = 0,
 }: {
   href: string;
   label: string;
   icon?: "arrow" | "external";
+  index?: number;
 }) {
   const Icon = icon === "external" ? ArrowSquareOut : ArrowUpRight;
   return (
@@ -60,7 +63,7 @@ export function OrgLinkChip({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex items-center gap-1 rounded-sm border border-border bg-card px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-muted-foreground transition-colors duration-base ease-out hover:border-border-strong hover:text-foreground"
+      className={`inline-flex items-center gap-1 rounded-sm border border-border bg-card px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-muted-foreground transition-colors duration-base ease-out hover:border-border-strong hover:text-foreground sticker sticker-sm candy:rounded-tag candy:font-semibold candy:text-foreground ${tilt(index)}`}
     >
       {label}
       <Icon className="h-2.5 w-2.5" />

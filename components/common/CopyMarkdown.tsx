@@ -50,7 +50,7 @@ export default function CopyMarkdown({ slug }: { slug: string }) {
   };
 
   return (
-    <aside className="mt-12 rounded-lg border border-border bg-card p-4 sm:flex sm:items-center sm:justify-between sm:gap-6 sm:p-5">
+    <aside className="mt-12 rounded-lg border border-border bg-card p-4 sm:flex sm:items-center sm:justify-between sm:gap-6 sm:p-5 sticker candy:rounded-sticker tilt-md-f">
       <div className="min-w-0">
         <p className="font-mono text-2xs uppercase tracking-label text-subtle">
           Take it with you
@@ -71,7 +71,9 @@ export default function CopyMarkdown({ slug }: { slug: string }) {
           className={cn(
             "inline-flex h-9 items-center rounded-md px-4 text-sm font-semibold",
             "transition-[background-color,transform] duration-fast ease-out active:scale-[0.97]",
-            "bg-accent text-accent-foreground hover:bg-accent-hover"
+            "bg-accent text-accent-foreground hover:bg-accent-hover",
+            "sticker candy:rounded-full candy:bg-candy-pink candy:text-foreground candy:hover:bg-candy-pink candy:font-bold",
+            copied && "candy:bg-candy-butter candy:hover:bg-candy-butter"
           )}
         >
           <IconSwap
@@ -95,7 +97,7 @@ export default function CopyMarkdown({ slug }: { slug: string }) {
             renders it and the reader can see what they are about to take. */}
         <a
           href={href}
-          className="inline-flex h-9 items-center gap-2 rounded-md border border-border-strong px-4 text-sm text-muted-foreground transition-colors duration-fast ease-out hover:bg-muted hover:text-foreground"
+          className="inline-flex h-9 items-center gap-2 rounded-md border border-border-strong px-4 text-sm text-muted-foreground transition-colors duration-fast ease-out hover:bg-muted hover:text-foreground sticker candy:rounded-full candy:text-foreground candy:font-bold candy:hover:bg-white"
         >
           <FileText aria-hidden className="h-3.5 w-3.5" />
           View raw

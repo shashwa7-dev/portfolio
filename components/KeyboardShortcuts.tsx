@@ -135,7 +135,7 @@ export default function KeyboardShortcuts() {
                           {s.keys.map((k, i) => (
                             <kbd
                               key={i}
-                              className="grid h-6 min-w-[24px] place-items-center rounded-md border border-border-strong bg-card px-1.5 font-mono text-xs text-muted-foreground"
+                              className="grid h-6 min-w-[24px] place-items-center rounded-md border border-border-strong bg-card px-1.5 font-mono text-xs text-muted-foreground candy:border-2 candy:border-foreground candy:border-b-4 candy:bg-white candy:text-foreground candy:font-semibold"
                             >
                               {/* The command key is Phosphor's icon rather than the
                                   ⌘ character, so it shares a stroke weight with

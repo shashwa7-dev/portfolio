@@ -51,7 +51,7 @@ export default function CardNudge({ className }: { className?: string }) {
     <Link
       href="/card"
       className={cn(
-        "group inline-flex items-center gap-2.5 rounded-md border border-border-strong px-4 py-2.5 text-sm font-medium text-foreground transition-colors duration-med ease-out hover:bg-elevated",
+        "group inline-flex items-center gap-2.5 rounded-md border border-border-strong px-4 py-2.5 text-sm font-medium text-foreground transition-colors duration-med ease-out hover:bg-elevated sticker candy:rounded-full candy:font-bold candy:hover:bg-white tilt-md-b",
         className
       )}
     >

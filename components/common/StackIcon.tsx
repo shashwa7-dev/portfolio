@@ -154,7 +154,7 @@ export default function StackIcon({
     const node = (
       <span
         className={cn(
-          "inline-flex items-center text-muted-foreground transition-colors hover:text-foreground",
+          "inline-flex items-center text-muted-foreground transition-colors hover:text-foreground candy:text-foreground",
           className
         )}
       >
@@ -195,6 +195,7 @@ export default function StackIcon({
            the set reads as one component at three sizes rather than three
            components. */
         "group inline-flex items-center gap-2 rounded-sm border border-border bg-card px-3.5 py-2 text-xs text-muted-foreground transition-colors duration-base ease-out hover:border-border-strong hover:bg-elevated hover:text-foreground",
+        "sticker sticker-sm candy:rounded-full candy:font-semibold candy:text-foreground candy:hover:bg-white",
         className
       )}
     >
@@ -210,7 +211,7 @@ export default function StackIcon({
           all, having pulled it over trademark policy. So this is the normal
           case for a real slice of the set, not a fallback. */}
       {glyph && (
-        <span className="text-subtle transition-colors group-hover:text-foreground">
+        <span className="text-subtle transition-colors group-hover:text-foreground candy:text-foreground">
           {glyph}
         </span>
       )}

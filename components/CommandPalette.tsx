@@ -125,7 +125,7 @@ export default function CommandPalette() {
                               {c.keys.map((k, i) => (
                                 <kbd
                                   key={`${c.id}-${i}`}
-                                  className={`grid h-[18px] min-w-[18px] place-items-center rounded-md border px-1 font-mono text-2xs ${
+                                  className={`grid h-[18px] min-w-[18px] place-items-center rounded-md border px-1 font-mono text-2xs candy:border-foreground candy:border-b-[3px] candy:bg-white candy:text-foreground candy:font-semibold ${
                                     idx === active
                                       ? "border-accent-foreground/30 text-accent-foreground/80"
                                       : "border-border-strong text-subtle"
