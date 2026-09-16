@@ -10,11 +10,11 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow hover:bg-primary/90 sticker candy:rounded-full candy:bg-candy-pink candy:text-foreground candy:shadow-none candy:hover:bg-candy-pink candy:font-bold",
+          "bg-primary text-primary-foreground shadow hover:bg-primary/90 sticker candy:rounded-full candy:bg-candy-pink candy:text-foreground candy:hover:bg-candy-pink candy:font-bold",
         destructive:
           "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
-          "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground sticker candy:rounded-full candy:bg-white candy:text-foreground candy:shadow-none candy:hover:bg-white candy:hover:text-foreground candy:font-bold",
+          "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground sticker candy:rounded-full candy:bg-white candy:text-foreground candy:hover:bg-white candy:hover:text-foreground candy:font-bold",
         secondary:
           "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",

@@ -124,7 +124,7 @@ export default function About() {
               <TooltipTrigger asChild>
                 <Link
                   href="/offcod8"
-                  className="group relative block shrink-0 overflow-hidden rounded-2xl border border-border-strong shadow-md shadow-black/10 dark:shadow-lg dark:shadow-black/40 sticker candy:rounded-full candy:shadow-none tilt-i"
+                  className="group relative block shrink-0 overflow-hidden rounded-2xl border border-border-strong shadow-md shadow-black/10 dark:shadow-lg dark:shadow-black/40 sticker candy:rounded-full tilt-i"
                 >
                   <AvatarHover />
                   <Shimmer className="absolute inset-x-0 bottom-0 block">
