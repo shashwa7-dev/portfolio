@@ -148,7 +148,7 @@ export default function RoasterPicker() {
                          standing for state: a mark printed at full white on a
                          near-black bag looks stuck on rather than printed.
                          The wrapper above carries the state for both. */
-                      className="h-full w-full object-contain opacity-95 grayscale candy:grayscale-0 invert"
+                      className="h-full w-full object-contain opacity-95 grayscale invert"
                     />
                   ) : (
                     <span
