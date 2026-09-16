@@ -121,12 +121,15 @@
   }
 
   /* Candy. A sticker sheet: warm paper with a faint line grid, ink outlines,
-     hard shadows, five tints. Light only; the boot script never pairs it with
-     `.dark`, and `body:has([data-bare])` below still wins for /offcod8 because
-     it comes later in this layer at equal specificity... except it does not:
-     `:root[data-theme="candy"]` is (0,1,1) and `body:has([data-bare])` is
-     (0,1,1) too, so source order decides. The bare block is therefore
-     restated after this one. */
+     hard shadows, five tints. Light only: the boot script never pairs it with
+     `.dark`.
+
+     /offcod8 still wins. Its palette is declared on <body> by the
+     `.dark, body:has([data-bare])` block above, and a declaration on body
+     beats any value merely inherited from <html>, whatever the specificity
+     of the html rule. Nothing here needs restating for that route; the only
+     Candy rule that targets body directly (the grid) opts that route out
+     below. */
   :root[data-theme="candy"] {
     --background: 45 100% 98%;
     --foreground: 0 0% 10%;
@@ -181,31 +184,15 @@
     --sh-entity: #7c5cbf;
   }
 
-  /* /offcod8 stays dark in every theme, Candy included. Restated here so it
-     comes after the Candy block in source order. */
-  body:has([data-bare]) {
-    --background: 30 7% 5%;
-    --foreground: 35 6% 94%;
-    --card: 30 7% 8.5%;
-    --card-foreground: 35 6% 94%;
-    --elevated: 30 7% 12%;
-    --muted: 30 6% 15%;
-    --muted-foreground: 35 6% 63%;
-    --subtle: 30 5% 55%;
-    --accent: 35 8% 94%;
-    --accent-foreground: 30 7% 6%;
-    --accent-hover: 35 8% 84%;
-    --border: 30 6% 16%;
-    --border-strong: 30 6% 24%;
-    --input: 30 6% 16%;
-    --ring: 35 6% 70%;
-  }
-
   [data-theme="candy"] body {
     background-image:
       linear-gradient(hsl(var(--grid-line)) 1px, transparent 1px),
       linear-gradient(90deg, hsl(var(--grid-line)) 1px, transparent 1px);
     background-size: var(--grid-size) var(--grid-size);
+  }
+
+  [data-theme="candy"] body:has([data-bare]) {
+    background-image: none;
   }
 
   [data-theme="candy"] h1,
