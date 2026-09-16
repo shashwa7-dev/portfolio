@@ -10,7 +10,7 @@ export default function ProjectShowcaseCard({ project, index = 0 }: { project: P
   return (
     <Link
       href={project.href}
-      className={`group block overflow-hidden rounded-2xl border border-border bg-card transition-[transform,border-color] duration-base ease-out hover:-translate-y-0.5 hover:border-border-strong active:scale-[0.99] sticker candy:rounded-sticker candy:border-white candy:hover:border-white ${tiltMd(index + 6)}`}
+      className={`group block overflow-hidden rounded-2xl border border-border bg-card transition-[transform,border-color] duration-base ease-out hover:-translate-y-0.5 hover:border-border-strong active:scale-[0.99] sticker candy:rounded-sticker candy:border-white candy:hover:border-white ${tiltMd(index + 1)}`}
     >
       <div className={`relative aspect-[16/10] overflow-hidden bg-elevated candy:border-b-2 candy:border-foreground ${tint(index)}`}>
         <Image

@@ -52,7 +52,7 @@ export default function Book({
   return (
     <Link
       href={`/books/${slug}`}
-      className="group relative block aspect-[2/3] w-full overflow-hidden rounded-md border border-border bg-card sticker candy:rounded-tile candy:border-white candy:hover:border-white tilt-md-c"
+      className="group relative block aspect-[2/3] w-full overflow-hidden rounded-md border border-border bg-card sticker candy:rounded-tile candy:border-white candy:hover:border-white tilt-md-g"
     >
       {isDone && (
         /* Same verified-badge idiom as About.tsx and BookListItem. Inset from

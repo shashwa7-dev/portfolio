@@ -1,22 +1,34 @@
-// lib/candy.test.ts
 import { describe, it, expect } from "vitest";
-import { TILT_CLASSES, TINT_CLASSES, tilt, tiltMd, tint } from "./candy";
+import { TILT_CLASSES, TILT_CARD_CLASSES, TINT_CLASSES, tilt, tiltMd, tint } from "./candy";
 
 describe("tilt", () => {
-  it("has nine fixed slots", () => {
+  it("cycles the seven slots that stay within 2 degrees", () => {
     expect(TILT_CLASSES).toEqual([
-      "tilt-a", "tilt-b", "tilt-c", "tilt-d", "tilt-e", "tilt-f", "tilt-g", "tilt-h", "tilt-i",
+      "tilt-a", "tilt-b", "tilt-c", "tilt-d", "tilt-e", "tilt-f", "tilt-g",
     ]);
+    expect(TILT_CLASSES).not.toContain("tilt-h");
+    expect(TILT_CLASSES).not.toContain("tilt-i");
   });
   it("is deterministic and wraps", () => {
     expect(tilt(0)).toBe("tilt-a");
-    expect(tilt(8)).toBe("tilt-i");
-    expect(tilt(9)).toBe("tilt-a");
-    expect(tilt(0)).toBe(tilt(0));
+    expect(tilt(6)).toBe("tilt-g");
+    expect(tilt(7)).toBe("tilt-a");
+    expect(tilt(-1)).toBe("tilt-b");
+    expect(tilt(3)).toBe(tilt(3));
   });
-  it("has a 640px-and-up variant with the same slots", () => {
-    expect(tiltMd(1)).toBe("tilt-md-b");
-    expect(tiltMd(10)).toBe("tilt-md-b");
+});
+
+describe("tiltMd", () => {
+  it("only ever picks the two sub-degree card slots", () => {
+    expect(TILT_CARD_CLASSES).toEqual(["tilt-md-f", "tilt-md-g"]);
+    for (let i = 0; i < 20; i++) {
+      expect(TILT_CARD_CLASSES).toContain(tiltMd(i));
+    }
+  });
+  it("alternates neighbours", () => {
+    expect(tiltMd(0)).toBe("tilt-md-f");
+    expect(tiltMd(1)).toBe("tilt-md-g");
+    expect(tiltMd(2)).toBe("tilt-md-f");
   });
 });
 
