@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { X, Command } from "@phosphor-icons/react/ssr";
 import { backdropFadeVariants } from "@/lib/motionVariants";
-import { useDarkMode } from "@/app/hooks/useDarkMode";
+import { useTheme } from "@/app/hooks/useTheme";
 import { goToShortcuts, shortcutGroups, MOD_KEY } from "@/lib/shortcutsData";
 
 function isTypingTarget(el: EventTarget | null): boolean {
@@ -16,7 +16,7 @@ function isTypingTarget(el: EventTarget | null): boolean {
 
 export default function KeyboardShortcuts() {
   const router = useRouter();
-  const { toggleDarkMode } = useDarkMode();
+  const { cycleTheme } = useTheme();
   const [helpOpen, setHelpOpen] = useState(false);
 
   /**
@@ -68,7 +68,7 @@ export default function KeyboardShortcuts() {
 
       if (e.key === "t") {
         e.preventDefault();
-        toggleDarkMode();
+        cycleTheme();
         return;
       }
 
@@ -85,7 +85,7 @@ export default function KeyboardShortcuts() {
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("open-shortcuts", onOpen as EventListener);
     };
-  }, [router, toggleDarkMode]);
+  }, [router, cycleTheme]);
 
   return (
     <AnimatePresence>

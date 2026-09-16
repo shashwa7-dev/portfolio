@@ -4,12 +4,12 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { backdropFadeVariants } from "@/lib/motionVariants";
-import { useDarkMode } from "@/app/hooks/useDarkMode";
+import { useTheme } from "@/app/hooks/useTheme";
 import { buildCommands, filterCommands, type Command } from "@/lib/commandData";
 
 export default function CommandPalette() {
   const router = useRouter();
-  const { toggleDarkMode } = useDarkMode();
+  const { setTheme, cycleTheme } = useTheme();
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const [active, setActive] = useState(0);
@@ -49,7 +49,8 @@ export default function CommandPalette() {
   const run = (c: Command) => {
     setOpen(false);
     if (c.href) router.push(c.href);
-    else if (c.action === "toggle-theme") toggleDarkMode();
+    else if (c.action === "cycle-theme") cycleTheme();
+    else if (c.action === "set-theme" && c.theme) setTheme(c.theme);
     else if (c.action === "copy-email") navigator.clipboard?.writeText("contact@shashwa7.in");
     else if (c.action === "open-shortcuts") window.dispatchEvent(new CustomEvent("open-shortcuts"));
   };

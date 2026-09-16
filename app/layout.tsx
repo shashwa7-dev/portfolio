@@ -13,6 +13,7 @@ import Rails from "@/components/layout/Rails";
 import UmamiAnalytics from "@/components/Umami";
 import NoScript from "@/components/NoScript";
 import { cardHand, cardSticker, cardMono } from "@/lib/card/fonts";
+import { THEME_BOOT_SCRIPT } from "@/lib/theme";
 
 const CommandPalette = dynamic(() => import("@/components/CommandPalette"), {
   ssr: false,
@@ -113,11 +114,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){var t=localStorage.getItem("theme");var d=window.matchMedia("(prefers-color-scheme: dark)").matches;var dark=t==="dark"||(t===null&&d);document.documentElement.classList.toggle("dark",dark);})();`,
-          }}
-        />
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
         <script
           type="application/ld+json"
           suppressHydrationWarning

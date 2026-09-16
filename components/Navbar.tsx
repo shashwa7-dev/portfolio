@@ -3,8 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Sun, Moon } from "@phosphor-icons/react/ssr";
-import { useDarkMode } from "@/app/hooks/useDarkMode";
+import { Sun, Moon, Circle } from "@phosphor-icons/react/ssr";
+import { useTheme } from "@/app/hooks/useTheme";
+import { nextTheme, themeLabel } from "@/lib/theme";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { navLinks } from "@/lib/siteLinks";
 import Container from "@/components/layout/Container";
@@ -26,7 +27,8 @@ const control =
   "flex h-8 items-center rounded-md bg-elevated text-muted-foreground transition-[color,background-color,transform] duration-fast ease-out hover:bg-border-strong/30 hover:text-foreground active:scale-[0.94]";
 
 export default function Navbar() {
-  const { isDarkMode, toggleDarkMode } = useDarkMode();
+  const { theme, cycleTheme } = useTheme();
+  const upcoming = nextTheme(theme);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
 
@@ -128,11 +130,20 @@ export default function Navbar() {
 
           <button
             type="button"
-            onClick={toggleDarkMode}
-            aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
-            className={`${control} w-8 justify-center`}
+            onClick={cycleTheme}
+            aria-label={`Theme: ${themeLabel(theme)}. Switch to ${themeLabel(upcoming).toLowerCase()}`}
+            className={`${control} w-8 justify-center candy:w-auto candy:gap-1.5 candy:px-3`}
           >
-            {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            {theme === "dark" ? (
+              <Sun className="h-4 w-4" />
+            ) : theme === "candy" ? (
+              <>
+                <Circle weight="fill" className="h-3 w-3 text-candy-pink" />
+                <span className="hidden text-xs font-bold md:inline">Candy</span>
+              </>
+            ) : (
+              <Moon className="h-4 w-4" />
+            )}
           </button>
 
           <button

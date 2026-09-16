@@ -1,12 +1,14 @@
 import { getAllSideProjects } from "@/lib/projectsData";
 import { goToShortcuts } from "@/lib/shortcutsData";
+import type { Theme } from "@/lib/theme";
 
 export type Command = {
   id: string;
   label: string;
   group: "Navigation" | "Projects" | "Actions";
   href?: string;
-  action?: "toggle-theme" | "copy-email" | "open-shortcuts";
+  action?: "cycle-theme" | "set-theme" | "copy-email" | "open-shortcuts";
+  theme?: Theme;
   /** Key hint shown on the right of the row, one chip per entry. */
   keys?: string[];
 };
@@ -42,7 +44,10 @@ export function buildCommands(): Command[] {
     href: `/project/${p.slug}`,
   }));
   const actions: Command[] = [
-    { id: "act-theme", label: "Toggle theme", group: "Actions", action: "toggle-theme", keys: ["t"] },
+    { id: "act-theme-cycle", label: "Cycle theme", group: "Actions", action: "cycle-theme", keys: ["t"] },
+    { id: "act-theme-light", label: "Light theme", group: "Actions", action: "set-theme", theme: "light" },
+    { id: "act-theme-dark", label: "Dark theme", group: "Actions", action: "set-theme", theme: "dark" },
+    { id: "act-theme-candy", label: "Candy theme", group: "Actions", action: "set-theme", theme: "candy" },
     { id: "act-email", label: "Copy email", group: "Actions", action: "copy-email" },
     { id: "act-shortcuts", label: "Keyboard shortcuts", group: "Actions", action: "open-shortcuts", keys: ["?"] },
   ];
