@@ -173,6 +173,7 @@ export default function MobileChapters({
           "rounded-full border border-border bg-elevated/90 py-2 pl-2 pr-3.5 shadow-lg backdrop-blur-md",
           "transition-[opacity] duration-base ease-out motion-reduce:transition-none",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          "sticker candy:border-white candy:bg-white candy:shadow-sticker-3 candy:backdrop-blur-none",
           open && "pointer-events-none opacity-0"
         )}
       >
@@ -225,7 +226,7 @@ export default function MobileChapters({
           open ? "visible translate-y-0" : "invisible translate-y-full"
         )}
       >
-        <div className="flex items-center justify-between gap-4 border-b border-border px-5 py-3.5">
+        <div className="flex items-center justify-between gap-4 border-b border-border candy:border-secondary px-5 py-3.5">
           <p className="font-mono text-2xs uppercase tracking-label text-subtle">
             {position > 0
               ? `Chapter ${position} of ${sections.length}`
@@ -257,7 +258,7 @@ export default function MobileChapters({
                     "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left",
                     "transition-colors duration-fast ease-out",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                    isCurrent ? "bg-elevated" : "hover:bg-elevated/60"
+                    isCurrent ? "bg-elevated candy:bg-candy-butter" : "hover:bg-elevated/60"
                   )}
                 >
                   <span
@@ -272,7 +273,7 @@ export default function MobileChapters({
                     className={cn(
                       "min-w-0 flex-1 truncate text-sm",
                       isCurrent
-                        ? "font-semibold text-foreground"
+                        ? "font-semibold text-foreground candy:bg-candy-butter"
                         : "text-muted-foreground"
                     )}
                   >
@@ -320,7 +321,7 @@ function ProgressRing({ position, total }: { position: number; total: number }) 
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={circumference * (1 - fraction)}
-          className="stroke-foreground transition-[stroke-dashoffset] duration-base ease-out motion-reduce:transition-none"
+          className="stroke-foreground candy:stroke-candy-pink transition-[stroke-dashoffset] duration-base ease-out motion-reduce:transition-none"
         />
       </svg>
       <span className="font-mono text-2xs tabular-nums text-foreground">

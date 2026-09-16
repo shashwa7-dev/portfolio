@@ -85,7 +85,7 @@ export default function CommandPalette() {
           aria-label="Command menu"
         >
           <div
-            className="w-full max-w-[540px] overflow-hidden rounded-2xl border border-border-strong bg-elevated shadow-2xl"
+            className="w-full max-w-[540px] overflow-hidden rounded-2xl border border-border-strong bg-elevated shadow-2xl sticker candy:rounded-sticker candy:border-white candy:bg-white candy:shadow-sticker-4"
             onClick={(e) => e.stopPropagation()}
             onKeyDown={onListKey}
           >
@@ -94,7 +94,7 @@ export default function CommandPalette() {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search projects, sections, actions…"
-              className="w-full border-b border-border bg-transparent px-4 py-4 text-base text-foreground outline-none placeholder:text-subtle"
+              className="w-full border-b border-border candy:border-secondary bg-transparent px-4 py-4 text-base text-foreground outline-none placeholder:text-subtle"
               aria-label="Search commands"
             />
             <div className="max-h-[50vh] overflow-y-auto p-2">
@@ -116,7 +116,7 @@ export default function CommandPalette() {
                           onMouseEnter={() => setActive(idx)}
                           onClick={() => run(c)}
                           className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm ${
-                            idx === active ? "bg-accent text-accent-foreground" : "text-foreground"
+                            idx === active ? "bg-accent text-accent-foreground candy:bg-candy-butter candy:text-foreground candy:outline candy:outline-2 candy:outline-foreground candy:rounded-tag candy:font-bold" : "text-foreground"
                           }`}
                         >
                           <span className="min-w-0 flex-1 truncate">{c.label}</span>

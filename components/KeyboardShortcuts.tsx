@@ -102,10 +102,10 @@ export default function KeyboardShortcuts() {
           aria-label="Keyboard shortcuts"
         >
           <div
-            className="w-full max-w-[420px] overflow-hidden rounded-2xl border border-border-strong bg-elevated shadow-2xl"
+            className="w-full max-w-[420px] overflow-hidden rounded-2xl border border-border-strong bg-elevated shadow-2xl sticker candy:rounded-sticker candy:border-white candy:bg-white candy:shadow-sticker-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-border px-4 py-3">
+            <div className="flex items-center justify-between border-b border-border candy:border-secondary px-4 py-3">
               <span className="font-mono text-xs uppercase tracking-label text-subtle">
                 Keyboard shortcuts
               </span>

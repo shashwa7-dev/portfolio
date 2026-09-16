@@ -7,6 +7,7 @@ import {
 import Section from "@/components/layout/Section";
 import { HOMEPAGE_SECTION_TOTAL } from "@/lib/sections";
 import { faqLd } from "@/lib/seo";
+import { tiltMd } from "@/lib/candy";
 
 const faqs = [
   { q: "Are you available for new work?", a: "Yes. I'm open to senior frontend and full-stack roles, plus freelance or consulting engagements. The fastest way to start is an email to contact@shashwa7.in." },
@@ -24,13 +25,17 @@ export default function Faq() {
         suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd(faqs)) }}
       />
-      <Accordion type="single" collapsible defaultValue="faq-0" className="overflow-hidden rounded-2xl border border-border">
+      <Accordion type="single" collapsible defaultValue="faq-0" className="overflow-hidden rounded-2xl border border-border candy:overflow-visible candy:rounded-none candy:border-0 candy:flex candy:flex-col candy:gap-3.5">
         {faqs.map((f, i) => (
-          <AccordionItem key={f.q} value={`faq-${i}`} className="border-b border-border px-5 last:border-b-0">
-            <AccordionTrigger className="py-4 text-left text-base font-medium text-foreground">
+          <AccordionItem
+            key={f.q}
+            value={`faq-${i}`}
+            className={`border-b border-border px-5 last:border-b-0 sticker sticker-hover candy:rounded-sticker candy:border-white candy:px-5 candy:data-[state=open]:bg-candy-pink candy:data-[state=open]:shadow-sticker-4 candy:data-[state=open]:rotate-0 ${tiltMd(i)}`}
+          >
+            <AccordionTrigger className="py-4 text-left text-base font-medium text-foreground candy:font-bold candy:hover:no-underline">
               {f.q}
             </AccordionTrigger>
-            <AccordionContent className="pb-4 text-sm leading-relaxed text-muted-foreground">
+            <AccordionContent className="pb-4 text-sm leading-relaxed text-muted-foreground candy:text-foreground/80">
               {f.a}
             </AccordionContent>
           </AccordionItem>
