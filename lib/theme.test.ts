@@ -116,11 +116,28 @@ describe("THEME_BOOT_SCRIPT", () => {
     return { theme: documentElement.dataset.theme, dark: classes.has("dark") };
   }
   it("mirrors resolveTheme and applyTheme without importing them", () => {
-    expect(run(null, true)).toEqual({ theme: "dark", dark: true });
-    expect(run(null, false)).toEqual({ theme: "light", dark: false });
-    expect(run("candy", true)).toEqual({ theme: "candy", dark: false });
-    expect(run("dark", false)).toEqual({ theme: "dark", dark: true });
-    expect(run("nonsense", false)).toEqual({ theme: "light", dark: false });
+    const cases: Array<[string | null, boolean]> = [
+      [null, true], [null, false], ["light", true], ["dark", false],
+      ["candy", true], ["candy", false], ["nonsense", false], ["", true],
+    ];
+    for (const [stored, prefersDark] of cases) {
+      const classes = new Set<string>();
+      const root = {
+        dataset: {} as DOMStringMap,
+        classList: {
+          toggle(name: string, force: boolean) {
+            if (force) classes.add(name);
+            else classes.delete(name);
+            return force;
+          },
+        },
+      };
+      applyTheme(root, resolveTheme(stored, prefersDark));
+      expect(run(stored, prefersDark)).toEqual({
+        theme: root.dataset.theme,
+        dark: classes.has("dark"),
+      });
+    }
   });
   it("is a single self-contained statement with no template placeholders", () => {
     expect(THEME_BOOT_SCRIPT).not.toContain("${");
