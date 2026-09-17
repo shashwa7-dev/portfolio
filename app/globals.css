@@ -203,7 +203,7 @@
   [data-theme="candy"] body:not(:has([data-bare])) h5,
   [data-theme="candy"] body:not(:has([data-bare])) h6 {
     font-family: var(--font-display);
-    font-weight: 700;
+    font-weight: 600;
     letter-spacing: -0.01em;
   }
 

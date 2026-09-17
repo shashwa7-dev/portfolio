@@ -449,7 +449,7 @@ export default function About() {
                   ["tilt-i", "tilt-h", "tilt-a", "tilt-d"][i],
                 )}
               >
-                <div className="text-xl font-medium tabular-nums tracking-tight text-foreground candy:font-display candy:text-2xl candy:font-bold">
+                <div className="text-xl font-medium tabular-nums tracking-tight text-foreground candy:font-display candy:text-2xl candy:font-semibold">
                   {s.n}
                 </div>
                 <div className="mt-1.5 candy:mt-0.5 font-mono text-2xs uppercase tracking-label text-subtle candy:font-sans candy:normal-case candy:tracking-normal candy:text-2xs candy:leading-tight candy:font-bold candy:text-foreground">
