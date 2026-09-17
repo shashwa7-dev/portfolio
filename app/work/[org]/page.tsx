@@ -72,7 +72,7 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
                 alt={org.name}
                 fill
                 sizes="48px"
-                className="object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
+                className="object-cover grayscale candy:grayscale-0 transition-[filter] duration-base ease-out group-hover:grayscale-0"
               />
             </span>
             <div className="min-w-0">
@@ -152,7 +152,7 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
                   {diary.featured.length} featured
                 </span>
               </div>
-              <ol className="divide-y divide-border">
+              <ol className="divide-y divide-border candy:divide-y-0">
                 {diary.featured.map((entry, idx) => (
                   <li key={entry.id} className="py-10 first:pt-0 last:pb-0">
                     <DiaryEntry entry={entry} index={idx + 1} />

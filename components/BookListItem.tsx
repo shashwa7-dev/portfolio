@@ -31,15 +31,15 @@ export default function BookListItem({
   return (
     <Link
       href={`/books/${slug}`}
-      className="group flex items-center gap-3 px-5 py-3 transition-[color,background-color,transform] duration-fast ease-out hover:bg-elevated active:scale-[0.98]"
+      className="group flex items-center gap-3 px-5 py-3 transition-[color,background-color,transform] duration-fast ease-out hover:bg-elevated active:scale-[0.98] candy:px-4 candy:py-2.5"
     >
-      <div className="relative h-14 w-10 shrink-0 overflow-hidden rounded-md border border-border bg-elevated">
+      <div className="relative h-14 w-10 shrink-0 overflow-hidden rounded-md border border-border bg-elevated candy:rounded-tag candy:border-2 candy:border-foreground tilt-c">
         <Image
           src={cover}
           alt={`Cover of ${name}`}
           fill
           sizes="40px"
-          className="object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
+          className="object-cover grayscale candy:grayscale-0 transition-[filter] duration-base ease-out group-hover:grayscale-0"
         />
       </div>
 
@@ -52,13 +52,13 @@ export default function BookListItem({
           aria-valuenow={progress}
           aria-valuemin={0}
           aria-valuemax={100}
-          className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-muted"
+          className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-muted candy:h-2 candy:bg-white candy:outline candy:outline-[1.5px] candy:outline-foreground"
         >
           {/* One fill colour at every value. A full-width bar already says
               complete, so recolouring at 100% was redundant signal carried by a
               hue the rest of the app does not use. */}
           <div
-            className="h-1 rounded-full bg-foreground transition-[width] duration-base ease-out"
+            className="h-1 rounded-full bg-foreground transition-[width] duration-base ease-out candy:h-2 candy:bg-candy-pink candy:border-r candy:border-foreground"
             style={{ width: `${progress}%` }}
           />
         </div>

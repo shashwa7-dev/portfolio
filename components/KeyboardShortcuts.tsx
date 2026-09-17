@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { X, Command } from "@phosphor-icons/react/ssr";
 import { backdropFadeVariants } from "@/lib/motionVariants";
-import { useDarkMode } from "@/app/hooks/useDarkMode";
+import { useTheme } from "@/app/hooks/useTheme";
 import { goToShortcuts, shortcutGroups, MOD_KEY } from "@/lib/shortcutsData";
 
 function isTypingTarget(el: EventTarget | null): boolean {
@@ -16,7 +16,7 @@ function isTypingTarget(el: EventTarget | null): boolean {
 
 export default function KeyboardShortcuts() {
   const router = useRouter();
-  const { toggleDarkMode } = useDarkMode();
+  const { cycleTheme } = useTheme();
   const [helpOpen, setHelpOpen] = useState(false);
 
   /**
@@ -68,7 +68,7 @@ export default function KeyboardShortcuts() {
 
       if (e.key === "t") {
         e.preventDefault();
-        toggleDarkMode();
+        cycleTheme();
         return;
       }
 
@@ -85,7 +85,7 @@ export default function KeyboardShortcuts() {
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("open-shortcuts", onOpen as EventListener);
     };
-  }, [router, toggleDarkMode]);
+  }, [router, cycleTheme]);
 
   return (
     <AnimatePresence>
@@ -102,10 +102,10 @@ export default function KeyboardShortcuts() {
           aria-label="Keyboard shortcuts"
         >
           <div
-            className="w-full max-w-[420px] overflow-hidden rounded-2xl border border-border-strong bg-elevated shadow-2xl"
+            className="w-full max-w-[420px] overflow-hidden rounded-2xl border border-border-strong bg-elevated shadow-2xl sticker candy:rounded-sticker candy:border-white candy:bg-white candy:shadow-sticker-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-border px-4 py-3">
+            <div className="flex items-center justify-between border-b border-border candy:border-secondary px-4 py-3">
               <span className="font-mono text-xs uppercase tracking-label text-subtle">
                 Keyboard shortcuts
               </span>
@@ -135,7 +135,7 @@ export default function KeyboardShortcuts() {
                           {s.keys.map((k, i) => (
                             <kbd
                               key={i}
-                              className="grid h-6 min-w-[24px] place-items-center rounded-md border border-border-strong bg-card px-1.5 font-mono text-xs text-muted-foreground"
+                              className="grid h-6 min-w-[24px] place-items-center rounded-md border border-border-strong bg-card px-1.5 font-mono text-xs text-muted-foreground candy:border-2 candy:border-foreground candy:border-b-4 candy:bg-white candy:text-foreground candy:font-semibold"
                             >
                               {/* The command key is Phosphor's icon rather than the
                                   ⌘ character, so it shares a stroke weight with

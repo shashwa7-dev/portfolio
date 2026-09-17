@@ -50,7 +50,7 @@ export default function RoastExplorer() {
       id="roast-picker"
       className="my-8 scroll-mt-24 overflow-hidden rounded-2xl border border-border bg-card"
     >
-      <div className="border-b border-border p-5 md:p-6">
+      <div className="border-b border-border candy:border-b-0 p-5 md:p-6">
         <p
           id={id}
           className="font-mono text-2xs uppercase tracking-label text-subtle"
@@ -214,11 +214,11 @@ function RoastPanel({ stop }: { stop: RoastStop }) {
       <p className="mt-5 font-mono text-2xs uppercase tracking-label text-subtle">
         Make it as
       </p>
-      <ul className="mt-2 border-t border-border">
+      <ul className="mt-2 border-t border-border candy:border-t-0">
         {stop.brews.map((b) => (
           <li
             key={b.method}
-            className="flex items-baseline justify-between gap-4 border-b border-border py-2.5"
+            className="flex items-baseline justify-between gap-4 border-b border-border candy:border-b-0 py-2.5"
           >
             <span className="min-w-0">
               <span className="text-sm text-foreground">{b.method}</span>

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Sans } from "next/font/google";
+import { DM_Sans, Fredoka } from "next/font/google";
 import dynamic from "next/dynamic";
 import { MotionConfig } from "motion/react";
 import "./globals.css";
@@ -13,6 +13,7 @@ import Rails from "@/components/layout/Rails";
 import UmamiAnalytics from "@/components/Umami";
 import NoScript from "@/components/NoScript";
 import { cardHand, cardSticker, cardMono } from "@/lib/card/fonts";
+import { THEME_BOOT_SCRIPT } from "@/lib/theme";
 
 const CommandPalette = dynamic(() => import("@/components/CommandPalette"), {
   ssr: false,
@@ -26,6 +27,13 @@ const dmSans = DM_Sans({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-sans",
+});
+
+const fredoka = Fredoka({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  display: "swap",
+  variable: "--font-display",
 });
 
 /**
@@ -113,11 +121,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){var t=localStorage.getItem("theme");var d=window.matchMedia("(prefers-color-scheme: dark)").matches;var dark=t==="dark"||(t===null&&d);document.documentElement.classList.toggle("dark",dark);})();`,
-          }}
-        />
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
         <script
           type="application/ld+json"
           suppressHydrationWarning
@@ -125,7 +129,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`bg-background text-foreground border-border ${dmSans.variable} ${plexMono.variable} ${cardHand.variable} ${cardSticker.variable} font-sans`}
+        className={`bg-background text-foreground border-border ${dmSans.variable} ${fredoka.variable} ${plexMono.variable} ${cardHand.variable} ${cardSticker.variable} font-sans`}
       >
         <NoScript />
         <MotionConfig reducedMotion="user">

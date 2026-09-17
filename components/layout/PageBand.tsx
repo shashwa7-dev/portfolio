@@ -32,7 +32,7 @@ export default function PageBand({
     // own `border-b` is this band's top rule, so drawing a second one stacks
     // two hairlines a pixel apart.
     <Band flush className="mb-8 md:mb-12">
-      <BandLabel id={id} name={name} />
+      <BandLabel id={id} name={name} tone="lavender" />
       {action}
     </Band>
   );

@@ -16,7 +16,7 @@
  * about 30 characters wide, which is narrower than the notes actually are.
  */
 export function SpecList({ children }: { children: React.ReactNode }) {
-  return <ul className="divide-y divide-border">{children}</ul>;
+  return <ul className="divide-y divide-border candy:divide-y-0">{children}</ul>;
 }
 
 export function SpecRow({

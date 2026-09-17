@@ -115,9 +115,9 @@ export default function StickyScrollSpyTOC({
                 <span
                   aria-hidden
                   className={cn(
-                    "h-px shrink-0 transition-[width,background-color] duration-base ease-out motion-reduce:transition-none",
+                    "h-px shrink-0 transition-[width,background-color] duration-base ease-out motion-reduce:transition-none candy:h-1 candy:rounded-full candy:outline candy:outline-[1.5px] candy:outline-foreground",
                     current
-                      ? "w-6 bg-foreground"
+                      ? "w-6 bg-foreground candy:bg-candy-pink candy:w-7"
                       : "w-3 bg-border-strong group-hover:bg-muted-foreground"
                   )}
                 />

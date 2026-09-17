@@ -267,7 +267,7 @@ function Sleeve({ track, spinning }: { track: Track; spinning: boolean }) {
       sizes="44px"
       className={cn(
         "object-cover transition-[filter] duration-base ease-out",
-        spinning ? "animate-spin-record grayscale-0" : "grayscale"
+        spinning ? "animate-spin-record grayscale-0" : "grayscale candy:grayscale-0"
       )}
     />
   );

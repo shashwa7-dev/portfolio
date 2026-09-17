@@ -108,6 +108,7 @@
     --border-strong: 30 6% 24%;
     --input: 30 6% 16%;
     --ring: 35 6% 70%;
+    --radius: 0.75rem;
     /* Complete colour values, not triplets. See the note in :root above. */
     --sh-class: hsl(38 55% 70%);
     --sh-identifier: hsl(35 6% 84%);
@@ -118,6 +119,92 @@
     --sh-jsxliterals: hsl(30 55% 68%);
     --sh-property: hsl(28 60% 70%);
     --sh-entity: hsl(180 45% 62%);
+  }
+
+  /* Candy. A sticker sheet: warm paper with a faint line grid, ink outlines,
+     hard shadows, five tints. Light only: the boot script never pairs it with
+     `.dark`.
+
+     /offcod8 still wins. Its palette is declared on <body> by the
+     `.dark, body:has([data-bare])` block above, and a declaration on body
+     beats any value merely inherited from <html>, whatever the specificity
+     of the html rule. Nothing here needs restating for that route; the only
+     Candy rule that targets body directly (the grid) opts that route out
+     below. */
+  :root[data-theme="candy"] {
+    --background: 45 100% 98%;
+    --foreground: 0 0% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
+    --elevated: 45 100% 98%;
+    --primary: 0 0% 10%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 44 36% 94%;
+    --secondary-foreground: 0 0% 10%;
+    --muted: 44 36% 94%;
+    --muted-foreground: 0 0% 23%;
+    --subtle: 0 0% 42%;
+    --accent: 0 0% 10%;
+    --accent-foreground: 0 0% 100%;
+    --accent-hover: 0 0% 22%;
+    --border: 0 0% 10%;
+    --border-strong: 0 0% 10%;
+    --input: 0 0% 10%;
+    --ring: 0 0% 10%;
+    --radius: 1rem;
+
+    --candy-pink: 348 100% 86%;
+    --candy-mint: 154 65% 83%;
+    --candy-butter: 50 100% 82%;
+    --candy-sky: 203 100% 87%;
+    --candy-lavender: 263 100% 92%;
+
+    --grid-line: 45 34% 89%;
+    --grid-size: 40px;
+
+    --sticker-radius-card: 22px;
+    --sticker-radius-tile: 16px;
+    --sticker-radius-tag: 8px;
+    --sticker-shadow-1: 2px 2px 0 hsl(var(--foreground));
+    --sticker-shadow-2: 3px 3px 0 hsl(var(--foreground));
+    --sticker-shadow-3: 4px 4px 0 hsl(var(--foreground));
+    --sticker-shadow-4: 7px 7px 0 hsl(var(--foreground));
+    --sticker-shadow-press: 1px 1px 0 hsl(var(--foreground));
+
+    /* Complete colour values, not triplets. See the note in :root above. */
+    --sh-class: #b7791f;
+    --sh-identifier: #1a1a1a;
+    --sh-sign: #6b6b6b;
+    --sh-string: #1f8a5b;
+    --sh-keyword: #d6336c;
+    --sh-comment: #8a8a8a;
+    --sh-jsxliterals: #b7791f;
+    --sh-property: #2b7bbf;
+    --sh-entity: #7c5cbf;
+  }
+
+  [data-theme="candy"] body {
+    background-image:
+      linear-gradient(hsl(var(--grid-line)) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--grid-line)) 1px, transparent 1px);
+    background-size: var(--grid-size) var(--grid-size);
+  }
+
+  [data-theme="candy"] body:has([data-bare]) {
+    background-image: none;
+  }
+
+  [data-theme="candy"] body:not(:has([data-bare])) h1,
+  [data-theme="candy"] body:not(:has([data-bare])) h2,
+  [data-theme="candy"] body:not(:has([data-bare])) h3,
+  [data-theme="candy"] body:not(:has([data-bare])) h4,
+  [data-theme="candy"] body:not(:has([data-bare])) h5,
+  [data-theme="candy"] body:not(:has([data-bare])) h6 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.01em;
   }
 
   * {
@@ -445,6 +532,106 @@ a {
   margin-bottom: 1.25em !important;
 }
 
+/* Candy prose. Scoped to the theme attribute; the Paper rules above still
+   apply and these override the few that differ. No new elements: blockquote,
+   figure and figcaption are what markdown already emits, they simply had no
+   rules before. */
+[data-theme="candy"] .prose a {
+  text-decoration: none;
+  font-weight: 600;
+  background-image: linear-gradient(transparent 55%, hsl(var(--candy-butter)) 55%);
+  transition: background-image var(--duration-fast) var(--ease-out);
+}
+[data-theme="candy"] .prose a:hover {
+  background-image: linear-gradient(transparent 0%, hsl(var(--candy-pink)) 0%);
+}
+[data-theme="candy"] .prose .anchor:after {
+  color: hsl(var(--foreground));
+  background: hsl(var(--candy-pink));
+  border-radius: 6px;
+  padding: 0 6px;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 600;
+}
+[data-theme="candy"] .prose code {
+  background: hsl(var(--candy-butter));
+  border: 1.5px solid hsl(var(--foreground));
+  border-radius: 6px;
+  padding: 2px 7px;
+}
+[data-theme="candy"] .prose pre {
+  background: #fff;
+  border: 3px solid #fff;
+  outline: 2px solid hsl(var(--foreground));
+  border-radius: var(--sticker-radius-tile);
+  box-shadow: var(--sticker-shadow-3);
+  padding: 14px 16px;
+}
+[data-theme="candy"] .prose pre code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+[data-theme="candy"] .prose ul li::marker {
+  color: hsl(var(--candy-pink));
+}
+[data-theme="candy"] .prose ol li::marker {
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+[data-theme="candy"] .prose .table-scroll {
+  background: #fff;
+  border: 3px solid #fff;
+  outline: 2px solid hsl(var(--foreground));
+  border-radius: var(--sticker-radius-tile);
+  box-shadow: var(--sticker-shadow-3);
+}
+[data-theme="candy"] .prose th {
+  background: hsl(var(--candy-butter));
+  border-bottom: 2px solid hsl(var(--foreground));
+  padding: 10px 14px;
+}
+[data-theme="candy"] .prose td {
+  border-bottom: 1px solid hsl(var(--secondary));
+  padding: 10px 14px;
+}
+[data-theme="candy"] .prose blockquote {
+  position: relative;
+  margin: 1.5rem 0;
+  padding: 22px 22px 18px;
+  background: hsl(var(--candy-pink));
+  border: 4px solid #fff;
+  outline: 2px solid hsl(var(--foreground));
+  border-radius: var(--sticker-radius-card);
+  box-shadow: var(--sticker-shadow-4);
+  font-weight: 600;
+  transform: rotate(-1deg);
+}
+[data-theme="candy"] .prose blockquote::before {
+  content: "\201C";
+  position: absolute;
+  left: 14px;
+  top: -12px;
+  font-family: var(--font-display);
+  font-size: 54px;
+  line-height: 1;
+  color: #fff;
+  -webkit-text-stroke: 2px hsl(var(--foreground));
+}
+[data-theme="candy"] .prose blockquote p {
+  margin: 0;
+}
+[data-theme="candy"] .prose figure {
+  margin: 1.5rem 0;
+}
+[data-theme="candy"] .prose figcaption {
+  margin-top: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: hsl(var(--subtle));
+}
+
 pre::-webkit-scrollbar {
   display: none;
 }
@@ -513,6 +700,11 @@ table {
   .band-gutters::before { left: 0; }
   .band-gutters::after { right: 0; }
 
+  [data-theme="candy"] .band-gutters::before,
+  [data-theme="candy"] .band-gutters::after {
+    display: none;
+  }
+
   /* The one mark in this system that carries weight, sitting on the left rail
      level with the label. It is `foreground` because this palette has no hue
      to spend: `--accent` IS the foreground here, so an ink tick is the accent,
@@ -560,6 +752,18 @@ table {
       hsl(var(--border)) 0 1px,
       transparent 1px 9px
     );
+  }
+
+  [data-theme="candy"] .plate-wordmark {
+    color: #fff;
+    -webkit-text-stroke: 3px hsl(var(--foreground));
+    text-shadow: 10px 10px 0 hsl(var(--candy-pink));
+  }
+  @supports not (-webkit-text-stroke: 1px currentColor) {
+    [data-theme="candy"] .plate-wordmark {
+      color: hsl(var(--foreground));
+      text-shadow: none;
+    }
   }
 
   /* The rails. A `<span>` is inline by default, so this is what makes the box
@@ -629,6 +833,82 @@ table {
   @media (prefers-reduced-motion: reduce) {
     .embed-cover {
       opacity: 0;
+    }
+  }
+
+  /* ── Candy stickers ──────────────────────────────────────────────────────
+   * Every interactive surface in Candy is a die-cut sticker: a white cut
+   * edge, an ink outline, a hard offset shadow. Scoped to the theme attribute
+   * so these classes are inert in Paper, where the element keeps its own
+   * classes. Specificity (0,2,0) beats a plain utility; the :hover and
+   * :active rules are (0,3,0) so they also beat `hover:` utilities that the
+   * Paper design left on the element.
+   * ---------------------------------------------------------------------- */
+  [data-theme="candy"] .sticker {
+    background-color: #fff;
+    border: 3px solid #fff;
+    outline: 2px solid hsl(var(--foreground));
+    box-shadow: var(--sticker-shadow-3);
+    transition:
+      transform var(--duration-fast) var(--ease-out),
+      box-shadow var(--duration-fast) var(--ease-out);
+  }
+  [data-theme="candy"] .sticker-sm {
+    border-width: 2px;
+    outline-width: 1.5px;
+    box-shadow: var(--sticker-shadow-1);
+  }
+  [data-theme="candy"] .sticker-flat {
+    box-shadow: none;
+  }
+  [data-theme="candy"] a.sticker:hover,
+  [data-theme="candy"] button.sticker:hover,
+  [data-theme="candy"] .sticker-hover:hover {
+    border-color: #fff;
+    transform: translateY(-1px) rotate(0);
+    box-shadow: var(--sticker-shadow-4);
+  }
+  [data-theme="candy"] a.sticker:active,
+  [data-theme="candy"] button.sticker:active,
+  [data-theme="candy"] .sticker-hover:active {
+    transform: translate(2px, 2px) rotate(0);
+    box-shadow: var(--sticker-shadow-press);
+  }
+
+  /* Tilts. Nine fixed slots so a list can pick one by index and the server
+     and client agree. `tilt-md-*` is the same set gated to 640px and up, for
+     cards and buttons, which stack full width on a phone and should not lean. */
+  [data-theme="candy"] .tilt-a { transform: rotate(-2deg); }
+  [data-theme="candy"] .tilt-b { transform: rotate(1.5deg); }
+  [data-theme="candy"] .tilt-c { transform: rotate(-1deg); }
+  [data-theme="candy"] .tilt-d { transform: rotate(2deg); }
+  [data-theme="candy"] .tilt-e { transform: rotate(-1.5deg); }
+  [data-theme="candy"] .tilt-f { transform: rotate(0.8deg); }
+  [data-theme="candy"] .tilt-g { transform: rotate(-0.8deg); }
+  [data-theme="candy"] .tilt-h { transform: rotate(4deg); }
+  [data-theme="candy"] .tilt-i { transform: rotate(-4deg); }
+  @media (min-width: 640px) {
+    [data-theme="candy"] .tilt-md-a { transform: rotate(-2deg); }
+    [data-theme="candy"] .tilt-md-b { transform: rotate(1.5deg); }
+    [data-theme="candy"] .tilt-md-c { transform: rotate(-1deg); }
+    [data-theme="candy"] .tilt-md-d { transform: rotate(2deg); }
+    [data-theme="candy"] .tilt-md-e { transform: rotate(-1.5deg); }
+    [data-theme="candy"] .tilt-md-f { transform: rotate(0.8deg); }
+    [data-theme="candy"] .tilt-md-g { transform: rotate(-0.8deg); }
+    [data-theme="candy"] .tilt-md-h { transform: rotate(4deg); }
+    [data-theme="candy"] .tilt-md-i { transform: rotate(-4deg); }
+  }
+  /* Shadows step down one size on a phone. */
+  @media (max-width: 639px) {
+    [data-theme="candy"] .sticker { box-shadow: var(--sticker-shadow-2); }
+    [data-theme="candy"] .sticker-sm { box-shadow: var(--sticker-shadow-1); }
+    [data-theme="candy"] .sticker-flat { box-shadow: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-theme="candy"] a.sticker:active,
+    [data-theme="candy"] button.sticker:active,
+    [data-theme="candy"] .sticker-hover:active {
+      transform: none;
     }
   }
 }

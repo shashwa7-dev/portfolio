@@ -23,10 +23,10 @@ export default function ProjectsIndex({ projects }: { projects: TSideProject[] }
               onClick={() => setActive(f.tag)}
               className={`rounded-md border px-3 py-1.5 font-mono text-xs uppercase tracking-label
                 transition-[color,background-color,border-color,transform]
-                duration-fast ease-out active:scale-[0.97] ${
+                duration-fast ease-out active:scale-[0.97] sticker sticker-sm sticker-flat candy:rounded-full candy:font-semibold ${
                 active === f.tag
-                  ? "border-accent bg-accent text-accent-foreground"
-                  : "border-border text-muted-foreground hover:text-foreground"
+                  ? "border-accent bg-accent text-accent-foreground candy:bg-foreground candy:text-background"
+                  : "border-border text-muted-foreground hover:text-foreground candy:text-foreground"
               }`}
             >
               {f.tag}
@@ -43,8 +43,8 @@ export default function ProjectsIndex({ projects }: { projects: TSideProject[] }
           transition={{ duration: duration.fast, ease: ease.out }}
           className="grid grid-cols-1 gap-5 md:grid-cols-2"
         >
-          {shown.map((p) => (
-            <ProjectShowcaseCard key={p.id} project={sideProjectToCard(p)} />
+          {shown.map((p, i) => (
+            <ProjectShowcaseCard key={p.id} project={sideProjectToCard(p)} index={i} />
           ))}
         </motion.div>
       </AnimatePresence>

@@ -33,7 +33,7 @@ export const shortcutGroups: { title: string; items: Shortcut[] }[] = [
     title: "General",
     items: [
       { keys: [MOD_KEY, "K"], label: "Open command menu" },
-      { keys: ["t"], label: "Toggle theme" },
+      { keys: ["t"], label: "Cycle theme" },
       { keys: ["?"], label: "Show this help" },
     ],
   },

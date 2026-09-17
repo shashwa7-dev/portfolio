@@ -3,8 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Sun, Moon } from "@phosphor-icons/react/ssr";
-import { useDarkMode } from "@/app/hooks/useDarkMode";
+import { Moon, Sun } from "@phosphor-icons/react/ssr";
+import Image from "next/image";
+import CandyMusic from "@/components/CandyMusic";
+import { useTheme } from "@/app/hooks/useTheme";
+import { nextTheme, themeLabel } from "@/lib/theme";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { navLinks } from "@/lib/siteLinks";
 import Container from "@/components/layout/Container";
@@ -23,22 +26,23 @@ import Container from "@/components/layout/Container";
  * show through a translucent control, and an opaque fill has nothing to show.
  */
 const control =
-  "flex h-8 items-center rounded-md bg-elevated text-muted-foreground transition-[color,background-color,transform] duration-fast ease-out hover:bg-border-strong/30 hover:text-foreground active:scale-[0.94]";
+  "flex h-8 items-center rounded-md bg-elevated text-muted-foreground transition-[color,background-color,transform] duration-fast ease-out hover:bg-border-strong/30 hover:text-foreground active:scale-[0.94] sticker sticker-sm candy:rounded-full candy:bg-white candy:text-foreground candy:hover:bg-white";
 
 export default function Navbar() {
-  const { isDarkMode, toggleDarkMode } = useDarkMode();
+  const { theme, cycleTheme } = useTheme();
+  const upcoming = nextTheme(theme);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
 
   return (
-    <header className="site-navbar sticky top-0 z-40 border-b border-border bg-background/70 backdrop-blur-xl">
+    <header className="site-navbar sticky top-0 z-40 border-b border-border bg-background/70 backdrop-blur-xl candy:border-0">
       {/* The same measure as the page below it. The bar used to run to
           1080px while every route's content stopped at 760, so the mark and
           the nav sat outside the column they belong to and the site read as
           two different widths stacked on each other. Through `Container`
           rather than a second hardcoded max-width, so there is one place the
           measure is decided. */}
-      <Container as="nav" className="flex items-center justify-between py-3.5">
+      <Container as="nav" className="flex items-center justify-between py-3.5 candy:font-display">
         {/* The mark alone, with no wordmark beside it.
 
             It is painted as a mask rather than drawn as an <img>: the asset is
@@ -53,10 +57,10 @@ export default function Navbar() {
             reader could announce for the home link is its href. */}
         <Tooltip>
           <TooltipTrigger asChild>
-            <Link href="/" aria-label="offcod8, home" className="flex shrink-0">
+            <Link href="/" aria-label="offcod8, home" className="flex shrink-0 sticker sticker-sm candy:rounded-tag candy:p-0.5 tilt-a">
               <span
                 aria-hidden
-                className="block h-7 w-7 bg-foreground"
+                className="block h-7 w-7 bg-foreground candy:h-6 candy:w-6"
                 style={{
                   WebkitMaskImage: "url(/brand-mark.png)",
                   maskImage: "url(/brand-mark.png)",
@@ -90,9 +94,9 @@ export default function Navbar() {
                      adds no height and cannot shift the row. Colour alone would
                      not do: hover already goes to `text-foreground`, so an active
                      link would be indistinguishable from a hovered one. */
-                  className={`relative text-sm transition-colors duration-fast ease-out ${
+                  className={`relative text-sm transition-colors duration-fast ease-out candy:font-semibold candy:px-1 ${
                     current
-                      ? "text-foreground after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:bg-foreground"
+                      ? "text-foreground after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:bg-foreground candy:after:hidden candy:bg-[linear-gradient(transparent_60%,hsl(var(--candy-pink))_60%)]"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
@@ -121,19 +125,39 @@ export default function Navbar() {
           <Link
             href="/cv"
             aria-current={pathname.startsWith("/cv") ? "page" : undefined}
-            className="flex h-8 items-center rounded-md bg-accent px-3 text-sm font-semibold leading-none text-accent-foreground transition-[background-color,transform] duration-fast ease-out hover:bg-accent-hover active:scale-[0.94] md:hidden"
+            className="flex h-8 items-center rounded-md bg-accent px-3 text-sm font-semibold leading-none text-accent-foreground transition-[background-color,transform] duration-fast ease-out hover:bg-accent-hover active:scale-[0.94] md:hidden sticker sticker-sm candy:rounded-full candy:bg-candy-butter candy:text-foreground candy:hover:bg-candy-butter tilt-d"
           >
             CV
           </Link>
 
-          <button
-            type="button"
-            onClick={toggleDarkMode}
-            aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
-            className={`${control} w-8 justify-center`}
-          >
-            {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </button>
+          <CandyMusic />
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                onClick={cycleTheme}
+                aria-label={`Theme: ${themeLabel(theme)}. Switch to ${themeLabel(upcoming).toLowerCase()}`}
+                className={`${control} justify-center ${theme === "light" ? "w-auto bg-transparent hover:bg-transparent" : "w-8"}`}
+              >
+                {theme === "light" ? (
+                  <Image
+                    src="/candy-treat.avif"
+                    alt=""
+                    width={128}
+                    height={128}
+                    unoptimized
+                    className="h-8 w-auto"
+                  />
+                ) : theme === "candy" ? (
+                  <Moon className="h-4 w-4" />
+                ) : (
+                  <Sun className="h-4 w-4" />
+                )}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>Switch to {themeLabel(upcoming)}</TooltipContent>
+          </Tooltip>
 
           <button
             type="button"
@@ -162,14 +186,14 @@ export default function Navbar() {
               stay drawn as a 1px line under the bar for the length of the
               close transition, until `visibility` flipped. Full bleed, while
               the links inside it take the same measure as the bar above. */}
-          <div className="border-t border-border">
+          <div className="border-t border-border candy:border-0">
             <Container>
               {/* CV is filtered out here, not missing. It is the accent pill
                   in the row above, which is on screen whether this panel is
                   open or not, so listing it again would be the same
                   destination twice on one screen with the quieter of the two
                   below the fold. */}
-              <ul>
+              <ul className="candy:flex candy:flex-col candy:gap-2 candy:py-3">
                 {navLinks
                   .filter((l) => l.href !== "/cv")
                   .map((l) => (
@@ -182,7 +206,7 @@ export default function Navbar() {
                             : undefined
                         }
                         onClick={() => setMobileOpen(false)}
-                        className="block py-3 text-sm text-muted-foreground transition-colors duration-fast ease-out hover:text-foreground aria-[current=page]:text-foreground"
+                        className="block py-3 text-sm text-muted-foreground transition-colors duration-fast ease-out hover:text-foreground aria-[current=page]:text-foreground sticker sticker-sm candy:rounded-full candy:px-4 candy:py-2.5 candy:font-semibold candy:text-foreground candy:aria-[current=page]:bg-candy-pink"
                       >
                         {l.label}
                       </Link>

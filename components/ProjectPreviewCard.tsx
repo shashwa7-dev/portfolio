@@ -4,6 +4,7 @@ import { ArrowUpRight } from "@phosphor-icons/react/ssr";
 import type { ProjectCardData } from "@/lib/projectCards";
 import StackIcon, { type StackName } from "@/components/common/StackIcon";
 import Shimmer from "@/components/common/Shimmer";
+import { tiltMd, tint } from "@/lib/candy";
 
 /**
  * Compact project card. Shared by the Featured-projects rows on the Experience
@@ -33,22 +34,22 @@ import Shimmer from "@/components/common/Shimmer";
  * `text-muted-foreground` tagline. In a palette with no hue, that step in
  * lightness is the emphasis lever, and it needs no container to work.
  */
-export default function ProjectPreviewCard({ project }: { project: ProjectCardData }) {
+export default function ProjectPreviewCard({ project, index = 0 }: { project: ProjectCardData; index?: number }) {
   return (
     <Link
       href={project.href}
-      className="group flex overflow-hidden rounded-lg border border-border bg-card transition-colors duration-base ease-out hover:border-border-strong"
+      className={`group flex overflow-hidden rounded-lg border border-border bg-card transition-colors duration-base ease-out hover:border-border-strong sticker candy:rounded-tile candy:border-white candy:hover:border-white ${tiltMd(index)}`}
     >
       {/* `self-stretch` is what makes this full height: the column takes its
           height from the content beside it, which `fill` then needs to resolve
           against. */}
-      <span className="relative w-[4.5rem] shrink-0 self-stretch bg-elevated sm:w-20">
+      <span className={`relative w-[4.5rem] shrink-0 self-stretch bg-elevated sm:w-20 candy:border-r-2 candy:border-foreground ${tint(index)}`}>
         <Image
           src={project.thumbnail}
           alt=""
           fill
           sizes="80px"
-          className="object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
+          className="object-cover grayscale candy:grayscale-0 transition-[filter] duration-base ease-out group-hover:grayscale-0"
         />
       </span>
 
@@ -68,7 +69,7 @@ export default function ProjectPreviewCard({ project }: { project: ProjectCardDa
           {project.badge && (
             <Shimmer
               tone="surface"
-              className="inline-block shrink-0 rounded-sm border border-border-strong"
+              className="inline-block shrink-0 rounded-sm border border-border-strong candy:rounded-tag candy:border-foreground candy:bg-candy-pink"
             >
               <span className="block px-1.5 font-mono text-2xs uppercase tracking-label text-foreground">
                 {project.badge}
@@ -84,7 +85,7 @@ export default function ProjectPreviewCard({ project }: { project: ProjectCardDa
 
         <div className="mt-2 flex items-center gap-2">
           {project.metric && (
-            <span className="truncate font-mono text-2xs font-medium text-foreground">
+            <span className="truncate font-mono text-2xs font-medium text-foreground candy:text-foreground">
               {project.metric}
             </span>
           )}

@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { stats } from "@/lib/stats";
 import { clients } from "@/lib/clients";
 import { socialLinks } from "@/lib/siteLinks";
+import { tint, tilt } from "@/lib/candy";
 
 /**
  * The hero.
@@ -58,9 +59,9 @@ import { socialLinks } from "@/lib/siteLinks";
  */
 export default function About() {
   return (
-    <header className="pt-10 md:pt-14">
+    <header className="pt-10 md:pt-14 candy:pb-6">
       <Container width="reading">
-        <div className="relative space-y-7 sm:space-y-8">
+        <div className="relative space-y-[1.925rem] sm:space-y-[2.2rem] candy:space-y-[1.375rem] candy:sm:space-y-[1.65rem]">
           <div className="flex items-start gap-3.5">
             {/* Availability rides the avatar, LinkedIn style, instead of taking a
                 row of its own as a pill.
@@ -123,7 +124,7 @@ export default function About() {
               <TooltipTrigger asChild>
                 <Link
                   href="/offcod8"
-                  className="group relative block shrink-0 overflow-hidden rounded-2xl border border-border-strong shadow-md shadow-black/10 dark:shadow-lg dark:shadow-black/40"
+                  className="group relative block shrink-0 overflow-hidden rounded-2xl border border-border-strong shadow-md shadow-black/10 dark:shadow-lg dark:shadow-black/40 sticker candy:rounded-full tilt-i"
                 >
                   <AvatarHover />
                   <Shimmer className="absolute inset-x-0 bottom-0 block">
@@ -159,7 +160,7 @@ export default function About() {
                   Shashwat Tripathi
                 </h1>
                 <span
-                  className="grid h-4 w-4 shrink-0 place-items-center rounded-full bg-foreground text-background"
+                  className="grid h-4 w-4 shrink-0 place-items-center rounded-full bg-foreground text-background candy:h-[18px] candy:w-[18px] candy:bg-candy-mint candy:text-foreground candy:outline candy:outline-[1.5px] candy:outline-foreground"
                   title="Verified engineer"
                   /* `role="img"` is load-bearing, not decoration: `aria-label`
                      on a bare span is a prohibited attribute, so without a role
@@ -207,7 +208,7 @@ export default function About() {
               filling the first and dropping the remainder. */}
           <p className="text-balance text-[clamp(1.625rem,3.4vw,2.3rem)] font-medium leading-[1.08] tracking-tighter text-foreground">
             I build interfaces that{" "}
-            <span className="font-semibold">ship and scale</span> to millions.
+            <span className="font-semibold candy:bg-candy-butter candy:px-2 candy:rounded-tag candy:[box-decoration-break:clone]">ship and scale</span> to millions.
           </p>
 
           {/* lede (no em-dashes, no org names — generic AI-adaptive positioning) */}
@@ -220,7 +221,7 @@ export default function About() {
             complex ideas into fast, polished, accessible UIs. Reach me at{" "}
             <a
               href="mailto:contact@shashwa7.in"
-              className="text-foreground underline decoration-border-strong underline-offset-4 transition-colors duration-fast ease-out hover:decoration-foreground"
+              className="text-foreground underline decoration-border-strong underline-offset-4 transition-colors duration-fast ease-out hover:decoration-foreground candy:no-underline candy:bg-[linear-gradient(transparent_55%,hsl(var(--candy-butter))_55%)] candy:font-semibold candy:hover:bg-[linear-gradient(transparent_0%,hsl(var(--candy-pink))_0%)]"
             >
               contact@shashwa7.in
             </a>
@@ -255,13 +256,13 @@ export default function About() {
           <div className="flex flex-wrap items-center gap-3">
             <a
               href="/#experience"
-              className="inline-flex items-center gap-2 rounded-md border border-transparent bg-accent px-5 py-2.5 text-sm font-medium text-accent-foreground transition-[color,background-color,transform] duration-fast ease-out hover:bg-accent-hover active:scale-[0.97]"
+              className="inline-flex items-center gap-2 rounded-md border border-transparent bg-accent px-5 py-2.5 text-sm font-medium text-accent-foreground transition-[color,background-color,transform] duration-fast ease-out hover:bg-accent-hover active:scale-[0.97] sticker candy:rounded-full candy:border-white candy:bg-candy-pink candy:text-foreground candy:font-bold candy:hover:bg-candy-pink tilt-md-e candy:px-4 candy:py-2"
             >
               View selected work <ArrowRight className="h-4 w-4" />
             </a>
             <a
               href="mailto:contact@shashwa7.in"
-              className="inline-flex items-center gap-2 rounded-md border border-border-strong px-5 py-2.5 text-sm font-medium text-foreground transition-[color,background-color,border-color,transform] duration-fast ease-out hover:border-foreground hover:bg-elevated active:scale-[0.97]"
+              className="inline-flex items-center gap-2 rounded-md border border-border-strong px-5 py-2.5 text-sm font-medium text-foreground transition-[color,background-color,border-color,transform] duration-fast ease-out hover:border-foreground hover:bg-elevated active:scale-[0.97] sticker candy:rounded-full candy:font-bold candy:hover:bg-white candy:hover:border-white tilt-md-b candy:px-4 candy:py-2"
             >
               <Coffee className="h-4 w-4" /> Get in touch
             </a>
@@ -303,7 +304,7 @@ export default function About() {
                     target="_blank"
                     rel="noopener noreferrer"
                     title={name}
-                    className="grid h-8 w-8 place-items-center rounded-md text-subtle transition-colors duration-fast ease-out hover:bg-elevated hover:text-foreground"
+                    className="grid h-8 w-8 place-items-center rounded-md text-subtle transition-colors duration-fast ease-out hover:bg-elevated hover:text-foreground sticker sticker-sm candy:rounded-full candy:text-foreground candy:hover:bg-white"
                   >
                     <Icon aria-hidden="true" className="h-4 w-4" />
                     <span className="sr-only">{name}</span>
@@ -358,14 +359,14 @@ export default function About() {
             <span className="font-mono text-2xs uppercase tracking-label text-subtle">
               Worked with
             </span>
-            <span className="flex items-center">
+            <span className="flex items-center candy:hidden">
               {clients.map((c, i) => (
                 <Tooltip key={c.name}>
                   <TooltipTrigger asChild>
                     <span
                       className={cn(
-                        "relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-secondary outline outline-1 outline-border ring-2 ring-background transition-[filter] duration-base ease-out hover:z-10 hover:grayscale-0",
-                        "grayscale",
+                        "relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-secondary outline outline-1 outline-border ring-2 ring-background transition-[filter] duration-base ease-out hover:z-10 hover:grayscale-0 candy:outline-foreground candy:outline-[1.5px] candy:ring-0",
+                        "grayscale candy:grayscale-0",
                         i > 0 && "-ml-2",
                       )}
                     >
@@ -383,8 +384,25 @@ export default function About() {
                 </Tooltip>
               ))}
             </span>
-            <span className="text-sm text-muted-foreground transition-colors duration-fast ease-out group-hover:text-foreground">
+            <span className="text-sm text-muted-foreground transition-colors duration-fast ease-out group-hover:text-foreground candy:hidden">
               {clients.map((c) => c.name).join(", ")}
+            </span>
+            <span className="hidden flex-wrap items-center gap-1.5 candy:flex">
+              {clients.map((c, i) => (
+                <span
+                  key={c.name}
+                  className={`sticker sticker-sm candy:inline-flex candy:items-center candy:gap-1.5 candy:rounded-tag candy:py-0.5 candy:pl-1 candy:pr-2 candy:text-xs candy:font-semibold candy:text-foreground ${tilt(i)}`}
+                >
+                  <Image
+                    src={c.img}
+                    alt=""
+                    width={32}
+                    height={32}
+                    className="h-4 w-4 rounded-full object-cover outline outline-[1.5px] outline-foreground"
+                  />
+                  {c.name}
+                </span>
+              ))}
             </span>
           </a>
         </div>
@@ -422,9 +440,9 @@ export default function About() {
           between the two rows run edge to edge. Left inside the padded column
           it stopped 24px short at each end, which reads as a broken line
           sitting between two full-width ones. */}
-      <div className="mt-10 md:mt-12">
-        <Container width="reading" className="border-t border-border">
-          <div className="-mx-6 grid grid-cols-2 md:mx-0 md:grid-cols-4">
+      <div className="mt-10 md:mt-12 candy:mt-5 candy:md:mt-6">
+        <Container width="reading" className="border-t border-border candy:border-0">
+          <div className="-mx-6 grid grid-cols-2 md:mx-0 md:grid-cols-4 candy:mx-0 candy:w-fit candy:max-w-full candy:grid-cols-2 candy:sm:grid-cols-4 candy:gap-3 candy:px-1">
             {stats.map((s, i) => (
               <div
                 key={s.c}
@@ -433,12 +451,15 @@ export default function About() {
                   i > 0 && "md:border-l md:border-border md:pl-4",
                   i % 2 === 1 && "border-l border-border",
                   i >= 2 && "border-t border-border md:border-t-0",
+                  "sticker candy:rounded-full candy:h-24 candy:w-24 candy:flex candy:flex-col candy:items-center candy:justify-center candy:p-2 candy:text-center",
+                  tint(i),
+                  ["tilt-i", "tilt-h", "tilt-a", "tilt-d"][i],
                 )}
               >
-                <div className="text-xl font-medium tabular-nums tracking-tight text-foreground">
+                <div className="text-xl font-medium tabular-nums tracking-tight text-foreground candy:font-display candy:text-2xl candy:font-semibold">
                   {s.n}
                 </div>
-                <div className="mt-1.5 font-mono text-2xs uppercase tracking-label text-subtle">
+                <div className="mt-1.5 candy:mt-0.5 font-mono text-2xs uppercase tracking-label text-subtle candy:font-sans candy:normal-case candy:tracking-normal candy:text-2xs candy:leading-tight candy:font-bold candy:text-foreground">
                   {s.c}
                 </div>
               </div>

@@ -15,20 +15,26 @@ export default function BandLabel({
   id,
   of,
   name,
+  tone = "butter",
 }: {
   id: string;
   of?: string;
   name?: string;
+  /** Candy only: sections are butter, secondary pages lavender. */
+  tone?: "butter" | "lavender";
 }) {
+  const candyTone = tone === "butter" ? "candy:bg-candy-butter" : "candy:bg-candy-lavender";
   return (
-    <Label>
+    <Label
+      className={`sticker sticker-sm candy:inline-flex candy:items-center candy:gap-2 candy:rounded-tag candy:px-2.5 candy:py-1 candy:font-semibold candy:text-foreground tilt-e ${candyTone}`}
+    >
       <span className="text-foreground">
         [ {id}
         {of ? ` / ${of}` : ""} ]
       </span>
       {name ? (
         <>
-          <span className="px-2 text-border-strong">·</span>
+          <span className="px-2 text-border-strong candy:opacity-50 candy:text-foreground">·</span>
           {name}
         </>
       ) : null}

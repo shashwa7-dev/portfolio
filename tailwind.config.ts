@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
 import { fontFamily } from "tailwindcss/defaultTheme";
+import plugin from "tailwindcss/plugin";
 
 const config: Config = {
   darkMode: ["class"],
@@ -7,6 +8,8 @@ const config: Config = {
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    // lib/candy.ts holds the tilt and tint class names as literal strings
+    "./lib/**/*.{js,ts,jsx,tsx}",
   ],
   future: {
     hoverOnlyWhenSupported: true,
@@ -106,6 +109,7 @@ const config: Config = {
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
         mono: ["var(--font-mono)", ...fontFamily.mono],
+        display: ["var(--font-display)", "var(--font-sans)", ...fontFamily.sans],
       },
       fontSize: {
         '2xs': ['0.625rem',  { lineHeight: '1.4' }],   // 10px, mono labels
@@ -146,6 +150,18 @@ const config: Config = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        // Candy only. Undefined in Paper, so always pair with the candy: variant.
+        sticker: "var(--sticker-radius-card)",
+        tile: "var(--sticker-radius-tile)",
+        tag: "var(--sticker-radius-tag)",
+      },
+      boxShadow: {
+        // Candy only. Hard ink offsets, no blur.
+        "sticker-1": "var(--sticker-shadow-1)",
+        "sticker-2": "var(--sticker-shadow-2)",
+        "sticker-3": "var(--sticker-shadow-3)",
+        "sticker-4": "var(--sticker-shadow-4)",
+        "sticker-press": "var(--sticker-shadow-press)",
       },
       colors: {
         background: "hsl(var(--background))",
@@ -187,6 +203,13 @@ const config: Config = {
         subtle: "hsl(var(--subtle))",
         "border-strong": "hsl(var(--border-strong))",
         "accent-hover": "hsl(var(--accent-hover))",
+        candy: {
+          pink: "hsl(var(--candy-pink))",
+          mint: "hsl(var(--candy-mint))",
+          butter: "hsl(var(--candy-butter))",
+          sky: "hsl(var(--candy-sky))",
+          lavender: "hsl(var(--candy-lavender))",
+        },
       },
     },
   },
@@ -198,7 +221,14 @@ const config: Config = {
   // Tier 1). None of its animate-in/out utilities are used here: the four
   // `animate-*` classes in play (blink, loading-bar, tooltip-in/out,
   // accordion-down/up) all come from this file's own theme.extend.animation.
-  plugins: [],
+  plugins: [
+    // `candy:` scopes a utility to the Candy theme. It is an attribute on
+    // <html>, like `.dark` is a class there, so `candy:` and `dark:` never
+    // both match: Candy never sets `.dark`.
+    plugin(({ addVariant }) => {
+      addVariant("candy", '[data-theme="candy"] &');
+    }),
+  ],
 };
 
 export default config;

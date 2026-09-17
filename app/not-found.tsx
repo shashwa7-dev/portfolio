@@ -78,7 +78,7 @@ export default function NotFound() {
 
           <nav
             aria-label="Other pages"
-            className="mt-10 border-t border-border pt-5"
+            className="mt-10 border-t border-border candy:border-t-0 pt-5"
           >
             <p className="font-mono text-2xs uppercase tracking-label text-subtle">
               Or try

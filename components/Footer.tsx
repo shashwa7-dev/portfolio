@@ -53,13 +53,13 @@ const Footer = () => {
   const navSecondary = footerLinks.slice(half);
 
   return (
-    <footer className="site-footer mt-24 border-t border-border">
-      <Container className="grid grid-cols-2 gap-x-10 gap-y-9 pt-10 md:grid-cols-4">
+    <footer className="site-footer mt-24 border-t border-border candy:border-0 candy:mt-16">
+      <Container className="grid grid-cols-2 gap-x-10 gap-y-9 pt-10 md:grid-cols-4 candy:pt-8">
         <div className="col-span-2 md:col-span-1">
           <Label className="mb-3 block">Studio</Label>
           <Link
             href="/"
-            className="inline-flex items-center gap-2.5 transition-opacity duration-fast ease-out hover:opacity-80"
+            className="inline-flex items-center gap-2.5 transition-opacity duration-fast ease-out hover:opacity-80 sticker sticker-sm candy:rounded-tag candy:px-2 candy:py-1 tilt-i"
           >
             {/* Masked rather than drawn as an <img>: the asset is one flat
                 colour on transparency, so as an image it would stay #0E0D0C
@@ -162,7 +162,7 @@ const Footer = () => {
         </div>
       </Container>
 
-      <Container className="grid grid-cols-2 gap-x-10 gap-y-9 pb-10 pt-9 md:grid-cols-4">
+      <Container className="grid grid-cols-2 gap-x-10 gap-y-9 pb-10 pt-9 md:grid-cols-4 candy:pb-8 candy:pt-7">
         <div className="col-span-2 md:col-span-1">
           <Label className="mb-3 block">Email</Label>
           <a
@@ -197,10 +197,10 @@ const Footer = () => {
           the Studio link above. */}
       <div
         aria-hidden
-        className="relative select-none overflow-hidden border-t border-border py-9"
+        className="relative select-none overflow-hidden border-t border-border py-9 candy:border-0"
       >
-        <span className="plate-rule pointer-events-none absolute inset-x-6 top-3 h-1.5" />
-        <span className="plate-rule pointer-events-none absolute inset-x-6 bottom-3 h-1.5" />
+        <span className="plate-rule pointer-events-none absolute inset-x-6 top-3 h-1.5 candy:hidden" />
+        <span className="plate-rule pointer-events-none absolute inset-x-6 bottom-3 h-1.5 candy:hidden" />
         {["left-2 top-2", "right-2 top-2", "left-2 bottom-2", "right-2 bottom-2"].map(
           (pos) => (
             <span
@@ -211,7 +211,7 @@ const Footer = () => {
             </span>
           )
         )}
-        <p className="plate-wordmark px-8 text-center text-[clamp(2.75rem,11vw,8rem)] font-bold leading-[0.86] tracking-tight">
+        <p className="plate-wordmark px-8 text-center text-[clamp(2.75rem,11vw,8rem)] font-bold leading-[0.86] tracking-tight candy:font-display tilt-a">
           offcod8
         </p>
         <p className="mt-4 text-center font-mono text-2xs uppercase tracking-label text-subtle">
@@ -221,7 +221,7 @@ const Footer = () => {
         </p>
       </div>
 
-      <div className="border-t border-border">
+      <div className="border-t border-border candy:border-0">
         <Container className="flex flex-wrap items-center gap-x-6 gap-y-2 py-4 font-mono text-2xs uppercase tracking-label text-subtle">
           <span className="mr-auto">
             &copy; {new Date().getFullYear()} Shashwat Tripathi

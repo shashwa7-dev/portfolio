@@ -44,10 +44,38 @@ export type TSideProject = {
 
 export const sideProjects: TSideProject[] = [
   {
+    id: "ganapati",
+    slug: "ganapati",
+    title: "Ganapati",
+    isRecent: true,
+    tagline: "A sketchbook of Ganesha studies, hung in two pages.",
+    description:
+      "An exhibition of 108 studies of Ganesha, catalogued by posture, material, trunk, companion and offering, pinned into an artist's notebook with margin notes, parallax and a like on every work. A second page tells the story of the festival: why he comes home, how it travelled, Lalbaugcha Raja, the hundred and eight names, and visarjan.",
+    longDescription: `Every load opens with a short splash that draws the mark, writes the name and the chant, then lifts away into a shower of marigolds. The flute in the header keeps playing across pages because its audio lives in the root layout.
+
+  The whole site renders from one dataset: a plates file describing every prepared image and a curated catalogue that names each work and files it under a posture. A plate without a curated entry still hangs, with neutral defaults, so adding a work is one image and one line.
+
+  Likes are counted through Upstash Redis over REST with no SDK; with the variables unset the store is in memory, so the site runs anywhere.`,
+    highlights: [
+      "108 works in six posture chapters, every one with a title, material, trunk, companion and offering",
+      "A splash that draws the logo, writes the chant and dissolves into marigolds, with a failsafe and skip on click",
+      "The Story: five short pages on the festival, the hundred and eight names and why 108, and visarjan",
+    ],
+    thumbnail: "/projects/project_ganapati.jpg",
+    date: "Sep 2026",
+    links: {
+      github: "https://github.com/shashwa7-dev/ganesha_2026",
+    },
+    stack: {
+      fe: ["next", "react", "typescript", "tailwind"],
+      be: ["vercel"],
+    },
+    tags: ["Art", "Festival", "Next.js"],
+  },
+  {
     id: "mehfil",
     slug: "mehfil",
     title: "Mehfil",
-    isRecent: true,
     tagline: "An evening gathering for music and poetry.",
     description:
       "A web player for golden-era Hindi film music, browsable by singer, composer, lyricist, actor, film, station and mood. The catalogue is built by parsing Saregama's publicly published Carvaan Gold songlist, then resolving and verifying every song against YouTube.",

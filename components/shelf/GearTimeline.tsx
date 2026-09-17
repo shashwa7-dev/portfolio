@@ -56,7 +56,7 @@ export default function GearTimeline() {
                    56px square, so pointing anywhere else on the row tinted the
                    row and left the image grey, which read as two things
                    reacting to two different gestures. */
-                className="h-full w-full object-contain grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
+                className="h-full w-full object-contain grayscale candy:grayscale-0 transition-[filter] duration-base ease-out group-hover:grayscale-0"
               />
             </div>
 

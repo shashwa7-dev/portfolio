@@ -424,7 +424,7 @@ function Block({ block }: { block: CvBlock }) {
   switch (block.kind) {
     case "section":
       return (
-        <h2 className="mt-10 border-b border-border pb-2 font-mono text-2xs uppercase tracking-label text-subtle">
+        <h2 className="mt-10 border-b border-border candy:border-b-0 pb-2 font-mono text-2xs uppercase tracking-label text-subtle">
           {block.text}
         </h2>
       );
@@ -472,7 +472,7 @@ function Block({ block }: { block: CvBlock }) {
       // No top border on the list. The section heading above already draws
       // one, and the two sat together as a doubled rule under the label.
       return (
-        <dl className="mt-3 divide-y divide-border border-b border-border">
+        <dl className="mt-3 divide-y divide-border border-b border-border candy:divide-y-0 candy:border-b-0">
           {block.rows.map((row) => (
             <div key={row.label} className="py-2.5 sm:flex sm:gap-5">
               <dt className="shrink-0 font-mono text-2xs uppercase tracking-label text-foreground sm:w-48 sm:pt-px">

@@ -3,6 +3,7 @@ import { ArrowRight } from "@phosphor-icons/react/ssr";
 import { books } from "@/lib/books";
 import BookListItem from "./BookListItem";
 import Section from "@/components/layout/Section";
+import { ViewAllLink } from "@/components/common/ViewAllLink";
 import { HOMEPAGE_SECTION_TOTAL } from "@/lib/sections";
 import Bento from "@/components/layout/Bento";
 
@@ -10,21 +11,21 @@ export default function Activity() {
   return (
     <Section id="activity" number="04" of={HOMEPAGE_SECTION_TOTAL} label="Now" title="What I'm up to" width="reading">
       <Bento className="grid-cols-1 sm:grid-cols-2">
-        <div className="bg-card p-5">
+        <div className="bg-card p-5 candy:bg-candy-butter candy:p-4">
           <p className="mb-2.5 font-mono text-2xs uppercase tracking-label text-subtle">Writing</p>
-          <Link href="/blogs" className="group inline-flex items-center gap-2 text-base font-medium transition-colors hover:text-foreground">
+          <Link href="/blogs" className="group inline-flex items-center gap-2 text-base font-medium transition-colors hover:text-foreground candy:font-semibold candy:text-foreground">
             Read my blog posts <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </Link>
           <p className="mt-2 text-xs text-muted-foreground">Notes on frontend, AI &amp; building products.</p>
         </div>
-        <div className="bg-card p-5">
+        <div className="bg-card p-5 candy:bg-candy-mint candy:p-4">
           <p className="mb-2.5 font-mono text-2xs uppercase tracking-label text-subtle">Currently</p>
-          <p className="text-xl font-semibold text-foreground">Building at ShopOS</p>
+          <p className="text-xl font-semibold text-foreground candy:font-display">Building at ShopOS</p>
           <p className="mt-1 text-xs text-muted-foreground">AI-native commerce · open to freelance.</p>
         </div>
-        <div className="col-span-full flex items-center justify-between bg-card px-5 py-3">
+        <div className="col-span-full flex items-center justify-between bg-card px-5 py-3 candy:px-4 candy:py-2.5">
           <p className="font-mono text-2xs uppercase tracking-label text-subtle">Currently Reading</p>
-          <Link href="/books" className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground">View all <ArrowRight className="h-3.5 w-3.5" /></Link>
+          <ViewAllLink href="/books">View all</ViewAllLink>
         </div>
         {books.slice(0, 3).map((book) => (
           <div key={book.slug} className="col-span-full bg-card">
@@ -39,9 +40,9 @@ export default function Activity() {
             It sits under the books because someone who has read this far down
             "Now" is already the person it is for, and the two-column row at the
             top is about work. */}
-        <div className="col-span-full bg-card p-5">
+        <div className="col-span-full bg-card p-5 candy:bg-candy-sky candy:p-4">
           <p className="mb-2.5 font-mono text-2xs uppercase tracking-label text-subtle">Off the clock</p>
-          <Link href="/shelf" className="group inline-flex items-center gap-2 text-base font-medium transition-colors hover:text-foreground">
+          <Link href="/shelf" className="group inline-flex items-center gap-2 text-base font-medium transition-colors hover:text-foreground candy:font-semibold candy:text-foreground">
             What I drink, brew and carry <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </Link>
           <p className="mt-2 text-xs text-muted-foreground">Coffee and the gear behind it, my everyday setup, scent, and links worth keeping.</p>

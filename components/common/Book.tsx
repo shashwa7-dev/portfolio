@@ -5,6 +5,7 @@ import { Check } from "@phosphor-icons/react/ssr";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { tiltMd } from "@/lib/candy";
 
 /**
  * A shelf card: the cover, with the title and author on an overlay across the
@@ -36,7 +37,8 @@ export default function Book({
   cover,
   chapters,
   isDone,
-}: BookProps) {
+  index = 0,
+}: BookProps & { index?: number }) {
   const [loaded, setLoaded] = useState(false);
   const progress = useMemo(() => {
     if (!chapters.length) return 0;
@@ -52,13 +54,13 @@ export default function Book({
   return (
     <Link
       href={`/books/${slug}`}
-      className="group relative block aspect-[2/3] w-full overflow-hidden rounded-md border border-border bg-card"
+      className={`group relative block aspect-[2/3] w-full overflow-hidden rounded-md border border-border bg-card sticker candy:rounded-tile candy:border-white candy:hover:border-white ${tiltMd(index)}`}
     >
       {isDone && (
         /* Same verified-badge idiom as About.tsx and BookListItem. Inset from
            the corner rather than flush, so it reads as placed on the cover
            rather than clipped by it. */
-        <span className="absolute right-1.5 top-1.5 z-10 grid h-6 w-6 place-items-center rounded-full bg-foreground text-background ring-2 ring-card">
+        <span className="absolute right-1.5 top-1.5 z-10 grid h-6 w-6 place-items-center rounded-full bg-foreground text-background ring-2 ring-card candy:bg-candy-mint candy:text-foreground candy:ring-0 candy:outline candy:outline-2 candy:outline-foreground">
           <Check className="h-3.5 w-3.5" weight="bold" />
         </span>
       )}
@@ -75,7 +77,7 @@ export default function Book({
         src={cover}
         alt={`Cover of ${name}`}
         fill
-        className="object-cover opacity-90 grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
+        className="object-cover opacity-90 grayscale candy:grayscale-0 transition-[filter] duration-base ease-out group-hover:grayscale-0"
         sizes="(max-width: 640px) 45vw, (max-width: 768px) 30vw, 180px"
         priority={false}
         onLoadingComplete={() => setLoaded(true)}
@@ -98,7 +100,7 @@ export default function Book({
       </div>
 
       {/* Info overlay */}
-      <div className="absolute bottom-1 left-0 w-full bg-secondary px-2 py-1 text-xs backdrop-blur">
+      <div className="absolute bottom-1 left-0 w-full bg-secondary px-2 py-1 text-xs backdrop-blur candy:bg-white candy:border-t-2 candy:border-foreground candy:backdrop-blur-none">
         <p className="truncate font-medium">{name}</p>
         <p className="truncate italic text-muted-foreground">{author}</p>
       </div>

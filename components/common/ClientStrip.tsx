@@ -64,7 +64,7 @@ export default function ClientStrip({ orgSlug }: { orgSlug: string }) {
                   alt={c.name}
                   fill
                   sizes="20px"
-                  className="object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
+                  className="object-cover grayscale candy:grayscale-0 transition-[filter] duration-base ease-out group-hover:grayscale-0"
                 />
               </span>
             </TooltipTrigger>

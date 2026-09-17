@@ -54,8 +54,8 @@ export default function BooksPage() {
               for every other consumer. */}
           {[...books]
             .sort((a, b) => Number(a.isDone) - Number(b.isDone))
-            .map((book) => (
-              <Book key={book.slug} {...book} />
+            .map((book, i) => (
+              <Book key={book.slug} {...book} index={i} />
             ))}
         </div>
       </Container>
