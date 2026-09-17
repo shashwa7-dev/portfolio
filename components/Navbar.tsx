@@ -147,7 +147,7 @@ export default function Navbar() {
                   className="h-5 w-auto"
                 />
                 {theme === "candy" && (
-                  <span className="hidden text-xs font-bold md:inline">Candy</span>
+                  <span className="text-xs font-bold">Candy</span>
                 )}
               </>
             )}

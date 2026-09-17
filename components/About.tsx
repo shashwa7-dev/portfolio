@@ -434,9 +434,9 @@ export default function About() {
                   i > 0 && "md:border-l md:border-border md:pl-4",
                   i % 2 === 1 && "border-l border-border",
                   i >= 2 && "border-t border-border md:border-t-0",
-                  "candy:border-0 sticker candy:rounded-full candy:aspect-square candy:flex candy:flex-col candy:items-center candy:justify-center candy:p-3 candy:text-center",
+                  "sticker candy:rounded-full candy:aspect-square candy:flex candy:flex-col candy:items-center candy:justify-center candy:p-3 candy:text-center",
                   tint(i),
-                  tilt(i + 7),
+                  tilt(i),
                 )}
               >
                 <div className="text-xl font-medium tabular-nums tracking-tight text-foreground candy:font-display candy:text-3xl candy:font-bold">

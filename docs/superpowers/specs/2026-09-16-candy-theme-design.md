@@ -11,6 +11,8 @@ The site gets a third theme, **Candy**, beside the existing Paper light and Pape
 
 Candy was distilled from a Simpsons concept website on Behance. Only the system transfers: flat colour, hard shadows, thick outlines, illustration-first playfulness. No characters, logo or lettering from the show appear anywhere.
 
+Dark's control mark changed from Sun to the wrapper image; everything else in dark is unchanged.
+
 ## 2. Decisions already made
 
 | Decision | Choice |
@@ -55,7 +57,7 @@ Replaces the current one. Reads the key, validates it against the three names, r
 
 ### UI
 
-- **Navbar control.** One button, same `control` class family as today. Shows the current theme's mark: Sun, Moon, or a candy dot. Click cycles. `aria-label` reads "Theme: Candy. Switch to light" and so on. In Candy the control is itself a sticker pill with the dot and the word "Candy" at `md` and up, dot only below.
+- **Navbar control.** One button, same `control` class family as today. The control shows the theme you will switch to: Moon in light, the candy wrapper image (`public/candy-wrapper.png`) in dark, and in Candy the wrapper plus the word "Candy" at every width; there is no Sun. Click cycles. `aria-label` reads "Theme: Candy. Switch to light" and so on. In Candy the control is itself a sticker pill with the dot and the word "Candy" at `md` and up, dot only below.
 - **Command palette.** "Toggle theme" becomes three rows under Actions: "Light theme", "Dark theme", "Candy theme", each calling `setTheme`. The `t` key hint moves to a single "Cycle theme" row.
 - **Shortcut.** `t` cycles. `lib/shortcutsData.ts` label becomes "Cycle theme".
 - **No crossfade** on switch. `CLAUDE.md` rejected a theme-toggle colour crossfade and that stands.
@@ -146,6 +148,7 @@ Implemented as a `.sticker` utility plus `.sticker-sm` and `.sticker-lg` size va
 - Section rhythm stays `py-10 md:py-14`; with no bands the gap between sections may read larger, which is intended.
 - The Navbar loses its bottom border in Candy. It keeps the translucent backdrop. The current link gets a pink highlight bar behind the text instead of the underline pseudo-element.
 - The Footer loses its top and inner rules. The plate keeps the crosshairs and the wordmark, drawn as a white Fredoka sticker with a 3px ink stroke and a pink 10px offset shadow, tilted -2 degrees.
+- In Candy the Experience org rail is kept as a dashed ink line (see G), the one nesting line the theme draws.
 
 ## 7. Tilt rules
 

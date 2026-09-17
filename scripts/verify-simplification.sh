@@ -75,6 +75,7 @@ absent C13 "CardNav gone"                components/ui/CardNav
 echo ""
 echo "Palette"
 count C14 "no indigo hue in tokens"      0 grep -rEoh "24[12] [0-9]+%|--accent: *24" app/globals.css
+count C15 "sticker elements keep their edge and shadow" 0 grep -rEoh "sticker[^\"'\`]*candy:(border-0|shadow-none)|candy:(border-0|shadow-none)[^\"'\`]*sticker" --include=*.tsx app components
 
 echo ""
 if [ "$FAILED" = 0 ]; then

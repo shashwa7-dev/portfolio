@@ -5,6 +5,7 @@ import { Check } from "@phosphor-icons/react/ssr";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { tiltMd } from "@/lib/candy";
 
 /**
  * A shelf card: the cover, with the title and author on an overlay across the
@@ -36,7 +37,8 @@ export default function Book({
   cover,
   chapters,
   isDone,
-}: BookProps) {
+  index = 0,
+}: BookProps & { index?: number }) {
   const [loaded, setLoaded] = useState(false);
   const progress = useMemo(() => {
     if (!chapters.length) return 0;
@@ -52,7 +54,7 @@ export default function Book({
   return (
     <Link
       href={`/books/${slug}`}
-      className="group relative block aspect-[2/3] w-full overflow-hidden rounded-md border border-border bg-card sticker candy:rounded-tile candy:border-white candy:hover:border-white tilt-md-g"
+      className={`group relative block aspect-[2/3] w-full overflow-hidden rounded-md border border-border bg-card sticker candy:rounded-tile candy:border-white candy:hover:border-white ${tiltMd(index)}`}
     >
       {isDone && (
         /* Same verified-badge idiom as About.tsx and BookListItem. Inset from

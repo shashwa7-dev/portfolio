@@ -72,10 +72,10 @@ export function BlogPosts() {
               </p>
 
               <div className="mt-2 flex flex-wrap gap-1.5">
-                {JSON.parse(post.metadata.tags).map((tag: string, i: number) => (
+                {JSON.parse(post.metadata.tags).map((tag: string, j: number) => (
                   <span
-                    key={i}
-                    className={`rounded-sm border border-border px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-muted-foreground sticker sticker-sm sticker-flat candy:rounded-tag candy:font-semibold candy:text-foreground ${tint(i)}`}
+                    key={j}
+                    className={`rounded-sm border border-border px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-muted-foreground sticker sticker-sm sticker-flat candy:rounded-tag candy:font-semibold candy:text-foreground ${tint(j)}`}
                   >
                     {tag}
                   </span>

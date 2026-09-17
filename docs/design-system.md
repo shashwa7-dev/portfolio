@@ -32,7 +32,7 @@ The palette is a warm, near-neutral ramp (low saturation, warm hue around 30-40 
 
 ### Candy
 
-A third theme, opt-in via `data-theme="candy"` on `<html>`. It redefines the same semantic tokens above under `:root[data-theme="candy"]`: paper `48 100% 98.4%`, ink `0 0% 10.2%`, sticker white `0 0% 100%` for `--card`, and a pink `--ring` at `346 100% 86%`. `--radius` becomes `1rem`, so `rounded-lg` is 16px, `rounded-md` 14px, `rounded-sm` 12px. A `--grid-line` / `--grid-size` pair (`45 34% 89%`, `40px`) draws graph paper behind every page.
+A third theme, opt-in via `data-theme="candy"` on `<html>`. It redefines the same semantic tokens above under `:root[data-theme="candy"]`: paper `45 100% 98%`, ink `0 0% 10%`, sticker white `0 0% 100%` for `--card`, and an ink `--ring` at `0 0% 10%`. `--radius` becomes `1rem`, so `rounded-lg` is 16px, `rounded-md` 14px, `rounded-sm` 12px. A `--grid-line` / `--grid-size` pair (`45 34% 89%`, `40px`) draws graph paper behind every page.
 
 Five candy-only tints, exposed as `bg-candy-*`:
 
@@ -70,7 +70,7 @@ Two rules:
 ### Rules
 
 - Always use semantic tokens, never raw hex or HSL literals in components.
-- Theme follows the `dark` class on `<html>`, toggled by the inline theme script in `app/layout.tsx` and by the `useDarkMode` hook in `app/hooks/useDarkMode.tsx`. The `:root` block is Paper light; `.dark` is Paper dark.
+- The theme is the `data-theme` attribute on `<html>` (`light`, `dark`, `candy`), applied on load by the inline script from `lib/theme.ts` and changed by the `useTheme` hook in `app/hooks/useTheme.tsx`; `.dark` is still toggled for dark only. The `:root` block is Paper light; `.dark` is Paper dark.
 - For opacity variants use Tailwind's slash notation: `bg-accent/15`, `decoration-accent/50`.
 
 ---
@@ -310,7 +310,7 @@ Renders a `<span>` with `font-mono text-xs uppercase tracking-label text-subtle`
 </button>
 ```
 
-Candy: a pink sticker pill, shadow 3, 44px tall.
+Candy: a pink sticker pill, shadow 3; a hand-rolled CTA, so it keeps its Paper padding (shadcn buttons are `h-9`/36px by default, `sm` is `h-8`/32px).
 
 ### Ghost button
 
@@ -320,7 +320,7 @@ Candy: a pink sticker pill, shadow 3, 44px tall.
 </button>
 ```
 
-Candy: a white sticker pill, shadow 3, 44px tall.
+Candy: a white sticker pill, shadow 3; a hand-rolled CTA, so it keeps its Paper padding (shadcn buttons are `h-9`/36px by default, `sm` is `h-8`/32px).
 
 ### Inline link (prose style)
 

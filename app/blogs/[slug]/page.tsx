@@ -160,7 +160,7 @@ export default function Blog({ params }: any) {
             description for someone else's artwork. Decorative is the honest
             value. */}
         {post.metadata.image && (
-          <div className="relative mt-6 aspect-[16/9] w-full overflow-hidden rounded-lg border border-border bg-elevated sticker candy:rounded-tile candy:border-white candy:bg-candy-sky tilt-g">
+          <div className="relative mt-6 aspect-[16/9] w-full overflow-hidden rounded-lg border border-border bg-elevated sticker candy:rounded-tile candy:border-white candy:bg-candy-sky candy:shadow-sticker-4 tilt-g">
             <Image
               src={post.metadata.image}
               alt=""

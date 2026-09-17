@@ -169,7 +169,7 @@ const TechStack = () => {
               <ul className="flex flex-wrap gap-1.5">
                 {tier.items.map((t) => (
                   <li key={t} className="flex">
-                    <StackIcon name={t} showLabel size={14} className="px-2.5 py-1 sticker-sm" />
+                    <StackIcon name={t} showLabel size={14} className="px-2.5 py-1" />
                   </li>
                 ))}
               </ul>

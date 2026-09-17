@@ -130,7 +130,7 @@ function Part({
   return (
     <div
       data-part
-      className={cn("border-t border-border pt-8", first ? "mt-8" : "mt-14")}
+      className={cn("border-t border-border candy:border-t-0 pt-8", first ? "mt-8" : "mt-14")}
     >
       <p className="font-mono text-2xs uppercase tracking-label text-subtle">
         {label}
@@ -219,7 +219,7 @@ function A({ href, children }: { href: string; children: React.ReactNode }) {
 
 function Def({ term, children }: { term: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div className="border-b border-border py-4">
+    <div className="border-b border-border candy:border-b-0 py-4">
       <dt className="font-semibold tracking-tight text-foreground">{term}</dt>
       <dd className="mt-1 text-base leading-relaxed text-muted-foreground">
         {children}
@@ -640,11 +640,11 @@ export default function CoffeePage() {
           The whole list in one place, since it is scattered through the story
           above. Each one links to where I bought it.
         </P>
-        <ol className="mt-6 border-t border-border">
+        <ol className="mt-6 border-t border-border candy:border-t-0">
           {gear.map((g) => (
             <li
               key={g.slug}
-              className="flex flex-col gap-1 border-b border-border py-4 sm:flex-row sm:items-baseline sm:gap-6"
+              className="flex flex-col gap-1 border-b border-border candy:border-b-0 py-4 sm:flex-row sm:items-baseline sm:gap-6"
             >
               <span className="font-mono text-2xs uppercase tracking-label text-subtle sm:w-40 sm:shrink-0">
                 {g.when}
@@ -743,7 +743,7 @@ export default function CoffeePage() {
           sounds as they cook, and those two sounds are the landmarks the whole
           craft is built around.
         </P>
-        <dl className="my-6 border-t border-border">
+        <dl className="my-6 border-t border-border candy:border-t-0">
           <Def term="First crack">
             Steam builds up until it bursts the bean open, with a loud pop that
             sounds like popcorn. The bean is now drinkable. Stop here or just
@@ -950,7 +950,7 @@ export default function CoffeePage() {
           out. How they did it changes the taste as much as the roast does, which
           is why it is printed on the bag.
         </P>
-        <dl className="my-6 border-t border-border">
+        <dl className="my-6 border-t border-border candy:border-t-0">
           <Def term="Washed">
             The fruit is stripped off before drying. You taste the seed and the
             place it grew, with nothing in the way. Cleaner and brighter, and the
@@ -1008,7 +1008,7 @@ export default function CoffeePage() {
               Rough resting times after roasting, by roast level and brew method
             </caption>
             <thead>
-              <tr className="border-b border-border bg-elevated">
+              <tr className="border-b border-border candy:border-b-0 bg-elevated">
                 <th scope="col" className="px-5 py-3 font-mono text-2xs uppercase tracking-label text-subtle">Roast</th>
                 <th scope="col" className="px-5 py-3 font-mono text-2xs uppercase tracking-label text-subtle">Filter</th>
                 <th scope="col" className="px-5 py-3 font-mono text-2xs uppercase tracking-label text-subtle">Espresso</th>
@@ -1020,7 +1020,7 @@ export default function CoffeePage() {
                 ["Medium", "3 to 7 days", "5 to 10 days"],
                 ["Light", "5 to 14 days", "7 to 21 days, sometimes more"],
               ].map(([roast, filter, espresso]) => (
-                <tr key={roast} className="border-b border-border last:border-0">
+                <tr key={roast} className="border-b border-border candy:border-b-0 last:border-0">
                   <th scope="row" className="px-5 py-3 align-top font-medium text-foreground">{roast}</th>
                   <td className="px-5 py-3 align-top text-sm text-muted-foreground">{filter}</td>
                   <td className="px-5 py-3 align-top text-sm text-muted-foreground">{espresso}</td>
@@ -1147,7 +1147,7 @@ export default function CoffeePage() {
 
         <H2 id="methods">Ways to make it</H2>
         <P>Three families, and they want different grinds.</P>
-        <dl className="my-6 border-t border-border">
+        <dl className="my-6 border-t border-border candy:border-t-0">
           <Def term="Espresso based">
             Hot water forced through a compacted puck at pressure, in about
             thirty seconds. Fine grind. This is the base for a cortado, a latte,
@@ -1200,7 +1200,7 @@ export default function CoffeePage() {
 
         <H3>When to move it</H3>
         <P>Taste first, then adjust one thing.</P>
-        <dl className="my-6 border-t border-border">
+        <dl className="my-6 border-t border-border candy:border-t-0">
           <Def term="Sour, thin, and it ran fast">
             Under-extracted. You did not get enough out. <Strong>Grind finer.</Strong>{" "}
             That slows the water down and gives it more surface to work on.
@@ -1257,7 +1257,7 @@ export default function CoffeePage() {
           places, and I would send a friend to either. The grinder is the
           exception: that one came direct from 1Zpresso.
         </P>
-        <dl className="my-6 border-t border-border">
+        <dl className="my-6 border-t border-border candy:border-t-0">
           <Def term={<A href="https://somethingsbrewing.in">Something&apos;s Brewing</A>}>
             Where the Budan and the Nanopresso came from. Broad range across
             machines, grinders and brewers, and they carry the Indian brands as
@@ -1282,9 +1282,9 @@ export default function CoffeePage() {
           a genuinely warm bunch. If you want to go further than this page does,
           your time is better spent there than on more of me.
         </P>
-        <ul className="my-6 border-t border-border">
+        <ul className="my-6 border-t border-border candy:border-t-0">
           {communities.map((c) => (
-            <li key={c.url} className="border-b border-border py-4">
+            <li key={c.url} className="border-b border-border candy:border-b-0 py-4">
               <a
                 href={c.url}
                 target="_blank"
@@ -1320,7 +1320,7 @@ export default function CoffeePage() {
               Coffee terms used on this page, with plain English meanings
             </caption>
             <thead>
-              <tr className="border-b border-border bg-elevated">
+              <tr className="border-b border-border candy:border-b-0 bg-elevated">
                 <th
                   scope="col"
                   className="w-40 px-5 py-3 font-mono text-2xs uppercase tracking-label text-subtle"
@@ -1337,7 +1337,7 @@ export default function CoffeePage() {
             </thead>
             <tbody>
               {GLOSSARY.map((g) => (
-                <tr key={g.term} className="border-b border-border last:border-0">
+                <tr key={g.term} className="border-b border-border candy:border-b-0 last:border-0">
                   <th
                     scope="row"
                     className="px-5 py-3 align-top font-medium text-foreground"

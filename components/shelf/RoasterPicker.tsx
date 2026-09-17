@@ -203,7 +203,7 @@ export default function RoasterPicker() {
 
 function BeanRow({ bean, first }: { bean: Bean; first: boolean }) {
   return (
-    <div className={cn("bg-card p-5", !first && "border-t border-border")}>
+    <div className={cn("bg-card p-5", !first && "border-t border-border candy:border-t-0")}>
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <p className="font-medium text-foreground">{bean.name}</p>

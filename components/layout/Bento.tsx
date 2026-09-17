@@ -8,7 +8,7 @@ export default function Bento({
   children: React.ReactNode;
 }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-border sticker candy:rounded-sticker candy:border-white">
+    <div className="overflow-hidden rounded-2xl border border-border sticker candy:rounded-sticker candy:border-white candy:shadow-sticker-4">
       <div className={cn("grid gap-px bg-border candy:gap-[2px] candy:bg-foreground", className)}>{children}</div>
     </div>
   );

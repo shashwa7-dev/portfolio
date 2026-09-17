@@ -30,7 +30,7 @@ export default function Faq() {
           <AccordionItem
             key={f.q}
             value={`faq-${i}`}
-            className={`border-b border-border px-5 last:border-b-0 sticker sticker-hover candy:rounded-sticker candy:border-white candy:px-5 candy:data-[state=open]:bg-candy-pink candy:data-[state=open]:shadow-sticker-4 candy:data-[state=open]:rotate-0 ${tiltMd(i)}`}
+            className={`border-b border-border px-5 last:border-b-0 sticker sticker-hover candy:rounded-sticker candy:border-white candy:px-5 candy:last:border-b-[3px] candy:data-[state=open]:bg-candy-pink candy:data-[state=open]:shadow-sticker-4 candy:data-[state=open]:rotate-0 ${tiltMd(i)}`}
           >
             <AccordionTrigger className="py-4 text-left text-base font-medium text-foreground candy:font-bold candy:hover:no-underline">
               {f.q}

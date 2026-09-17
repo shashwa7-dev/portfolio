@@ -108,6 +108,7 @@
     --border-strong: 30 6% 24%;
     --input: 30 6% 16%;
     --ring: 35 6% 70%;
+    --radius: 0.75rem;
     /* Complete colour values, not triplets. See the note in :root above. */
     --sh-class: hsl(38 55% 70%);
     --sh-identifier: hsl(35 6% 84%);
@@ -151,7 +152,7 @@
     --border: 0 0% 10%;
     --border-strong: 0 0% 10%;
     --input: 0 0% 10%;
-    --ring: 348 100% 86%;
+    --ring: 0 0% 10%;
     --radius: 1rem;
 
     --candy-pink: 348 100% 86%;
@@ -195,12 +196,12 @@
     background-image: none;
   }
 
-  [data-theme="candy"] h1,
-  [data-theme="candy"] h2,
-  [data-theme="candy"] h3,
-  [data-theme="candy"] h4,
-  [data-theme="candy"] h5,
-  [data-theme="candy"] h6 {
+  [data-theme="candy"] body:not(:has([data-bare])) h1,
+  [data-theme="candy"] body:not(:has([data-bare])) h2,
+  [data-theme="candy"] body:not(:has([data-bare])) h3,
+  [data-theme="candy"] body:not(:has([data-bare])) h4,
+  [data-theme="candy"] body:not(:has([data-bare])) h5,
+  [data-theme="candy"] body:not(:has([data-bare])) h6 {
     font-family: var(--font-display);
     font-weight: 700;
     letter-spacing: -0.01em;
@@ -630,11 +631,6 @@ a {
   font-size: 0.6875rem;
   color: hsl(var(--subtle));
 }
-@media (prefers-reduced-motion: reduce) {
-  [data-theme="candy"] .prose blockquote {
-    transform: none;
-  }
-}
 
 pre::-webkit-scrollbar {
   display: none;
@@ -762,6 +758,12 @@ table {
     color: #fff;
     -webkit-text-stroke: 3px hsl(var(--foreground));
     text-shadow: 10px 10px 0 hsl(var(--candy-pink));
+  }
+  @supports not (-webkit-text-stroke: 1px currentColor) {
+    [data-theme="candy"] .plate-wordmark {
+      color: hsl(var(--foreground));
+      text-shadow: none;
+    }
   }
 
   /* The rails. A `<span>` is inline by default, so this is what makes the box
