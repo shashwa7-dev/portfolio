@@ -133,17 +133,18 @@ export default function Navbar() {
             type="button"
             onClick={cycleTheme}
             aria-label={`Theme: ${themeLabel(theme)}. Switch to ${themeLabel(upcoming).toLowerCase()}`}
-            className={`${control} w-8 justify-center candy:w-8`}
+            className={`${control} w-8 justify-center candy:w-8 dark:w-auto dark:bg-transparent dark:hover:bg-transparent`}
           >
             {theme === "light" ? (
               <Moon className="h-4 w-4" />
             ) : theme === "dark" ? (
               <Image
-                src="/candy-wrapper.png"
+                src="/candy-bat.gif"
                 alt=""
-                width={20}
-                height={20}
-                className="h-5 w-auto"
+                width={128}
+                height={116}
+                unoptimized
+                className="h-8 w-auto"
               />
             ) : (
               <Sun className="h-4 w-4" />

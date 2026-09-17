@@ -11,7 +11,7 @@ The site gets a third theme, **Candy**, beside the existing Paper light and Pape
 
 Candy was distilled from a Simpsons concept website on Behance. Only the system transfers: flat colour, hard shadows, thick outlines, illustration-first playfulness. No characters, logo or lettering from the show appear anywhere.
 
-Dark's control mark changed from Sun to the wrapper image; everything else in dark is unchanged.
+Dark's control mark changed from Sun to the animated candy-corn bat; everything else in dark is unchanged.
 
 ## 2. Decisions already made
 
@@ -57,7 +57,7 @@ Replaces the current one. Reads the key, validates it against the three names, r
 
 ### UI
 
-- **Navbar control.** One button, same `control` class family as today. The control shows the theme you will switch to: Moon in light, the candy wrapper image (`public/candy-wrapper.png`) in dark, and the Sun in Candy. Click cycles. `aria-label` reads "Theme: Candy. Switch to light" and so on. In Candy the control is a white sticker pill like the other navbar controls.
+- **Navbar control.** One button, same `control` class family as today. The control shows the theme you will switch to: Moon in light, the animated candy-corn bat (`public/candy-bat.gif`, no box around it) in dark, and the Sun in Candy. Click cycles. `aria-label` reads "Theme: Candy. Switch to light" and so on. In Candy the control is a white sticker pill like the other navbar controls.
 - **Command palette.** "Toggle theme" becomes three rows under Actions: "Light theme", "Dark theme", "Candy theme", each calling `setTheme`. The `t` key hint moves to a single "Cycle theme" row.
 - **Shortcut.** `t` cycles. `lib/shortcutsData.ts` label becomes "Cycle theme".
 - **No crossfade** on switch. `CLAUDE.md` rejected a theme-toggle colour crossfade and that stands.
