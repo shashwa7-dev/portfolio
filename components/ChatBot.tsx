@@ -335,8 +335,8 @@ const S7Bot = () => {
             exit="exit"
             className="fixed bottom-[60px] right-4 -md:right-2.5 -md:hidden"
           >
-            <div className="rounded-lg border border-border-strong bg-card shadow-md px-3 py-2 max-w-[200px]">
-              <p className="text-xs text-card-foreground">
+            <div className="rounded-lg border border-border-strong bg-card shadow-md px-3 py-2 max-w-[200px] sticker sticker-sm candy:rounded-tile candy:border-white candy:bg-candy-butter candy:shadow-sticker-2 tilt-b">
+              <p className="text-xs text-card-foreground candy:font-semibold candy:text-foreground">
                 {notificationText}
                 <span className="ml-0.5 animate-blink">|</span>
               </p>
@@ -356,7 +356,7 @@ const S7Bot = () => {
             whileHover={hoverLiftRotate}
             whileTap={tapPress}
             onClick={() => setIsOpen(true)}
-            className="group fixed bottom-4 right-4 -md:right-2.5 grid h-12 w-12 place-items-center rounded-2xl bg-white shadow-lg ring-1 ring-border-strong"
+            className="group fixed bottom-4 right-4 -md:right-2.5 grid h-12 w-12 place-items-center rounded-2xl bg-white shadow-lg ring-1 ring-border-strong sticker candy:rounded-full candy:ring-0 candy:shadow-sticker-3 tilt-i"
           >
             {/* An inline mark rather than a raster. It draws in `currentColor`, so
                 it is monochrome by construction and needs no greyscale class, and
@@ -386,14 +386,14 @@ const S7Bot = () => {
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="w-[360px] max-h-[520px] rounded-2xl border border-border bg-elevated shadow-2xl flex flex-col overflow-hidden"
+            className="w-[360px] max-h-[520px] rounded-2xl border border-border bg-elevated shadow-2xl flex flex-col overflow-hidden sticker candy:rounded-sticker candy:border-white candy:bg-white candy:shadow-sticker-4"
           >
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-border bg-card px-4 py-3">
+            <div className="flex items-center justify-between border-b border-border bg-card px-4 py-3 candy:border-b-2 candy:border-foreground candy:bg-candy-pink">
               <div className="flex items-center gap-2">
-                <div className="relative grid h-9 w-9 flex-shrink-0 place-items-center rounded-lg bg-white">
+                <div className="relative grid h-9 w-9 flex-shrink-0 place-items-center rounded-lg bg-white candy:outline candy:outline-2 candy:outline-foreground tilt-a">
                   <AgentMark className="h-6 w-auto text-black" />
-                  <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-card" />
+                  <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-card candy:ring-candy-pink" />
                 </div>
                 <div>
                   <h3 className="text-base leading-tight text-foreground">
@@ -406,7 +406,7 @@ const S7Bot = () => {
               </div>
               <button
                 onClick={handleClose}
-                className="rounded-lg p-1.5 hover:bg-elevated text-muted-foreground transition-[color,background-color,transform] duration-150 ease-out active:scale-[0.94]"
+                className="rounded-lg p-1.5 hover:bg-elevated text-muted-foreground transition-[color,background-color,transform] duration-150 ease-out active:scale-[0.94] candy:text-foreground candy:hover:bg-white"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -495,7 +495,7 @@ const S7Bot = () => {
                         animate="visible"
                         transition={{ delay: stagger.loose + idx * stagger.tight }}
                         onClick={() => sendMessage(prompt)}
-                        className="group/prompt flex w-full items-start gap-1.5 py-1 text-left text-xs text-muted-foreground transition-colors duration-base ease-out hover:text-foreground"
+                        className="group/prompt flex w-full items-start gap-1.5 py-1 text-left text-xs text-muted-foreground transition-colors duration-base ease-out hover:text-foreground sticker sticker-sm candy:w-auto candy:rounded-full candy:px-3 candy:py-1.5 candy:mb-2 candy:font-semibold candy:text-foreground"
                       >
                         <ArrowRight className="mt-0.5 h-3 w-3 shrink-0 text-subtle transition-colors duration-base ease-out group-hover/prompt:text-foreground" />
                         {prompt}
@@ -523,8 +523,8 @@ const S7Bot = () => {
                       className={cn(
                         "relative px-3 py-2 text-sm max-w-[85%]",
                         msg.role === "user"
-                          ? "bg-accent text-accent-foreground rounded-2xl rounded-br-md"
-                          : "bg-card border border-border text-foreground rounded-2xl rounded-bl-md"
+                          ? "bg-accent text-accent-foreground rounded-2xl rounded-br-md candy:bg-candy-pink candy:text-foreground candy:outline candy:outline-[1.5px] candy:outline-foreground"
+                          : "bg-card border border-border text-foreground rounded-2xl rounded-bl-md candy:bg-white candy:border-[1.5px]"
                       )}
                     >
                       {showThinking ? (
@@ -583,7 +583,7 @@ const S7Bot = () => {
                     initial="hidden"
                     animate="visible"
                     exit="exit"
-                    className="absolute bottom-2 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 rounded-md border border-border bg-card px-2.5 py-1 text-xs text-muted-foreground shadow-md transition-[color,transform] duration-150 ease-out hover:text-foreground active:scale-[0.94]"
+                    className="absolute bottom-2 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 rounded-md border border-border bg-card px-2.5 py-1 text-xs text-muted-foreground shadow-md transition-[color,transform] duration-150 ease-out hover:text-foreground active:scale-[0.94] candy:border-2 candy:border-foreground candy:text-foreground candy:shadow-sticker-1 candy:rounded-full"
                   >
                     <ArrowDown className="h-3 w-3" /> New messages
                   </motion.button>
@@ -592,7 +592,7 @@ const S7Bot = () => {
             </div>
 
             {/* Input */}
-            <form onSubmit={handleSubmit} className="border-t border-border bg-card p-3">
+            <form onSubmit={handleSubmit} className="border-t border-border bg-card p-3 candy:border-t-2 candy:border-foreground candy:bg-candy-butter">
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -602,12 +602,12 @@ const S7Bot = () => {
                     emailState ? "Type your response..." : "Ask a question..."
                   }
                   disabled={isStreaming}
-                  className="flex-1 px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
+                  className="flex-1 px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground candy:border-2 candy:border-foreground candy:rounded-full candy:bg-white candy:px-4"
                 />
                 <button
                   type="submit"
                   disabled={isStreaming || !message.trim()}
-                  className="flex items-center justify-center h-9 w-9 rounded-lg bg-accent text-accent-foreground hover:opacity-90 transition-[opacity,transform] duration-150 ease-out disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0 active:scale-[0.94]"
+                  className="flex items-center justify-center h-9 w-9 rounded-lg bg-accent text-accent-foreground hover:opacity-90 transition-[opacity,transform] duration-150 ease-out disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0 active:scale-[0.94] sticker candy:rounded-full candy:bg-candy-pink candy:text-foreground candy:hover:opacity-100"
                 >
                   <PaperPlaneTilt className="h-4 w-4" />
                 </button>
@@ -627,7 +627,7 @@ function TypingDots() {
       {[0, 1, 2].map((i) => (
         <span
           key={i}
-          className="h-1.5 w-1.5 rounded-full bg-muted-foreground/70"
+          className="h-1.5 w-1.5 rounded-full bg-muted-foreground/70 candy:bg-foreground"
           style={{
             animation: "chatDotPulse 1.2s ease-in-out infinite",
             animationDelay: `${i * 0.15}s`,
