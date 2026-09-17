@@ -59,7 +59,7 @@ import { tint, tilt } from "@/lib/candy";
  */
 export default function About() {
   return (
-    <header className="pt-10 md:pt-14 candy:relative">
+    <header className="pt-10 md:pt-14 candy:relative candy:pb-6">
       <Container width="reading">
         <div className="relative space-y-7 sm:space-y-8 candy:space-y-5 candy:sm:space-y-6">
           <div className="flex items-start gap-3.5">
