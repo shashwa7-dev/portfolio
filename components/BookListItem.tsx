@@ -31,7 +31,7 @@ export default function BookListItem({
   return (
     <Link
       href={`/books/${slug}`}
-      className="group flex items-center gap-3 px-5 py-3 transition-[color,background-color,transform] duration-fast ease-out hover:bg-elevated active:scale-[0.98]"
+      className="group flex items-center gap-3 px-5 py-3 transition-[color,background-color,transform] duration-fast ease-out hover:bg-elevated active:scale-[0.98] candy:px-4 candy:py-2.5"
     >
       <div className="relative h-14 w-10 shrink-0 overflow-hidden rounded-md border border-border bg-elevated candy:rounded-tag candy:border-2 candy:border-foreground tilt-c">
         <Image

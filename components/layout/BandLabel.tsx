@@ -26,7 +26,7 @@ export default function BandLabel({
   const candyTone = tone === "butter" ? "candy:bg-candy-butter" : "candy:bg-candy-lavender";
   return (
     <Label
-      className={`sticker sticker-sm candy:inline-flex candy:items-center candy:gap-2 candy:rounded-tag candy:px-3 candy:py-1.5 candy:font-semibold candy:text-foreground tilt-e ${candyTone}`}
+      className={`sticker sticker-sm candy:inline-flex candy:items-center candy:gap-2 candy:rounded-tag candy:px-2.5 candy:py-1 candy:font-semibold candy:text-foreground tilt-e ${candyTone}`}
     >
       <span className="text-foreground">
         [ {id}

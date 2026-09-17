@@ -195,7 +195,7 @@ export default function StackIcon({
            the set reads as one component at three sizes rather than three
            components. */
         "group inline-flex items-center gap-2 rounded-sm border border-border bg-card px-3.5 py-2 text-xs text-muted-foreground transition-colors duration-base ease-out hover:border-border-strong hover:bg-elevated hover:text-foreground",
-        "sticker sticker-sm candy:rounded-full candy:font-semibold candy:text-foreground candy:hover:bg-white",
+        "sticker sticker-sm candy:rounded-full candy:font-semibold candy:text-foreground candy:hover:bg-white candy:px-3 candy:py-1.5",
         className
       )}
     >

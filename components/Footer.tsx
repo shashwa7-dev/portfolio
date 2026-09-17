@@ -53,8 +53,8 @@ const Footer = () => {
   const navSecondary = footerLinks.slice(half);
 
   return (
-    <footer className="site-footer mt-24 border-t border-border candy:border-0">
-      <Container className="grid grid-cols-2 gap-x-10 gap-y-9 pt-10 md:grid-cols-4">
+    <footer className="site-footer mt-24 border-t border-border candy:border-0 candy:mt-16">
+      <Container className="grid grid-cols-2 gap-x-10 gap-y-9 pt-10 md:grid-cols-4 candy:pt-8">
         <div className="col-span-2 md:col-span-1">
           <Label className="mb-3 block">Studio</Label>
           <Link
@@ -162,7 +162,7 @@ const Footer = () => {
         </div>
       </Container>
 
-      <Container className="grid grid-cols-2 gap-x-10 gap-y-9 pb-10 pt-9 md:grid-cols-4">
+      <Container className="grid grid-cols-2 gap-x-10 gap-y-9 pb-10 pt-9 md:grid-cols-4 candy:pb-8 candy:pt-7">
         <div className="col-span-2 md:col-span-1">
           <Label className="mb-3 block">Email</Label>
           <a

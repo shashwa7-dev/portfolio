@@ -158,7 +158,7 @@ const TechStack = () => {
                       name={t}
                       showLabel
                       size={16}
-                      className="border-border-strong px-4 py-2 text-sm font-medium text-foreground candy:h-10"
+                      className="border-border-strong px-4 py-2 text-sm font-medium text-foreground candy:h-9 candy:px-3.5"
                     />
                   </li>
                 ))}

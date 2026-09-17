@@ -40,7 +40,7 @@ export default function Band({
       )}
     >
       <span aria-hidden className="band-tick candy:hidden" />
-      <Container className="flex items-center justify-between gap-4 py-3">
+      <Container className="flex items-center justify-between gap-4 py-3 candy:py-1.5">
         {children}
       </Container>
     </div>

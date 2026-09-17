@@ -61,7 +61,7 @@ export default function About() {
   return (
     <header className="pt-10 md:pt-14">
       <Container width="reading">
-        <div className="relative space-y-7 sm:space-y-8">
+        <div className="relative space-y-7 sm:space-y-8 candy:space-y-5 candy:sm:space-y-6">
           <div className="flex items-start gap-3.5">
             {/* Availability rides the avatar, LinkedIn style, instead of taking a
                 row of its own as a pill.
@@ -256,13 +256,13 @@ export default function About() {
           <div className="flex flex-wrap items-center gap-3">
             <a
               href="/#experience"
-              className="inline-flex items-center gap-2 rounded-md border border-transparent bg-accent px-5 py-2.5 text-sm font-medium text-accent-foreground transition-[color,background-color,transform] duration-fast ease-out hover:bg-accent-hover active:scale-[0.97] sticker candy:rounded-full candy:border-white candy:bg-candy-pink candy:text-foreground candy:font-bold candy:hover:bg-candy-pink tilt-md-e"
+              className="inline-flex items-center gap-2 rounded-md border border-transparent bg-accent px-5 py-2.5 text-sm font-medium text-accent-foreground transition-[color,background-color,transform] duration-fast ease-out hover:bg-accent-hover active:scale-[0.97] sticker candy:rounded-full candy:border-white candy:bg-candy-pink candy:text-foreground candy:font-bold candy:hover:bg-candy-pink tilt-md-e candy:px-4 candy:py-2"
             >
               View selected work <ArrowRight className="h-4 w-4" />
             </a>
             <a
               href="mailto:contact@shashwa7.in"
-              className="inline-flex items-center gap-2 rounded-md border border-border-strong px-5 py-2.5 text-sm font-medium text-foreground transition-[color,background-color,border-color,transform] duration-fast ease-out hover:border-foreground hover:bg-elevated active:scale-[0.97] sticker candy:rounded-full candy:font-bold candy:hover:bg-white candy:hover:border-white tilt-md-b"
+              className="inline-flex items-center gap-2 rounded-md border border-border-strong px-5 py-2.5 text-sm font-medium text-foreground transition-[color,background-color,border-color,transform] duration-fast ease-out hover:border-foreground hover:bg-elevated active:scale-[0.97] sticker candy:rounded-full candy:font-bold candy:hover:bg-white candy:hover:border-white tilt-md-b candy:px-4 candy:py-2"
             >
               <Coffee className="h-4 w-4" /> Get in touch
             </a>
@@ -359,7 +359,7 @@ export default function About() {
             <span className="font-mono text-2xs uppercase tracking-label text-subtle">
               Worked with
             </span>
-            <span className="flex items-center">
+            <span className="flex items-center candy:hidden">
               {clients.map((c, i) => (
                 <Tooltip key={c.name}>
                   <TooltipTrigger asChild>
@@ -384,8 +384,18 @@ export default function About() {
                 </Tooltip>
               ))}
             </span>
-            <span className="text-sm text-muted-foreground transition-colors duration-fast ease-out group-hover:text-foreground">
+            <span className="text-sm text-muted-foreground transition-colors duration-fast ease-out group-hover:text-foreground candy:hidden">
               {clients.map((c) => c.name).join(", ")}
+            </span>
+            <span className="hidden flex-wrap items-center gap-1.5 candy:flex">
+              {clients.map((c, i) => (
+                <span
+                  key={c.name}
+                  className={`sticker sticker-sm candy:rounded-tag candy:px-2 candy:py-0.5 candy:text-xs candy:font-semibold candy:text-foreground ${tilt(i)}`}
+                >
+                  {c.name}
+                </span>
+              ))}
             </span>
           </a>
         </div>
@@ -423,9 +433,9 @@ export default function About() {
           between the two rows run edge to edge. Left inside the padded column
           it stopped 24px short at each end, which reads as a broken line
           sitting between two full-width ones. */}
-      <div className="mt-10 md:mt-12">
+      <div className="mt-10 md:mt-12 candy:mt-7 candy:md:mt-8">
         <Container width="reading" className="border-t border-border candy:border-0">
-          <div className="-mx-6 grid grid-cols-2 md:mx-0 md:grid-cols-4 candy:mx-0 candy:gap-4 candy:px-1">
+          <div className="-mx-6 grid grid-cols-2 md:mx-0 md:grid-cols-4 candy:mx-0 candy:gap-3 candy:px-1">
             {stats.map((s, i) => (
               <div
                 key={s.c}

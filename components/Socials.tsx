@@ -23,7 +23,7 @@ const Socials = () => {
         <div className="flex flex-wrap items-center gap-3">
           <a
             href={`mailto:${contactEmail}`}
-            className="inline-block rounded-md bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground hover:opacity-90 transition-opacity sticker candy:rounded-full candy:bg-candy-pink candy:text-foreground candy:font-bold candy:hover:opacity-100 tilt-md-c"
+            className="inline-block rounded-md bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground hover:opacity-90 transition-opacity sticker candy:rounded-full candy:bg-candy-pink candy:text-foreground candy:font-bold candy:hover:opacity-100 tilt-md-c candy:px-4 candy:py-2"
           >
             {contactEmail}
           </a>
@@ -54,7 +54,7 @@ const Socials = () => {
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`flex items-center gap-1.5 hover:text-foreground transition-colors sticker sticker-sm candy:rounded-full candy:px-3 candy:py-1.5 candy:font-semibold candy:text-foreground ${tilt(i)}`}
+                className={`flex items-center gap-1.5 hover:text-foreground transition-colors sticker sticker-sm candy:rounded-full candy:px-2.5 candy:py-1 candy:font-semibold candy:text-foreground ${tilt(i)}`}
               >
                 <Icon className="w-4 h-4" />
                 <span>{name}</span>
