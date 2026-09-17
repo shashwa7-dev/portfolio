@@ -56,10 +56,10 @@ export default function Navbar() {
             reader could announce for the home link is its href. */}
         <Tooltip>
           <TooltipTrigger asChild>
-            <Link href="/" aria-label="offcod8, home" className="flex shrink-0 sticker sticker-sm candy:rounded-tag candy:p-1.5 tilt-a">
+            <Link href="/" aria-label="offcod8, home" className="flex shrink-0 sticker sticker-sm candy:rounded-tag candy:p-0.5 tilt-a">
               <span
                 aria-hidden
-                className="block h-7 w-7 bg-foreground"
+                className="block h-7 w-7 bg-foreground candy:h-6 candy:w-6"
                 style={{
                   WebkitMaskImage: "url(/brand-mark.png)",
                   maskImage: "url(/brand-mark.png)",

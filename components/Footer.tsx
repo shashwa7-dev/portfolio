@@ -59,7 +59,7 @@ const Footer = () => {
           <Label className="mb-3 block">Studio</Label>
           <Link
             href="/"
-            className="inline-flex items-center gap-2.5 transition-opacity duration-fast ease-out hover:opacity-80"
+            className="inline-flex items-center gap-2.5 transition-opacity duration-fast ease-out hover:opacity-80 sticker sticker-sm candy:rounded-tag candy:px-2 candy:py-1 tilt-i"
           >
             {/* Masked rather than drawn as an <img>: the asset is one flat
                 colour on transparency, so as an image it would stay #0E0D0C
@@ -67,7 +67,7 @@ const Footer = () => {
                 header uses. */}
             <span
               aria-hidden
-              className="block h-6 w-6 shrink-0 bg-foreground sticker sticker-sm candy:rounded-tag candy:p-1 tilt-i"
+              className="block h-6 w-6 shrink-0 bg-foreground"
               style={{
                 WebkitMaskImage: "url(/brand-mark.png)",
                 maskImage: "url(/brand-mark.png)",
