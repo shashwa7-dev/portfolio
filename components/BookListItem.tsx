@@ -58,7 +58,7 @@ export default function BookListItem({
               complete, so recolouring at 100% was redundant signal carried by a
               hue the rest of the app does not use. */}
           <div
-            className="h-1 rounded-full bg-foreground transition-[width] duration-base ease-out candy:bg-candy-pink candy:border-r candy:border-foreground"
+            className="h-1 rounded-full bg-foreground transition-[width] duration-base ease-out candy:h-2 candy:bg-candy-pink candy:border-r candy:border-foreground"
             style={{ width: `${progress}%` }}
           />
         </div>

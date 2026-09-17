@@ -93,7 +93,7 @@ export default function LaunchNudge() {
       target="_blank"
       rel="noopener noreferrer"
       onClick={dismiss}
-      className={`group fixed bottom-4 left-4 z-40 block max-w-[16.5rem] overflow-hidden rounded-lg border border-border-strong bg-card/95 px-3.5 py-3 shadow-lg backdrop-blur transition-[opacity,transform,border-color] ease-out active:scale-[0.98] motion-reduce:translate-y-0 ${
+      className={`group fixed bottom-4 left-4 z-40 block max-w-[16.5rem] overflow-hidden rounded-lg border border-border-strong bg-card/95 px-3.5 py-3 shadow-lg backdrop-blur transition-[opacity,transform,border-color] ease-out active:scale-[0.98] motion-reduce:translate-y-0 sticker candy:rounded-tile candy:border-white candy:hover:border-white ${
         shown
           ? "translate-y-0 opacity-100 duration-med"
           : "translate-y-2 opacity-0 duration-fast"
@@ -110,7 +110,7 @@ export default function LaunchNudge() {
           fill
           sizes="264px"
           quality={70}
-          className="object-cover object-right-top opacity-[0.22] grayscale candy:grayscale-0 dark:opacity-[0.28]"
+          className="object-cover object-right-top opacity-[0.22] grayscale candy:grayscale-0 candy:opacity-[0.3] dark:opacity-[0.28]"
           style={{
             maskImage: "linear-gradient(to bottom left, black 0%, transparent 62%)",
             WebkitMaskImage:
@@ -119,14 +119,14 @@ export default function LaunchNudge() {
         />
       </span>
 
-      <p className="relative font-mono text-2xs uppercase tracking-label text-subtle">
+      <p className="relative font-mono text-2xs uppercase tracking-label text-subtle candy:inline-flex candy:items-center candy:rounded-tag candy:bg-candy-pink candy:px-2 candy:py-0.5 candy:font-semibold candy:text-foreground">
         Just shipped
       </p>
-      <p className="relative mt-1.5 flex items-center gap-1.5 text-sm font-semibold text-foreground">
+      <p className="relative mt-1.5 flex items-center gap-1.5 text-sm font-semibold text-foreground candy:font-display candy:text-base">
         Mehfil
         <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-subtle transition-[transform,color] duration-base ease-out group-hover:translate-x-0.5 group-hover:text-foreground motion-reduce:group-hover:translate-x-0" />
       </p>
-      <p className="relative mt-1 text-2xs leading-relaxed text-muted-foreground">
+      <p className="relative mt-1 text-2xs leading-relaxed text-muted-foreground candy:text-foreground/80">
         Golden-era Hindi film music, 3,916 songs across 66 stations.
       </p>
     </a>
