@@ -9,6 +9,7 @@ import ProjectPreviewCard from "@/components/ProjectPreviewCard";
 import { workProjectToCard } from "@/lib/projectCards";
 import ClientStrip from "@/components/common/ClientStrip";
 import { EmploymentTag, OrgLinkChip, Tag } from "@/components/common/OrgChips";
+import { ViewAllLink } from "@/components/common/ViewAllLink";
 
 export default function ExperienceWork() {
   return (
@@ -78,7 +79,7 @@ export default function ExperienceWork() {
                   by side. Shortening the rail needs no mask, so it also cannot
                   drift out of alignment or depend on a box matching the page
                   background in both themes. */}
-              <div className="relative pl-9 pt-2 before:absolute before:left-3 before:top-0 before:bottom-[1.625rem] before:w-px before:bg-border candy:before:w-0 candy:before:bg-transparent candy:before:border-l-2 candy:before:border-dashed candy:before:border-foreground">
+              <div className="relative pl-9 pt-2 before:absolute before:left-3 before:top-0 before:bottom-[1.625rem] before:w-px before:bg-border candy:before:w-0 candy:before:bg-transparent candy:before:border-l-2 candy:before:border-dashed candy:before:border-foreground/40">
                 {/* Role metadata as a real description list, so each value says
                     what it is to a screen reader and to the markdown renditions.
                     Values carry `whitespace-nowrap` so a narrow column wraps
@@ -181,13 +182,9 @@ export default function ExperienceWork() {
                       <span className="font-mono text-2xs uppercase tracking-label text-subtle">
                         Featured projects
                       </span>
-                      <Link
-                        href={`/work/${org.slug}`}
-                        className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors duration-base ease-out hover:text-foreground"
-                      >
-                        View all {org.projects.length}{" "}
-                        <ArrowRight className="h-3.5 w-3.5" />
-                      </Link>
+                      <ViewAllLink href={`/work/${org.slug}`}>
+                        View all {org.projects.length}
+                      </ViewAllLink>
                     </div>
                     <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
                       {featured.map((p, i) => (
@@ -223,7 +220,7 @@ export default function ExperienceWork() {
                     are the same two the rail above uses. */}
                 <span
                   aria-hidden
-                  className="pointer-events-none absolute bottom-2.5 left-3 h-4 w-4 rounded-bl-md border-b border-l border-border candy:border-b-2 candy:border-l-2 candy:border-dashed candy:border-foreground"
+                  className="pointer-events-none absolute bottom-2.5 left-3 h-4 w-4 rounded-bl-md border-b border-l border-border candy:border-b-2 candy:border-l-2 candy:border-dashed candy:border-foreground/40"
                 />
               </div>
             </div>

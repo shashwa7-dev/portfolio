@@ -59,9 +59,9 @@ import { tint, tilt } from "@/lib/candy";
  */
 export default function About() {
   return (
-    <header className="pt-10 md:pt-14 candy:relative candy:pb-6">
+    <header className="pt-10 md:pt-14 candy:pb-6">
       <Container width="reading">
-        <div className="relative space-y-7 sm:space-y-8 candy:space-y-5 candy:sm:space-y-6">
+        <div className="relative space-y-[1.925rem] sm:space-y-[2.2rem] candy:space-y-[1.375rem] candy:sm:space-y-[1.65rem]">
           <div className="flex items-start gap-3.5">
             {/* Availability rides the avatar, LinkedIn style, instead of taking a
                 row of its own as a pill.
@@ -391,8 +391,15 @@ export default function About() {
               {clients.map((c, i) => (
                 <span
                   key={c.name}
-                  className={`sticker sticker-sm candy:rounded-tag candy:px-2 candy:py-0.5 candy:text-xs candy:font-semibold candy:text-foreground ${tilt(i)}`}
+                  className={`sticker sticker-sm candy:inline-flex candy:items-center candy:gap-1.5 candy:rounded-tag candy:py-0.5 candy:pl-1 candy:pr-2 candy:text-xs candy:font-semibold candy:text-foreground ${tilt(i)}`}
                 >
+                  <Image
+                    src={c.img}
+                    alt=""
+                    width={32}
+                    height={32}
+                    className="h-4 w-4 rounded-full object-cover outline outline-[1.5px] outline-foreground"
+                  />
                   {c.name}
                 </span>
               ))}
@@ -433,9 +440,9 @@ export default function About() {
           between the two rows run edge to edge. Left inside the padded column
           it stopped 24px short at each end, which reads as a broken line
           sitting between two full-width ones. */}
-      <div className="mt-10 md:mt-12 candy:mt-5 candy:md:mt-6 candy:xl:absolute candy:xl:top-14 candy:xl:mt-0 candy:xl:w-52 candy:xl:left-[calc(50%+var(--measure)/2+2rem)]">
-        <Container width="reading" className="border-t border-border candy:border-0 candy:xl:mx-0 candy:xl:max-w-none candy:xl:px-0">
-          <div className="-mx-6 grid grid-cols-2 md:mx-0 md:grid-cols-4 candy:mx-0 candy:w-fit candy:max-w-full candy:grid-cols-2 candy:sm:grid-cols-4 candy:gap-3 candy:px-1 candy:xl:grid-cols-2 candy:xl:gap-2.5">
+      <div className="mt-10 md:mt-12 candy:mt-5 candy:md:mt-6">
+        <Container width="reading" className="border-t border-border candy:border-0">
+          <div className="-mx-6 grid grid-cols-2 md:mx-0 md:grid-cols-4 candy:mx-0 candy:w-fit candy:max-w-full candy:grid-cols-2 candy:sm:grid-cols-4 candy:gap-3 candy:px-1">
             {stats.map((s, i) => (
               <div
                 key={s.c}

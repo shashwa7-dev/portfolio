@@ -12,7 +12,7 @@ import {
 
 describe("theme names", () => {
   it("has exactly three themes in cycle order", () => {
-    expect(THEMES).toEqual(["light", "dark", "candy"]);
+    expect(THEMES).toEqual(["light", "candy", "dark"]);
   });
   it("uses the same storage key as before", () => {
     expect(THEME_STORAGE_KEY).toBe("theme");
@@ -47,10 +47,10 @@ describe("resolveTheme", () => {
 });
 
 describe("nextTheme", () => {
-  it("cycles light, dark, candy, light", () => {
-    expect(nextTheme("light")).toBe("dark");
-    expect(nextTheme("dark")).toBe("candy");
-    expect(nextTheme("candy")).toBe("light");
+  it("cycles light, candy, dark, light", () => {
+    expect(nextTheme("light")).toBe("candy");
+    expect(nextTheme("candy")).toBe("dark");
+    expect(nextTheme("dark")).toBe("light");
   });
 });
 

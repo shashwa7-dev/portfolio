@@ -10,7 +10,7 @@
  * Absent (or garbage) means follow the OS between light and dark. Candy is
  * light only and ignores the OS.
  */
-export const THEMES = ["light", "dark", "candy"] as const;
+export const THEMES = ["light", "candy", "dark"] as const;
 export type Theme = (typeof THEMES)[number];
 
 export const THEME_STORAGE_KEY = "theme";

@@ -56,7 +56,7 @@ export default function Section({
       )}
       <Container width={width} className="py-10 md:py-14 candy:py-7 candy:md:py-9">
         {title && (
-          <h2 className="mb-8 text-2xl text-foreground md:text-3xl candy:mt-1 candy:mb-5">{title}</h2>
+          <h2 className="mb-8 text-2xl font-medium text-foreground md:text-3xl candy:mt-1 candy:mb-5">{title}</h2>
         )}
         {children}
       </Container>

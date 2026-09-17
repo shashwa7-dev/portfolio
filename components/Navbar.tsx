@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Moon, Sun } from "@phosphor-icons/react/ssr";
 import Image from "next/image";
+import CandyMusic from "@/components/CandyMusic";
 import { useTheme } from "@/app/hooks/useTheme";
 import { nextTheme, themeLabel } from "@/lib/theme";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -41,7 +42,7 @@ export default function Navbar() {
           two different widths stacked on each other. Through `Container`
           rather than a second hardcoded max-width, so there is one place the
           measure is decided. */}
-      <Container as="nav" className="flex items-center justify-between py-3.5">
+      <Container as="nav" className="flex items-center justify-between py-3.5 candy:font-display">
         {/* The mark alone, with no wordmark beside it.
 
             It is painted as a mask rather than drawn as an <img>: the asset is
@@ -129,27 +130,34 @@ export default function Navbar() {
             CV
           </Link>
 
-          <button
-            type="button"
-            onClick={cycleTheme}
-            aria-label={`Theme: ${themeLabel(theme)}. Switch to ${themeLabel(upcoming).toLowerCase()}`}
-            className={`${control} w-8 justify-center candy:w-8 dark:w-auto dark:bg-transparent dark:hover:bg-transparent`}
-          >
-            {theme === "light" ? (
-              <Moon className="h-4 w-4" />
-            ) : theme === "dark" ? (
-              <Image
-                src="/candy-bat.gif"
-                alt=""
-                width={128}
-                height={116}
-                unoptimized
-                className="h-8 w-auto"
-              />
-            ) : (
-              <Sun className="h-4 w-4" />
-            )}
-          </button>
+          <CandyMusic />
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                onClick={cycleTheme}
+                aria-label={`Theme: ${themeLabel(theme)}. Switch to ${themeLabel(upcoming).toLowerCase()}`}
+                className={`${control} justify-center ${theme === "light" ? "w-auto bg-transparent hover:bg-transparent" : "w-8"}`}
+              >
+                {theme === "light" ? (
+                  <Image
+                    src="/candy-treat.avif"
+                    alt=""
+                    width={128}
+                    height={128}
+                    unoptimized
+                    className="h-8 w-auto"
+                  />
+                ) : theme === "candy" ? (
+                  <Moon className="h-4 w-4" />
+                ) : (
+                  <Sun className="h-4 w-4" />
+                )}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>Switch to {themeLabel(upcoming)}</TooltipContent>
+          </Tooltip>
 
           <button
             type="button"

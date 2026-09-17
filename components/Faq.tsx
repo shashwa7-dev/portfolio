@@ -32,10 +32,10 @@ export default function Faq() {
             value={`faq-${i}`}
             className={`border-b border-border px-5 last:border-b-0 sticker sticker-hover candy:rounded-sticker candy:border-white candy:px-4 candy:last:border-b-[3px] candy:data-[state=open]:shadow-sticker-4 candy:data-[state=open]:rotate-0 ${tiltMd(i)} ${tint(i)}`}
           >
-            <AccordionTrigger className="py-4 text-left text-base font-medium text-foreground candy:font-bold candy:hover:no-underline candy:py-3">
+            <AccordionTrigger className="py-4 text-left text-lg font-medium text-foreground candy:font-bold candy:hover:no-underline candy:py-3">
               {f.q}
             </AccordionTrigger>
-            <AccordionContent className="pb-4 text-sm leading-relaxed text-muted-foreground candy:text-foreground/80">
+            <AccordionContent className="pb-4 text-base leading-relaxed text-muted-foreground candy:text-foreground/80">
               {f.a}
             </AccordionContent>
           </AccordionItem>

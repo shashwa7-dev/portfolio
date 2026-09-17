@@ -3,6 +3,7 @@ import { ArrowRight } from "@phosphor-icons/react/ssr";
 import { books } from "@/lib/books";
 import BookListItem from "./BookListItem";
 import Section from "@/components/layout/Section";
+import { ViewAllLink } from "@/components/common/ViewAllLink";
 import { HOMEPAGE_SECTION_TOTAL } from "@/lib/sections";
 import Bento from "@/components/layout/Bento";
 
@@ -24,7 +25,7 @@ export default function Activity() {
         </div>
         <div className="col-span-full flex items-center justify-between bg-card px-5 py-3 candy:px-4 candy:py-2.5">
           <p className="font-mono text-2xs uppercase tracking-label text-subtle">Currently Reading</p>
-          <Link href="/books" className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground candy:font-semibold candy:text-foreground">View all <ArrowRight className="h-3.5 w-3.5" /></Link>
+          <ViewAllLink href="/books">View all</ViewAllLink>
         </div>
         {books.slice(0, 3).map((book) => (
           <div key={book.slug} className="col-span-full bg-card">
