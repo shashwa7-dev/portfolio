@@ -57,7 +57,7 @@ Replaces the current one. Reads the key, validates it against the three names, r
 
 ### UI
 
-- **Navbar control.** One button, same `control` class family as today. The control shows the theme you will switch to: Moon in light, the candy wrapper image (`public/candy-wrapper.png`) in dark, and in Candy the wrapper plus the word "Candy" at every width; there is no Sun. Click cycles. `aria-label` reads "Theme: Candy. Switch to light" and so on. In Candy the control is itself a sticker pill with the dot and the word "Candy" at `md` and up, dot only below.
+- **Navbar control.** One button, same `control` class family as today. The control shows the theme you will switch to: Moon in light, the candy wrapper image (`public/candy-wrapper.png`) in dark, and the Sun in Candy. Click cycles. `aria-label` reads "Theme: Candy. Switch to light" and so on. In Candy the control is a white sticker pill like the other navbar controls.
 - **Command palette.** "Toggle theme" becomes three rows under Actions: "Light theme", "Dark theme", "Candy theme", each calling `setTheme`. The `t` key hint moves to a single "Cycle theme" row.
 - **Shortcut.** `t` cycles. `lib/shortcutsData.ts` label becomes "Cycle theme".
 - **No crossfade** on switch. `CLAUDE.md` rejected a theme-toggle colour crossfade and that stands.

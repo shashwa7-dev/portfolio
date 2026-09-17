@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Moon } from "@phosphor-icons/react/ssr";
+import { Moon, Sun } from "@phosphor-icons/react/ssr";
 import Image from "next/image";
 import { useTheme } from "@/app/hooks/useTheme";
 import { nextTheme, themeLabel } from "@/lib/theme";
@@ -133,23 +133,20 @@ export default function Navbar() {
             type="button"
             onClick={cycleTheme}
             aria-label={`Theme: ${themeLabel(theme)}. Switch to ${themeLabel(upcoming).toLowerCase()}`}
-            className={`${control} w-8 justify-center candy:w-auto candy:gap-1.5 candy:px-3`}
+            className={`${control} w-8 justify-center candy:w-8`}
           >
             {theme === "light" ? (
               <Moon className="h-4 w-4" />
+            ) : theme === "dark" ? (
+              <Image
+                src="/candy-wrapper.png"
+                alt=""
+                width={20}
+                height={20}
+                className="h-5 w-auto"
+              />
             ) : (
-              <>
-                <Image
-                  src="/candy-wrapper.png"
-                  alt=""
-                  width={20}
-                  height={20}
-                  className="h-5 w-auto"
-                />
-                {theme === "candy" && (
-                  <span className="text-xs font-bold">Candy</span>
-                )}
-              </>
+              <Sun className="h-4 w-4" />
             )}
           </button>
 
