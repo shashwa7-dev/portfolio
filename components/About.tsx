@@ -435,7 +435,7 @@ export default function About() {
           sitting between two full-width ones. */}
       <div className="mt-10 md:mt-12 candy:mt-5 candy:md:mt-6 candy:xl:absolute candy:xl:top-14 candy:xl:mt-0 candy:xl:w-52 candy:xl:left-[calc(50%+var(--measure)/2+2rem)]">
         <Container width="reading" className="border-t border-border candy:border-0 candy:xl:mx-0 candy:xl:max-w-none candy:xl:px-0">
-          <div className="-mx-6 grid grid-cols-2 md:mx-0 md:grid-cols-4 candy:mx-0 candy:ml-auto candy:w-fit candy:max-w-full candy:grid-cols-2 candy:sm:grid-cols-4 candy:gap-3 candy:px-1 candy:xl:grid-cols-2 candy:xl:gap-2.5">
+          <div className="-mx-6 grid grid-cols-2 md:mx-0 md:grid-cols-4 candy:mx-0 candy:w-fit candy:max-w-full candy:grid-cols-2 candy:sm:grid-cols-4 candy:gap-3 candy:px-1 candy:xl:grid-cols-2 candy:xl:gap-2.5">
             {stats.map((s, i) => (
               <div
                 key={s.c}
@@ -446,7 +446,7 @@ export default function About() {
                   i >= 2 && "border-t border-border md:border-t-0",
                   "sticker candy:rounded-full candy:h-24 candy:w-24 candy:flex candy:flex-col candy:items-center candy:justify-center candy:p-2 candy:text-center",
                   tint(i),
-                  tilt(i),
+                  ["tilt-i", "tilt-h", "tilt-a", "tilt-d"][i],
                 )}
               >
                 <div className="text-xl font-medium tabular-nums tracking-tight text-foreground candy:font-display candy:text-2xl candy:font-bold">
