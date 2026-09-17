@@ -59,7 +59,7 @@ import { tint, tilt } from "@/lib/candy";
  */
 export default function About() {
   return (
-    <header className="pt-10 md:pt-14">
+    <header className="pt-10 md:pt-14 candy:relative">
       <Container width="reading">
         <div className="relative space-y-7 sm:space-y-8 candy:space-y-5 candy:sm:space-y-6">
           <div className="flex items-start gap-3.5">
@@ -433,9 +433,9 @@ export default function About() {
           between the two rows run edge to edge. Left inside the padded column
           it stopped 24px short at each end, which reads as a broken line
           sitting between two full-width ones. */}
-      <div className="mt-10 md:mt-12 candy:mt-7 candy:md:mt-8">
-        <Container width="reading" className="border-t border-border candy:border-0">
-          <div className="-mx-6 grid grid-cols-2 md:mx-0 md:grid-cols-4 candy:mx-0 candy:gap-3 candy:px-1">
+      <div className="mt-10 md:mt-12 candy:mt-5 candy:md:mt-6 candy:xl:absolute candy:xl:top-14 candy:xl:mt-0 candy:xl:w-52 candy:xl:left-[calc(50%+var(--measure)/2+2rem)]">
+        <Container width="reading" className="border-t border-border candy:border-0 candy:xl:mx-0 candy:xl:max-w-none candy:xl:px-0">
+          <div className="-mx-6 grid grid-cols-2 md:mx-0 md:grid-cols-4 candy:mx-0 candy:ml-auto candy:w-fit candy:max-w-full candy:grid-cols-2 candy:sm:grid-cols-4 candy:gap-3 candy:px-1 candy:xl:grid-cols-2 candy:xl:gap-2.5">
             {stats.map((s, i) => (
               <div
                 key={s.c}
@@ -444,15 +444,15 @@ export default function About() {
                   i > 0 && "md:border-l md:border-border md:pl-4",
                   i % 2 === 1 && "border-l border-border",
                   i >= 2 && "border-t border-border md:border-t-0",
-                  "sticker candy:rounded-full candy:aspect-square candy:flex candy:flex-col candy:items-center candy:justify-center candy:p-3 candy:text-center",
+                  "sticker candy:rounded-full candy:h-24 candy:w-24 candy:flex candy:flex-col candy:items-center candy:justify-center candy:p-2 candy:text-center",
                   tint(i),
                   tilt(i),
                 )}
               >
-                <div className="text-xl font-medium tabular-nums tracking-tight text-foreground candy:font-display candy:text-3xl candy:font-bold">
+                <div className="text-xl font-medium tabular-nums tracking-tight text-foreground candy:font-display candy:text-2xl candy:font-bold">
                   {s.n}
                 </div>
-                <div className="mt-1.5 font-mono text-2xs uppercase tracking-label text-subtle candy:font-sans candy:normal-case candy:tracking-normal candy:text-xs candy:font-bold candy:text-foreground">
+                <div className="mt-1.5 candy:mt-0.5 font-mono text-2xs uppercase tracking-label text-subtle candy:font-sans candy:normal-case candy:tracking-normal candy:text-2xs candy:leading-tight candy:font-bold candy:text-foreground">
                   {s.c}
                 </div>
               </div>
