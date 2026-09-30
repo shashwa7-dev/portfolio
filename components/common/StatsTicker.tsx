@@ -11,12 +11,12 @@ function Items({ copy }: { copy?: boolean }) {
       aria-label={copy ? undefined : "Highlights"}
       aria-hidden={copy || undefined}
       data-ticker-copy={copy ? "" : undefined}
-      className="flex shrink-0 items-center gap-x-7 gap-y-2 pr-7"
+      className="flex shrink-0 items-center gap-x-8 gap-y-2 pr-8"
     >
       {tickerStats.map((s) => (
-        <li key={s.n} className="flex items-center gap-7 whitespace-nowrap text-sm text-muted-foreground">
+        <li key={s.n} className="flex items-center gap-8 whitespace-nowrap text-base text-muted-foreground">
           <span>
-            <strong className="font-semibold text-foreground">{s.n}</strong> {s.c}
+            <strong className="text-lg font-semibold tracking-tight text-foreground">{s.n}</strong> {s.c}
             {s.context && <span className="text-subtle"> · {s.context}</span>}
           </span>
           <span aria-hidden className="text-border-strong">✦</span>
