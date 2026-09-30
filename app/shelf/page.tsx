@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "@phosphor-icons/react/ssr";
 import Container from "@/components/layout/Container";
-import PageBand from "@/components/layout/PageBand";
 import Section from "@/components/layout/Section";
 import RoasterPicker from "@/components/shelf/RoasterPicker";
 import GearTimeline from "@/components/shelf/GearTimeline";
@@ -67,19 +66,8 @@ const SHOW_BOOKMARKS = false;
 export default async function ShelfPage() {
   const tracks = await getPlaylist();
 
-  /**
-   * The parts this page shows, counted for the band's "N parts". Bookmarks sits
-   * behind SHOW_BOOKMARKS, so the count is derived rather than written down.
-   */
-  const parts = [
-    "coffee",
-    "everyday",
-    ...(SHOW_BOOKMARKS ? ["bookmarks"] : []),
-  ];
-
   return (
-    <main className="pb-8 md:pb-12">
-      <PageBand id="Shelf" name={`${parts.length} parts`} />
+    <main className="pt-8 md:pt-12 pb-8 md:pb-12">
       <script
         type="application/ld+json"
         suppressHydrationWarning

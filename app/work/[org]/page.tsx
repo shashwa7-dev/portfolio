@@ -5,7 +5,6 @@ import { organizations, getOrganization } from "@/lib/workData";
 import { getDiary } from "@/lib/diaryData";
 import { baseUrl } from "@/app/sitemap";
 import Container from "@/components/layout/Container";
-import PageBand from "@/components/layout/PageBand";
 import Label from "@/components/layout/Label";
 import ProjectShowcaseCard from "@/components/ProjectShowcaseCard";
 import { workProjectToCard } from "@/lib/projectCards";
@@ -50,8 +49,7 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
   const diary = getDiary(orgSlug);
 
   return (
-    <main className="pb-8 md:pb-12">
-      <PageBand id="Work" name={org.name} />
+    <main className="pt-8 md:pt-12 pb-8 md:pb-12">
       <script
         type="application/ld+json"
         suppressHydrationWarning

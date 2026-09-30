@@ -56,9 +56,8 @@ export const metadata: Metadata = {
  */
 export default function Offcod8Page() {
   return (
-    // Not the `pb-8 md:pb-12` every other route carries. That convention pairs
-    // with a PageBand whose own margin supplies the top half, and there is no
-    // band here.
+    // Not the `pt-8 md:pt-12 pb-8 md:pb-12` every other route carries: this
+    // page runs bare, with no navbar above it, so it sets its own padding.
     <main data-bare className="py-10 md:py-16">
       {/* No panel behind the letter. The words sit on the dimmed video the
           same way they would sit on the page, which is the version that still

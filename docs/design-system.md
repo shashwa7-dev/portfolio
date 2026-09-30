@@ -225,17 +225,11 @@ import Section from "@/components/layout/Section";
 - `action` sits on the right of the label row.
 - `width` is passed to the inner `Container`.
 
-### Band, PageBand (secondary routes, until phase 2)
+### Secondary routes
 
-```tsx
-<PageBand id="Blog" name="12 posts" />         {/* first child of <main> */}
-```
-
-- The page rails, gutter dots and ink tick are gone. `Band` is a plain
-  full-width label row with one hairline, drawn only by `PageBand` at the top
-  of a secondary route.
-- Every secondary route opens with a `PageBand` and carries `pb-8 md:pb-12`
-  on its `<main>`; the band's own `mb-8 md:mb-12` supplies the rest.
+- No header row: `Band`, `BandLabel` and `PageBand` are deleted. A route opens
+  directly with its own heading.
+- Every secondary route's `<main>` carries `pt-8 md:pt-12 pb-8 md:pb-12`.
 
 ### StatsTicker, MarginNote
 

@@ -9,7 +9,6 @@ import { ActiveBadge } from "@/components/common/ActiveBadge";
 import StackIcon from "@/components/common/StackIcon";
 import VideoModal from "@/components/common/VideoModal";
 import Container from "@/components/layout/Container";
-import PageBand from "@/components/layout/PageBand";
 import { motion } from "motion/react";
 import { useState } from "react";
 import { slideUpVariants, stagger } from "@/lib/motionVariants";
@@ -31,8 +30,7 @@ export default function WorkProjectPage({
   const stack = [...(project.stack.fe || []), ...(project.stack.be || [])];
 
   return (
-    <main className="min-h-screen pb-8 md:pb-12">
-      <PageBand id="Work" name={`${org.name} / ${project.title}`} />
+    <main className="pt-8 md:pt-12 min-h-screen pb-8 md:pb-12">
       <Container width="reading" className="space-y-8">
         {/* Back link */}
         <Link

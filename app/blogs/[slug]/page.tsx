@@ -12,7 +12,6 @@ import { baseUrl } from "@/app/sitemap";
 import { ogUrl, blogPostingLd, breadcrumbLd } from "@/lib/seo";
 import { Badge } from "@/components/ui/badge";
 import Container from "@/components/layout/Container";
-import PageBand from "@/components/layout/PageBand";
 import CopyMarkdown from "@/components/common/CopyMarkdown";
 
 export async function generateStaticParams() {
@@ -97,12 +96,11 @@ export default function Blog({ params }: any) {
 
   return (
     <>
-      <PageBand id="Blog" name={formatDate(post.metadata.publishedAt)} />
       <Container
         as="section"
         width="reading"
         className={cn(
-          "relative pb-8 md:pb-12",
+          "relative pt-8 pb-8 md:pt-12 md:pb-12",
           /* Only reserved when there is something to reserve it for. The table
              of contents renders nothing without headings, so a post that has
              none would otherwise end on 112px of empty page. */

@@ -3,7 +3,6 @@ import path from "path";
 import Image from "next/image";
 import { DownloadSimple, Scissors } from "@phosphor-icons/react/ssr";
 import Container from "@/components/layout/Container";
-import PageBand from "@/components/layout/PageBand";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl, breadcrumbLd } from "@/lib/seo";
 import { parseCv, inlineHtml, type CvBlock } from "@/lib/cv";
@@ -225,8 +224,7 @@ export default function CvPage() {
   const cv = parseCv(md);
 
   return (
-    <main className="pb-8 md:pb-12">
-      <PageBand id="CV" name="Shashwat Tripathi" />
+    <main className="pt-8 md:pt-12 pb-8 md:pb-12">
       <script
         type="application/ld+json"
         suppressHydrationWarning

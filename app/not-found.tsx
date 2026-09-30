@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, House } from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/button";
 import Container from "@/components/layout/Container";
-import PageBand from "@/components/layout/PageBand";
 
 /**
  * Recovery links, not decoration. A 404 that offers only "go home" makes the
@@ -37,8 +36,7 @@ export default function NotFound() {
   const router = useRouter();
 
   return (
-    <main className="pb-8 md:pb-12">
-      <PageBand id="404" name="Page not found" />
+    <main className="pt-8 md:pt-12 pb-8 md:pb-12">
       <Container width="reading">
         <div className="flex min-h-[60vh] flex-col justify-center">
           <Image

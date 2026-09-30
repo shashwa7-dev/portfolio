@@ -85,6 +85,9 @@ count C18 "Candy disabled"               1 grep -rEoh "CANDY_ENABLED = false" li
 count C19 "no section numbering"        0 grep -rEoh "HOMEPAGE_SECTION_TOTAL|number=\\{?\"0[0-9]\"" --include=*.tsx --include=*.ts app components lib
 absent C19 "sections constant gone"     lib/sections.ts
 count C20 "no band gutters or tick"      0 grep -rEoh "band-gutters|band-tick|--dot-gap|var\\(--gutter\\)" --include=*.tsx --include=*.ts --include=*.css app components lib
+absent C21 "PageBand gone"               components/layout/PageBand.tsx
+absent C21 "Band gone"                   components/layout/Band.tsx
+absent C21 "BandLabel gone"              components/layout/BandLabel.tsx
 
 echo ""
 if [ "$FAILED" = 0 ]; then

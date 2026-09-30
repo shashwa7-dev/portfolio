@@ -1,6 +1,6 @@
 ---
 name: portfolio-design-system
-description: Design system for this portfolio (warm paper/ink tokens, DM Sans + IBM Plex Mono type, Container/Section/Band/Bento primitives, usage rules). Use when building or restyling UI in this repo.
+description: Design system for this portfolio (warm paper/ink tokens, DM Sans + IBM Plex Mono type, Container/Section/Bento primitives, usage rules). Use when building or restyling UI in this repo.
 ---
 
 Full reference: `docs/design-system.md`. This skill gives you the fast rules.
@@ -34,8 +34,7 @@ Every homepage section follows this structure:
 
 - A small muted label, an h2 title, then content, at `py-14 md:py-20`. Whitespace is the only separator: no band, no rule, no numbering (`number` / `of` no longer exist).
 - There is no `Divider` component, and importing one fails the gate (C13).
-- Secondary routes still open with `<PageBand id="Blog" name="12 posts" />` as the first child of `<main>`, which carries `pb-8 md:pb-12` (until phase 2 replaces it with a plain label).
-- Never draw a band by hand.
+- Secondary routes have no header row: their `<main>` carries `pt-8 md:pt-12 pb-8 md:pb-12` and opens with the page's own heading.
 
 ## Layout primitives (all in `components/layout/`)
 
@@ -45,8 +44,6 @@ Every homepage section follows this structure:
 | `Container width="wide"` | Full layouts, hero sections (1080px max) |
 | `Section` | Any homepage content block: plain label + title |
 | `Bento` | Grid of feature cards with hairline borders |
-| `Band` | The plain labelled row behind `PageBand` (secondary routes); no gutter dots, no tick |
-| `PageBand` | A secondary route's opening band, flush under the navbar |
 | `Label` | Eyebrow text above headings |
 | `StatsTicker` (common) | The intro's slow stats line at column width |
 | `MarginNote` (common) | Handwritten homepage aside, three at most |
