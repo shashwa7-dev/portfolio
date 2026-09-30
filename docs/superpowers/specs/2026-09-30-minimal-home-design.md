@@ -1,4 +1,4 @@
-# Minimal home: design
+# Minimal home: design (phase 1: homepage)
 
 Date: 2026-09-30
 Status: awaiting review
@@ -7,7 +7,7 @@ Status: awaiting review
 
 Make the site simple, minimal and modern, with character. Concretely: a
 cleaner intro, no structural chrome (rails, bands, gutter dots, dividers), a
-shorter homepage with fewer and stronger sections, and a human voice added
+tighter homepage with fewer and stronger sections, and a human voice added
 through handwritten margin notes. Candy is switched off until Shashwat asks for
 it back.
 
@@ -17,8 +17,9 @@ body width**, page structure **B**, character **X2 margin notes**.
 
 ## Non-goals
 
-- No change to `/work/<org>` diary content or components, `/cv`, the visitor
-  card, `/shelf` content or the blog, beyond losing their band chrome.
+- Secondary routes keep their `PageBand` in this change (phase 2, section 7).
+- No change to `/work/<org>` diary content, `/cv`, the visitor card, `/shelf`
+  content or the blog.
 - No new data sources, no new dependencies.
 - Candy is not deleted: it is disabled behind a flag.
 - The "live tiles", hover previews and handwritten sign-off ideas are out of
@@ -64,30 +65,26 @@ Stacked, left-aligned, inside the reading measure. Top to bottom:
 - Data: `lib/stats.ts` gains an optional `context` per stat and the "10K+
   spaces created" entry. The OG card keeps quoting the first three stats.
 
-## 2. Structure: remove the chrome
-
-Applies to every route.
+## 2. Chrome removal, phase 1 (this change)
 
 - **Rails**: `components/layout/Rails.tsx` is no longer rendered from
-  `app/layout.tsx`. The component and its CSS are deleted.
-- **Band**: loses its top and bottom rules, gutter dots (`band-gutters`) and
-  tick (`band-tick`). It becomes a plain label row.
-- **Section**: renders a small muted text label (`Experience`) above the title,
-  no numbering. `number` / `of` props and `HOMEPAGE_SECTION_TOTAL` are removed.
-  Vertical spacing becomes one consistent step between sections
-  (`py-14 md:py-20`), since whitespace is now the only separator.
-- **PageBand** (secondary routes): renders the same plain label, as
-  `Work · ShopOS` style text, flush under the navbar, no lines. The existing
-  `pb-8 md:pb-12` page-padding convention stays.
-- **Footer**: its border lines are removed; the columns and copyright row stay.
-- Any other `border-t` / `divide-y` used purely as section dividers on the
-  homepage goes. Component-internal borders (cards, inputs, the Impact callout)
-  stay.
+  `app/layout.tsx` (global, since it is one render site). The component and its
+  CSS are deleted.
+- **Section**: renders a small muted text label ("Work") above the title, no
+  numbering and no band. `number` / `of` props and `HOMEPAGE_SECTION_TOTAL` are
+  removed. Vertical spacing becomes one consistent step between sections
+  (`py-14 md:py-20`), since whitespace is now the only separator. This also
+  applies to `/shelf`, the only other route that uses `Section`; its call sites
+  drop the removed props.
+- **Homepage dividers**: any `border-t` / `divide-y` used purely to separate
+  homepage sections goes, including the hero's rule above the old stat band.
+  Component-internal borders (cards, inputs, the Impact callout) stay.
+- `Band` and `PageBand` are untouched in phase 1 (see section 7).
 
-## 3. Homepage structure (option B)
+## 3. Homepage structure (option B, FAQ kept)
 
 `app/page.tsx` renders, in order: `About`, `Work`, `Projects`, `Currently`,
-`Closing`.
+`Faq`, `Closing`.
 
 - **Work** (from `ExperienceWork`): label "Work", title "Where I've worked, and
   what I shipped". One row per org: logo, name, products or partners beside the
@@ -100,16 +97,16 @@ Applies to every route.
   project), date right, each linking to its project page. Replaces the large
   cards.
 - **Currently** (merges `Activity` and `TechStack`): label "Currently", title
-  "What I'm building, reading and using". Three short rows: Building (current
-  org product focus), Reading (current book from `lib/books.ts`), Stack (one row
-  of existing stack chips). The Building text lives in a new `lib/currently.ts`
+  "What I'm building, reading and using". Three short rows: Building, Reading
+  (current book from `lib/books.ts`), Stack (one row of existing stack chips).
+  The Building text lives in a new `lib/currently.ts`
   (`building: "Sloosh, ShopOS's creator app"`), edited by hand like the other
   data files. `Activity` and `TechStack` components are deleted.
+- **FAQ** stays on the homepage with its `FAQPage` JSON-LD. Restyled to the
+  minimal pattern: label "FAQ", title "Questions, answered", questions as plain
+  rows that expand (same accordion behaviour), no card or sticker chrome.
 - **Closing** (replaces `Socials`): the line "Let's build something good." and
   the email plus GitHub / LinkedIn / X links. No section label.
-- **FAQ** moves to a new route `/faq`, rendered from the existing `Faq`
-  component content with its `FAQPage` JSON-LD. Linked from the footer, added
-  to the sitemap, `llms.txt` and the command palette.
 
 ## 4. Character: margin notes (X2)
 
@@ -141,14 +138,31 @@ Applies to every route.
 
 ## 6. Rules, docs and gates
 
-- `CLAUDE.md`: remove the "Rails and bands" convention, the per-page Rails ban,
-  the `[ NN / 06 ]` / `HOMEPAGE_SECTION_TOTAL` notes; describe the plain label
-  pattern, the ticker, margin notes and the Candy flag.
-- `docs/design-system.md` and `.claude/skills/design-system/SKILL.md`: same.
-- `scripts/verify-simplification.sh`: drop checks that require bands or rails;
-  add checks that `Rails` is not rendered and that `CANDY_ENABLED` is false
-  until re-enabled deliberately.
-- `data/agent-memory.md`: the site sections Truffy describes (if listed).
+- `CLAUDE.md`: remove the Rails parts of the "Rails and bands" convention and
+  the per-page Rails ban; replace the `[ NN / 06 ]` / `HOMEPAGE_SECTION_TOTAL`
+  notes with the plain section-label pattern; document the ticker, margin notes
+  and the Candy flag. The `Band` / `PageBand` rules stay until phase 2.
+- `docs/design-system.md` and `.claude/skills/design-system/SKILL.md`: same
+  scope.
+- `scripts/verify-simplification.sh`: drop checks that require rails or section
+  numbering; add checks that `Rails` is not rendered and that `CANDY_ENABLED`
+  is false until re-enabled deliberately.
+- `data/agent-memory.md`: update only if it describes the homepage sections.
+
+## 7. Phase 2: the other pages (next change, not this one)
+
+How the rest of the site follows, for review now and a separate spec later:
+
+- **PageBand** on the 13 secondary routes (`/work/<org>`, project pages,
+  `/projects`, `/blogs`, a post, `/books`, a book, `/shelf`, `/cv`, `/card`,
+  `/coffee`, `/offcod8`, 404) becomes a plain breadcrumb-style label
+  ("Work · ShopOS") flush under the navbar, no lines, gutter dots or tick.
+- **Band** and its CSS (`band-gutters`, `band-tick`, `BandLabel` tones) are then
+  deleted.
+- **Footer** loses its divider lines; columns and copyright row stay.
+- Page-level spacing aligned to the homepage's section step.
+- Inner components with divider lists (e.g. `/work/<org>` Projects header rows)
+  reviewed case by case.
 
 ## Testing
 
@@ -156,17 +170,16 @@ Applies to every route.
   `npm test` all pass.
 - New unit tests: theme flag fallback (stored `candy` → system theme; cycle is
   light ↔ dark).
-- Manual, light and dark, desktop and 390px mobile: `/`, `/faq`,
-  `/work/shopos`, `/projects`, `/blogs`, `/shelf`, `/cv`, `/card`.
+- Manual, light and dark, desktop and 390px mobile: `/` in full, plus `/shelf`
+  (shares `Section`) and one secondary route (`/work/shopos`) to confirm the
+  missing rails do not leave anything misaligned.
 - Reduced motion on: the ticker is static and fully readable.
-- `/faq` validates as `FAQPage` JSON-LD; `/` no longer emits it.
+- `/` still emits valid `FAQPage` JSON-LD.
 
 ## Risks
 
-- Removing the FAQ from `/` drops its on-page content from the homepage;
-  mitigated by `/faq` keeping the JSON-LD and being linked sitewide.
-- Several components read `HOMEPAGE_SECTION_TOTAL` and `Band` props; the
-  removal is mechanical but touches ~20 files. The verify script and `tsc`
+- Several components read `HOMEPAGE_SECTION_TOTAL`; the removal is mechanical
+  but touches the homepage sections and `/shelf`. The verify script and `tsc`
   catch leftovers.
 - Caveat already loads with `display: swap` via `cardHand`, so the notes never
   block text; its stylesheet now also loads on `/`.
