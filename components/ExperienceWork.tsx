@@ -20,9 +20,9 @@ export default function ExperienceWork() {
             <li key={org.id} className="relative">
               <Link
                 href={`/work/${org.slug}`}
-                className="group -mx-3 flex items-center gap-3 rounded-lg px-3 py-3 transition-colors duration-base ease-out hover:bg-muted"
+                className="group -mx-3 flex items-start gap-3 rounded-lg px-3 py-3 transition-colors duration-base ease-out hover:bg-muted"
               >
-                <span className="relative h-7 w-7 shrink-0 overflow-hidden rounded-md ring-1 ring-border">
+                <span className="relative mt-px h-7 w-7 shrink-0 overflow-hidden rounded-md ring-1 ring-border">
                   <Image src={org.logo} alt="" fill sizes="28px" className="object-cover" />
                 </span>
                 <span className="min-w-0 flex-1">
@@ -34,7 +34,7 @@ export default function ExperienceWork() {
                   </span>
                   {org.summary && <span className="mt-1 block text-sm text-muted-foreground">{org.summary}</span>}
                 </span>
-                <span className="shrink-0 font-mono text-xs tabular-nums text-subtle">{formatPeriod(org.period)}</span>
+                <span className="mt-1 shrink-0 font-mono text-xs tabular-nums text-subtle">{formatPeriod(org.period)}</span>
               </Link>
               <MarginNote id={org.slug} />
             </li>
