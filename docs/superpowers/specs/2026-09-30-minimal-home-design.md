@@ -73,7 +73,7 @@ Stacked, left-aligned, inside the reading measure. Top to bottom:
 - **Section**: renders a small muted text label ("Work") above the title, no
   numbering and no band. `number` / `of` props and `HOMEPAGE_SECTION_TOTAL` are
   removed. Vertical spacing becomes one consistent step between sections
-  (`py-14 md:py-20`), since whitespace is now the only separator. This also
+  (`py-10 md:py-12`), since whitespace is now the only separator. This also
   applies to `/shelf`, the only other route that uses `Section`; its call sites
   drop the removed props.
 - **Homepage dividers**: any `border-t` / `divide-y` used purely to separate
@@ -89,8 +89,8 @@ Stacked, left-aligned, inside the reading measure. Top to bottom:
 - **Work** (from `ExperienceWork`): label "Work", title "Where I've worked, and
   what I shipped". One row per org: logo, name, products or partners beside the
   name (ShopOS: Sloosh · Spacelab · ShopOS; Dehidden: Coinbase · Polygon · Play
-  AI), dates right. The row links to `/work/<org>`. The two featured Dehidden
-  project cards stay under Dehidden. Tech tags, highlight bullets and
+  AI), dates right. The row links to `/work/<org>`. No project cards in Work;
+  they live on `/work/<org>`. Tech tags, highlight bullets and
   Site/App chips move off the homepage (they remain on `/work/<org>`).
 - **Projects** (from `Projects`): label "Projects", title "Things I build for
   fun". Rows of small thumbnail, name, optional "new" tag (the `isRecent`

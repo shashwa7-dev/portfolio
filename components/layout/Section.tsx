@@ -14,12 +14,12 @@ type Props = {
 
 /**
  * A homepage-style section. Whitespace is the only separator: no band, no
- * rule, no numbering. One vertical step (`py-14 md:py-20`) between sections.
+ * rule, no numbering. One vertical step (`py-10 md:py-12`) between sections.
  */
 export default function Section({ id, label, title, action, width = "reading", className, children }: Props) {
   return (
     <section id={id} className={className}>
-      <Container width={width} className="scroll-mt-16 py-14 md:py-20">
+      <Container width={width} className="scroll-mt-16 py-10 md:py-12">
         {(label || action) && (
           <div className="mb-2 flex items-center justify-between gap-4">
             {label && <p className="text-sm text-subtle">{label}</p>}
