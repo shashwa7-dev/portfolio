@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { organizations } from "./workData";
-import { orgSubtitle, currentBook } from "./home";
+import { orgSubtitle, currentBook, homeProjects } from "./home";
+import { sideProjects } from "./projectsData";
 import type { Book } from "./books";
 
 const org = (slug: string) => organizations.find((o) => o.slug === slug)!;
@@ -26,5 +27,14 @@ describe("currentBook", () => {
   });
   it("is undefined when every book is finished", () => {
     expect(currentBook([book("a", true)])).toBeUndefined();
+  });
+});
+
+describe("homeProjects", () => {
+  it("shows only Mehfil and Kiryoku, in that order", () => {
+    expect(homeProjects(sideProjects).map((p) => p.slug)).toEqual(["mehfil", "kiryoku"]);
+  });
+  it("skips a listed slug that no longer exists instead of breaking", () => {
+    expect(homeProjects(sideProjects.filter((p) => p.slug !== "kiryoku")).map((p) => p.slug)).toEqual(["mehfil"]);
   });
 });

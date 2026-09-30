@@ -1,13 +1,16 @@
 import Link from "next/link";
 import Image from "next/image";
 import { sideProjects } from "@/lib/projectsData";
+import { homeProjects } from "@/lib/home";
 import Section from "@/components/layout/Section";
 import { ViewAllLink } from "@/components/common/ViewAllLink";
 import MarginNote from "@/components/common/MarginNote";
 
 /**
- * Side projects as light rows: a small thumbnail, the name, a "New" tag on the
- * most recent one, and the date. The big cards live on /projects.
+ * Two side projects, by name only. The thumbnail stays out of the way until
+ * the row is hovered or focused, then fades in at the row's right end; touch
+ * visitors get the names and the project page one tap away. The full list
+ * lives on /projects.
  */
 export default function Projects() {
   return (
@@ -18,32 +21,21 @@ export default function Projects() {
       action={<ViewAllLink href="/projects">View all</ViewAllLink>}
     >
       <ul className="space-y-1">
-        {sideProjects.map((p) => (
+        {homeProjects(sideProjects).map((p) => (
           <li key={p.id} className="relative">
             <Link
               href={`/project/${p.slug}`}
-              className="group -mx-3 flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors duration-base ease-out hover:bg-muted"
+              className="group relative -mx-3 flex items-center rounded-lg px-3 py-3 text-lg font-medium text-foreground transition-colors duration-base ease-out hover:bg-muted"
             >
-              <span className="relative h-8 w-12 shrink-0 overflow-hidden rounded ring-1 ring-border">
-                <Image
-                  src={p.thumbnail}
-                  alt=""
-                  fill
-                  sizes="48px"
-                  className="object-cover grayscale transition-[filter] duration-base ease-out group-hover:grayscale-0"
-                />
+              {p.title}
+              <span
+                aria-hidden
+                className="pointer-events-none absolute right-3 top-1/2 aspect-[16/10] w-40 -translate-y-1/2 scale-95 overflow-hidden rounded-md opacity-0 shadow-lg ring-1 ring-border transition-[opacity,transform] duration-base ease-out group-hover:scale-100 group-hover:opacity-100 group-focus-visible:scale-100 group-focus-visible:opacity-100"
+              >
+                <Image src={p.thumbnail} alt="" fill sizes="160px" className="object-cover" />
               </span>
-              <span className="min-w-0 flex-1 truncate font-medium text-foreground">
-                {p.title}
-                {p.isRecent && (
-                  <span className="ml-2 rounded-full border border-border px-1.5 py-px font-mono text-2xs uppercase tracking-label text-subtle">
-                    New
-                  </span>
-                )}
-              </span>
-              {p.date && <span className="shrink-0 font-mono text-xs tabular-nums text-subtle">{p.date}</span>}
             </Link>
-            <MarginNote id={p.slug} />
+            <MarginNote id={p.slug} indent={false} />
           </li>
         ))}
       </ul>
