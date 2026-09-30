@@ -7,6 +7,7 @@ import Section from "@/components/layout/Section";
 import { HOMEPAGE_SECTION_TOTAL } from "@/lib/sections";
 import ProjectPreviewCard from "@/components/ProjectPreviewCard";
 import { workProjectToCard } from "@/lib/projectCards";
+import ProductStrip from "@/components/common/ProductStrip";
 import ClientStrip from "@/components/common/ClientStrip";
 import { EmploymentTag, OrgLinkChip, Tag } from "@/components/common/OrgChips";
 import { ViewAllLink } from "@/components/common/ViewAllLink";
@@ -149,8 +150,14 @@ export default function ExperienceWork() {
                   <ClientStrip orgSlug={org.slug} />
                 </div>
 
+                {/* Products built here, as marks. Same idiom as the brand row
+                    above, and likewise renders nothing for orgs without any. */}
+                <div className="mt-3 empty:mt-0">
+                  <ProductStrip products={org.products} />
+                </div>
+
                 <ul className="mt-3 space-y-1.5">
-                  {org.highlights.slice(0, 2).map((h, i) => (
+                  {org.highlights.slice(0, 3).map((h, i) => (
                     <li
                       key={i}
                       className="flex gap-2.5 text-sm text-muted-foreground"

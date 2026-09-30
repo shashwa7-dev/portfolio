@@ -43,6 +43,7 @@ export type StackName =
   | "wagmi"
   | "styledComponents"
   | "chakraui"
+  | "sass"
   | "electron"
   | "googleGemini"
   | "javascript"
@@ -104,6 +105,7 @@ const labelMap: Record<StackName, string> = {
   postgress: "PostgreSQL",
   cloudflare: "Cloudflare",
   chakraui: "Chakra UI",
+  sass: "SCSS",
   electron: "Electron",
   wagmi: "Wagmi",
   solana: "Solana",

@@ -24,7 +24,7 @@ function composeHomepageMarkdown(): string {
   lines.push("# Shashwat Tripathi, Frontend Engineer");
   lines.push("");
   lines.push(
-    "> Frontend engineer building AI-first product surfaces. Currently consultant at ShopOS, an AI-native commerce platform, where I ship merchant-facing agent UIs, workflow authoring (Canvas Builder), and content-rich chat. Across 9+ production products with top AI and Web3 teams."
+    "> Frontend engineer building AI-first product surfaces. At ShopOS, an AI-native commerce platform, I build its AI products end to end: Sloosh for creators, the ShopOS app for brands, and Spacelab, the node canvas for AI content pipelines that both run on. Across 12+ production products with top AI and Web3 teams."
   );
   lines.push("");
 
@@ -32,8 +32,8 @@ function composeHomepageMarkdown(): string {
   lines.push("## At a glance");
   lines.push("");
   lines.push("- **1M+** users reached at Coinbase × Polygon NFT");
-  lines.push("- **100K** day-one mints at Coinbase × Polygon NFT");
-  lines.push("- **9+** products shipped across ShopOS & Dehidden");
+  lines.push("- **12+** products shipped across ShopOS & Dehidden");
+  lines.push("- **30+** AI models shipped, in Spacelab");
   lines.push("- **4+ years** building frontend");
   lines.push("");
 

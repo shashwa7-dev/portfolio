@@ -92,5 +92,13 @@ function serializeEntry(entry: TDiaryEntry, index: number): string[] {
     lines.push(`**Stack.** ${entry.stack.join(", ")}`);
     lines.push("");
   }
+  // Reserved slots without a capture yet are skipped, as on the page.
+  const media = (entry.media ?? []).filter((m) => m.src);
+  if (media.length > 0) {
+    lines.push("**Media.**");
+    lines.push("");
+    media.forEach((m) => lines.push(`- [${m.alt}](${m.src})`));
+    lines.push("");
+  }
   return lines;
 }

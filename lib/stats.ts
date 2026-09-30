@@ -20,15 +20,27 @@ const NFT_PARTNERS = [
   { name: "Polygon", img: "/clients/client_polygon.jpg" },
 ];
 
+// Order matters: the OG card quotes the first three. 12+ is the nine
+// Dehidden projects plus ShopOS's three products (Sloosh, Spacelab, the ShopOS
+// app). 30+ is Spacelab's model catalog. "100K day-one mints" was dropped for
+// it: it was the second stat from the same launch as 1M+, and the band had
+// nothing from the current role.
 export const stats: Stat[] = [
   { n: "1M+", c: "users reached", orgs: NFT_PARTNERS },
-  { n: "100K", c: "day-one mints", orgs: NFT_PARTNERS },
   {
-    n: "9+",
+    n: "12+",
     c: "products shipped",
     orgs: [
       { name: "ShopOS", img: "/images/shopos.jpeg" },
       { name: "Dehidden", img: "/images/dehidden_logo.jpeg" },
+    ],
+  },
+  {
+    n: "30+",
+    c: "AI models shipped",
+    orgs: [
+      { name: "Sloosh", img: "/images/sloosh.png" },
+      { name: "Spacelab", img: "/images/spacelab.svg" },
     ],
   },
   { n: "4+ yrs", c: "building frontend" },

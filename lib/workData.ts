@@ -58,6 +58,11 @@ export type TOrganization = {
     app?: string;
     twitter?: string;
   };
+  /**
+   * Products built under this org, shown as an icon row on the homepage
+   * Experience entry. Each needs its own square mark in /public/images.
+   */
+  products?: { name: string; logo: string; link?: string }[];
   projects: TProject[];
 };
 
@@ -70,23 +75,28 @@ export const organizations: TOrganization[] = [
     role: "Frontend Engineer",
     employment: "full-time",
     period: { start: "01.2026" },
-    // Each of these is documented in data/agent-memory.md's ShopOS ships table
-    // (the Next.js app, the Tiptap chat input, the React Query hooks).
-    skills: ["React", "TypeScript", "Next.js", "React Query", "Tiptap"],
+    // Each of these is documented in data/agent-memory.md's ShopOS section and
+    // Tech stack list (the Next.js apps, the Spacelab node canvas on React
+    // Flow, the streaming agent chat on the Vercel AI SDK).
+    skills: ["React", "TypeScript", "Next.js", "React Flow", "Vercel AI SDK", "React Query"],
     description:
-      "Frontend engineer at ShopOS, an AI-native commerce platform. Shipping merchant-facing surfaces across AI agents, workflow authoring, and chat for create, manage, market, and sell flows.",
+      "Frontend engineer at ShopOS, building its AI products end to end: Sloosh for creators, the ShopOS app for brands, and Spacelab, the node canvas both of them run on.",
     links: {
       web: "https://shopos.ai/",
       app: "https://app.shopos.ai/",
     },
-    // Ordered by what a reader who does not know the company can weigh. The
-    // review surface leads because it is the only one carrying named accounts
-    // and a count; the migration reads as internal plumbing to anyone outside,
-    // so it moves down and shares a line.
+    // One line per product, led by its name, and no more: the homepage
+    // Experience row shows the first three. The detail (features, nodes,
+    // models) lives in the /work/shopos diary in lib/diaryData.ts.
     highlights: [
-      "Built the client review surface now used by 8 enterprise accounts, including Celio, Bear House and Holy Drip.",
-      "Built Canvas Builder for visual workflow authoring and the content-rich tiptap chat input.",
-      "Migrated the Enterprise dashboard in-app off its iframe, and shipped the Skills Library across two apps.",
+      "Sloosh: the creator app from ShopOS. Pick an AI space, fill in the inputs, get the image or video.",
+      "Spacelab: a node canvas chaining 30+ frontier models (Veo, Seedance, Kling, Nano Banana) into content pipelines, the engine under both apps.",
+      "ShopOS: an AI workspace where brands run agents for marketing, creative, storefront and GEO. Its enterprise review is used by Celio, Bear House and Holy Drip.",
+    ],
+    products: [
+      { name: "Sloosh", logo: "/images/sloosh.png" },
+      { name: "Spacelab", logo: "/images/spacelab.svg" },
+      { name: "ShopOS", logo: "/images/shopos.jpeg", link: "https://app.shopos.ai/" },
     ],
     projects: [],
   },
@@ -207,7 +217,6 @@ export const organizations: TOrganization[] = [
         slug: "polygon-copilot",
         title: "Polygon Copilot",
         shortTitle: "Polygon Copilot",
-        featured: true,
         description:
           "AI chatbot for Web3 developers using OpenAI GPT models, delivering blockchain insights within the zkEVM ecosystem.",
         highlights: [
@@ -286,7 +295,6 @@ export const organizations: TOrganization[] = [
         slug: "agent-experience",
         title: "Agent Experience",
         shortTitle: "0xRogueAgent",
-        featured: true,
         description:
           "AI-driven agent project on Solana with $ROGUE token for mission-based experiences and governance participation.",
         highlights: [
@@ -317,7 +325,6 @@ export const organizations: TOrganization[] = [
         slug: "node-explorer",
         title: "Node Explorer",
         shortTitle: "Node Explorer",
-        featured: true,
         description:
           "Node management platform for delegating PlayAI Oasis Nodes, enabling task execution and PlayAI Coin earnings.",
         highlights: [
@@ -365,10 +372,10 @@ export const organizations: TOrganization[] = [
     logo: "/images/copestudio.jpeg",
     role: "Frontend Dev (internship)",
     period: { start: "01.2022", end: "03.2022" },
-    // One tag on purpose. The only technology this org's own highlights name is
-    // React ("Learning and applying React and modern web tooling"), and padding
-    // the list would be inventing a claim.
-    skills: ["React"],
+    // The stack used on the internship's client work, as confirmed by
+    // Shashwat; mirrored in the diary entry's `stack` and in
+    // data/agent-memory.md's Tech stack list.
+    skills: ["React", "styled-components", "Chakra UI", "SCSS"],
     description: "Frontend development for Cope.Studio.",
     highlights: [
       "Contributing to client-facing frontend features and bug fixes",

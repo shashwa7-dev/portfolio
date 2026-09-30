@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { ArrowSquareOut } from "@phosphor-icons/react/ssr";
+import { ArrowRight, ArrowSquareOut } from "@phosphor-icons/react/ssr";
 import { organizations, getOrganization } from "@/lib/workData";
 import { getDiary } from "@/lib/diaryData";
 import { baseUrl } from "@/app/sitemap";
@@ -10,6 +10,8 @@ import Label from "@/components/layout/Label";
 import ProjectShowcaseCard from "@/components/ProjectShowcaseCard";
 import { workProjectToCard } from "@/lib/projectCards";
 import DiaryEntry from "@/components/common/DiaryEntry";
+import ProductMark from "@/components/common/ProductMark";
+import CollapsibleGrid from "@/components/common/CollapsibleGrid";
 import { EmploymentTag, OrgLinkChip } from "@/components/common/OrgChips";
 import { formatPeriod, formatTenure } from "@/lib/tenure";
 import { breadcrumbLd, ogUrl } from "@/lib/seo";
@@ -110,18 +112,54 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
           )}
         </header>
 
-        {/* ── Key contributions ──────────────────────────────────────── */}
-        <section className="space-y-3 rounded-2xl border border-border bg-card p-5">
-          <Label>Key contributions</Label>
-          <ul className="space-y-2">
-            {org.highlights.map((h, i) => (
-              <li key={i} className="flex gap-2.5 text-sm text-muted-foreground">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-muted-foreground" />
-                {h}
-              </li>
-            ))}
-          </ul>
-        </section>
+        {/* ── Key contributions ──────────────────────────────────────
+            With a multi-entry diary, this is its table of contents: one row
+            per product, each jumping to its entry below. No hairlines: the
+            marks and the hover fill carry the rows. A single-entry diary needs
+            no index, so it gets nothing. Without a diary, the org's highlight
+            bullets. */}
+        {diary ? (
+          diary.featured.length > 1 && (
+            <nav aria-label="Key contributions" className="space-y-3">
+              <Label>Key contributions</Label>
+              <ol className="-mx-3 space-y-1">
+                {diary.featured.map((entry, i) => (
+                  <li key={entry.id}>
+                    <a
+                      href={`#${entry.id}`}
+                      className="group flex items-center gap-4 rounded-lg px-3 py-3 transition-colors duration-base ease-out hover:bg-muted"
+                    >
+                      <span className="w-6 shrink-0 font-mono text-xs tabular-nums text-subtle">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      {entry.logo && <ProductMark src={entry.logo} size={28} />}
+                      <span className="min-w-0 flex-1">
+                        <span className="block font-medium text-foreground">{entry.title}</span>
+                        <span className="block truncate text-sm text-muted-foreground">{firstSentence(entry.summary)}</span>
+                      </span>
+                      <ArrowRight
+                        aria-hidden
+                        className="h-4 w-4 shrink-0 text-subtle transition-[color,transform] duration-base ease-out group-hover:translate-x-0.5 group-hover:text-foreground"
+                      />
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          )
+        ) : (
+          <section className="space-y-3 rounded-2xl border border-border bg-card p-5">
+            <Label>Key contributions</Label>
+            <ul className="space-y-2">
+              {org.highlights.map((h, i) => (
+                <li key={i} className="flex gap-2.5 text-sm text-muted-foreground">
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-muted-foreground" />
+                  {h}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         {/* ── Projects ───────────────────────────────────────────────── */}
         {org.projects.length > 0 && (
@@ -133,11 +171,11 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
                   {org.projects.length} shipped
                 </span>
               </div>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <CollapsibleGrid visible={4}>
                 {org.projects.map((p) => (
                   <ProjectShowcaseCard key={p.id} project={workProjectToCard(org.slug, p)} />
                 ))}
-              </div>
+              </CollapsibleGrid>
             </section>
           </>
         )}
@@ -154,8 +192,8 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
               </div>
               <ol className="divide-y divide-border candy:divide-y-0">
                 {diary.featured.map((entry, idx) => (
-                  <li key={entry.id} className="py-10 first:pt-0 last:pb-0">
-                    <DiaryEntry entry={entry} index={idx + 1} />
+                  <li key={entry.id} id={entry.id} className="scroll-mt-20 py-10 first:pt-0 last:pb-0">
+                    <DiaryEntry entry={entry} index={idx + 1} total={diary.featured.length} />
                   </li>
                 ))}
               </ol>
@@ -167,3 +205,9 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
   );
 }
 
+
+/** The index row's one-liner: the summary up to its first full stop. */
+function firstSentence(text: string): string {
+  const i = text.indexOf(". ");
+  return i === -1 ? text : text.slice(0, i + 1);
+}
