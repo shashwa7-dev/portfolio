@@ -50,7 +50,7 @@ export default function ExperienceWork() {
                       alt={org.name}
                       fill
                       sizes="24px"
-                      className="object-cover grayscale candy:grayscale-0 transition-[filter] duration-base ease-out group-hover/orglink:grayscale-0"
+                      className="object-cover"
                     />
                   </span>
                   <h3 className="truncate text-lg font-semibold text-foreground/90 transition-colors duration-base ease-out group-hover/orglink:text-foreground">

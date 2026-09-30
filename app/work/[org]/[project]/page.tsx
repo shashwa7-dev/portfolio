@@ -73,15 +73,14 @@ export default function WorkProjectPage({
             href={`/work/${org.slug}`}
             className="group inline-flex items-center gap-2 self-start rounded-lg border border-border bg-card px-2.5 py-1.5 transition-colors hover:border-border-strong"
           >
-            {/* Was a raw <img>, which is also why this logo escaped the
-                greyscale sweep: that pass walked `next/image` call sites. */}
+            {/* Logos stay in colour; only thumbnails are greyscale. */}
             <span className="relative h-5 w-5 shrink-0 overflow-hidden rounded-md bg-elevated">
               <Image
                 src={org.logo}
                 alt={org.name}
                 fill
                 sizes="20px"
-                className="object-cover grayscale candy:grayscale-0 transition-[filter] duration-base ease-out group-hover:grayscale-0"
+                className="object-cover"
               />
             </span>
             <span className="text-sm text-muted-foreground transition-colors group-hover:text-foreground">
