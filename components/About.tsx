@@ -12,10 +12,8 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { SOCIAL_ICONS } from "@/components/common/socialIcons";
-import { cn } from "@/lib/utils";
-import { stats } from "@/lib/stats";
+import StatsTicker from "@/components/common/StatsTicker";
 import { socialLinks } from "@/lib/siteLinks";
-import { tint, tilt } from "@/lib/candy";
 
 /**
  * The hero.
@@ -57,7 +55,7 @@ export default function About() {
   return (
     <header className="pt-10 md:pt-14 candy:pb-6">
       <Container width="reading">
-        <div className="relative space-y-5 sm:space-y-6 candy:space-y-4 candy:sm:space-y-5">
+        <div className="relative space-y-6 sm:space-y-7">
           <div className="flex items-start gap-3.5">
             {/* Availability rides the avatar, LinkedIn style, instead of taking a
                 row of its own as a pill.
@@ -202,7 +200,7 @@ export default function About() {
               a line under eight words, and a one-word last line reads as a
               mistake at this size. Balance evens the two lines instead of
               filling the first and dropping the remainder. */}
-          <p className="text-balance text-[clamp(1.625rem,3.4vw,2.3rem)] font-medium leading-[1.08] tracking-tighter text-foreground">
+          <p className="!mt-10 text-balance text-[clamp(1.625rem,3.4vw,2.3rem)] font-medium sm:!mt-14 leading-[1.08] tracking-tighter text-foreground">
             {/* Emphasis by contrast: the frame of the sentence drops to muted
                 and the claim stays in full foreground, set in DM Sans's real
                 italic (loaded in app/layout.tsx). Candy keeps its butter chip. */}
@@ -218,7 +216,7 @@ export default function About() {
               AI-adaptive frontend engineer
             </span>
             . I ship fast, polished interfaces for agentic and generative AI
-            products, 12+ so far with top AI and Web3 teams. Reach me at{" "}
+            products with top AI and Web3 teams. Reach me at{" "}
             <a
               href="mailto:contact@shashwa7.in"
               className="text-foreground underline decoration-border-strong underline-offset-4 transition-colors duration-fast ease-out hover:decoration-foreground candy:no-underline candy:bg-[linear-gradient(transparent_55%,hsl(var(--candy-butter))_55%)] candy:font-semibold candy:hover:bg-[linear-gradient(transparent_0%,hsl(var(--candy-pink))_0%)]"
@@ -266,6 +264,13 @@ export default function About() {
             >
               <Coffee className="h-4 w-4" /> Get in touch
             </a>
+          </div>
+
+          {/* The proof points, as one slow line at the column's width. It
+              replaced a four-cell stat band: the numbers read as part of the
+              intro rather than as a table under it. */}
+          <div className="!mt-10">
+            <StatsTicker />
           </div>
 
           {/* Socials, desktop only.
@@ -316,65 +321,6 @@ export default function About() {
         </div>
       </Container>
 
-      {/* The proof points, as a band rather than a box.
-
-          No gutter dots, and no tick. Both of those are how a `Band` says "a
-          labelled division of the page starts here", and this is not one: it
-          is the last line of the hero, carrying four numbers. Dotting its
-          margins made it claim the same rank as section 01 directly beneath
-          it, so the page appeared to start twice.
-
-          Which means no `relative` either. That was only ever here to give the
-          dots' absolutely positioned pseudo-elements a containing block, and
-          nothing inside this is positioned.
-
-          The rule above the numbers moves onto the Container, so it stops at
-          the measure instead of running the full width of the page. Full bleed
-          is what made it read as a band: a hairline crossing the rails is the
-          page announcing a division, and this is the last line of the hero. Cut
-          to the reading column it lands between the rails rather than through
-          them, and reads as what it is, the line the numbers sit on.
-
-          On a phone the Container is the viewport, so the rule is edge to edge
-          there anyway. That is correct and not an accident of this change:
-          below 900px the rails are not drawn at all, so there is nothing for a
-          full-width line to cut across.
-
-          Nothing closes the stats from below, and nothing needs to. The next
-          thing on the page is section 01's band, which draws its own top rule.
-
-          The grid pulls itself out of the Container's `px-6` on mobile and
-          hands that padding to the cells instead. That is what makes the rule
-          between the two rows run edge to edge. Left inside the padded column
-          it stopped 24px short at each end, which reads as a broken line
-          sitting between two full-width ones. */}
-      <div className="mt-8 md:mt-10 candy:mt-5 candy:md:mt-6">
-        <Container width="reading" className="border-t border-border candy:border-0">
-          <div className="-mx-6 grid grid-cols-2 md:mx-0 md:grid-cols-4 candy:mx-0 candy:w-fit candy:max-w-full candy:grid-cols-2 candy:sm:grid-cols-4 candy:gap-3 candy:px-1">
-            {stats.map((s, i) => (
-              <div
-                key={s.c}
-                className={cn(
-                  "px-6 py-4 md:px-0",
-                  i > 0 && "md:border-l md:border-border md:pl-4",
-                  i % 2 === 1 && "border-l border-border",
-                  i >= 2 && "border-t border-border md:border-t-0",
-                  "sticker candy:rounded-full candy:h-24 candy:w-24 candy:flex candy:flex-col candy:items-center candy:justify-center candy:p-2 candy:text-center",
-                  tint(i),
-                  ["tilt-i", "tilt-h", "tilt-a", "tilt-d"][i],
-                )}
-              >
-                <div className="text-xl font-medium tabular-nums tracking-tight text-foreground candy:font-display candy:text-2xl candy:font-semibold">
-                  {s.n}
-                </div>
-                <div className="mt-1.5 candy:mt-0.5 font-mono text-2xs uppercase tracking-label text-subtle candy:font-sans candy:normal-case candy:tracking-normal candy:text-2xs candy:leading-tight candy:font-bold candy:text-foreground">
-                  {s.c}
-                </div>
-              </div>
-            ))}
-          </div>
-        </Container>
-      </div>
     </header>
   );
 }

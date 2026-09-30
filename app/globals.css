@@ -898,6 +898,8 @@ table {
        mask-free overflow would still cut the later stats off. */
     .ticker-track > ul {
       flex-wrap: wrap;
+      flex-shrink: 1;
+      width: 100%;
     }
   }
 }
