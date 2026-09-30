@@ -29,7 +29,7 @@
 2. `prefers-reduced-motion: reduce` → the ticker does not move, every stat is readable, and screen readers hear each stat once. (Test: Task 4 data test for single source list; manual check in Task 4.)
 3. An org with no products and no clients (Cope.Studio) → its Work row shows no subtitle and no stray "·". (Test: Task 6.)
 4. Every book marked done → the "Reading" row is omitted rather than showing an empty value. (Test: Task 9.)
-5. A 1024px laptop or a 390px phone → margin notes render inline under their row with no horizontal page scroll. (Manual: Task 7.)
+5. A 1024px window with a visible scrollbar → margin notes still fit beside the column with no horizontal page scroll; a 390px phone → notes inline under their row. (Manual: Task 7.)
 
 ---
 
@@ -688,8 +688,9 @@ import { marginNotes } from "@/lib/marginNotes";
 
 /**
  * A handwritten aside beside a homepage row. In the right margin, rotated, from
- * `xl` (1280px), where the margin is ~260px; inline under the row, upright,
- * below that. At 1024px the margin is only ~132px, too narrow for a note. Real content, so it
+ * `lg` (1024px). The note is 96px wide plus a 16px gap (112px), which fits the
+ * ~124px margin left at 1024px even with a classic scrollbar; the few words
+ * wrap to two or three lines. Inline under the row, upright, below `lg`. Real content, so it
  * is read by assistive tech after the row it annotates.
  */
 export default function MarginNote({ id }: { id: string }) {
@@ -697,7 +698,7 @@ export default function MarginNote({ id }: { id: string }) {
   if (!note) return null;
   return (
     <p
-      className={`${cardHand.variable} pl-10 text-lg leading-none text-amber-600 dark:text-amber-300/90 xl:absolute xl:left-full xl:top-2 xl:ml-6 xl:w-40 xl:pl-0 xl:[transform:rotate(var(--note-rotate))]`}
+      className={`${cardHand.variable} pl-10 text-lg leading-none text-amber-600 dark:text-amber-300/90 lg:absolute lg:left-full lg:top-2 lg:ml-4 lg:w-24 lg:pl-0 lg:[transform:rotate(var(--note-rotate))]`}
       style={{ fontFamily: "var(--font-hand)", ["--note-rotate" as string]: `${note.rotate}deg` }}
     >
       {note.text}
@@ -713,7 +714,7 @@ In `components/ExperienceWork.tsx` add `import MarginNote from "@/components/com
 - [ ] **Step 5: Verify**
 
 Run: `npx vitest run && npx tsc --noEmit && npm run lint && ./scripts/verify-simplification.sh`
-Expected: all pass. In the browser at 1440px: notes sit in the right margin beside ShopOS and Dehidden, rotated. At 1024px and 390px: notes sit under their rows, upright, and `document.documentElement.scrollWidth === window.innerWidth` (no horizontal scroll).
+Expected: all pass. In the browser at 1440px: notes sit in the right margin beside ShopOS and Dehidden, rotated. At 1024px (Chrome window 1024 wide, scrollbar showing): notes sit in the margin and the page does not scroll sideways. At 390px: notes sit under their rows, upright, and `document.documentElement.scrollWidth === window.innerWidth` (no horizontal scroll).
 
 - [ ] **Step 6: Commit**
 
