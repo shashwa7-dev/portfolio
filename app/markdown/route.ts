@@ -34,7 +34,7 @@ function composeHomepageMarkdown(): string {
   lines.push("- **1M+** users reached at Coinbase × Polygon NFT");
   lines.push("- **12+** products shipped across ShopOS & Dehidden");
   lines.push("- **30+** AI models shipped, in Spacelab");
-  lines.push("- **4+ years** building frontend");
+  lines.push("- **5+ years** building frontend");
   lines.push("");
 
   // Currently building

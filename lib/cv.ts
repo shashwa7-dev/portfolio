@@ -2,7 +2,8 @@
  * The CV, parsed from one markdown file.
  *
  * `data/cv.md` is the single source: the same file is rendered to PDF for
- * download and to HTML for `/cv`. Keeping one source is the whole point. A
+ * download (`npm run cv:pdf`, see `scripts/render-cv-pdf.ts`, which uses this
+ * parser) and to HTML for `/cv`. Keeping one source is the whole point. A
  * hand-maintained page beside a hand-maintained PDF drifts within one edit, and
  * the drift is invisible until someone reads both.
  */

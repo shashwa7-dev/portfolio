@@ -75,7 +75,10 @@ npm run dev      # next dev (port 3000 by default; this repo uses 3001 in practi
 npm run build    # next build
 npm run lint     # next lint
 npm test         # vitest run (pure lib modules: card's seed, issues, types, dice, toss, revealSequence, plus chatStream)
+npm run cv:pdf   # re-render public/shashwat-tripathi-cv.pdf from data/cv.md (system Chrome; aims for one page)
 ```
+
+After any edit to `data/cv.md`, run `npm run cv:pdf` in the same change, or the downloadable PDF keeps the old CV while `/cv` shows the new one.
 
 ---
 

@@ -11,7 +11,8 @@
     "start": "next start",
     "lint": "next lint",
     "test": "vitest run",
-    "og:issues": "tsx scripts/render-issue-og.ts"
+    "og:issues": "tsx scripts/render-issue-og.ts",
+    "cv:pdf": "tsx scripts/render-cv-pdf.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
