@@ -6,6 +6,7 @@ import { orgSubtitle } from "@/lib/home";
 import Section from "@/components/layout/Section";
 import ProjectPreviewCard from "@/components/ProjectPreviewCard";
 import { workProjectToCard } from "@/lib/projectCards";
+import MarginNote from "@/components/common/MarginNote";
 
 /**
  * Work, as one row per company: logo, name, what was built there (or for
@@ -35,6 +36,7 @@ export default function ExperienceWork() {
                 </span>
                 <span className="shrink-0 font-mono text-xs tabular-nums text-subtle">{formatPeriod(org.period)}</span>
               </Link>
+              <MarginNote id={org.slug} />
               {featured.length > 0 && (
                 <div className="mt-3 grid grid-cols-1 gap-2.5 pb-4 sm:grid-cols-2 sm:pl-10">
                   {featured.map((p, i) => (
