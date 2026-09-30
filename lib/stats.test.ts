@@ -14,4 +14,7 @@ describe("tickerStats", () => {
   it("keeps the OG card's first three stats stable", () => {
     expect(stats.slice(0, 3).map((s) => s.n)).toEqual(["1M+", "12+", "30+"]);
   });
+  it("describes the years as building web apps", () => {
+    expect(stats.find((s) => s.n === "5+ yrs")?.c).toBe("building web apps");
+  });
 });

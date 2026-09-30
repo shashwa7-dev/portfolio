@@ -4,6 +4,21 @@ import { currentBook, homeProjects } from "./home";
 import { sideProjects } from "./projectsData";
 import type { Book } from "./books";
 
+describe("org tags", () => {
+  it("gives every org a designation, an employment type and a work mode", () => {
+    const tags = Object.fromEntries(organizations.map((o) => [o.slug, [o.employment, o.workMode]]));
+    expect(tags).toEqual({
+      shopos: ["full-time", "onsite"],
+      dehidden: ["contract", "remote"],
+      copestudio: ["internship", "remote"],
+    });
+    for (const o of organizations) expect(o.role, o.slug).toBeTruthy();
+  });
+  it("keeps summaries free of 'end to end'", () => {
+    for (const o of organizations) expect(o.summary ?? "", o.slug).not.toMatch(/end to end/i);
+  });
+});
+
 describe("org summaries", () => {
   it("gives every org one short line for its Work row", () => {
     for (const o of organizations) {

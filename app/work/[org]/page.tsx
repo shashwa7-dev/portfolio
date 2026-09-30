@@ -11,7 +11,7 @@ import { workProjectToCard } from "@/lib/projectCards";
 import DiaryEntry from "@/components/common/DiaryEntry";
 import ProductMark from "@/components/common/ProductMark";
 import CollapsibleGrid from "@/components/common/CollapsibleGrid";
-import { EmploymentTag, OrgLinkChip } from "@/components/common/OrgChips";
+import { EmploymentTag, OrgLinkChip, WorkModeTag } from "@/components/common/OrgChips";
 import { formatPeriod, formatTenure } from "@/lib/tenure";
 import { breadcrumbLd, ogUrl } from "@/lib/seo";
 
@@ -87,6 +87,7 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
               <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
                 <span>{org.role}</span>
                 <EmploymentTag employment={org.employment} />
+                <WorkModeTag mode={org.workMode} />
                 <span className="text-border-strong">·</span>
                 <span className="font-mono text-xs tabular-nums text-subtle">{formatPeriod(org.period)}</span>
                 {formatTenure(org.period) && (

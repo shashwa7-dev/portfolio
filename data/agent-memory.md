@@ -63,12 +63,12 @@ be Shashwat.
   - BCA, Amity University Mumbai (2018–2021), CGPA 9.7
   - 11th & 12th, Laxmi Vidyapeeth, Vapi
   - Hindustani Music, True School of Music, Lower Parel, Mumbai
-- **Working style:** remote-first, ships fast, design-system fluent
+- **Working style:** ships fast, design-system fluent. Works onsite at ShopOS (Bengaluru); Dehidden and Cope.Studio were remote. Open to remote roles.
 - **Open to work:** Yes, senior frontend / full-stack roles, plus freelance and consulting engagements
 
 ## Current engagement
 
-**ShopOS**, Frontend Engineer (**full-time**, Jan 2026 – Present)
+**ShopOS**, Frontend Engineer (**full-time, onsite**, Jan 2026 – Present)
 
 AI-native commerce platform. Shashwat builds ShopOS's AI products end to end,
 from the UI down to the integrations: **Sloosh** for creators, the **ShopOS**
@@ -87,7 +87,7 @@ app for brands, and **Spacelab**, the node canvas both of them run on.
 
 ## Past engagement
 
-**Dehidden**, Frontend Developer, Web3 (**contract**, Jan 2022 – Dec 2025)
+**Dehidden**, Frontend Developer, Web3 (**contract, remote**, Jan 2022 – Dec 2025)
 
 Built AI × Web3 products including DeFi platforms, NFT minting solutions,
 and blockchain integrations.
@@ -105,7 +105,7 @@ and blockchain integrations.
 - **12+** production products shipped, across ShopOS (Sloosh, Spacelab, the ShopOS app) & Dehidden (9)
 - **30+** AI models shipped, in Spacelab
 - **100K** day-one mints, Coinbase × Polygon NFT (on the Dehidden page, not the homepage ticker)
-- **5+ years** building frontend
+- **5+ years** building web apps
 
 ## Tech stack
 

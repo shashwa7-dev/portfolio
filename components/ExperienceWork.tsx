@@ -2,11 +2,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { organizations } from "@/lib/workData";
 import { formatPeriod } from "@/lib/tenure";
+import { EmploymentTag, WorkModeTag } from "@/components/common/OrgChips";
 import Section from "@/components/layout/Section";
 import MarginNote from "@/components/common/MarginNote";
 
 /**
- * Work, as one row per company: logo, name, a one-line summary, dates. The row opens the org's own page, which holds the detail the
+ * Work, as one row per company: logo, name, designation with its employment
+ * and work-mode tags, a one-line summary, dates. The row opens the org's own page, which holds the detail the
  * homepage used to carry (role, tags, highlights, links, featured projects).
  */
 export default function ExperienceWork() {
@@ -25,7 +27,12 @@ export default function ExperienceWork() {
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block font-medium text-foreground">{org.name}</span>
-                  {org.summary && <span className="block text-sm text-muted-foreground">{org.summary}</span>}
+                  <span className="mt-1 flex flex-wrap items-center gap-1.5 text-sm text-foreground/80">
+                    <span className="mr-0.5">{org.role}</span>
+                    <EmploymentTag employment={org.employment} />
+                    <WorkModeTag mode={org.workMode} />
+                  </span>
+                  {org.summary && <span className="mt-1 block text-sm text-muted-foreground">{org.summary}</span>}
                 </span>
                 <span className="shrink-0 font-mono text-xs tabular-nums text-subtle">{formatPeriod(org.period)}</span>
               </Link>

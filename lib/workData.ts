@@ -47,7 +47,9 @@ export type TOrganization = {
    */
   skills?: string[];
   /** Engagement type — surfaced as a small pill next to the role. */
-  employment?: "full-time" | "contract";
+  employment?: "full-time" | "contract" | "internship";
+  /** Where the work happened. Shown as a tag beside the employment type. */
+  workMode?: "onsite" | "remote" | "hybrid";
   description: string;
   /** One line for the homepage Work row, under the org name. Keep it under 90 characters. */
   summary?: string;
@@ -81,7 +83,8 @@ export const organizations: TOrganization[] = [
     // Tech stack list (the Next.js apps, the Spacelab node canvas on React
     // Flow, the streaming agent chat on the Vercel AI SDK).
     skills: ["React", "TypeScript", "Next.js", "React Flow", "Vercel AI SDK", "React Query"],
-    summary: "Building Sloosh, Spacelab and the ShopOS app end to end.",
+    workMode: "onsite",
+    summary: "Building Sloosh, Spacelab and the ShopOS app.",
     description:
       "Frontend engineer at ShopOS, building its AI products end to end: Sloosh for creators, the ShopOS app for brands, and Spacelab, the node canvas both of them run on.",
     links: {
@@ -115,6 +118,7 @@ export const organizations: TOrganization[] = [
     // arrays, so every tag is backed by a shipped project rather than inferred
     // from the role title.
     skills: ["React", "TypeScript", "wagmi", "React Query", "Tailwind CSS", "Framer Motion"],
+    workMode: "remote",
     summary: "Sole frontend engineer on 9 AI and Web3 products for Coinbase, Polygon and Play AI.",
     description:
       "Building AI × Web3 products including DeFi platforms, NFT minting solutions, and blockchain integrations.",
@@ -374,12 +378,14 @@ export const organizations: TOrganization[] = [
     slug: "copestudio",
     name: "Cope.Studio",
     logo: "/images/copestudio.jpeg",
-    role: "Frontend Dev (internship)",
+    role: "Frontend Developer",
+    employment: "internship",
     period: { start: "01.2022", end: "03.2022" },
     // The stack used on the internship's client work, as confirmed by
     // Shashwat; mirrored in the diary entry's `stack` and in
     // data/agent-memory.md's Tech stack list.
     skills: ["React", "styled-components", "Chakra UI", "SCSS"],
+    workMode: "remote",
     summary: "Frontend internship on client-facing React work.",
     description: "Frontend development for Cope.Studio.",
     highlights: [
