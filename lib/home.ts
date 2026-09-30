@@ -1,5 +1,6 @@
 import type { TOrganization } from "./workData";
 import { clients } from "./clients";
+import type { Book } from "./books";
 
 /**
  * The one line beside an org's name on the homepage Work row: what was built
@@ -13,4 +14,9 @@ export function orgSubtitle(org: TOrganization): string {
         .filter((c) => c.org === org.slug && c.name.toLowerCase().replace(/\s+/g, "") !== org.slug)
         .map((c) => c.name);
   return names.join(" · ");
+}
+
+/** The book in progress: the first one not marked done. */
+export function currentBook(list: Book[]): Book | undefined {
+  return list.find((b) => !b.isDone);
 }

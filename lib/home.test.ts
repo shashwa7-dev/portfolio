@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { organizations } from "./workData";
-import { orgSubtitle } from "./home";
+import { orgSubtitle, currentBook } from "./home";
+import type { Book } from "./books";
 
 const org = (slug: string) => organizations.find((o) => o.slug === slug)!;
 
@@ -13,5 +14,17 @@ describe("orgSubtitle", () => {
   });
   it("is empty when there is neither, with no stray separator", () => {
     expect(orgSubtitle(org("copestudio"))).toBe("");
+  });
+});
+
+const book = (slug: string, isDone: boolean): Book =>
+  ({ slug, name: slug, link: "", author: "", cover: "", isDone, chapters: [] });
+
+describe("currentBook", () => {
+  it("is the first unfinished book", () => {
+    expect(currentBook([book("a", true), book("b", false), book("c", false)])?.slug).toBe("b");
+  });
+  it("is undefined when every book is finished", () => {
+    expect(currentBook([book("a", true)])).toBeUndefined();
   });
 });

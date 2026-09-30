@@ -109,8 +109,8 @@ and blockchain integrations.
 
 ## Tech stack
 
-Grouped the same four ways the site's Toolkit section groups them, so an answer
-here matches what a visitor is looking at.
+Grouped four ways for answers; the homepage shows the everyday stack under
+Currently.
 
 - **Frontend:** JavaScript, TypeScript, React, Next.js, Tailwind, shadcn, Base UI, Chakra UI, styled-components, SCSS, GSAP, Framer Motion, React Query, Zustand, React Flow, tiptap / ProseMirror, wagmi, Solana, Web3.js
 - **AI:** OpenAI, Google Gemini, Claude (Anthropic), Vercel AI SDK
