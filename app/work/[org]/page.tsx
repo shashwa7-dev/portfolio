@@ -72,7 +72,7 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
                 alt={org.name}
                 fill
                 sizes="48px"
-                className="object-cover grayscale candy:grayscale-0 transition-[filter] duration-base ease-out group-hover:grayscale-0"
+                className="object-cover"
               />
             </span>
             <div className="min-w-0">

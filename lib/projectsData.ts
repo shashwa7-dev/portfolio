@@ -64,6 +64,7 @@ export const sideProjects: TSideProject[] = [
     thumbnail: "/projects/project_ganapati.jpg",
     date: "Sep 2026",
     links: {
+      web: "https://ganapatibappamoraya.shashwa7.in/",
       github: "https://github.com/shashwa7-dev/ganesha_2026",
     },
     stack: {

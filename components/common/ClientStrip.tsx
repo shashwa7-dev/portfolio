@@ -25,12 +25,10 @@ import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip
  *    same avatar idiom in `About.tsx`. There the avatars sit on a bento tile;
  *    here they sit on the page background, and copying `ring-card` would put a
  *    faintly wrong-coloured halo around each logo.
- * 3. Greyscale by default, colour on hover. Five brand palettes at full
- *    saturation are what made four earlier ornamental treatments of this row
- *    fail (vinyl, brass plaques, gallery frames, postage stamps): each needed
- *    fixed non-palette colour to read as a physical object, on a page whose
- *    premise is a restrained hueless palette. Removing the colour and giving it
- *    back as a hover reward solves it from the other direction.
+ * 3. Full colour, always. Logos are shown as their owners draw them; only
+ *    thumbnails and photography go greyscale in Paper. At 20px, overlapped,
+ *    with no ornament around them, five brand palettes read as marks rather
+ *    than as the decoration that sank earlier treatments of this row.
  */
 export default function ClientStrip({ orgSlug }: { orgSlug: string }) {
   // An organisation cannot be a brand it worked with. ShopOS is in the list so
@@ -64,7 +62,7 @@ export default function ClientStrip({ orgSlug }: { orgSlug: string }) {
                   alt={c.name}
                   fill
                   sizes="20px"
-                  className="object-cover grayscale candy:grayscale-0 transition-[filter] duration-base ease-out group-hover:grayscale-0"
+                  className="object-cover"
                 />
               </span>
             </TooltipTrigger>

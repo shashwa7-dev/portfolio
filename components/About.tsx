@@ -14,7 +14,6 @@ import {
 import { SOCIAL_ICONS } from "@/components/common/socialIcons";
 import { cn } from "@/lib/utils";
 import { stats } from "@/lib/stats";
-import { clients } from "@/lib/clients";
 import { socialLinks } from "@/lib/siteLinks";
 import { tint, tilt } from "@/lib/candy";
 
@@ -31,14 +30,11 @@ import { tint, tilt } from "@/lib/candy";
  *
  * What went, and why:
  *
- * - The brand avatars in the stat cells. At 17px, greyscale, at 80% opacity,
- *   nobody can identify Coinbase or Polygon, so they did not read as proof,
- *   they read as smudges. The brands are a line of the hero's content stack
- *   now, at 28px, where they can actually be recognised. The per-org
- *   `ClientStrip` inside Experience lists the same names per engagement, and
- *   that repetition is deliberate: this row says who, unscoped, as a footnote to
- *   the claim above it; the strip says which of them belong to a specific
- *   engagement and what was built for each.
+ * - The brand avatars in the stat cells, and later the "Worked with" row that
+ *   replaced them. Both were removed: the hero is the claim, the lede and the
+ *   numbers, and the brands are named where they mean something, per
+ *   engagement, by `ClientStrip` inside Experience. Do not re-add a brand row
+ *   here.
  * - The bento box. A `rounded-2xl` bordered container with internal hairlines
  *   made no sense on a page whose structural idea is full-bleed bands crossing
  *   two rails. The stats are a band now, so the hero uses the page's own
@@ -61,7 +57,7 @@ export default function About() {
   return (
     <header className="pt-10 md:pt-14 candy:pb-6">
       <Container width="reading">
-        <div className="relative space-y-[1.925rem] sm:space-y-[2.2rem] candy:space-y-[1.375rem] candy:sm:space-y-[1.65rem]">
+        <div className="relative space-y-5 sm:space-y-6 candy:space-y-4 candy:sm:space-y-5">
           <div className="flex items-start gap-3.5">
             {/* Availability rides the avatar, LinkedIn style, instead of taking a
                 row of its own as a pill.
@@ -207,8 +203,12 @@ export default function About() {
               mistake at this size. Balance evens the two lines instead of
               filling the first and dropping the remainder. */}
           <p className="text-balance text-[clamp(1.625rem,3.4vw,2.3rem)] font-medium leading-[1.08] tracking-tighter text-foreground">
-            I build interfaces that{" "}
-            <span className="font-semibold candy:bg-candy-butter candy:px-2 candy:rounded-tag candy:[box-decoration-break:clone]">ship and scale</span> to millions.
+            {/* Emphasis by contrast: the frame of the sentence drops to muted
+                and the claim stays in full foreground, set in DM Sans's real
+                italic (loaded in app/layout.tsx). Candy keeps its butter chip. */}
+            <span className="text-muted-foreground">I build interfaces that </span>
+            <span className="font-semibold italic candy:bg-candy-butter candy:px-2 candy:rounded-tag candy:[box-decoration-break:clone]">ship and scale</span>
+            <span className="text-muted-foreground"> to millions.</span>
           </p>
 
           {/* lede (no em-dashes, no org names — generic AI-adaptive positioning) */}
@@ -217,8 +217,8 @@ export default function About() {
             <span className="text-foreground">
               AI-adaptive frontend engineer
             </span>
-            . Across 9+ production products with top AI and Web3 teams, I turn
-            complex ideas into fast, polished, accessible UIs. Reach me at{" "}
+            . I ship fast, polished interfaces for agentic and generative AI
+            products, 12+ so far with top AI and Web3 teams. Reach me at{" "}
             <a
               href="mailto:contact@shashwa7.in"
               className="text-foreground underline decoration-border-strong underline-offset-4 transition-colors duration-fast ease-out hover:decoration-foreground candy:no-underline candy:bg-[linear-gradient(transparent_55%,hsl(var(--candy-butter))_55%)] candy:font-semibold candy:hover:bg-[linear-gradient(transparent_0%,hsl(var(--candy-pink))_0%)]"
@@ -313,98 +313,6 @@ export default function About() {
               );
             })}
           </ul>
-
-          {/* Worked with.
-
-              Part of the hero's content stack, not a block of its own. It was
-              tried as a standalone centred panel under the stat band and that
-              was the problem: a centred island below a full-bleed band read as
-              a third section rather than as a line of the hero, and it gave
-              the logos more of the page than a supporting fact deserves.
-
-              Ranged left on one line with everything above it, at 28px. Large
-              enough to recognise, which the 17px avatars buried in the old stat
-              cells never were, and small enough to stay a footnote to the
-              claim rather than competing with it.
-
-              Overlapped by 8px rather than spaced. An even row reads as
-              separate marks; a stack reads as one group, which is what a list
-              of brands is. Spacing them out was tried while this row was
-              centred, where overlap made the cluster look off-axis, and that
-              reason went away when the row moved left with the rest of the
-              hero.
-
-              `ring-2 ring-background` comes back with the overlap. Its only job
-              is to cut a gap between circles that touch; without it the stack
-              reads as one smeared shape.
-
-              `alt=""` is correct rather than lazy: the names sit in text in the
-              same link, so labelling the images too would make a screen reader
-              announce each brand twice. The tooltip is the same bargain from
-              the other side. It names a mark for a pointer that has stopped on
-              one, and it is `TooltipTrigger asChild` on a span rather than
-              Radix's default button, so nothing focusable ends up nested inside
-              this anchor. `ClientStrip` does the same thing for the same
-              reason.
-
-              Colour is per mark now, not per row. `group-hover` lit all four
-              from anywhere in the link, which said "these are one group" at the
-              exact moment the reader was asking about one of them. `hover:z-10`
-              goes with it: the stack overlaps left to right, so without it the
-              mark being looked at stays pinned under its neighbour's ring. */}
-          <a
-            href="/#experience"
-            className="group flex flex-wrap items-center gap-x-3 gap-y-2"
-          >
-            <span className="font-mono text-2xs uppercase tracking-label text-subtle">
-              Worked with
-            </span>
-            <span className="flex items-center candy:hidden">
-              {clients.map((c, i) => (
-                <Tooltip key={c.name}>
-                  <TooltipTrigger asChild>
-                    <span
-                      className={cn(
-                        "relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-secondary outline outline-1 outline-border ring-2 ring-background transition-[filter] duration-base ease-out hover:z-10 hover:grayscale-0 candy:outline-foreground candy:outline-[1.5px] candy:ring-0",
-                        "grayscale candy:grayscale-0",
-                        i > 0 && "-ml-2",
-                      )}
-                    >
-                      <Image
-                        src={c.img}
-                        alt=""
-                        width={128}
-                        height={128}
-                        quality={90}
-                        className="h-full w-full object-cover"
-                      />
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent>{c.name}</TooltipContent>
-                </Tooltip>
-              ))}
-            </span>
-            <span className="text-sm text-muted-foreground transition-colors duration-fast ease-out group-hover:text-foreground candy:hidden">
-              {clients.map((c) => c.name).join(", ")}
-            </span>
-            <span className="hidden flex-wrap items-center gap-1.5 candy:flex">
-              {clients.map((c, i) => (
-                <span
-                  key={c.name}
-                  className={`sticker sticker-sm candy:inline-flex candy:items-center candy:gap-1.5 candy:rounded-tag candy:py-0.5 candy:pl-1 candy:pr-2 candy:text-xs candy:font-semibold candy:text-foreground ${tilt(i)}`}
-                >
-                  <Image
-                    src={c.img}
-                    alt=""
-                    width={32}
-                    height={32}
-                    className="h-4 w-4 rounded-full object-cover outline outline-[1.5px] outline-foreground"
-                  />
-                  {c.name}
-                </span>
-              ))}
-            </span>
-          </a>
         </div>
       </Container>
 
@@ -440,7 +348,7 @@ export default function About() {
           between the two rows run edge to edge. Left inside the padded column
           it stopped 24px short at each end, which reads as a broken line
           sitting between two full-width ones. */}
-      <div className="mt-10 md:mt-12 candy:mt-5 candy:md:mt-6">
+      <div className="mt-8 md:mt-10 candy:mt-5 candy:md:mt-6">
         <Container width="reading" className="border-t border-border candy:border-0">
           <div className="-mx-6 grid grid-cols-2 md:mx-0 md:grid-cols-4 candy:mx-0 candy:w-fit candy:max-w-full candy:grid-cols-2 candy:sm:grid-cols-4 candy:gap-3 candy:px-1">
             {stats.map((s, i) => (

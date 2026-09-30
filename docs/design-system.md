@@ -65,7 +65,7 @@ Two rules:
 
 - Every Candy-specific utility (`bg-candy-*`, `rounded-sticker`, `rounded-tile`, `rounded-tag`, `shadow-sticker-*`, and every other Candy class) is written behind the `candy:` variant, never bare, so it stays harmless in Paper and dark. The one exception is `sticker`, `sticker-sm`, `sticker-flat`, `sticker-hover`, `tilt-*` and `tilt-md-*`: those are written without the `candy:` prefix because they are scoped by their own `[data-theme="candy"]` selector in `globals.css`, so they are already no-ops outside Candy.
 - No dividers in Candy: no rails, bands, ticks, dot gutters, or row hairlines (`divide-y`). Sections separate on whitespace alone.
-- Images are always in colour in Candy; Paper keeps greyscale until hover.
+- Images are always in colour in Candy; Paper keeps thumbnails and photography greyscale until hover. Logos (org, client, product marks) are always in colour, in every theme.
 
 ### Rules
 

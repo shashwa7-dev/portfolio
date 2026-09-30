@@ -25,6 +25,9 @@ const KeyboardShortcuts = dynamic(
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
+  // Italic is loaded for the hero headline's emphasis. Without it the browser
+  // slants the upright face, which reads as broken rather than as italic.
+  style: ["normal", "italic"],
   display: "swap",
   variable: "--font-sans",
 });

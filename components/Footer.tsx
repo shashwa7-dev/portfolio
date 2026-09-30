@@ -11,7 +11,12 @@ import {
 } from "@/lib/siteLinks";
 
 /**
- * The footer, as labelled columns closed by a specimen plate.
+ * The footer, as labelled columns over a copyright row.
+ *
+ * It was closed by a "specimen plate", a full-bleed outlined "offcod8"
+ * wordmark between two rules. That was removed: it was the loudest thing at the
+ * foot of the page and said nothing the navbar's mark does not. Do not re-add
+ * it; the `.plate-*` styles went with it.
  *
  * It used to be a paragraph with links under it, over a panther photograph
  * washed in at 16% and 28%. Two things were wrong with that by the time the
@@ -29,8 +34,7 @@ import {
  * the same work, and nothing can collide with a border that is not there.
  *
  * The photograph is gone. It was the only photographic element in the design,
- * and it existed to give the foot of the page some weight, which the plate now
- * does with type. `public/footer-panther.jpg` is no longer referenced by
+ * and it existed to give the foot of the page some weight. `public/footer-panther.jpg` is no longer referenced by
  * anything.
  *
  * Two facts move down here from the hero: the address and the location. Both
@@ -183,43 +187,6 @@ const Footer = () => {
         </div>
 
       </Container>
-
-      {/* The plate.
-
-          Full bleed so its rules cross the page rails, like every band above
-          it. Outline type rather than a filled wordmark: filled, it would be a
-          second logo competing with the navbar's; drawn, it reads as a
-          specimen of the mark, which is the language the visitor card already
-          speaks.
-
-          `aria-hidden` on the whole thing. It is the word "offcod8" for the
-          third time in one footer, and a screen reader has already had it from
-          the Studio link above. */}
-      <div
-        aria-hidden
-        className="relative select-none overflow-hidden border-t border-border py-9 candy:border-0"
-      >
-        <span className="plate-rule pointer-events-none absolute inset-x-6 top-3 h-1.5 candy:hidden" />
-        <span className="plate-rule pointer-events-none absolute inset-x-6 bottom-3 h-1.5 candy:hidden" />
-        {["left-2 top-2", "right-2 top-2", "left-2 bottom-2", "right-2 bottom-2"].map(
-          (pos) => (
-            <span
-              key={pos}
-              className={`pointer-events-none absolute ${pos} font-mono text-xs leading-none text-border-strong`}
-            >
-              +
-            </span>
-          )
-        )}
-        <p className="plate-wordmark px-8 text-center text-[clamp(2.75rem,11vw,8rem)] font-bold leading-[0.86] tracking-tight candy:font-display tilt-a">
-          offcod8
-        </p>
-        <p className="mt-4 text-center font-mono text-2xs uppercase tracking-label text-subtle">
-          shashwa7.in
-          <span className="px-2 text-border-strong">·</span>
-          Built with Next.js
-        </p>
-      </div>
 
       <div className="border-t border-border candy:border-0">
         <Container className="flex flex-wrap items-center gap-x-6 gap-y-2 py-4 font-mono text-2xs uppercase tracking-label text-subtle">
