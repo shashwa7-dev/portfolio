@@ -7,7 +7,7 @@ import { Moon, Sun } from "@phosphor-icons/react/ssr";
 import Image from "next/image";
 import CandyMusic from "@/components/CandyMusic";
 import { useTheme } from "@/app/hooks/useTheme";
-import { nextTheme, themeLabel } from "@/lib/theme";
+import { nextTheme, themeLabel, toggleIcon } from "@/lib/theme";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { navLinks } from "@/lib/siteLinks";
 import Container from "@/components/layout/Container";
@@ -138,9 +138,9 @@ export default function Navbar() {
                 type="button"
                 onClick={cycleTheme}
                 aria-label={`Theme: ${themeLabel(theme)}. Switch to ${themeLabel(upcoming).toLowerCase()}`}
-                className={`${control} justify-center ${theme === "light" ? "w-auto bg-transparent hover:bg-transparent" : "w-8"}`}
+                className={`${control} justify-center ${toggleIcon(upcoming) === "treat" ? "w-auto bg-transparent hover:bg-transparent" : "w-8"}`}
               >
-                {theme === "light" ? (
+                {toggleIcon(upcoming) === "treat" ? (
                   <Image
                     src="/candy-treat.avif"
                     alt=""
@@ -149,7 +149,7 @@ export default function Navbar() {
                     unoptimized
                     className="h-8 w-auto"
                   />
-                ) : theme === "candy" ? (
+                ) : toggleIcon(upcoming) === "moon" ? (
                   <Moon className="h-4 w-4" />
                 ) : (
                   <Sun className="h-4 w-4" />

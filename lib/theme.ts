@@ -44,6 +44,15 @@ export function themeLabel(theme: Theme): "Light" | "Dark" | "Candy" {
   return theme === "light" ? "Light" : theme === "dark" ? "Dark" : "Candy";
 }
 
+/**
+ * What the theme button shows: the theme it will switch TO. Keyed on the next
+ * theme rather than the current one, so turning Candy off turns the treat off
+ * with it instead of leaving light mode advertising a theme that is gone.
+ */
+export function toggleIcon(upcoming: Theme): "treat" | "moon" | "sun" {
+  return upcoming === "candy" ? "treat" : upcoming === "dark" ? "moon" : "sun";
+}
+
 type RootLike = {
   dataset: DOMStringMap;
   classList: { toggle(name: string, force: boolean): unknown };

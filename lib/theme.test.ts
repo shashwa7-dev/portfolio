@@ -8,6 +8,7 @@ import {
   nextTheme,
   applyTheme,
   themeLabel,
+  toggleIcon,
   THEME_BOOT_SCRIPT,
 } from "./theme";
 
@@ -140,5 +141,15 @@ describe("THEME_BOOT_SCRIPT", () => {
   it("is a single self-contained statement with no template placeholders", () => {
     expect(THEME_BOOT_SCRIPT).not.toContain("${");
     expect(THEME_BOOT_SCRIPT.trim().startsWith("(function")).toBe(true);
+  });
+});
+
+describe("toggleIcon", () => {
+  it("shows the theme the button will switch to", () => {
+    expect(toggleIcon(nextTheme("light"))).toBe("moon");
+    expect(toggleIcon(nextTheme("dark"))).toBe("sun");
+  });
+  it("shows the candy treat only when candy is next", () => {
+    expect(toggleIcon("candy")).toBe("treat");
   });
 });
