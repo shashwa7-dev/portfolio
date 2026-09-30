@@ -70,24 +70,20 @@ be Shashwat.
 
 **ShopOS**, Frontend Engineer (**full-time**, Jan 2026 – Present)
 
-AI-native commerce platform. Shashwat ships merchant-facing surfaces across
-AI agents, workflow authoring, and chat for the create / manage / market /
-sell flows. Works across the main app, the admin console, and the shared
-design-system package.
+AI-native commerce platform. Shashwat builds ShopOS's AI products end to end,
+from the UI down to the integrations: **Sloosh** for creators, the **ShopOS**
+app for brands, and **Spacelab**, the node canvas both of them run on.
 
 - Site: https://shopos.ai/
 - App: https://app.shopos.ai/
 
-### Recently shipped at ShopOS (most notable)
+### What he built at ShopOS
 
-| When | What |
+| Product | What it is |
 |---|---|
-| Jun 2026 | **Client review pipeline.** Rebuilt on top of the migrated Enterprise dashboard, adding approval and decline flows the iframe version never had. Now the review surface for **8 major enterprise accounts, including Celio, Bear House and Holy Drip**. |
-| Apr 2026 | **Enterprise dashboard in-app migration.** Pulled Enterprise UI out of a separate iframe-hosted repo into the main Next.js app. One auth layer, one design system, no cross-origin tax. |
-| May 2026 | **Canvas Builder for visual workflow authoring.** Drawer-based editor that lets non-engineers compose workflow templates without writing code. |
-| May 2026 | **Content-rich chat input.** Tiptap-based editor with slash commands, skill mentions, structured serialization. Replaced a fragile contenteditable. |
-| Jan 2026 | **Media carousel for AI asset review.** Editing + reconciliation surface for AI-generated images. Refine modal, comment overlay, hash-routed deep-linking. |
-| May 2026 | **Skills Library across two apps.** End-to-end Skills Library in main app + admin console: types, API client, React Query hooks with optimistic updates, dialogs. |
+| **Sloosh** (Sep 2026) | The creator app from ShopOS: "Pick a space, fill in the inputs, get the outcome." Space gallery, Viral Visuals trend templates, a Models hub, Studio, plan-gated features with credits and upgrades, and Sloosh MCP to run spaces from Claude or ChatGPT. Built on the same packages as ShopOS, without a fork. |
+| **Spacelab** (since Jan 2026) | A node canvas for AI content pipelines. Wire inputs, models and tools into a graph, run it on one product or a whole catalog, and publish it as a one-click Space. 30+ frontier models (video: Veo 3.1, Seedance 2.5, Kling 3.0, MiniMax H3, Grok Imagine; image: Nano Banana Pro, GPT Image 2.5, Seedream 5, Flux 2 Pro, Qwen Image; text: Claude, GPT-5.6, Gemini, DeepSeek; audio: Lyria 3, ElevenLabs). Custom nodes include Brand Memory and Moodboard (on-brand output), Image Iterator / Image Pool / Garment Classifier (run across a catalog), Auto Mask (SAM 3), Video Analyzer, Pinterest Scraper, and video finishing (lipsync, text to speech, music, sound, subtitles). Ask AI builds the graph from a sentence; Goal Mode keeps revising the workflow until the output meets quality criteria; an MCP server lets outside agents build and run canvases. |
+| **ShopOS app** (since Jan 2026) | An AI workspace where e-commerce brands create, market and sell. Agents: Performance Marketing (Meta, Google, GA4, Creative Pulse, catalog overlays), Creative Director (images, video, storyboards), Store Manager (Shopify themes, landing pages, advertorials edited by chat) and GEO Optimizer (visibility in AI answer engines). Plus streaming agent chat, Brand Memory, asset Library, Routines, Skills, Connectors and MCP. Its enterprise catalog review surface is used by **8 accounts, including Celio, Bear House and Holy Drip**. |
 
 ## Past engagement
 
@@ -106,8 +102,9 @@ and blockchain integrations.
 ## Proof points (stats)
 
 - **1M+** users reached, Coinbase × Polygon NFT
-- **100K** day-one mints, Coinbase × Polygon NFT
-- **9+** production products shipped, across ShopOS & Dehidden
+- **12+** production products shipped, across ShopOS (Sloosh, Spacelab, the ShopOS app) & Dehidden (9)
+- **30+** AI models shipped, in Spacelab
+- (Also true, no longer on the stat band: **100K** day-one mints, Coinbase × Polygon NFT)
 - **4+ years** building frontend
 
 ## Tech stack
@@ -115,8 +112,8 @@ and blockchain integrations.
 Grouped the same four ways the site's Toolkit section groups them, so an answer
 here matches what a visitor is looking at.
 
-- **Frontend:** JavaScript, TypeScript, React, Next.js, Tailwind, shadcn, Chakra UI, GSAP, Framer Motion, React Query, Zustand, tiptap, wagmi, Solana, Web3.js
-- **AI:** OpenAI, Google Gemini, Claude (Anthropic)
+- **Frontend:** JavaScript, TypeScript, React, Next.js, Tailwind, shadcn, Base UI, Chakra UI, styled-components, SCSS, GSAP, Framer Motion, React Query, Zustand, React Flow, tiptap, wagmi, Solana, Web3.js
+- **AI:** OpenAI, Google Gemini, Claude (Anthropic), Vercel AI SDK
 - **Backend & data:** Node.js, Bun, PostgreSQL, MongoDB, Firebase, Supabase, REST, GraphQL, WebSocket, WebRTC
 - **Infra & tooling:** Git, GitHub, Docker, AWS, Cloudflare, Vercel, Playwright, Vitest, Sentry, PostHog, Google Analytics, Vercel Analytics, VS Code, Figma, Postman
 
