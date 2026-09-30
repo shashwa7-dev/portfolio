@@ -874,7 +874,7 @@ table {
     animation: ticker-drift var(--duration-ticker) linear infinite;
   }
   .ticker-mask:hover .ticker-track,
-  .ticker-mask:focus-within .ticker-track {
+  .ticker-mask[data-paused] .ticker-track {
     animation-play-state: paused;
   }
   @keyframes ticker-drift {
@@ -892,6 +892,9 @@ table {
       flex-wrap: wrap;
     }
     .ticker-track [data-ticker-copy] {
+      display: none;
+    }
+    .ticker-toggle {
       display: none;
     }
     /* The list itself wraps too: otherwise it stays one long line and the
