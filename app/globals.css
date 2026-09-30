@@ -340,6 +340,8 @@
      timer that ends it have to be one number or the curtain is torn away
      mid-transition. See that file for why three seconds is allowed. */
   --duration-curtain: 1200ms;
+  /* Mirrors duration.ticker in lib/motionVariants.ts. */
+  --duration-ticker: 40s;
 }
 
 /* The dice on /card. The dice are made of the card's own paper. These
@@ -856,3 +858,47 @@ table {
     }
   }
 }
+
+/* The intro stats ticker (components/common/StatsTicker.tsx). Clipped to the
+   reading column and faded at both edges; the track holds the list twice and
+   drifts by half its width, so the loop has no seam. */
+@layer components {
+  .ticker-mask {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+  .ticker-track {
+    display: flex;
+    width: max-content;
+    animation: ticker-drift var(--duration-ticker) linear infinite;
+  }
+  .ticker-mask:hover .ticker-track,
+  .ticker-mask:focus-within .ticker-track {
+    animation-play-state: paused;
+  }
+  @keyframes ticker-drift {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ticker-mask {
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+    .ticker-track {
+      animation: none;
+      width: auto;
+      flex-wrap: wrap;
+    }
+    .ticker-track [data-ticker-copy] {
+      display: none;
+    }
+    /* The list itself wraps too: otherwise it stays one long line and the
+       mask-free overflow would still cut the later stats off. */
+    .ticker-track > ul {
+      flex-wrap: wrap;
+    }
+  }
+}
+

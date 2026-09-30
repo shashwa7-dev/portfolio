@@ -11,6 +11,8 @@
 export type Stat = {
   n: string;
   c: string;
+  /** Short muted aside after the caption, used by the intro ticker. */
+  context?: string;
   /** Brand logos anchoring the number — small overlapping avatars below the stat. */
   orgs?: { name: string; img: string }[];
 };
@@ -44,4 +46,16 @@ export const stats: Stat[] = [
     ],
   },
   { n: "5+ yrs", c: "building frontend" },
+];
+
+/**
+ * The intro ticker's items, in order. A superset of `stats`: the ticker has
+ * room for one more fact than the OG card, so "10K+ spaces" lives here only.
+ */
+export const tickerStats: Stat[] = [
+  { ...stats[0], c: "users reached", context: "Coinbase × Polygon" },
+  stats[1],
+  { ...stats[2], c: "AI models in Spacelab" },
+  { n: "10K+", c: "spaces created" },
+  stats[3],
 ];

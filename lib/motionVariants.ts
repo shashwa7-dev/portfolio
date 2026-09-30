@@ -50,6 +50,12 @@ export const duration = {
    * glyph being swapped.
    */
   throw: 0.7,
+  /**
+   * The intro stats ticker: one full loop, in seconds. A drift, not a
+   * transition, so it is far outside the UI budget on purpose. It pauses on
+   * hover and does not run under reduced motion.
+   */
+  ticker: 40,
 } as const;
 
 /** Per-item stagger offsets (seconds). Use instead of literal `i * 0.05`. */
