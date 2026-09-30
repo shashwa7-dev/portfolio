@@ -2,13 +2,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { organizations } from "@/lib/workData";
 import { formatPeriod } from "@/lib/tenure";
-import { orgSubtitle } from "@/lib/home";
 import Section from "@/components/layout/Section";
 import MarginNote from "@/components/common/MarginNote";
 
 /**
- * Work, as one row per company: logo, name, what was built there (or for
- * whom), dates. The row opens the org's own page, which holds the detail the
+ * Work, as one row per company: logo, name, a one-line summary, dates. The row opens the org's own page, which holds the detail the
  * homepage used to carry (role, tags, highlights, links, featured projects).
  */
 export default function ExperienceWork() {
@@ -16,7 +14,6 @@ export default function ExperienceWork() {
     <Section id="experience" label="Work" title="Where I've worked, and what I shipped">
       <ul className="space-y-1">
         {organizations.map((org) => {
-          const subtitle = orgSubtitle(org);
           return (
             <li key={org.id} className="relative">
               <Link
@@ -28,7 +25,7 @@ export default function ExperienceWork() {
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block font-medium text-foreground">{org.name}</span>
-                  {subtitle && <span className="block truncate text-sm text-muted-foreground">{subtitle}</span>}
+                  {org.summary && <span className="block text-sm text-muted-foreground">{org.summary}</span>}
                 </span>
                 <span className="shrink-0 font-mono text-xs tabular-nums text-subtle">{formatPeriod(org.period)}</span>
               </Link>

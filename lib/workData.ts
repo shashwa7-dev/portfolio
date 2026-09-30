@@ -49,6 +49,8 @@ export type TOrganization = {
   /** Engagement type — surfaced as a small pill next to the role. */
   employment?: "full-time" | "contract";
   description: string;
+  /** One line for the homepage Work row, under the org name. Keep it under 90 characters. */
+  summary?: string;
   highlights: string[];
   /** Single canonical link — used as the org name link if `links` isn't set. */
   link?: string;
@@ -79,6 +81,7 @@ export const organizations: TOrganization[] = [
     // Tech stack list (the Next.js apps, the Spacelab node canvas on React
     // Flow, the streaming agent chat on the Vercel AI SDK).
     skills: ["React", "TypeScript", "Next.js", "React Flow", "Vercel AI SDK", "React Query"],
+    summary: "Building Sloosh, Spacelab and the ShopOS app end to end.",
     description:
       "Frontend engineer at ShopOS, building its AI products end to end: Sloosh for creators, the ShopOS app for brands, and Spacelab, the node canvas both of them run on.",
     links: {
@@ -112,6 +115,7 @@ export const organizations: TOrganization[] = [
     // arrays, so every tag is backed by a shipped project rather than inferred
     // from the role title.
     skills: ["React", "TypeScript", "wagmi", "React Query", "Tailwind CSS", "Framer Motion"],
+    summary: "Sole frontend engineer on 9 AI and Web3 products for Coinbase, Polygon and Play AI.",
     description:
       "Building AI × Web3 products including DeFi platforms, NFT minting solutions, and blockchain integrations.",
     link: "https://x.com/playAInetwork",
@@ -376,6 +380,7 @@ export const organizations: TOrganization[] = [
     // Shashwat; mirrored in the diary entry's `stack` and in
     // data/agent-memory.md's Tech stack list.
     skills: ["React", "styled-components", "Chakra UI", "SCSS"],
+    summary: "Frontend internship on client-facing React work.",
     description: "Frontend development for Cope.Studio.",
     highlights: [
       "Contributing to client-facing frontend features and bug fixes",

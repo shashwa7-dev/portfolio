@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { ArrowUpRight } from "@phosphor-icons/react/ssr";
 import { sideProjects } from "@/lib/projectsData";
 import { homeProjects } from "@/lib/home";
 import Section from "@/components/layout/Section";
@@ -7,8 +8,9 @@ import { ViewAllLink } from "@/components/common/ViewAllLink";
 import MarginNote from "@/components/common/MarginNote";
 
 /**
- * Two side projects, by name only. The thumbnail stays out of the way until
- * the row is hovered or focused, then fades in at the row's right end; touch
+ * Two side projects, by name only. On hover or focus an underline draws in
+ * under the name, a small arrow appears, and the thumbnail fades in at the
+ * row's right end; touch
  * visitors get the names and the project page one tap away. The full list
  * lives on /projects.
  */
@@ -25,9 +27,15 @@ export default function Projects() {
           <li key={p.id} className="relative">
             <Link
               href={`/project/${p.slug}`}
-              className="group relative -mx-3 flex items-center rounded-lg px-3 py-3 text-lg font-medium text-foreground transition-colors duration-base ease-out hover:bg-muted"
+              className="group relative -mx-3 flex items-center gap-1.5 rounded-lg px-3 py-3 text-lg font-medium text-foreground"
             >
-              {p.title}
+              <span className="bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_1px] bg-left-bottom bg-no-repeat pb-0.5 transition-[background-size] duration-med ease-out group-hover:bg-[length:100%_1px] group-focus-visible:bg-[length:100%_1px]">
+                {p.title}
+              </span>
+              <ArrowUpRight
+                aria-hidden
+                className="h-4 w-4 -translate-x-1 translate-y-0.5 text-subtle opacity-0 transition-[opacity,transform] duration-base ease-out group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:translate-y-0 group-focus-visible:opacity-100"
+              />
               <span
                 aria-hidden
                 className="pointer-events-none absolute right-3 top-1/2 aspect-[16/10] w-40 -translate-y-1/2 scale-95 overflow-hidden rounded-md opacity-0 shadow-lg ring-1 ring-border transition-[opacity,transform] duration-base ease-out group-hover:scale-100 group-hover:opacity-100 group-focus-visible:scale-100 group-focus-visible:opacity-100"
