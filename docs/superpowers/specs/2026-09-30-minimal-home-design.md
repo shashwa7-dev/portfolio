@@ -114,9 +114,10 @@ Stacked, left-aligned, inside the reading measure. Top to bottom:
   the existing `cardHand` font from `lib/card/fonts.ts` (`next/font`, weight
   600, `display: swap`, variable `--font-hand`), in a warm accent colour, slightly rotated (−4° to +3°, from a fixed per-note
   value, not random).
-- Desktop (≥ 1024px): absolutely positioned in the right margin beside the row
-  it annotates, outside the reading column.
-- Below 1024px: rendered inline under its row as a small note, not rotated.
+- Wide screens (≥ 1280px, where the side margin is ~260px): absolutely
+  positioned in the right margin beside the row it annotates, outside the
+  reading column.
+- Below 1280px: rendered inline under its row as a small note, not rotated.
 - `aria-hidden` is **not** used: the notes are real content, read after the
   row.
 - Notes are data, kept next to what they annotate:
