@@ -78,6 +78,12 @@ count C14 "no indigo hue in tokens"      0 grep -rEoh "24[12] [0-9]+%|--accent: 
 count C15 "sticker elements keep their edge and shadow" 0 grep -rEoh "sticker[^\"'\`]*candy:(border-0|shadow-none)|candy:(border-0|shadow-none)[^\"'\`]*sticker" --include=*.tsx app components
 
 echo ""
+echo "Minimal home"
+absent C16 "Rails component gone"        components/layout/Rails.tsx
+count C17 "Rails not rendered"           0 grep -rEoh "<Rails" --include=*.tsx app components
+count C18 "Candy disabled"               1 grep -rEoh "CANDY_ENABLED = false" lib/theme.ts
+
+echo ""
 if [ "$FAILED" = 0 ]; then
   printf '\033[32mAll checks pass.\033[0m\n\n'
 else

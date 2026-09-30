@@ -34,10 +34,8 @@
   --input: 36 16% 89.5%;
   --ring: 35 9% 30%;
   --radius: 0.75rem;
-  /* The page measure, and the two derived values the rail-and-band system
-     needs. `Container` reads --measure for its reading width, and the rails
-     are drawn at that same value, so a line can never drift from the column
-     it describes. --gutter is a percentage, so it resolves against whichever
+  /* The page measure, and the two derived values the band system needs.
+     `Container` reads --measure for its reading width. --gutter is a percentage, so it resolves against whichever
      element consumes it: on a full-bleed band that is the viewport. */
   --measure: 760px;
   --gutter: max(0px, calc((100% - var(--measure)) / 2));
@@ -669,16 +667,13 @@ table {
   text-wrap: balance;
 }
 
-/* ── Section rails and bands ──────────────────────────────────────────────
- * The page draws two continuous vertical hairlines at the edges of the
- * reading measure, and every numbered section opens with a full-bleed band
- * carrying its label. `components/layout/Rails.tsx` paints the rails;
- * everything below dresses the band.
+/* ── Bands ───────────────────────────────────────────────────────────────
+ * The page rails are gone (minimal home, phase 1). What remains dresses the
+ * full-bleed `Band` that secondary routes still open with via `PageBand`;
+ * phase 2 replaces those with a plain label and deletes this block.
  *
- * All of it switches off under 900px. Below that the gutters are narrower
- * than the `px-6` a Container already holds, so the rails stop reading as
- * margin and start hugging the text. The band survives as a plain border-y
- * row, which still separates sections cleanly on a phone.
+ * The dots and tick switch off under 900px, where the gutters are narrower
+ * than the `px-6` a Container already holds.
  * ------------------------------------------------------------------------ */
 
 @layer components {
@@ -724,16 +719,8 @@ table {
     pointer-events: none;
   }
 
-  /* The rails. A `<span>` is inline by default, so this is what makes the box
-     that carries the two borders. Declared here rather than as a Tailwind
-     variant: see the note in `components/layout/Rails.tsx`. */
-  .page-rails {
-    display: block;
-  }
-
   /* One threshold for the whole system, expressed once. */
   @media (max-width: 899px) {
-    .page-rails,
     .band-gutters::before,
     .band-gutters::after,
     .band-tick {
@@ -741,9 +728,9 @@ table {
     }
   }
 
-  /* The letter at /offcod8 runs bare: no navbar, no footer, no rails.
+  /* The letter at /offcod8 runs bare: no navbar, no footer.
 
-     Those three are rendered once from app/layout.tsx, a server component with
+     Both are rendered once from app/layout.tsx, a server component with
      no idea which route sits below it. Reading the pathname there would make
      every page on the site dynamic in order to strip chrome from one of them,
      and giving that route its own root layout means moving every other route
@@ -755,8 +742,7 @@ table {
      This is the only route allowed to do it. A second one means it is not an
      easter egg any more, it is a layout, and a layout belongs in a layout. */
   body:has([data-bare]) .site-navbar,
-  body:has([data-bare]) .site-footer,
-  body:has([data-bare]) .page-rails {
+  body:has([data-bare]) .site-footer {
     display: none;
   }
 
