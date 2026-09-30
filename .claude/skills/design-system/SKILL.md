@@ -45,7 +45,7 @@ Every homepage section follows this structure:
 | `Container width="wide"` | Full layouts, hero sections (1080px max) |
 | `Section` | Any homepage content block: plain label + title |
 | `Bento` | Grid of feature cards with hairline borders |
-| `Band` | The full-bleed labelled row behind `PageBand` (secondary routes, until phase 2) |
+| `Band` | The plain labelled row behind `PageBand` (secondary routes); no gutter dots, no tick |
 | `PageBand` | A secondary route's opening band, flush under the navbar |
 | `Label` | Eyebrow text above headings |
 | `StatsTicker` (common) | The intro's slow stats line at column width |

@@ -231,13 +231,11 @@ import Section from "@/components/layout/Section";
 <PageBand id="Blog" name="12 posts" />         {/* first child of <main> */}
 ```
 
-- The page rails are gone. `Band` is still the full-bleed row with gutter dots
-  (`--dot-gap`) and an ink tick, drawn only by `PageBand` at the top of a
-  secondary route. Phase 2 of the minimal-home spec replaces it with a plain
-  label.
+- The page rails, gutter dots and ink tick are gone. `Band` is a plain
+  full-width label row with one hairline, drawn only by `PageBand` at the top
+  of a secondary route.
 - Every secondary route opens with a `PageBand` and carries `pb-8 md:pb-12`
   on its `<main>`; the band's own `mb-8 md:mb-12` supplies the rest.
-- The dots and tick hide under 900px.
 
 ### StatsTicker, MarginNote
 

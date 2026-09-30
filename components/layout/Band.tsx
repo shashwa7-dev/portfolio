@@ -2,17 +2,9 @@ import { cn } from "@/lib/utils";
 import Container from "./Container";
 
 /**
- * A full-bleed row that crosses the rails, carrying a label and an optional
- * action. It is the one structural device this page system adds.
- *
- * The band is full width while its contents sit in a Container, so the two
- * hairlines run edge to edge and cross the rails rather than stopping at the
- * measure. That crossing is the whole effect: it is what makes the label read
- * as page furniture instead of as a caption sitting above a paragraph.
- *
- * Used by `Section` for a numbered section and by `PageBand` for a route
- * header. Nothing else should draw a band: a band means "a labelled division
- * starts here", and it stops meaning that as soon as it is used for emphasis.
+ * A full-width label row with a hairline under it, used only by `PageBand` at
+ * the top of a secondary route. The rails, gutter dots and ink tick that used
+ * to dress it are gone; what is left is a plain labelled row.
  */
 export default function Band({
   className,
@@ -34,12 +26,11 @@ export default function Band({
   return (
     <div
       className={cn(
-        "band-gutters relative border-b border-border candy:border-0",
+        "relative border-b border-border candy:border-0",
         !flush && "border-t",
         className
       )}
     >
-      <span aria-hidden className="band-tick candy:hidden" />
       <Container className="flex items-center justify-between gap-4 py-3 candy:py-1.5">
         {children}
       </Container>
