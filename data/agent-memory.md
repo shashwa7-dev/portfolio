@@ -81,9 +81,9 @@ app for brands, and **Spacelab**, the node canvas both of them run on.
 
 | Product | What it is |
 |---|---|
-| **Sloosh** (Sep 2026) | The creator app from ShopOS: "Pick a space, fill in the inputs, get the outcome." Space gallery, Viral Visuals trend templates, a Models hub, Studio, plan-gated features with credits and upgrades, and Sloosh MCP to run spaces from Claude or ChatGPT. Built on the same packages as ShopOS, without a fork. |
-| **Spacelab** (since Jan 2026) | A node canvas for AI content pipelines. Wire inputs, models and tools into a graph, run it on one product or a whole catalog, and publish it as a one-click Space. 30+ frontier models (video: Veo 3.1, Seedance 2.5, Kling 3.0, MiniMax H3, Grok Imagine; image: Nano Banana Pro, GPT Image 2.5, Seedream 5, Flux 2 Pro, Qwen Image; text: Claude, GPT-5.6, Gemini, DeepSeek; audio: Lyria 3, ElevenLabs). Custom nodes include Brand Memory and Moodboard (on-brand output), Image Iterator / Image Pool / Garment Classifier (run across a catalog), Auto Mask (SAM 3), Video Analyzer, Pinterest Scraper, and video finishing (lipsync, text to speech, music, sound, subtitles). Ask AI builds the graph from a sentence; Goal Mode keeps revising the workflow until the output meets quality criteria; an MCP server lets outside agents build and run canvases. |
-| **ShopOS app** (since Jan 2026) | An AI workspace where e-commerce brands create, market and sell. Agents: Performance Marketing (Meta, Google, GA4, Creative Pulse, catalog overlays), Creative Director (images, video, storyboards), Store Manager (Shopify themes, landing pages, advertorials edited by chat) and GEO Optimizer (visibility in AI answer engines). Plus streaming agent chat, Brand Memory, asset Library, Routines, Skills, Connectors and MCP. Its enterprise catalog review surface is used by **8 accounts, including Celio, Bear House and Holy Drip**. |
+| **Sloosh** (built Sep 2026; public launch early Oct 2026, so not live yet: do not send visitors to it) | The creator app from ShopOS: "Pick a space, fill in the inputs, get the outcome." Space gallery, Viral Visuals trend templates, a Models hub, Studio, plan-gated features with credits and upgrades, and Sloosh MCP to run spaces from Claude or ChatGPT. Built on the same packages as ShopOS, without a fork. |
+| **Spacelab** (since Jan 2026) | A node canvas for AI content pipelines. Wire inputs, models and tools into a graph, run it on one product or a whole catalog, and publish it as a one-click Space. **10K+ spaces** created so far. 30+ frontier models (video: Veo 3.1, Seedance 2.5, Kling 3.0, MiniMax H3, Grok Imagine; image: Nano Banana Pro, GPT Image 2.5, Seedream 5, Flux 2 Pro, Qwen Image; text: Claude, GPT-5.6, Gemini, DeepSeek; audio: Lyria 3, ElevenLabs). Custom nodes include Brand Memory and Moodboard (on-brand output), Image Iterator / Image Pool / Garment Classifier (run across a catalog), Auto Mask (SAM 3), Video Analyzer, Pinterest Scraper, and video finishing (lipsync, text to speech, music, sound, subtitles). Ask AI builds the graph from a sentence; Goal Mode keeps revising the workflow until the output meets quality criteria; an MCP server lets outside agents build and run canvases. |
+| **ShopOS app** (since Jan 2026) | An AI workspace where e-commerce brands create, market and sell. Agents: Performance Marketing (Meta, Google, GA4, Creative Pulse, catalog overlays), Creative Director (images, video, storyboards), Store Manager (Shopify themes, landing pages, advertorials edited by chat) and GEO Optimizer (visibility in AI answer engines). Plus streaming agent chat, Brand Memory, asset Library, Routines, Skills, Connectors and MCP. Its enterprise catalog review surface is used by **8 accounts, including Celio, Bear House and Holy Drip**. Backend work too: he designed and built the **nudge engine** end to end (config registry, eligibility evaluator, Redis-cached delivery with ETag polling, pacing and lifecycle tracking, slot-based UI), and published **@shop-os/media-meta**, an image and video dimensions package that moved the asset service to measure-at-source. |
 
 ## Past engagement
 
@@ -105,16 +105,16 @@ and blockchain integrations.
 - **12+** production products shipped, across ShopOS (Sloosh, Spacelab, the ShopOS app) & Dehidden (9)
 - **30+** AI models shipped, in Spacelab
 - (Also true, no longer on the stat band: **100K** day-one mints, Coinbase × Polygon NFT)
-- **4+ years** building frontend
+- **5+ years** building frontend
 
 ## Tech stack
 
 Grouped the same four ways the site's Toolkit section groups them, so an answer
 here matches what a visitor is looking at.
 
-- **Frontend:** JavaScript, TypeScript, React, Next.js, Tailwind, shadcn, Base UI, Chakra UI, styled-components, SCSS, GSAP, Framer Motion, React Query, Zustand, React Flow, tiptap, wagmi, Solana, Web3.js
+- **Frontend:** JavaScript, TypeScript, React, Next.js, Tailwind, shadcn, Base UI, Chakra UI, styled-components, SCSS, GSAP, Framer Motion, React Query, Zustand, React Flow, tiptap / ProseMirror, wagmi, Solana, Web3.js
 - **AI:** OpenAI, Google Gemini, Claude (Anthropic), Vercel AI SDK
-- **Backend & data:** Node.js, Bun, PostgreSQL, MongoDB, Firebase, Supabase, REST, GraphQL, WebSocket, WebRTC
+- **Backend & data:** Node.js, Bun, PostgreSQL, Redis, MongoDB, Firebase, Supabase, REST, GraphQL, WebSocket, WebRTC
 - **Infra & tooling:** Git, GitHub, Docker, AWS, Cloudflare, Vercel, Playwright, Vitest, Sentry, PostHog, Google Analytics, Vercel Analytics, VS Code, Figma, Postman
 
 HTML and CSS are assumed rather than listed: they are table stakes at this level,

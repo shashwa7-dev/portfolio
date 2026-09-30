@@ -43,5 +43,5 @@ export const stats: Stat[] = [
       { name: "Spacelab", img: "/images/spacelab.svg" },
     ],
   },
-  { n: "4+ yrs", c: "building frontend" },
+  { n: "5+ yrs", c: "building frontend" },
 ];
