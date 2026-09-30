@@ -1,6 +1,6 @@
 import { getAllSideProjects } from "@/lib/projectsData";
 import { goToShortcuts } from "@/lib/shortcutsData";
-import type { Theme } from "@/lib/theme";
+import { CANDY_ENABLED, type Theme } from "@/lib/theme";
 
 export type Command = {
   id: string;
@@ -47,7 +47,9 @@ export function buildCommands(): Command[] {
     { id: "act-theme-cycle", label: "Cycle theme", group: "Actions", action: "cycle-theme", keys: ["t"] },
     { id: "act-theme-light", label: "Light theme", group: "Actions", action: "set-theme", theme: "light" },
     { id: "act-theme-dark", label: "Dark theme", group: "Actions", action: "set-theme", theme: "dark" },
-    { id: "act-theme-candy", label: "Candy theme", group: "Actions", action: "set-theme", theme: "candy" },
+    ...(CANDY_ENABLED
+      ? [{ id: "act-theme-candy", label: "Candy theme", group: "Actions", action: "set-theme", theme: "candy" } satisfies Command]
+      : []),
     { id: "act-email", label: "Copy email", group: "Actions", action: "copy-email" },
     { id: "act-shortcuts", label: "Keyboard shortcuts", group: "Actions", action: "open-shortcuts", keys: ["?"] },
   ];
