@@ -22,7 +22,6 @@ export const navLinks: NavLink[] = [
   { label: "Work", href: "/#experience" },
   { label: "Projects", href: "/#projects" },
   { label: "Writing", href: "/blogs", match: "/blogs" },
-  { label: "Books", href: "/books", match: "/books" },
   { label: "Shelf", href: "/shelf", match: "/shelf" },
   { label: "CV", href: "/cv", match: "/cv" },
 ];
@@ -34,8 +33,9 @@ export const navLinks: NavLink[] = [
  * The footer briefly carried every route in `navLinks`, which is what the
  * sticky header already renders at every width. Repeating the whole bar is
  * what made it worth cutting; carrying the handful someone actually leaves a
- * page for is not the same thing. Books and Shelf are the personal-interest
- * pages and stay in the header only, where a reader browsing for them will be.
+ * page for is not the same thing. Shelf is a personal-interest page and stays in
+ * the header only. Books is in neither bar: it is reached from Currently on the
+ * homepage, the command palette and the `g b` shortcut.
  *
  * `href`s come from `navLinks` rather than being retyped, so a route that
  * moves cannot leave a dead link here. The trade is that renaming a label in
