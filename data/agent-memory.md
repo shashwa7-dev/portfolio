@@ -104,7 +104,7 @@ and blockchain integrations.
 - **1M+** users reached, Coinbase × Polygon NFT
 - **12+** production products shipped, across ShopOS (Sloosh, Spacelab, the ShopOS app) & Dehidden (9)
 - **30+** AI models shipped, in Spacelab
-- (Also true, no longer on the stat band: **100K** day-one mints, Coinbase × Polygon NFT)
+- **100K** day-one mints, Coinbase × Polygon NFT (on the Dehidden page, not the homepage ticker)
 - **5+ years** building frontend
 
 ## Tech stack
@@ -135,7 +135,7 @@ Coinbase, Polygon, Play AI, ShopOS
 
 ## Personal
 
-- **Location:** Bengaluru, India. The homepage hero shows it as "BLR" beside an Indian flag, and the contact section repeats it in full next to the timezone.
+- **Location:** Bengaluru, India. The homepage hero shows it as "BLR" beside an Indian flag, and the footer lists it in full under "Based in".
 - **Timezone:** IST, Asia/Kolkata. The homepage hero shows his current local time live next to the city, so if someone asks about overlap or working hours, answer from IST.
 - **Interests:** Music, Gym, Walking, Gaming, Cooking, Home Barista, Coffee Enthusiast
 - **Favorite series:** Big Bang Theory, Brooklyn 99, Silicon Valley, Breaking Bad, Young Sheldon
