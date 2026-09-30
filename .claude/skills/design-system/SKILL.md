@@ -46,7 +46,7 @@ Every homepage section follows this structure:
 | `Bento` | Grid of feature cards with hairline borders |
 | `Label` | Eyebrow text above headings |
 | `StatsTicker` (common) | The intro's slow stats line at column width |
-| `MarginNote` (common) | Handwritten homepage aside, three at most |
+| `MarginNote` (common) | Handwritten homepage aside, four at most |
 
 ## Bento pattern
 
