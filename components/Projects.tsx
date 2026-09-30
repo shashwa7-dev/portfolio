@@ -3,15 +3,12 @@ import { sideProjectToCard } from "@/lib/projectCards";
 import ProjectPreviewCard from "./ProjectPreviewCard";
 import Section from "@/components/layout/Section";
 import { ViewAllLink } from "@/components/common/ViewAllLink";
-import { HOMEPAGE_SECTION_TOTAL } from "@/lib/sections";
 
 export default function Projects() {
   return (
     <Section
       id="projects"
-      number="02"
-      of={HOMEPAGE_SECTION_TOTAL}
-      label="Side Projects"
+      label="Projects"
       title="Things I build for fun"
       width="reading"
       action={

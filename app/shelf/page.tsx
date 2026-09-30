@@ -68,22 +68,14 @@ export default async function ShelfPage() {
   const tracks = await getPlaylist();
 
   /**
-   * The section numbers are derived, never written down.
-   *
-   * Bookmarks sits behind SHOW_BOOKMARKS, so a hardcoded total would promise a
-   * part the page does not show, and the counter is the one element whose whole
-   * job is to be true. Sound no longer appears here at all: it is a row inside
-   * Everyday, so an empty playlist costs the page one row rather than
-   * renumbering everything after it.
+   * The parts this page shows, counted for the band's "N parts". Bookmarks sits
+   * behind SHOW_BOOKMARKS, so the count is derived rather than written down.
    */
   const parts = [
     "coffee",
     "everyday",
     ...(SHOW_BOOKMARKS ? ["bookmarks"] : []),
   ];
-  const pad = (n: number) => String(n).padStart(2, "0");
-  const total = pad(parts.length);
-  const no = (key: string) => pad(parts.indexOf(key) + 1);
 
   return (
     <main className="pb-8 md:pb-12">
@@ -125,7 +117,7 @@ export default async function ShelfPage() {
         </p>
       </Container>
 
-      <Section number={no("coffee")} of={total} label="Coffee" title="What I drink" width="reading">
+      <Section label="Coffee" title="What I drink" width="reading">
         {/* The taste note sits above the picker, not below it. Underneath, it
             moved every time someone switched to a roaster with a different
             number of beans, which is a layout shift caused by nothing the
@@ -285,8 +277,6 @@ export default async function ShelfPage() {
           the labels survive as the key column, and the page stops clearing its
           throat between every short list. */}
       <Section
-        number={no("everyday")}
-        of={total}
         label="Everyday"
         title="Desk, scent, sound"
         width="reading"
@@ -353,7 +343,7 @@ export default async function ShelfPage() {
           in order, and restoring it appends 05 rather than reopening a gap in
           the middle of the page. */}
       {SHOW_BOOKMARKS && (
-        <Section number={no("bookmarks")} of={total} label="Bookmarks" title="Worth keeping" width="reading">
+        <Section label="Bookmarks" title="Worth keeping" width="reading">
           <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
             Links I come back to. Every one carries a reason, or it does not go in.
           </p>

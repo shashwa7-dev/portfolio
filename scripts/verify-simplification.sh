@@ -82,6 +82,8 @@ echo "Minimal home"
 absent C16 "Rails component gone"        components/layout/Rails.tsx
 count C17 "Rails not rendered"           0 grep -rEoh "<Rails" --include=*.tsx app components
 count C18 "Candy disabled"               1 grep -rEoh "CANDY_ENABLED = false" lib/theme.ts
+count C19 "no section numbering"        0 grep -rEoh "HOMEPAGE_SECTION_TOTAL|number=\\{?\"0[0-9]\"" --include=*.tsx --include=*.ts app components lib
+absent C19 "sections constant gone"     lib/sections.ts
 
 echo ""
 if [ "$FAILED" = 0 ]; then

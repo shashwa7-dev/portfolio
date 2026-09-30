@@ -1,7 +1,6 @@
 import React from "react";
 import { GithubLogo, LinkedinLogo, XLogo } from "@phosphor-icons/react/ssr";
 import Section from "@/components/layout/Section";
-import { HOMEPAGE_SECTION_TOTAL } from "@/lib/sections";
 import CardNudge from "@/components/CardNudge";
 import { socialLinks, contactEmail, location } from "@/lib/siteLinks";
 import { tilt } from "@/lib/candy";
@@ -15,7 +14,7 @@ const ICONS = {
 
 const Socials = () => {
   return (
-    <Section number="06" of={HOMEPAGE_SECTION_TOTAL} label="Contact" title="Let's build something good" width="reading">
+    <Section label="Contact" title="Let's build something good" width="reading">
       <div>
         {/* The two things on offer, side by side and the same height: write
             to him, or take a card. `flex-wrap` so the card drops onto its own
