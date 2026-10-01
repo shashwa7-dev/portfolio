@@ -14,7 +14,8 @@ export function generateStaticParams() {
   return getAllSideProjects().map((p) => ({ slug: p.slug }));
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const project = getSideProject(params.slug);
   if (!project) return {};
   const title = project.title;
@@ -45,7 +46,8 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
 
 const toList = (v?: string[] | string) => (Array.isArray(v) ? v : v ? [v] : []);
 
-export default function ProjectPage({ params }: { params: { slug: string } }) {
+export default async function ProjectPage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const project = getSideProject(params.slug);
   if (!project) return notFound();
 
@@ -90,7 +92,7 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
           <Label>
             {["Case Study", cs.year, cs.role].filter(Boolean).join(" · ")}
           </Label>
-          <h1 className="text-[clamp(2.2rem,5vw,3rem)] font-medium leading-[1.03] tracking-[-0.02em]">
+          <h1 className="text-[clamp(2.2rem,5vw,3rem)] font-medium leading-[1.03] tracking-tight">
             {project.title}
           </h1>
           <p className="text-lg text-muted-foreground">{project.tagline}</p>

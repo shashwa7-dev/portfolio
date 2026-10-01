@@ -219,10 +219,10 @@ export default function TossDice({ onComplete, issueCaption, onRollAgain, onRoll
         {/* The dock: the dice live here at rest, and return here after
             the toss. */}
         <span className="relative inline-flex h-9 w-[74px] shrink-0 items-center" aria-hidden="true">
-          <span ref={dieRefA} className="absolute left-0 z-[2] inline-flex will-change-transform">
+          <span ref={dieRefA} className="absolute left-0 z-2 inline-flex will-change-transform">
             <Die value={faces[0]} wobbleId={wobbleId} faceGradId={faceGradId} pipGradId={pipGradId} />
           </span>
-          <span ref={dieRefB} className="absolute left-10 z-[1] inline-flex will-change-transform">
+          <span ref={dieRefB} className="absolute left-10 z-1 inline-flex will-change-transform">
             <Die value={faces[1]} wobbleId={wobbleId} faceGradId={faceGradId} pipGradId={pipGradId} />
           </span>
         </span>

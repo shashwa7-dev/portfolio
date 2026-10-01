@@ -10,14 +10,15 @@ import StackIcon from "@/components/common/StackIcon";
 import VideoModal from "@/components/common/VideoModal";
 import Container from "@/components/layout/Container";
 import { motion } from "motion/react";
-import { useState } from "react";
+import { useState, use } from "react";
 import { slideUpVariants, stagger } from "@/lib/motionVariants";
 
-export default function WorkProjectPage({
-  params,
-}: {
-  params: { org: string; project: string };
-}) {
+export default function WorkProjectPage(
+  props: {
+    params: Promise<{ org: string; project: string }>;
+  }
+) {
+  const params = use(props.params);
   const { org: orgSlug, project: projectSlug } = params;
   const org = getOrganization(orgSlug);
   const project = getProjectFromOrg(orgSlug, projectSlug);

@@ -49,7 +49,7 @@ import { socialLinks } from "@/lib/siteLinks";
  * The identity row is the original, restored. An earlier pass here flattened it
  * onto one line and moved availability off the portrait into a text chip; it
  * was reverted on sight. The portrait keeps its band, its shadow and its
- * `min-h-[4rem]` column, and the reasoning for each is in the comments below.
+ * `min-h-16` column, and the reasoning for each is in the comments below.
  */
 export default function About() {
   return (
@@ -132,10 +132,10 @@ export default function About() {
               </TooltipTrigger>
               <TooltipContent>Open to work</TooltipContent>
             </Tooltip>
-            {/* `min-h-[4rem]`, not `h-16`. It is the avatar's exact height so the
+            {/* `min-h-16`, not `h-16`. It is the avatar's exact height so the
                 edges still line up, but a fixed height would overflow instead of
                 growing if the availability row ever wrapped on a narrow screen. */}
-            <div className="flex min-h-[4rem] flex-col justify-between">
+            <div className="flex min-h-16 flex-col justify-between">
               {/* The name is the page's h1.
 
                   It used to be a 17px div while the tagline below was the h1 at
@@ -154,7 +154,7 @@ export default function About() {
                   Shashwat Tripathi
                 </h1>
                 <span
-                  className="grid h-4 w-4 shrink-0 place-items-center rounded-full bg-foreground text-background candy:h-[18px] candy:w-[18px] candy:bg-candy-mint candy:text-foreground candy:outline candy:outline-[1.5px] candy:outline-foreground"
+                  className="grid h-4 w-4 shrink-0 place-items-center rounded-full bg-foreground text-background candy:h-[18px] candy:w-[18px] candy:bg-candy-mint candy:text-foreground candy:outline-solid candy:outline-[1.5px] candy:outline-foreground"
                   title="Verified engineer"
                   /* `role="img"` is load-bearing, not decoration: `aria-label`
                      on a bare span is a prohibited attribute, so without a role
@@ -200,7 +200,7 @@ export default function About() {
               a line under eight words, and a one-word last line reads as a
               mistake at this size. Balance evens the two lines instead of
               filling the first and dropping the remainder. */}
-          <p className="!mt-10 text-balance text-[clamp(1.625rem,3.4vw,2.3rem)] font-medium sm:!mt-14 leading-[1.08] tracking-tighter text-foreground">
+          <p className="mt-10! text-balance text-[clamp(1.625rem,3.4vw,2.3rem)] font-medium sm:mt-14! leading-[1.08] tracking-tighter text-foreground">
             {/* Emphasis by contrast: the frame of the sentence drops to muted
                 and the claim stays in full foreground, set in DM Sans's real
                 italic (loaded in app/layout.tsx). Candy keeps its butter chip. */}
@@ -219,7 +219,7 @@ export default function About() {
             products with top AI and Web3 teams. Reach me at{" "}
             <a
               href="mailto:contact@shashwa7.in"
-              className="text-foreground underline decoration-border-strong underline-offset-4 transition-colors duration-fast ease-out hover:decoration-foreground candy:no-underline candy:bg-[linear-gradient(transparent_55%,hsl(var(--candy-butter))_55%)] candy:font-semibold candy:hover:bg-[linear-gradient(transparent_0%,hsl(var(--candy-pink))_0%)]"
+              className="text-foreground underline decoration-border-strong underline-offset-4 transition-colors duration-fast ease-out hover:decoration-foreground candy:no-underline candy:bg-[linear-gradient(transparent_55%,hsl(var(--candy-butter))_55%)] candy:font-semibold hover:candy:bg-[linear-gradient(transparent_0%,hsl(var(--candy-pink))_0%)]"
             >
               contact@shashwa7.in
             </a>
@@ -254,13 +254,13 @@ export default function About() {
           <div className="flex flex-wrap items-center gap-3">
             <a
               href="/#experience"
-              className="inline-flex items-center gap-2 rounded-md border border-transparent bg-accent px-5 py-2.5 text-sm font-medium text-accent-foreground transition-[color,background-color,transform] duration-fast ease-out hover:bg-accent-hover active:scale-[0.97] sticker candy:rounded-full candy:border-white candy:bg-candy-pink candy:text-foreground candy:font-bold candy:hover:bg-candy-pink tilt-md-e candy:px-4 candy:py-2"
+              className="inline-flex items-center gap-2 rounded-md border border-transparent bg-accent px-5 py-2.5 text-sm font-medium text-accent-foreground transition-[color,background-color,transform] duration-fast ease-out hover:bg-accent-hover active:scale-[0.97] sticker candy:rounded-full candy:border-white candy:bg-candy-pink candy:text-foreground candy:font-bold hover:candy:bg-candy-pink tilt-md-e candy:px-4 candy:py-2"
             >
               View selected work <ArrowRight className="h-4 w-4" />
             </a>
             <a
               href="mailto:contact@shashwa7.in"
-              className="inline-flex items-center gap-2 rounded-md border border-border-strong px-5 py-2.5 text-sm font-medium text-foreground transition-[color,background-color,border-color,transform] duration-fast ease-out hover:border-foreground hover:bg-elevated active:scale-[0.97] sticker candy:rounded-full candy:font-bold candy:hover:bg-white candy:hover:border-white tilt-md-b candy:px-4 candy:py-2"
+              className="inline-flex items-center gap-2 rounded-md border border-border-strong px-5 py-2.5 text-sm font-medium text-foreground transition-[color,background-color,border-color,transform] duration-fast ease-out hover:border-foreground hover:bg-elevated active:scale-[0.97] sticker candy:rounded-full candy:font-bold hover:candy:bg-white hover:candy:border-white tilt-md-b candy:px-4 candy:py-2"
             >
               <Coffee className="h-4 w-4" /> Get in touch
             </a>
@@ -269,7 +269,7 @@ export default function About() {
           {/* The proof points, as one slow line at the column's width. It
               replaced a four-cell stat band: the numbers read as part of the
               intro rather than as a table under it. */}
-          <div className="!mt-10">
+          <div className="mt-10!">
             <StatsTicker />
           </div>
 
@@ -291,7 +291,7 @@ export default function About() {
               corner, level with the portrait. No magic numbers hold that
               alignment, so changing the row's height cannot break it.
 
-              `!mt-0` is not a shortcut. `space-y-7` sets `margin-top` through
+              `mt-0!` is not a shortcut. `space-y-7` sets `margin-top` through
               `.space-y-7 > :not([hidden]) ~ :not([hidden])`, which outranks a
               plain `mt-0` on specificity, and on an absolutely positioned box
               that margin offsets it below the `top-0` it was just given.
@@ -299,7 +299,7 @@ export default function About() {
               Icon only, because this is a corner and the footer already lists
               them by name. Each still carries an `sr-only` name and a `title`,
               so nothing is reachable only by a pointer. */}
-          <ul className="hidden items-center gap-0.5 sm:absolute sm:right-0 sm:top-0 sm:flex sm:!mt-0">
+          <ul className="hidden items-center gap-0.5 sm:absolute sm:right-0 sm:top-0 sm:flex sm:mt-0!">
             {socialLinks.map(({ name, href }) => {
               const Icon = SOCIAL_ICONS[name];
               return (
@@ -309,7 +309,7 @@ export default function About() {
                     target="_blank"
                     rel="noopener noreferrer"
                     title={name}
-                    className="grid h-8 w-8 place-items-center rounded-md text-subtle transition-colors duration-fast ease-out hover:bg-elevated hover:text-foreground sticker sticker-sm candy:rounded-full candy:text-foreground candy:hover:bg-white"
+                    className="grid h-8 w-8 place-items-center rounded-md text-subtle transition-colors duration-fast ease-out hover:bg-elevated hover:text-foreground sticker sticker-sm candy:rounded-full candy:text-foreground hover:candy:bg-white"
                   >
                     <Icon aria-hidden="true" className="h-4 w-4" />
                     <span className="sr-only">{name}</span>

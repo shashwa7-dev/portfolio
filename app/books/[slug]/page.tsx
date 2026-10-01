@@ -9,7 +9,7 @@ import { ogUrl, breadcrumbLd } from "@/lib/seo";
 import Container from "@/components/layout/Container";
 
 type Props = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
 /**
@@ -31,7 +31,8 @@ function readProgress(book: Book) {
   return { total, read, finished: total > 0 ? read === total : book.isDone };
 }
 
-export function generateMetadata({ params }: Props) {
+export async function generateMetadata(props: Props) {
+  const params = await props.params;
   const book = books.find((b) => b.slug === params.slug);
   if (!book) return undefined;
 
@@ -89,7 +90,8 @@ export function generateMetadata({ params }: Props) {
   };
 }
 
-export default function BookPage({ params }: Props) {
+export default async function BookPage(props: Props) {
+  const params = await props.params;
   const book = books.find((b) => b.slug === params.slug);
   if (!book) notFound();
 
@@ -116,7 +118,7 @@ export default function BookPage({ params }: Props) {
           {/* `group` exists only so the cover can return to colour on hover.
               This is a detail page with no card to hover, and a permanently
               desaturated cover would hide the one thing the page is about. */}
-          <div className="group relative w-36 shrink-0 overflow-hidden rounded-lg border border-border bg-secondary aspect-[2/3] md:w-40">
+          <div className="group relative w-36 shrink-0 overflow-hidden rounded-lg border border-border bg-secondary aspect-2/3 md:w-40">
             <Image
               src={book.cover}
               alt={book.name}

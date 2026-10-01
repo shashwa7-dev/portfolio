@@ -6,7 +6,7 @@ Project memory for Claude Code agents (and any other coding-LLM-driven sessions)
 
 ## Project at a glance
 
-- **Stack:** Next.js 14 App Router · TypeScript · Tailwind CSS · React 18 · Framer Motion · Vercel
+- **Stack:** Next.js 16 App Router · TypeScript · Tailwind CSS 4 · React 19 · Framer Motion · Vercel
 - **Owner:** Shashwat Tripathi — frontend engineer portfolio at `shashwa7.in`
 - **Default branch:** `master`
 - **Package manager:** `npm` (lockfile committed)
@@ -56,7 +56,7 @@ Concrete triggers that REQUIRE a memory-file update:
 - **The measure lives in one place**, `--measure` in `app/globals.css`. `Container width="reading"` reads it. Never write `760px` into a component.
 - **Page padding**: every secondary route's `<main>` carries `pt-8 md:pt-12 pb-8 md:pb-12` (a blog post puts the same on its section). There is no header row above the content any more, so the top padding lives on the page. Match this when adding a new top-level route.
 - **The global `<Navbar />`** is rendered once in `app/layout.tsx`. Per-page Navbar imports are forbidden.
-- **Markdown-for-agents** is wired in `middleware.ts` — when adding a new route family with a `text/markdown` rendition, add it both to the matcher and to the rewrite branches there.
+- **Markdown-for-agents** is wired in `proxy.ts` (Next 16's name for middleware; the function is `proxy`). When adding a new route family with a `text/markdown` rendition, add it both to the matcher and to the rewrite branches there.
 - **Candy is disabled** by `CANDY_ENABLED = false` in `lib/theme.ts`. A stored `candy` preference falls back to the system theme and the palette hides the Candy action. Its styles and `candy:` classes stay in place; flip the flag (and verify check C18) only when Shashwat asks for it back.
 - **Intro stats ticker**: `components/common/StatsTicker.tsx` renders `tickerStats` from `lib/stats.ts` (`stats` keeps its first three for the OG card). The loop length is `duration.ticker` / `--duration-ticker`; it pauses on hover and wraps statically under reduced motion. Never name it or import anything as `Marquee` (verify check C13).
 - **Intro phrase cycle**: the italic phrase in the `About.tsx` headline is `components/common/HeroPhrase.tsx`, cycling `HERO_PHRASES` from `lib/heroPhrases.ts` (the first, "ship and scale", is the SSR and reduced-motion text). Swap order is word-by-word blur out, width eases to the next phrase's measured width, word-by-word blur in (`phraseSwapVariants` + `phraseWordVariants`, `duration.phraseStart` / `phraseHold`). Runs only while the hero is in view and the tab is visible. Never name it or a token `wordCycle` (verify check C09).
@@ -64,6 +64,7 @@ Concrete triggers that REQUIRE a memory-file update:
 - **Margin notes**: handwritten asides from `lib/marginNotes.ts`, keyed by row id (org or side-project slug), four at most, rendered by `components/common/MarginNote.tsx` in Caveat (`--font-hand`). In the right margin from `lg`, inline below it.
 - **Two icon packages, and only two.** `@phosphor-icons/react` for UI, actions and concepts, always imported from `@phosphor-icons/react/ssr` (the package root is a `"use client"` barrel, so the root entry drags every icon page into the client bundle and breaks server components). `simple-icons` for technology and brand marks, via `components/common/StackIcon.tsx`. `lucide-react` was replaced wholesale and must not come back. `devicon` was evaluated and rejected: it covers 18 of this stack's 27 tools, missing Claude, OpenAI, Gemini, wagmi and Solana among others, and measures 2.13x simple-icons' bytes on the marks they share. Phosphor has no `strokeWidth`; it has `weight`.
 - **Design tokens (color, type, spacing)** are documented in `docs/design-system.md`; reusable Claude Code skill at `.claude/skills/design-system/SKILL.md`.
+- **Tailwind 4**, still configured from `tailwind.config.ts`: `app/globals.css` loads it with `@config`, after `@import "tailwindcss"` and two documented v4 compatibility rules (theme border colour, button cursor). Custom classes stay in plain `@layer utilities` blocks rather than `@utility`, because several use compound selectors (`a.sticker:hover`) that `@utility` cannot express. The four default-palette colours in use (amber 300/700, emerald 400/500) are pinned to their v3 values, since v4 redrew its palette.
 - **Type scale** comes from `tailwind.config.ts`: sizes `text-2xs` through `text-4xl`, tracking from `tracking-label` / `tracking-tight` / `tracking-tighter`. Arbitrary `text-[Npx]` is forbidden: use the scale instead.
 - **`scripts/verify-simplification.sh`** is the mechanical gate for the simplification pass (typography, motion, deleted surfaces, palette). It must exit 0 before any change to `app/`, `components/`, or `lib/` is considered done.
 - **All visitor-card drawing** goes through `lib/card/`. The pure modules (`seed`, `issues`, `types`, `dice`, `toss`, `revealSequence`) carry vitest tests and must stay free of DOM access; the drawing modules (`sticker`, `ticket`, and the vendored `engine`) take a canvas context as a parameter and must never hold module-level mutable state, because the issue gallery renders five canvases on one page. `drawTicket` draws every size: preview, export and thumbnail. Never add a second drawing routine.
@@ -78,7 +79,7 @@ Concrete triggers that REQUIRE a memory-file update:
 ```bash
 npm run dev      # next dev (port 3000 by default; this repo uses 3001 in practice)
 npm run build    # next build
-npm run lint     # next lint
+npm run lint     # eslint . (flat config in eslint.config.mjs; Next 16 removed next lint)
 npm test         # vitest run (pure lib modules: card's seed, issues, types, dice, toss, revealSequence, plus chatStream)
 npm run cv:pdf   # re-render public/shashwat-tripathi-cv.pdf from data/cv.md (system Chrome; aims for one page)
 ```
@@ -93,4 +94,4 @@ After any edit to `data/cv.md`, run `npm run cv:pdf` in the same change, or the 
 - Org page: `app/work/[org]/page.tsx` — header + key contributions + projects + inline diary.
 - Project case-study: `app/work/[org]/[project]/page.tsx`.
 - Blog: `app/blogs/*` with MDX posts under `app/blogs/posts/`.
-- Agent discovery: `app/robots.txt/route.ts`, `public/.well-known/llms.txt`, `app/markdown/route.ts`, `middleware.ts`, `docs/dns-aid.md`.
+- Agent discovery: `app/robots.txt/route.ts`, `public/.well-known/llms.txt`, `app/markdown/route.ts`, `proxy.ts`, `docs/dns-aid.md`.

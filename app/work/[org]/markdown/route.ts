@@ -14,10 +14,8 @@ export async function generateStaticParams() {
   return organizations.map((o) => ({ org: o.slug }));
 }
 
-export async function GET(
-  _req: Request,
-  { params }: { params: { org: string } }
-) {
+export async function GET(_req: Request, props: { params: Promise<{ org: string }> }) {
+  const params = await props.params;
   const org = getOrganization(params.org);
   if (!org) {
     return new Response("Not found", { status: 404 });

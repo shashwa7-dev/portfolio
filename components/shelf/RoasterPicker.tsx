@@ -49,7 +49,7 @@ export default function RoasterPicker() {
       <div
         role="tablist"
         aria-label="Roasters"
-        className="-mx-6 flex gap-6 overflow-x-auto px-6 pb-3 pt-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="-mx-6 flex gap-6 overflow-x-auto px-6 pb-3 pt-2 scrollbar-none [&::-webkit-scrollbar]:hidden"
       >
         {roasters.map((r, i) => {
           const selected = r.slug === active;
@@ -103,7 +103,7 @@ export default function RoasterPicker() {
                   motion turned off. */}
               <span
                 className={cn(
-                  "relative block aspect-[400/489] w-full transition-[opacity,transform] duration-base ease-out",
+                  "relative block aspect-400/489 w-full transition-[opacity,transform] duration-base ease-out",
                   selected ? "scale-100 opacity-100" : "scale-95 opacity-95"
                 )}
               >

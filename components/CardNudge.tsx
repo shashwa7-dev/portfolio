@@ -51,24 +51,24 @@ export default function CardNudge({ className }: { className?: string }) {
     <Link
       href="/card"
       className={cn(
-        "group inline-flex items-center gap-2.5 rounded-md border border-border-strong px-4 py-2.5 text-sm font-medium text-foreground transition-colors duration-med ease-out hover:bg-elevated sticker candy:rounded-full candy:font-bold candy:hover:bg-white tilt-md-b",
+        "group inline-flex items-center gap-2.5 rounded-md border border-border-strong px-4 py-2.5 text-sm font-medium text-foreground transition-colors duration-med ease-out hover:bg-elevated sticker candy:rounded-full candy:font-bold hover:candy:bg-white tilt-md-b",
         className
       )}
     >
       <span aria-hidden="true" className="relative block h-5 w-[26px] shrink-0">
         <span
-          className="absolute left-1/2 top-1/2 h-[17px] w-[13px] -translate-x-[calc(50%_+_5px)] -translate-y-1/2 -rotate-[10deg] rounded-[3px] border border-border-strong transition-transform duration-[var(--duration-fan)] ease-[var(--ease-fan)] group-hover:-translate-x-[calc(50%_+_8px)] group-hover:-rotate-[16deg]"
+          className="absolute left-1/2 top-1/2 h-[17px] w-[13px] -translate-x-[calc(50%+5px)] -translate-y-1/2 rotate-[-10deg] rounded-[3px] border border-border-strong transition-transform duration-(--duration-fan) ease-(--ease-fan) group-hover:-translate-x-[calc(50%+8px)] group-hover:rotate-[-16deg]"
           style={{ backgroundColor: FAN_STOCKS[0] }}
         />
         <span
-          className="absolute left-1/2 top-1/2 h-[17px] w-[13px] -translate-x-[calc(50%_+_1.5px)] -translate-y-1/2 -rotate-[3deg] rounded-[3px] border border-border-strong transition-transform duration-[var(--duration-fan)] ease-[var(--ease-fan)] group-hover:-translate-x-[calc(50%_+_3px)] group-hover:-rotate-[6deg]"
+          className="absolute left-1/2 top-1/2 h-[17px] w-[13px] -translate-x-[calc(50%+1.5px)] -translate-y-1/2 -rotate-3 rounded-[3px] border border-border-strong transition-transform duration-(--duration-fan) ease-(--ease-fan) group-hover:-translate-x-[calc(50%+3px)] group-hover:-rotate-6"
           style={{ backgroundColor: FAN_STOCKS[1] }}
         />
         {/* The rare black stock, drawn last so ordinary stacking order puts
             it on top. It keeps a border like the other two: against a
             near-black page in dark theme it would otherwise have no edge. */}
         <span
-          className="absolute left-1/2 top-1/2 h-[17px] w-[13px] translate-x-[calc(-50%_+_2px)] -translate-y-1/2 rotate-[7deg] rounded-[3px] border border-border-strong transition-transform duration-[var(--duration-fan)] ease-[var(--ease-fan)] group-hover:translate-x-[calc(-50%_+_5px)] group-hover:translate-y-[calc(-50%_-_1px)] group-hover:rotate-[11deg]"
+          className="absolute left-1/2 top-1/2 h-[17px] w-[13px] translate-x-[calc(-50%+2px)] -translate-y-1/2 rotate-[7deg] rounded-[3px] border border-border-strong transition-transform duration-(--duration-fan) ease-(--ease-fan) group-hover:translate-x-[calc(-50%+5px)] group-hover:translate-y-[calc(-50%-1px)] group-hover:rotate-11"
           style={{ backgroundColor: FAN_STOCKS[2] }}
         />
       </span>

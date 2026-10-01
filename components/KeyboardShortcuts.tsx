@@ -91,7 +91,7 @@ export default function KeyboardShortcuts() {
     <AnimatePresence>
       {helpOpen && (
         <motion.div
-          className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 px-4"
+          className="fixed inset-0 z-70 flex items-center justify-center bg-black/40 px-4"
           variants={backdropFadeVariants}
           initial="hidden"
           animate="visible"

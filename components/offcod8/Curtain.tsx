@@ -105,7 +105,7 @@ export default function Curtain({
             underneath, faintly, so this reads as something laid over the page
             rather than as a different page that happens to come first.
 
-            No `backdrop-blur`. There is a video playing back there, and a
+            No `backdrop-blur-sm`. There is a video playing back there, and a
             viewport-sized backdrop filter over moving pixels re-rasterises
             every frame to soften something the scrim has already taken most of
             the detail out of. */}

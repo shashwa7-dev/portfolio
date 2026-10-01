@@ -392,7 +392,7 @@ const S7Bot = () => {
             {/* Header */}
             <div className="flex items-center justify-between border-b border-border bg-card px-4 py-3 candy:border-b-2 candy:border-foreground candy:bg-candy-pink">
               <div className="flex items-center gap-2">
-                <div className="relative h-9 w-9 flex-shrink-0 tilt-a">
+                <div className="relative h-9 w-9 shrink-0 tilt-a">
                   <Image src="/truffy.webp" alt="" width={192} height={192} className="h-9 w-9 rounded-[22%]" />
                   <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-card candy:ring-candy-pink" />
                 </div>
@@ -407,7 +407,7 @@ const S7Bot = () => {
               </div>
               <button
                 onClick={handleClose}
-                className="rounded-lg p-1.5 hover:bg-elevated text-muted-foreground transition-[color,background-color,transform] duration-150 ease-out active:scale-[0.94] candy:text-foreground candy:hover:bg-white"
+                className="rounded-lg p-1.5 hover:bg-elevated text-muted-foreground transition-[color,background-color,transform] duration-150 ease-out active:scale-[0.94] candy:text-foreground hover:candy:bg-white"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -524,7 +524,7 @@ const S7Bot = () => {
                       className={cn(
                         "relative px-3 py-2 text-sm max-w-[85%]",
                         msg.role === "user"
-                          ? "bg-accent text-accent-foreground rounded-2xl rounded-br-md candy:bg-candy-pink candy:text-foreground candy:outline candy:outline-[1.5px] candy:outline-foreground"
+                          ? "bg-accent text-accent-foreground rounded-2xl rounded-br-md candy:bg-candy-pink candy:text-foreground candy:outline-solid candy:outline-[1.5px] candy:outline-foreground"
                           : "bg-card border border-border text-foreground rounded-2xl rounded-bl-md candy:bg-white candy:border-[1.5px]"
                       )}
                     >
@@ -603,12 +603,12 @@ const S7Bot = () => {
                     emailState ? "Type your response..." : "Ask a question..."
                   }
                   disabled={isStreaming}
-                  className="flex-1 px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground candy:border-2 candy:border-foreground candy:rounded-full candy:bg-white candy:px-4"
+                  className="flex-1 px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-hidden focus:ring-2 focus:ring-ring placeholder:text-muted-foreground candy:border-2 candy:border-foreground candy:rounded-full candy:bg-white candy:px-4"
                 />
                 <button
                   type="submit"
                   disabled={isStreaming || !message.trim()}
-                  className="flex items-center justify-center h-9 w-9 rounded-lg bg-accent text-accent-foreground hover:opacity-90 transition-[opacity,transform] duration-150 ease-out disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0 active:scale-[0.94] sticker candy:rounded-full candy:bg-candy-pink candy:text-foreground candy:hover:opacity-100"
+                  className="flex items-center justify-center h-9 w-9 rounded-lg bg-accent text-accent-foreground hover:opacity-90 transition-[opacity,transform] duration-150 ease-out disabled:opacity-40 disabled:cursor-not-allowed shrink-0 active:scale-[0.94] sticker candy:rounded-full candy:bg-candy-pink candy:text-foreground hover:candy:opacity-100"
                 >
                   <PaperPlaneTilt className="h-4 w-4" />
                 </button>

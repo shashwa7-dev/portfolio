@@ -44,7 +44,7 @@ export default function VideoModal({
             animate="visible"
             exit="exit"
             onClick={onClose}
-            className="fixed inset-0 bg-background/90 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-background/90 backdrop-blur-xs z-50"
           />
 
           {/* Modal — enter is deliberate, exit is snappy */}

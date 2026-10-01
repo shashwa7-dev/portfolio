@@ -29,7 +29,7 @@ export default function Projects() {
               href={`/project/${p.slug}`}
               className="group relative -mx-3 flex items-center gap-1.5 rounded-lg px-3 py-3 text-lg font-medium text-foreground"
             >
-              <span className="bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_1px] bg-left-bottom bg-no-repeat pb-0.5 transition-[background-size] duration-med ease-out group-hover:bg-[length:100%_1px] group-focus-visible:bg-[length:100%_1px]">
+              <span className="bg-[linear-gradient(currentColor,currentColor)] bg-size-[0%_1px] bg-bottom-left bg-no-repeat pb-0.5 transition-[background-size] duration-med ease-out group-hover:bg-size-[100%_1px] group-focus-visible:bg-size-[100%_1px]">
                 {p.title}
               </span>
               <ArrowUpRight
@@ -38,7 +38,7 @@ export default function Projects() {
               />
               <span
                 aria-hidden
-                className="pointer-events-none absolute right-3 top-1/2 aspect-[16/10] w-40 -translate-y-1/2 scale-95 overflow-hidden rounded-md opacity-0 shadow-lg ring-1 ring-border transition-[opacity,transform] duration-base ease-out group-hover:scale-100 group-hover:opacity-100 group-focus-visible:scale-100 group-focus-visible:opacity-100"
+                className="pointer-events-none absolute right-3 top-1/2 aspect-16/10 w-40 -translate-y-1/2 scale-95 overflow-hidden rounded-md opacity-0 shadow-lg ring-1 ring-border transition-[opacity,transform] duration-base ease-out group-hover:scale-100 group-hover:opacity-100 group-focus-visible:scale-100 group-focus-visible:opacity-100"
               >
                 <Image src={p.thumbnail} alt="" fill sizes="160px" className="object-cover" />
               </span>

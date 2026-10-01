@@ -87,7 +87,7 @@ const COPY_CONFIRM_MS = 1400;
  *  `relative` is load-bearing: the pseudo-element positions against this
  *  box, not the toolbar around it. */
 const TOOLBAR_BUTTON =
-  "relative flex h-6 w-6 items-center justify-center rounded-md text-subtle transition-colors duration-base ease-out before:absolute before:-inset-2.5 before:content-[''] hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "relative flex h-6 w-6 items-center justify-center rounded-md text-subtle transition-colors duration-base ease-out before:absolute before:-inset-2.5 before:content-[''] hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring";
 
 /** The card's on-stage preview size. Independent of CARD_W/CARD_H, the
  *  resolution `download()` and the visible canvas actually draw at: this is
@@ -907,7 +907,7 @@ export default function CardMinter({
                     cancelEditName();
                   }
                 }}
-                className="w-full rounded-md border border-border bg-elevated px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
+                className="w-full rounded-md border border-border bg-elevated px-3 py-2 text-sm text-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
               />
             </div>
           )}

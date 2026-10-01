@@ -36,11 +36,12 @@ const CARD_OG = ogUrl({
  * duplicate-content problem, and the param changes only what a crawler is
  * told to preview, never what the page is.
  */
-export function generateMetadata({
-  searchParams,
-}: {
-  searchParams: { issue?: string | string[] };
-}): Metadata {
+export async function generateMetadata(
+  props: {
+    searchParams: Promise<{ issue?: string | string[] }>;
+  }
+): Promise<Metadata> {
+  const searchParams = await props.searchParams;
   const issue = issueFromParam(searchParams.issue);
   const image = issue ? `${baseUrl}og/issue-${issue.key}.png` : CARD_OG;
   const title = issue
@@ -75,8 +76,8 @@ export function generateMetadata({
  * In development only, a NODE_ENV-guarded stand-in fills them in below so
  * the origin line and the postmark's city can be seen without deploying.
  */
-export default function CardPage() {
-  const h = headers();
+export default async function CardPage() {
+  const h = await headers();
   let country = h.get("x-vercel-ip-country");
   let rawCity = h.get("x-vercel-ip-city");
   // Development-only stand-in: Vercel's geo headers only exist on its edge,

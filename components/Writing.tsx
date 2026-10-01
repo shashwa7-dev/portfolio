@@ -32,7 +32,7 @@ export default function Writing() {
               className="group -mx-3 flex items-baseline justify-between gap-6 rounded-lg px-3 py-3"
             >
               <span className="text-base font-medium text-foreground">
-                <span className="bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_1px] bg-left-bottom bg-no-repeat pb-0.5 transition-[background-size] duration-med ease-out group-hover:bg-[length:100%_1px] group-focus-visible:bg-[length:100%_1px]">
+                <span className="bg-[linear-gradient(currentColor,currentColor)] bg-size-[0%_1px] bg-bottom-left bg-no-repeat pb-0.5 transition-[background-size] duration-med ease-out group-hover:bg-size-[100%_1px] group-focus-visible:bg-size-[100%_1px]">
                   {post.metadata.title}
                 </span>
               </span>

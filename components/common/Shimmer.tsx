@@ -49,7 +49,7 @@ export default function Shimmer({
       <span
         aria-hidden
         className={cn(
-          "pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent to-transparent group-hover:animate-shimmer motion-reduce:hidden",
+          "pointer-events-none absolute inset-0 -translate-x-full bg-linear-to-r from-transparent to-transparent group-hover:animate-shimmer motion-reduce:hidden",
           tone === "media" ? "via-white/30" : "via-foreground/20"
         )}
       />

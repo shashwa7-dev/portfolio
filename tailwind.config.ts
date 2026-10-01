@@ -1,9 +1,11 @@
 import type { Config } from "tailwindcss";
-import { fontFamily } from "tailwindcss/defaultTheme";
-import plugin from "tailwindcss/plugin";
+/* Tailwind v3's default fallback stacks, written out. They used to come from
+   `tailwindcss/defaultTheme`, which v4 no longer ships. */
+const SANS = ["ui-sans-serif", "system-ui", "sans-serif", '"Apple Color Emoji"', '"Segoe UI Emoji"', '"Segoe UI Symbol"', '"Noto Color Emoji"'];
+const MONO = ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", '"Liberation Mono"', '"Courier New"', "monospace"];
 
 const config: Config = {
-  darkMode: ["class"],
+  darkMode: "class",
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -93,9 +95,9 @@ const config: Config = {
         "-sm": { max: "639px" },
       },
       fontFamily: {
-        sans: ["var(--font-sans)", ...fontFamily.sans],
-        mono: ["var(--font-mono)", ...fontFamily.mono],
-        display: ["var(--font-display)", "var(--font-sans)", ...fontFamily.sans],
+        sans: ["var(--font-sans)", ...SANS],
+        mono: ["var(--font-mono)", ...MONO],
+        display: ["var(--font-display)", "var(--font-sans)", ...SANS],
       },
       fontSize: {
         '2xs': ['0.625rem',  { lineHeight: '1.4' }],   // 10px, mono labels
@@ -150,6 +152,11 @@ const config: Config = {
         "sticker-press": "var(--sticker-shadow-press)",
       },
       colors: {
+        /* The only default-palette colours in use, pinned to their Tailwind 3
+           values. v4 redrew its palette in oklch, which moved the margin
+           notes' amber and the availability dot's green a few points. */
+        amber: { 300: "#fcd34d", 700: "#b45309" },
+        emerald: { 400: "#34d399", 500: "#10b981" },
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {
@@ -205,7 +212,7 @@ const config: Config = {
   // matchUtilities, mapping them to animationDuration/animationTimingFunction
   // instead of Tailwind's core transitionDuration/transitionTimingFunction.
   // That silently zeroed out every `ease-[--ease-out]` and
-  // `duration-[var(--duration-*)]` class in the app (see final-fix-report.md,
+  // duration class built on the --duration-* tokens (see final-fix-report.md,
   // Tier 1). None of its animate-in/out utilities are used here: the four
   // `animate-*` classes in play (blink, loading-bar, tooltip-in/out,
   // accordion-down/up) all come from this file's own theme.extend.animation.
@@ -213,9 +220,11 @@ const config: Config = {
     // `candy:` scopes a utility to the Candy theme. It is an attribute on
     // <html>, like `.dark` is a class there, so `candy:` and `dark:` never
     // both match: Candy never sets `.dark`.
-    plugin(({ addVariant }) => {
+    // A plain function rather than `plugin()` from "tailwindcss/plugin": the
+    // same contract, and one import fewer for the v4 loader to resolve.
+    ({ addVariant }: { addVariant: (name: string, selector: string) => void }) => {
       addVariant("candy", '[data-theme="candy"] &');
-    }),
+    },
   ],
 };
 

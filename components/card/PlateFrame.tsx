@@ -147,10 +147,10 @@ export default function PlateFrame({
           className="pointer-events-none absolute inset-0 opacity-70"
           style={dotGrid}
         />
-        <Cross className="-left-[5px] -top-[5px]" />
-        <Cross className="-right-[5px] -top-[5px]" />
-        <Cross className="-bottom-[5px] -left-[5px]" />
-        <Cross className="-bottom-[5px] -right-[5px]" />
+        <Cross className="left-[-5px] top-[-5px]" />
+        <Cross className="right-[-5px] top-[-5px]" />
+        <Cross className="bottom-[-5px] left-[-5px]" />
+        <Cross className="bottom-[-5px] right-[-5px]" />
         {children}
       </div>
 

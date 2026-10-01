@@ -171,8 +171,8 @@ export default function MobileChapters({
         className={cn(
           "pointer-events-auto flex w-56 max-w-full items-center gap-2.5",
           "rounded-full border border-border bg-elevated/90 py-2 pl-2 pr-3.5 shadow-lg backdrop-blur-md",
-          "transition-[opacity] duration-base ease-out motion-reduce:transition-none",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          "transition-opacity duration-base ease-out motion-reduce:transition-none",
+          "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
           "sticker candy:border-white candy:bg-white candy:shadow-sticker-3 candy:backdrop-blur-none",
           open && "pointer-events-none opacity-0"
         )}
@@ -207,7 +207,7 @@ export default function MobileChapters({
         aria-hidden={!open}
         onClick={() => setOpen(false)}
         className={cn(
-          "fixed inset-0 z-40 overscroll-contain bg-background/70 backdrop-blur-sm",
+          "fixed inset-0 z-40 overscroll-contain bg-background/70 backdrop-blur-xs",
           "transition-[opacity,visibility] duration-base ease-out motion-reduce:transition-none",
           open ? "visible opacity-100" : "invisible opacity-0"
         )}
@@ -221,7 +221,7 @@ export default function MobileChapters({
         aria-label="Chapters"
         tabIndex={-1}
         className={cn(
-          "fixed inset-x-0 bottom-0 z-50 rounded-t-2xl border-t border-border bg-card outline-none",
+          "fixed inset-x-0 bottom-0 z-50 rounded-t-2xl border-t border-border bg-card outline-hidden",
           "transition-[transform,visibility] duration-base ease-out motion-reduce:transition-none",
           open ? "visible translate-y-0" : "invisible translate-y-full"
         )}
@@ -236,7 +236,7 @@ export default function MobileChapters({
             type="button"
             onClick={() => setOpen(false)}
             aria-label="Close chapters"
-            className="-mr-1.5 rounded-full p-1.5 text-subtle transition-colors duration-fast ease-out hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="-mr-1.5 rounded-full p-1.5 text-subtle transition-colors duration-fast ease-out hover:text-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
           >
             <X aria-hidden className="h-4 w-4" />
           </button>
@@ -257,7 +257,7 @@ export default function MobileChapters({
                   className={cn(
                     "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left",
                     "transition-colors duration-fast ease-out",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                    "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
                     isCurrent ? "bg-elevated candy:bg-candy-butter" : "hover:bg-elevated/60"
                   )}
                 >

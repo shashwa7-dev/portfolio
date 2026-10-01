@@ -59,7 +59,7 @@ export default function LocalTime() {
     <span className="inline-flex items-center gap-1.5 font-mono text-2xs uppercase tracking-label text-subtle">
       {/* Decorative: the city beside it already carries the meaning, and a
           screen reader announcing "flag" before it would only be noise. */}
-      <IndiaFlag aria-hidden className="h-2.5 w-[0.9375rem] shrink-0" />
+      <IndiaFlag aria-hidden className="h-2.5 w-3.75 shrink-0" />
       <span>
         {/* "BLR" is an airport code. It reads instantly to anyone who would use
             it and as three letters to everyone else, so the full name goes to

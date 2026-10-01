@@ -34,7 +34,7 @@ const AccordionTrigger = React.forwardRef<
       {...props}
     >
       {children}
-      <CaretDown className="h-4 w-4 shrink-0 text-subtle transition-transform duration-base ease-out candy:h-[30px] candy:w-[30px] candy:rounded-full candy:bg-white candy:p-2 candy:text-foreground candy:outline candy:outline-2 candy:outline-foreground" />
+      <CaretDown className="h-4 w-4 shrink-0 text-subtle transition-transform duration-base ease-out candy:h-[30px] candy:w-[30px] candy:rounded-full candy:bg-white candy:p-2 candy:text-foreground candy:outline-solid candy:outline-2 candy:outline-foreground" />
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
 ))

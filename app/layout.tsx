@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { DM_Sans, Fredoka } from "next/font/google";
-import dynamic from "next/dynamic";
 import { MotionConfig } from "motion/react";
 import "./globals.css";
 import { baseUrl } from "./sitemap";
@@ -9,18 +8,12 @@ import { Analytics } from "@vercel/analytics/next";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import GlobalOverlays from "@/components/GlobalOverlays";
 import UmamiAnalytics from "@/components/Umami";
 import NoScript from "@/components/NoScript";
 import { cardHand, cardSticker, cardMono } from "@/lib/card/fonts";
 import { THEME_BOOT_SCRIPT } from "@/lib/theme";
 
-const CommandPalette = dynamic(() => import("@/components/CommandPalette"), {
-  ssr: false,
-});
-const KeyboardShortcuts = dynamic(
-  () => import("@/components/KeyboardShortcuts"),
-  { ssr: false }
-);
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -141,8 +134,7 @@ export default function RootLayout({
               <TooltipProvider delayDuration={150} skipDelayDuration={0}>
                 <Navbar />
                 {children}
-                <CommandPalette />
-                <KeyboardShortcuts />
+                <GlobalOverlays />
               </TooltipProvider>
               <Analytics />
               <UmamiAnalytics />

@@ -12,10 +12,8 @@ export async function generateStaticParams() {
   return getBlogPosts().map((p) => ({ slug: p.slug }));
 }
 
-export async function GET(
-  _req: Request,
-  { params }: { params: { slug: string } }
-) {
+export async function GET(_req: Request, props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const post = getBlogPosts().find((p) => p.slug === params.slug);
   if (!post) {
     return new Response("Not found", { status: 404 });
