@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Envelope } from "@phosphor-icons/react/ssr";
 import Container from "@/components/layout/Container";
@@ -166,7 +167,7 @@ const Footer = () => {
         </div>
       </Container>
 
-      <Container className="grid grid-cols-2 gap-x-10 gap-y-9 pb-10 pt-9 md:grid-cols-4 candy:pb-8 candy:pt-7">
+      <Container className="relative grid grid-cols-2 gap-x-10 gap-y-9 pb-10 pt-9 md:grid-cols-4 candy:pb-8 candy:pt-7">
         <div className="col-span-2 md:col-span-1">
           <Label className="mb-3 block">Email</Label>
           <a
@@ -186,6 +187,27 @@ const Footer = () => {
           <p className="text-sm text-muted-foreground">{location.name}</p>
         </div>
 
+        {/* A crushed can, knocked over at the far right of this row, in the
+            space the two-fact row leaves empty: the one found object on the
+            footer floor. Far right and low, so it sits clear of the links
+            above and well below the graffiti hand, which rises at the right
+            of the section before the footer.
+
+            Decorative (`alt=""`, no pointer events except its own hover). It
+            rights itself a little and lifts on hover; the tilt is part of the
+            resting transform, so the hover only nudges it.
+
+            Higher on a phone (beside "Based in"): at the foot of the page the
+            fixed chat launcher and its greeting cover the bottom-right corner. */}
+        <Image
+          src="/images/footer-can.webp"
+          alt=""
+          width={156}
+          height={242}
+          sizes="52px"
+          draggable={false}
+          className="absolute bottom-24 right-8 w-11 -rotate-[78deg] select-none drop-shadow-[0_6px_10px_rgba(0,0,0,0.3)] transition-transform duration-med ease-out hover:-translate-y-0.5 hover:-rotate-[70deg] sm:bottom-7 sm:right-10 sm:w-[52px] dark:drop-shadow-[0_6px_12px_rgba(0,0,0,0.6)]"
+        />
       </Container>
 
       <div className="border-t border-border candy:border-0">
