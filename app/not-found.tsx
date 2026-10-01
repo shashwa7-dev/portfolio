@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, House } from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/button";
 import Container from "@/components/layout/Container";
+import PeekingEyes from "@/components/common/PeekingEyes";
 
 /**
  * Recovery links, not decoration. A 404 that offers only "go home" makes the
@@ -39,14 +39,11 @@ export default function NotFound() {
     <main className="pt-8 md:pt-12 pb-8 md:pb-12">
       <Container width="reading">
         <div className="flex min-h-[60vh] flex-col justify-center">
-          <Image
-            src="/apple-touch-icon.png"
-            alt="offcod8"
-            width={48}
-            height={48}
-            className="h-12 w-12 rounded-xl border border-border"
-            priority
-          />
+          {/* A tear in the page, with a stack of $100 bills looking back out
+              through it, and the eyes follow the pointer: the hole this link
+              fell into, watching you. It replaced a 48px logo tile that said
+              nothing the navbar's mark does not. See PeekingEyes. */}
+          <PeekingEyes className="w-[260px] -translate-x-2 -rotate-3 sm:w-[340px]" />
 
           <p className="mt-8 font-mono text-2xs uppercase tracking-label text-subtle">
             Error 404
