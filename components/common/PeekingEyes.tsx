@@ -35,7 +35,7 @@ const EYES = [
 const MAX_DX = 18;
 const MAX_DY = 7;
 /** Pointer distance (CSS px) from an eye at which it is fully deflected. */
-const REACH = 320;
+const REACH = 420;
 /** Share of the remaining distance covered each frame. */
 const FOLLOW = 0.18;
 
@@ -114,9 +114,9 @@ export default function PeekingEyes({ className }: { className?: string }) {
       <Image
         src="/images/404-tear.webp"
         alt=""
-        width={640}
-        height={232}
-        sizes="(min-width: 640px) 340px, 260px"
+        width={1280}
+        height={464}
+        sizes="(min-width: 768px) 720px, 100vw"
         priority
         draggable={false}
         className="block h-auto w-full"
