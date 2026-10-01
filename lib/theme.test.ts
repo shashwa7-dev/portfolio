@@ -156,11 +156,11 @@ describe("toggleIcon", () => {
 });
 
 describe("toggleCowl", () => {
-  it("wears the cowl of the theme you are in", () => {
-    expect(toggleCowl("dark")).toBe("black");
-    expect(toggleCowl("light")).toBe("white");
+  it("shows the cowl of the theme the click switches to", () => {
+    expect(toggleCowl("dark")).toBe("white");
+    expect(toggleCowl("light")).toBe("black");
   });
   it("treats candy as a light theme", () => {
-    expect(toggleCowl("candy")).toBe("white");
+    expect(toggleCowl("candy")).toBe("black");
   });
 });

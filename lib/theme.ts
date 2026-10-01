@@ -54,13 +54,13 @@ export function toggleIcon(upcoming: Theme): "treat" | "moon" | "sun" {
 }
 
 /**
- * The theme button's artwork: a black cowl in the dark theme, a white one in
- * the light theme. Unlike `toggleIcon`, this shows the theme you are IN, not
- * the one the click leads to, because the cowl reads as "this is the mode",
- * the way the page itself does. Candy is a light theme, so it gets white.
+ * The theme button's artwork, keyed like `toggleIcon` on where the click
+ * leads rather than where you are: the dark theme shows the white cowl (switch
+ * to light), the light theme shows the black one. Candy is a light theme, so
+ * it offers black too.
  */
 export function toggleCowl(current: Theme): "black" | "white" {
-  return current === "dark" ? "black" : "white";
+  return current === "dark" ? "white" : "black";
 }
 
 type RootLike = {

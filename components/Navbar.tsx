@@ -160,8 +160,8 @@ export default function Navbar() {
                     className="h-8 w-auto"
                   />
                 ) : (
-                  /* The cowl of the theme you are in: black in dark, white in
-                     light. Both are rendered and crossfade on a switch, so the
+                  /* The cowl of the theme the click leads to: white in dark,
+                     black in light. Both are rendered and crossfade on a switch, so the
                      click reads as the mask changing rather than an icon
                      popping in. */
                   <span aria-hidden className="relative block h-7 w-[1.2rem] transition-transform duration-fast ease-out hover:-rotate-6">
