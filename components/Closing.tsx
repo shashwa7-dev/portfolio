@@ -11,7 +11,7 @@ import { socialLinks, contactEmail } from "@/lib/siteLinks";
 export default function Closing() {
   return (
     <section id="contact">
-      <Container width="reading" className="py-10 md:py-12">
+      <Container width="reading" className="pt-11 pb-10 md:pt-[3.3rem] md:pb-12">
         <p className="text-2xl font-medium tracking-tight text-foreground md:text-3xl">Let&apos;s build something good.</p>
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <a
