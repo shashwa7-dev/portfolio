@@ -12,12 +12,23 @@ import { tilt, tint } from "@/lib/candy";
 export function EmploymentTag({
   employment,
 }: {
-  employment?: "full-time" | "contract";
+  employment?: "full-time" | "contract" | "internship";
 }) {
   if (!employment) return null;
-  const label = employment === "full-time" ? "Full-time" : "Contract";
+  const label = { "full-time": "Full-time", contract: "Contract", internship: "Internship" }[employment];
   return (
     <span className="inline-flex items-center rounded-sm border border-border-strong px-1.5 py-0.5 font-mono text-2xs uppercase tracking-label text-muted-foreground sticker sticker-sm sticker-flat candy:rounded-tag candy:font-semibold candy:text-foreground">
+      {label}
+    </span>
+  );
+}
+
+/** Where the work happened: onsite, remote or hybrid. Same outline as `EmploymentTag`. */
+export function WorkModeTag({ mode }: { mode?: "onsite" | "remote" | "hybrid" }) {
+  if (!mode) return null;
+  const label = { onsite: "Onsite", remote: "Remote", hybrid: "Hybrid" }[mode];
+  return (
+    <span className="inline-flex items-center rounded-sm border border-border-strong px-1.5 py-0.5 font-mono text-2xs uppercase tracking-label text-muted-foreground">
       {label}
     </span>
   );

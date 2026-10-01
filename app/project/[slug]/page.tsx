@@ -4,7 +4,6 @@ import { ArrowLeft } from "@phosphor-icons/react/ssr";
 import { getSideProject, getAllSideProjects } from "@/lib/projectsData";
 import { baseUrl } from "@/app/sitemap";
 import Container from "@/components/layout/Container";
-import PageBand from "@/components/layout/PageBand";
 import Label from "@/components/layout/Label";
 import ProseGutter from "@/components/layout/ProseGutter";
 import StackIcon from "@/components/common/StackIcon";
@@ -63,8 +62,7 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
   ].filter((s) => s.body.length > 0);
 
   return (
-    <main className="pb-8 md:pb-12">
-      <PageBand id="Project" name={project.title} />
+    <main className="pt-8 md:pt-12 pb-8 md:pb-12">
       <script
         type="application/ld+json"
         suppressHydrationWarning

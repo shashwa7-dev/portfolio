@@ -1,14 +1,11 @@
-import Band from "./Band";
-import BandLabel from "./BandLabel";
 import Container from "./Container";
 
 type Props = {
   id?: string;
-  number?: string;
-  /** Total sections on this route, so the label can read `[ 02 / 06 ]`. */
-  of?: string;
+  /** Small muted label above the title, e.g. "Work". Plain text: no band, no number. */
   label?: string;
   title?: string;
+  /** Right-aligned beside the label, e.g. a "View all" link. */
   action?: React.ReactNode;
   width?: "reading" | "wide";
   className?: string;
@@ -16,48 +13,22 @@ type Props = {
 };
 
 /**
- * A numbered section: a full-bleed band carrying the number and label, then
- * the content beneath it.
- *
- * The number and label used to sit inside the text column as an eyebrow above
- * the title. Lifting them out into a band is the point of the change: a
- * caption describes the paragraph under it, whereas a band that crosses the
- * page's rails divides the page, which is what a numbered section actually
- * does.
- *
- * The title stays in the column with the content, where it belongs. It is a
- * heading for the material, not a piece of page structure, and a band holding
- * both a coordinate and a sentence reads as a title bar.
- *
- * Vertical rhythm moved from the `<section>` onto the inner Container so the
- * band can reach the full width of the page without inheriting the padding
- * that keeps the content off the rails.
+ * A homepage-style section. Whitespace is the only separator: no band, no
+ * rule, no numbering. Top padding only (`pt-12 md:pt-[3.65rem]`, 48px and about 58px), so the gap between
+ * two sections is one step, the same as the gap under the intro. With padding
+ * on both sides it was two steps, and the page read as looser below the hero.
  */
-export default function Section({
-  id,
-  number,
-  of,
-  label,
-  title,
-  action,
-  width = "reading",
-  className,
-  children,
-}: Props) {
-  const hasBand = Boolean(number || label || action);
-
+export default function Section({ id, label, title, action, width = "reading", className, children }: Props) {
   return (
     <section id={id} className={className}>
-      {hasBand && (
-        <Band>
-          <BandLabel id={number ?? ""} of={of} name={label} />
-          {action}
-        </Band>
-      )}
-      <Container width={width} className="py-10 md:py-14 candy:py-7 candy:md:py-9">
-        {title && (
-          <h2 className="mb-8 text-2xl font-medium text-foreground md:text-3xl candy:mt-1 candy:mb-5">{title}</h2>
+      <Container width={width} className="scroll-mt-16 pt-12 md:pt-[3.65rem]">
+        {(label || action) && (
+          <div className="mb-2 flex items-center justify-between gap-4">
+            {label && <p className="text-sm text-subtle">{label}</p>}
+            {action}
+          </div>
         )}
+        {title && <h2 className="mb-8 text-2xl font-medium tracking-tight text-foreground md:text-3xl">{title}</h2>}
         {children}
       </Container>
     </section>

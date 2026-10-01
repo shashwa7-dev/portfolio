@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
+  CANDY_ENABLED,
   THEMES,
   THEME_STORAGE_KEY,
   isTheme,
@@ -7,23 +8,27 @@ import {
   nextTheme,
   applyTheme,
   themeLabel,
+  toggleIcon,
+  toggleCowl,
   THEME_BOOT_SCRIPT,
 } from "./theme";
 
 describe("theme names", () => {
-  it("has exactly three themes in cycle order", () => {
-    expect(THEMES).toEqual(["light", "candy", "dark"]);
+  it("Candy is disabled for now", () => {
+    expect(CANDY_ENABLED).toBe(false);
+  });
+  it("cycles only light and dark while Candy is off", () => {
+    expect(THEMES).toEqual(["light", "dark"]);
   });
   it("uses the same storage key as before", () => {
     expect(THEME_STORAGE_KEY).toBe("theme");
   });
-  it("recognises only the three names", () => {
+  it("does not recognise candy while it is off", () => {
     expect(isTheme("light")).toBe(true);
     expect(isTheme("dark")).toBe(true);
-    expect(isTheme("candy")).toBe(true);
+    expect(isTheme("candy")).toBe(false);
     expect(isTheme("system")).toBe(false);
     expect(isTheme(null)).toBe(false);
-    expect(isTheme(undefined)).toBe(false);
   });
 });
 
@@ -36,9 +41,9 @@ describe("resolveTheme", () => {
     expect(resolveTheme("light", true)).toBe("light");
     expect(resolveTheme("dark", false)).toBe("dark");
   });
-  it("keeps candy regardless of the OS", () => {
-    expect(resolveTheme("candy", true)).toBe("candy");
-    expect(resolveTheme("candy", false)).toBe("candy");
+  it("sends a stored candy back to the system theme", () => {
+    expect(resolveTheme("candy", true)).toBe("dark");
+    expect(resolveTheme("candy", false)).toBe("light");
   });
   it("treats an unknown stored value like nothing stored", () => {
     expect(resolveTheme("purple", true)).toBe("dark");
@@ -47,9 +52,8 @@ describe("resolveTheme", () => {
 });
 
 describe("nextTheme", () => {
-  it("cycles light, candy, dark, light", () => {
-    expect(nextTheme("light")).toBe("candy");
-    expect(nextTheme("candy")).toBe("dark");
+  it("toggles light and dark", () => {
+    expect(nextTheme("light")).toBe("dark");
     expect(nextTheme("dark")).toBe("light");
   });
 });
@@ -74,9 +78,6 @@ describe("applyTheme", () => {
     applyTheme(root, "dark");
     expect(root.dataset.theme).toBe("dark");
     expect(root.classes.has("dark")).toBe(true);
-    applyTheme(root, "candy");
-    expect(root.dataset.theme).toBe("candy");
-    expect(root.classes.has("dark")).toBe(false);
     applyTheme(root, "light");
     expect(root.dataset.theme).toBe("light");
     expect(root.classes.has("dark")).toBe(false);
@@ -87,7 +88,6 @@ describe("themeLabel", () => {
   it("capitalises for people", () => {
     expect(themeLabel("light")).toBe("Light");
     expect(themeLabel("dark")).toBe("Dark");
-    expect(themeLabel("candy")).toBe("Candy");
   });
 });
 
@@ -142,5 +142,25 @@ describe("THEME_BOOT_SCRIPT", () => {
   it("is a single self-contained statement with no template placeholders", () => {
     expect(THEME_BOOT_SCRIPT).not.toContain("${");
     expect(THEME_BOOT_SCRIPT.trim().startsWith("(function")).toBe(true);
+  });
+});
+
+describe("toggleIcon", () => {
+  it("shows the theme the button will switch to", () => {
+    expect(toggleIcon(nextTheme("light"))).toBe("moon");
+    expect(toggleIcon(nextTheme("dark"))).toBe("sun");
+  });
+  it("shows the candy treat only when candy is next", () => {
+    expect(toggleIcon("candy")).toBe("treat");
+  });
+});
+
+describe("toggleCowl", () => {
+  it("shows the cowl of the theme the click switches to", () => {
+    expect(toggleCowl("dark")).toBe("white");
+    expect(toggleCowl("light")).toBe("black");
+  });
+  it("treats candy as a light theme", () => {
+    expect(toggleCowl("candy")).toBe("black");
   });
 });

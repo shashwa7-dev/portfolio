@@ -1,7 +1,6 @@
 import Book from "@/components/common/Book";
 import { books } from "@/lib/books";
 import Container from "@/components/layout/Container";
-import PageBand from "@/components/layout/PageBand";
 import { ogUrl } from "@/lib/seo";
 import { baseUrl } from "@/app/sitemap";
 
@@ -35,8 +34,7 @@ export const metadata = {
 
 export default function BooksPage() {
   return (
-    <main className="min-h-screen pb-8 md:pb-12">
-      <PageBand id="Books" name={`${books.length} titles`} />
+    <main className="pt-8 md:pt-12 min-h-screen pb-8 md:pb-12">
       <Container width="reading" className="space-y-8">
         <div className="space-y-4">
           <h1 className="text-3xl font-semibold tracking-tight">Book Shelf</h1>

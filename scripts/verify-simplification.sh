@@ -78,6 +78,18 @@ count C14 "no indigo hue in tokens"      0 grep -rEoh "24[12] [0-9]+%|--accent: 
 count C15 "sticker elements keep their edge and shadow" 0 grep -rEoh "sticker[^\"'\`]*candy:(border-0|shadow-none)|candy:(border-0|shadow-none)[^\"'\`]*sticker" --include=*.tsx app components
 
 echo ""
+echo "Minimal home"
+absent C16 "Rails component gone"        components/layout/Rails.tsx
+count C17 "Rails not rendered"           0 grep -rEoh "<Rails" --include=*.tsx app components
+count C18 "Candy disabled"               1 grep -rEoh "CANDY_ENABLED = false" lib/theme.ts
+count C19 "no section numbering"        0 grep -rEoh "HOMEPAGE_SECTION_TOTAL|number=\\{?\"0[0-9]\"" --include=*.tsx --include=*.ts app components lib
+absent C19 "sections constant gone"     lib/sections.ts
+count C20 "no band gutters or tick"      0 grep -rEoh "band-gutters|band-tick|--dot-gap|var\\(--gutter\\)" --include=*.tsx --include=*.ts --include=*.css app components lib
+absent C21 "PageBand gone"               components/layout/PageBand.tsx
+absent C21 "Band gone"                   components/layout/Band.tsx
+absent C21 "BandLabel gone"              components/layout/BandLabel.tsx
+
+echo ""
 if [ "$FAILED" = 0 ]; then
   printf '\033[32mAll checks pass.\033[0m\n\n'
 else

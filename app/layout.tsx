@@ -9,7 +9,6 @@ import { Analytics } from "@vercel/analytics/next";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Rails from "@/components/layout/Rails";
 import UmamiAnalytics from "@/components/Umami";
 import NoScript from "@/components/NoScript";
 import { cardHand, cardSticker, cardMono } from "@/lib/card/fonts";
@@ -136,13 +135,8 @@ export default function RootLayout({
       >
         <NoScript />
         <MotionConfig reducedMotion="user">
-          {/* This wrapper exists for `Rails`. Its height is the document's
-              height, so one absolutely positioned element inside it draws the
-              two page rails unbroken from the navbar to the foot of the
-              footer. The inner `z-10` layer keeps every route's content above
-              them. */}
+          {/* Navbar, page and footer share one wrapper. */}
           <div className="relative">
-            <Rails />
             <div className="relative z-10">
               <TooltipProvider delayDuration={150} skipDelayDuration={0}>
                 <Navbar />

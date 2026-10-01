@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "@phosphor-icons/react/ssr";
 import Container from "@/components/layout/Container";
-import PageBand from "@/components/layout/PageBand";
 import Section from "@/components/layout/Section";
 import RoasterPicker from "@/components/shelf/RoasterPicker";
 import GearTimeline from "@/components/shelf/GearTimeline";
@@ -67,27 +66,8 @@ const SHOW_BOOKMARKS = false;
 export default async function ShelfPage() {
   const tracks = await getPlaylist();
 
-  /**
-   * The section numbers are derived, never written down.
-   *
-   * Bookmarks sits behind SHOW_BOOKMARKS, so a hardcoded total would promise a
-   * part the page does not show, and the counter is the one element whose whole
-   * job is to be true. Sound no longer appears here at all: it is a row inside
-   * Everyday, so an empty playlist costs the page one row rather than
-   * renumbering everything after it.
-   */
-  const parts = [
-    "coffee",
-    "everyday",
-    ...(SHOW_BOOKMARKS ? ["bookmarks"] : []),
-  ];
-  const pad = (n: number) => String(n).padStart(2, "0");
-  const total = pad(parts.length);
-  const no = (key: string) => pad(parts.indexOf(key) + 1);
-
   return (
-    <main className="pb-8 md:pb-12">
-      <PageBand id="Shelf" name={`${parts.length} parts`} />
+    <main className="pt-8 md:pt-12 pb-8 md:pb-12">
       <script
         type="application/ld+json"
         suppressHydrationWarning
@@ -101,20 +81,14 @@ export default async function ShelfPage() {
         }}
       />
 
-      {/* The page header.
-
-          It carries its own bottom padding rather than leaning on whatever
-          follows, because what follows is a Section whose band draws a
-          full-bleed rule across the page: with nothing between them the lede's
-          last line sat directly on that rule. The value is Section's own
-          `py-10 md:py-14`, so the air above band 01 is the same air every other
-          band gets, and the header reads as part of the same rhythm rather than
-          as something dropped in above it.
+      {/* The page header. No bottom padding of its own: the first Section's
+          top padding is the gap, so the header sits one spacing step above
+          Coffee, the same step as between every section here and on the
+          homepage.
 
           The display size is the one in `docs/design-system.md`, matching
-          /blogs and /projects. This page was on `text-3xl font-semibold`, half
-          a step smaller and a weight heavier than every other route's h1. */}
-      <Container width="reading" className="space-y-4 pb-10 md:pb-14">
+          /blogs and /projects. */}
+      <Container width="reading" className="space-y-4">
         <h1 className="text-[clamp(2rem,5vw,2.75rem)] font-medium tracking-tight">
           Things I&apos;m into
         </h1>
@@ -125,7 +99,7 @@ export default async function ShelfPage() {
         </p>
       </Container>
 
-      <Section number={no("coffee")} of={total} label="Coffee" title="What I drink" width="reading">
+      <Section label="Coffee" title="What I drink" width="reading">
         {/* The taste note sits above the picker, not below it. Underneath, it
             moved every time someone switched to a roaster with a different
             number of beans, which is a layout shift caused by nothing the
@@ -285,8 +259,6 @@ export default async function ShelfPage() {
           the labels survive as the key column, and the page stops clearing its
           throat between every short list. */}
       <Section
-        number={no("everyday")}
-        of={total}
         label="Everyday"
         title="Desk, scent, sound"
         width="reading"
@@ -353,7 +325,7 @@ export default async function ShelfPage() {
           in order, and restoring it appends 05 rather than reopening a gap in
           the middle of the page. */}
       {SHOW_BOOKMARKS && (
-        <Section number={no("bookmarks")} of={total} label="Bookmarks" title="Worth keeping" width="reading">
+        <Section label="Bookmarks" title="Worth keeping" width="reading">
           <p className="mb-6 max-w-[62ch] text-sm text-muted-foreground">
             Links I come back to. Every one carries a reason, or it does not go in.
           </p>
@@ -385,7 +357,7 @@ export default async function ShelfPage() {
         </Section>
       )}
 
-      <Container width="reading" className="pb-10">
+      <Container width="reading" className="pt-12 md:pt-[3.65rem]">
         <Link
           href="/books"
           className="group flex items-center justify-between gap-4 rounded-2xl border border-border bg-card p-5 sticker candy:rounded-sticker candy:border-white candy:hover:border-white"

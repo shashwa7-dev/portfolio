@@ -3,10 +3,9 @@
  *
  * Separate from `StackIcon.tsx` for one hard reason: that file is `"use
  * client"`, and a server component importing a function across that boundary
- * receives a client-reference object rather than the function. `TechStack`
- * renders its third tier as running text and calls `stackLabel` during the
- * server render, which failed with "object is not a function" until this moved
- * out here.
+ * receives a client-reference object rather than the function. The old
+ * Toolkit section called `stackLabel` during its server render and failed with
+ * "object is not a function" until this moved out here.
  *
  * So the rule is: anything a server component needs to CALL lives in this file.
  * `StackIcon` still re-exports `StackName`, because a type crosses the boundary
@@ -69,6 +68,9 @@ export type StackName =
   | "opensea"
   | "playwright"
   | "vitest"
+  | "jest"
+  | "testingLibrary"
+  | "redis"
   | "posthog"
   | "sentry"
   | "googleAnalytics"
@@ -130,6 +132,9 @@ const labelMap: Record<StackName, string> = {
   docker: "Docker",
   playwright: "Playwright",
   vitest: "Vitest",
+  jest: "Jest",
+  testingLibrary: "Testing Library",
+  redis: "Redis",
   posthog: "PostHog",
   sentry: "Sentry",
   googleAnalytics: "Google Analytics",

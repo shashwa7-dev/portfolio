@@ -11,6 +11,8 @@
 export type Stat = {
   n: string;
   c: string;
+  /** Short muted aside after the caption, used by the intro ticker. */
+  context?: string;
   /** Brand logos anchoring the number — small overlapping avatars below the stat. */
   orgs?: { name: string; img: string }[];
 };
@@ -43,5 +45,16 @@ export const stats: Stat[] = [
       { name: "Spacelab", img: "/images/spacelab.svg" },
     ],
   },
-  { n: "5+ yrs", c: "building frontend" },
+  { n: "5+ yrs", c: "building web apps" },
+];
+
+/**
+ * The intro ticker's items, in order. Leaves out the Spacelab model count (the
+ * OG card still quotes it): without the canvas on the page to explain it, the
+ * number read as noise in a scrolling line.
+ */
+export const tickerStats: Stat[] = [
+  { ...stats[0], c: "users reached", context: "Coinbase × Polygon" },
+  stats[1],
+  stats[3],
 ];

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Container from "@/components/layout/Container";
-import PageBand from "@/components/layout/PageBand";
 import CardMinter from "@/components/card/CardMinter";
 import CardFan from "@/components/card/CardFan";
 import { baseUrl } from "@/app/sitemap";
@@ -102,8 +101,7 @@ export default function CardPage() {
   const origin = city && country ? `${city}, ${country}` : country;
 
   return (
-    <main className="pb-8 md:pb-12">
-      <PageBand id="Card" name="Souvenir" />
+    <main className="pt-8 md:pt-12 pb-8 md:pb-12">
       <Container width="reading">
         {/* The fan sits with the title rather than above or below it, so the
             page opens by showing what it is offering instead of only naming

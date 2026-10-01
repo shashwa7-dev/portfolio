@@ -5,37 +5,31 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import Section from "@/components/layout/Section";
-import { HOMEPAGE_SECTION_TOTAL } from "@/lib/sections";
 import { faqLd } from "@/lib/seo";
-import { tiltMd, tint } from "@/lib/candy";
 
 const faqs = [
   { q: "Are you available for new work?", a: "Yes. I'm open to senior frontend and full-stack roles, plus freelance or consulting engagements. The fastest way to start is an email to contact@shashwa7.in." },
   { q: "What's your core stack?", a: "React, Next.js, TypeScript and Tailwind on the frontend. On the backend I work with Node, PostgreSQL, Vercel, AWS and event/trigger workflows (Trigger.dev). I've shipped a lot of AI-integrated interfaces (agents, chat, workflow authoring, generated-asset review) and Web3 (wagmi, Solana) across the stack." },
-  { q: "Do you work remotely?", a: "Yes, remote-first. I've collaborated with distributed teams and partners including ShopOS, Coinbase, Polygon and Sentient." },
+  { q: "Do you work remotely?", a: "Yes. I spent four years working remotely with distributed teams and partners including Coinbase, Polygon and Sentient, and I'm open to remote roles. At ShopOS I work onsite in Bengaluru." },
   { q: "What kind of projects do you take on?", a: "Product UIs, design systems, complex AI and Web3 frontends, and performance work. I can own a build end to end or embed with an existing team." },
   { q: "How do we get started?", a: "Email contact@shashwa7.in with a short note about your project or role, and I'll reply quickly." },
 ];
 
 export default function Faq() {
   return (
-    <Section id="faq" number="05" of={HOMEPAGE_SECTION_TOTAL} label="FAQ" title="Questions, answered" width="reading">
+    <Section id="faq" label="FAQ" title="Questions, answered" width="reading">
       <script
         type="application/ld+json"
         suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd(faqs)) }}
       />
-      <Accordion type="single" collapsible defaultValue="faq-0" className="overflow-hidden rounded-2xl border border-border candy:overflow-visible candy:rounded-none candy:border-0 candy:flex candy:flex-col candy:gap-2.5">
+      <Accordion type="single" collapsible defaultValue="faq-0" className="space-y-1">
         {faqs.map((f, i) => (
-          <AccordionItem
-            key={f.q}
-            value={`faq-${i}`}
-            className={`border-b border-border px-5 last:border-b-0 sticker sticker-hover candy:rounded-sticker candy:border-white candy:px-4 candy:last:border-b-[3px] candy:data-[state=open]:shadow-sticker-4 candy:data-[state=open]:rotate-0 ${tiltMd(i)} ${tint(i)}`}
-          >
-            <AccordionTrigger className="py-4 text-left text-lg font-medium text-foreground candy:font-bold candy:hover:no-underline candy:py-3">
+          <AccordionItem key={f.q} value={`faq-${i}`} className="border-0">
+            <AccordionTrigger className="py-3 text-left text-base font-medium text-foreground hover:no-underline">
               {f.q}
             </AccordionTrigger>
-            <AccordionContent className="pb-4 text-base leading-relaxed text-muted-foreground candy:text-foreground/80">
+            <AccordionContent className="pb-4 text-base leading-relaxed text-muted-foreground">
               {f.a}
             </AccordionContent>
           </AccordionItem>

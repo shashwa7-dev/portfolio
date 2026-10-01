@@ -1,10 +1,10 @@
 import About from "@/components/About";
 import ExperienceWork from "@/components/ExperienceWork";
 import Projects from "@/components/Projects";
-import TechStack from "@/components/TechStack";
-import Activity from "@/components/Activity";
+import Writing from "@/components/Writing";
+import Currently from "@/components/Currently";
 import Faq from "@/components/Faq";
-import Socials from "@/components/Socials";
+import Closing from "@/components/Closing";
 import LaunchNudge from "@/components/LaunchNudge";
 import ChatBotMount from "@/components/ChatBotMount";
 import { profilePageLd } from "@/lib/seo";
@@ -23,15 +23,15 @@ export default function Home() {
       />
       <About />
       <ExperienceWork />
+      <Writing />
+      <Currently />
       <Projects />
-      <TechStack />
-      <Activity />
       <Faq />
-      {/* Last section on the page, directly above the footer rendered from
+      {/* The closing line, directly above the footer rendered from
           `app/layout.tsx`. It carries the visitor-card nudge at its foot:
           that copy is a parting note for someone who has scrolled the whole
           page, so it only reads honestly from here. */}
-      <Socials />
+      <Closing />
       {/* Homepage only, deliberately: mounted here rather than in the layout so
           it never appears on a blog post or a case study. */}
       <LaunchNudge />

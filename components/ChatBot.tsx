@@ -12,7 +12,7 @@ import {
 } from "@/lib/chatStream";
 import { CONNECTION_TROUBLE } from "@/lib/chatMessages";
 import IconSwap from "@/components/common/IconSwap";
-import AgentMark from "@/components/common/AgentMark";
+import Image from "next/image";
 import {
   popoverUpVariants,
   fabPopVariants,
@@ -356,23 +356,24 @@ const S7Bot = () => {
             whileHover={hoverLiftRotate}
             whileTap={tapPress}
             onClick={() => setIsOpen(true)}
-            className="group fixed bottom-4 right-4 -md:right-2.5 grid h-12 w-12 place-items-center rounded-2xl bg-white shadow-lg ring-1 ring-border-strong sticker candy:rounded-full candy:ring-0 candy:shadow-sticker-3 tilt-i"
+            aria-label="Chat with Truffy"
+            className="group fixed bottom-4 right-4 -md:right-2.5 grid h-12 w-12 place-items-center rounded-[22%] shadow-lg ring-2 ring-foreground/30 ring-offset-2 ring-offset-background transition-shadow duration-base ease-out hover:ring-foreground/60 tilt-i"
           >
-            {/* An inline mark rather than a raster. It draws in `currentColor`, so
-                it is monochrome by construction and needs no greyscale class, and
-                it is sharp at any size instead of being a 49KB JPEG scaled into a
-                48px button.
-
-                `place-items-center` rather than `object-cover`: the artwork is a
-                line drawing with its own breathing room, so filling the button
-                edge to edge would crop the headset. That also retires the
-                `overflow-hidden` the bleed used to need.
-
-                Two older problems are gone with the file itself: the reduced-motion
-                caveat from when this was an animated GIF, whose loop CSS cannot
-                pause, and a `./truffycc.png` relative path that 404'd on every
-                nested route because this FAB mounts globally from the layout. */}
-            <AgentMark className="h-9 w-auto text-black" />
+            {/* Truffy's icon is a finished app tile with its own rounded
+                corners and depth, so it is the button rather than art sitting
+                on a white tile. The outline is a 2px ring held off the icon by
+                a 2px gap in the page colour, so the tile reads as a badge and
+                lifts off a light page as well as a dark one. 192px source for a 48px button, so it stays
+                sharp at 2x and 3x. Decorative: the button's label names it. */}
+            <Image
+              src="/truffy.webp"
+              alt=""
+              width={192}
+              height={192}
+              priority={false}
+              className="h-12 w-12 select-none rounded-[22%]"
+              draggable={false}
+            />
           </motion.button>
         )}
       </AnimatePresence>
@@ -391,8 +392,8 @@ const S7Bot = () => {
             {/* Header */}
             <div className="flex items-center justify-between border-b border-border bg-card px-4 py-3 candy:border-b-2 candy:border-foreground candy:bg-candy-pink">
               <div className="flex items-center gap-2">
-                <div className="relative grid h-9 w-9 flex-shrink-0 place-items-center rounded-lg bg-white candy:outline candy:outline-2 candy:outline-foreground tilt-a">
-                  <AgentMark className="h-6 w-auto text-black" />
+                <div className="relative h-9 w-9 flex-shrink-0 tilt-a">
+                  <Image src="/truffy.webp" alt="" width={192} height={192} className="h-9 w-9 rounded-[22%]" />
                   <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-card candy:ring-candy-pink" />
                 </div>
                 <div>

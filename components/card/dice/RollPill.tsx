@@ -116,7 +116,7 @@ const RollPill = forwardRef<HTMLButtonElement, RollPillProps>(function RollPill(
 
             font-semibold, sentence case: how every other primary action in
             the app labels itself (components/ui/button.tsx's base class;
-            components/Navbar.tsx's CV link; components/Socials.tsx's email
+            components/Navbar.tsx's CV link; components/Closing.tsx's email
             CTA; components/About.tsx's hero CTAs). The uppercase mono label
             this replaced read as a different design language next to
             those. Sized text-lg, up from text-sm: quiet was right for an

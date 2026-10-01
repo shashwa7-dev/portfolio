@@ -32,7 +32,7 @@ The palette is a warm, near-neutral ramp (low saturation, warm hue around 30-40 
 
 ### Candy
 
-A third theme, opt-in via `data-theme="candy"` on `<html>`. It redefines the same semantic tokens above under `:root[data-theme="candy"]`: paper `45 100% 98%`, ink `0 0% 10%`, sticker white `0 0% 100%` for `--card`, and an ink `--ring` at `0 0% 10%`. `--radius` becomes `1rem`, so `rounded-lg` is 16px, `rounded-md` 14px, `rounded-sm` 12px. A `--grid-line` / `--grid-size` pair (`45 34% 89%`, `40px`) draws graph paper behind every page.
+**Disabled for now** (`CANDY_ENABLED = false` in `lib/theme.ts`): the styles below stay, but nothing can select the theme. A third theme, opt-in via `data-theme="candy"` on `<html>`. It redefines the same semantic tokens above under `:root[data-theme="candy"]`: paper `45 100% 98%`, ink `0 0% 10%`, sticker white `0 0% 100%` for `--card`, and an ink `--ring` at `0 0% 10%`. `--radius` becomes `1rem`, so `rounded-lg` is 16px, `rounded-md` 14px, `rounded-sm` 12px. A `--grid-line` / `--grid-size` pair (`45 34% 89%`, `40px`) draws graph paper behind every page.
 
 Five candy-only tints, exposed as `bg-candy-*`:
 
@@ -201,9 +201,8 @@ import Container from "@/components/layout/Container";
 <Container width="wide">     {/* max-w-[1080px], centered */}
 ```
 
-The reading width is the token, never the literal. `Rails` draws the page's two
-hairlines at that same `--measure`, so writing `760px` into a component is how
-the lines and the column they describe drift apart.
+The reading width is the token, never the literal: write `--measure`, never
+`760px`.
 
 Props: `as` (HTML tag, default `div`), `width` (`"reading"` | `"wide"`, default `"reading"`), `className`, `id`, `children`.
 
@@ -214,56 +213,33 @@ Both variants use `mx-auto w-full px-6`.
 ```tsx
 import Section from "@/components/layout/Section";
 
-<Section
-  number="01"
-  of="06"
-  label="Color"
-  title="Paper"
-  width="reading"
-  action={<SomeButton />}
->
+<Section label="Work" title="Where I've worked" action={<ViewAllLink href="/projects">View all</ViewAllLink>}>
   {/* content */}
 </Section>
 ```
 
-- Opens with a full-bleed `Band` carrying `[ 01 / 06 ] · COLOR`, then a
-  `Container` holding the title and content at `py-10 md:py-14`.
-- The band replaced the in-column eyebrow. A caption describes the paragraph
-  under it; a band that crosses the page rails divides the page, which is what
-  a numbered section actually does.
-- `of` is opt-in. It asserts the route is a sequence of known length, which is
-  true of the homepage and `/shelf` and false of a blog post.
-- `action` renders on the band's right side.
-- Title is a `text-2xl md:text-3xl text-foreground` h2, and stays in the column
-  with the content rather than in the band.
+- A small muted `label` above an h2 `title` (`text-2xl md:text-3xl`), then the
+  content, in a reading `Container` at `py-14 md:py-20`.
+- No band, no rule, no numbering: whitespace is the only separator between
+  homepage sections. `number` / `of` and `HOMEPAGE_SECTION_TOTAL` are gone.
+- `action` sits on the right of the label row.
 - `width` is passed to the inner `Container`.
 
-### Rails, Band, PageBand
+### Secondary routes
 
-```tsx
-<Rails />                                      {/* app/layout.tsx ONLY */}
-<PageBand id="Blog" name="12 posts" />         {/* first child of <main> */}
-```
+- No header row: `Band`, `BandLabel` and `PageBand` are deleted. A route opens
+  directly with its own heading.
+- Every secondary route's `<main>` carries `pt-8 md:pt-12 pb-8 md:pb-12`.
 
-- `Rails` draws two vertical hairlines at the edges of `--measure`, rendered
-  once from `app/layout.tsx` inside the `relative` wrapper around navbar,
-  children and footer, so they span the document. Per-page imports are
-  forbidden, the same rule the Navbar follows.
-- It centres the way `Container` centres (`left-0 right-0` + `max-width` +
-  `mx-auto`). Anything measured from the viewport instead lands a few pixels
-  off, because `scrollbar-gutter: stable` means the viewport and the content
-  box are different widths.
-- `Band` is the full-bleed row that crosses the rails, carrying the gutter dots
-  (`--dot-gap`) and the ink tick. Only `Section` and `PageBand` may draw one.
-- Every secondary route opens with a `PageBand` and carries `pb-8 md:pb-12`
-  on its `<main>`; the band's own `mb-8 md:mb-12` supplies the rest.
-- All of it hides under 900px, where the gutters get narrower than a
-  Container's `px-6` and the rails would sit inside the text's own padding.
-- Candy: `Rails` and `Band` render nothing, so their lines, the ink tick and the
-  dot gutters are hidden on every route regardless of width. `Section` and
-  `PageBand` still show their `BandLabel` and `action`, in a plain flex row
-  above the title; the label itself renders as a sticker pill instead of mono
-  caps in a band.
+### StatsTicker, MarginNote
+
+- `StatsTicker` (`components/common/`): the intro's proof points as one slow
+  line at the reading column's width, faded at both edges. Reads `tickerStats`;
+  loop length `--duration-ticker`. Pauses on hover; static and wrapped under
+  reduced motion.
+- `MarginNote` (`components/common/`): a short handwritten note in Caveat
+  beside a homepage row, from `lib/marginNotes.ts`. Four at most. Right margin
+  from `lg`, inline below it.
 
 ### Bento
 

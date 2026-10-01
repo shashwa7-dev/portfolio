@@ -1,6 +1,6 @@
 ---
 name: portfolio-design-system
-description: Design system for this portfolio (warm paper/ink tokens, DM Sans + IBM Plex Mono type, Container/Section/Band/Rails/Bento primitives, usage rules). Use when building or restyling UI in this repo.
+description: Design system for this portfolio (warm paper/ink tokens, DM Sans + IBM Plex Mono type, Container/Section/Bento primitives, usage rules). Use when building or restyling UI in this repo.
 ---
 
 Full reference: `docs/design-system.md`. This skill gives you the fast rules.
@@ -12,7 +12,7 @@ Full reference: `docs/design-system.md`. This skill gives you the fast rules.
 - Brand / accent: `bg-accent` for CTAs; `hover:bg-accent-hover` on hover; `text-accent` for inline highlights
 - Borders: `border-border` (default hairline); `border-border-strong` (emphasis, button outlines)
 - Never use raw hex. Dark mode is the default (`dark` class on `<html>`).
-- Three themes: light, dark, candy. Candy classes use the `candy:` variant and are inert elsewhere.
+- Two live themes, light and dark. Candy is disabled (`CANDY_ENABLED = false` in `lib/theme.ts`); its `candy:` classes stay but are inert.
 - No dividers in Candy.
 
 ## Typography
@@ -24,19 +24,17 @@ Full reference: `docs/design-system.md`. This skill gives you the fast rules.
 
 ## Section pattern
 
-Every major section follows this structure:
+Every homepage section follows this structure:
 
 ```tsx
-<Section number="01" of="06" label="Label" title="Section title" width="reading">
+<Section label="Work" title="Section title">
   {/* content */}
 </Section>
 ```
 
-- `Section` opens with a full-bleed `Band` carrying `[ 01 / 06 ] · LABEL`, then a `Container` holding the title and content at `py-10 md:py-14`.
-- The band IS the divider. There is no `Divider` component, and importing one fails the gate (C13).
-- `of` is opt-in: pass it only where the route really is a sequence of known length (homepage, `/shelf`). A blog post is not a sequence.
-- Secondary routes open with `<PageBand id="Blog" name="12 posts" />` as the first child of `<main>`, which carries `pb-8 md:pb-12`.
-- Never draw a band by hand. It means "a labelled division starts here" and stops meaning it the moment it is used for emphasis.
+- A small muted label, an h2 title, then content, at `py-14 md:py-20`. Whitespace is the only separator: no band, no rule, no numbering (`number` / `of` no longer exist).
+- There is no `Divider` component, and importing one fails the gate (C13).
+- Secondary routes have no header row: their `<main>` carries `pt-8 md:pt-12 pb-8 md:pb-12` and opens with the page's own heading.
 
 ## Layout primitives (all in `components/layout/`)
 
@@ -44,12 +42,11 @@ Every major section follows this structure:
 |---|---|
 | `Container width="reading"` | Prose / single-column content (760px max) |
 | `Container width="wide"` | Full layouts, hero sections (1080px max) |
-| `Section` | Any major content block needing the numbered eyebrow + title |
+| `Section` | Any homepage content block: plain label + title |
 | `Bento` | Grid of feature cards with hairline borders |
-| `Band` | The full-bleed labelled row that crosses the page rails |
-| `PageBand` | A secondary route's opening band, flush under the navbar |
-| `Rails` | The two page hairlines. Rendered ONCE from `app/layout.tsx`, never per page |
 | `Label` | Eyebrow text above headings |
+| `StatsTicker` (common) | The intro's slow stats line at column width |
+| `MarginNote` (common) | Handwritten homepage aside, four at most |
 
 ## Bento pattern
 

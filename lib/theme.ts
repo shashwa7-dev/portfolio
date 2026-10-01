@@ -10,8 +10,19 @@
  * Absent (or garbage) means follow the OS between light and dark. Candy is
  * light only and ignores the OS.
  */
-export const THEMES = ["light", "candy", "dark"] as const;
-export type Theme = (typeof THEMES)[number];
+/**
+ * Candy is switched off until Shashwat turns it back on. Flip this to `true`
+ * and the third theme returns everywhere: the cycle, the palette action, and
+ * stored preferences. Its styles never left; every `candy:` class is inert
+ * while `data-theme` can never be "candy".
+ */
+export const CANDY_ENABLED = false;
+
+const ALL_THEMES = ["light", "candy", "dark"] as const;
+export type Theme = (typeof ALL_THEMES)[number];
+export const THEMES = (CANDY_ENABLED
+  ? ALL_THEMES
+  : ALL_THEMES.filter((t) => t !== "candy")) as readonly Theme[];
 
 export const THEME_STORAGE_KEY = "theme";
 
@@ -33,6 +44,25 @@ export function themeLabel(theme: Theme): "Light" | "Dark" | "Candy" {
   return theme === "light" ? "Light" : theme === "dark" ? "Dark" : "Candy";
 }
 
+/**
+ * What the theme button shows: the theme it will switch TO. Keyed on the next
+ * theme rather than the current one, so turning Candy off turns the treat off
+ * with it instead of leaving light mode advertising a theme that is gone.
+ */
+export function toggleIcon(upcoming: Theme): "treat" | "moon" | "sun" {
+  return upcoming === "candy" ? "treat" : upcoming === "dark" ? "moon" : "sun";
+}
+
+/**
+ * The theme button's artwork, keyed like `toggleIcon` on where the click
+ * leads rather than where you are: the dark theme shows the white cowl (switch
+ * to light), the light theme shows the black one. Candy is a light theme, so
+ * it offers black too.
+ */
+export function toggleCowl(current: Theme): "black" | "white" {
+  return current === "dark" ? "white" : "black";
+}
+
 type RootLike = {
   dataset: DOMStringMap;
   classList: { toggle(name: string, force: boolean): unknown };
@@ -50,5 +80,6 @@ export function applyTheme(root: RootLike, theme: Theme): void {
  * drift. Uses setAttribute rather than dataset so it also works on the
  * minimal stub the test hands it.
  */
-export const THEME_BOOT_SCRIPT =
-  '(function(){var t=localStorage.getItem("theme");var ok=t==="light"||t==="dark"||t==="candy";var d=window.matchMedia("(prefers-color-scheme: dark)").matches;var theme=ok?t:(d?"dark":"light");var r=document.documentElement;r.setAttribute("data-theme",theme);r.classList.toggle("dark",theme==="dark");})();';
+export const THEME_BOOT_SCRIPT = `(function(){var t=localStorage.getItem("theme");var ok=t==="light"||t==="dark"${
+  CANDY_ENABLED ? '||t==="candy"' : ""
+};var d=window.matchMedia("(prefers-color-scheme: dark)").matches;var theme=ok?t:(d?"dark":"light");var r=document.documentElement;r.setAttribute("data-theme",theme);r.classList.toggle("dark",theme==="dark");})();`;

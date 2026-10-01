@@ -18,6 +18,12 @@ export const ease = {
    * this file is that no ease-out can describe an arc that comes back down.
    */
   throw: [0.33, 0.02, 0.62, 1] as const,
+  /**
+   * A sine in-out, for the graffiti hand's idle sway only. A loop that
+   * reverses needs to slow at both ends, or it reads as hitting a wall; an
+   * ease-out cannot do that. Not a UI curve.
+   */
+  sway: [0.45, 0, 0.55, 1] as const,
 } as const;
 
 export const duration = {
@@ -50,6 +56,27 @@ export const duration = {
    * glyph being swapped.
    */
   throw: 0.7,
+  /**
+   * The intro stats ticker: one full loop, in seconds. A drift, not a
+   * transition, so it is far outside the UI budget on purpose. It pauses on
+   * hover and does not run under reduced motion.
+   */
+  ticker: 40,
+  /**
+   * The intro headline's phrase cycle, in seconds: the wait after the intro
+   * comes into view before the first swap, and how long each phrase holds.
+   * Ambient like the ticker, not a response to input, so outside the budget.
+   */
+  phraseStart: 1.5,
+  phraseHold: 3.5,
+  /**
+   * The graffiti hand in the closing section: its rise, and one half swing of
+   * the idle sway that follows (one side to the other). Ambient, not a response to input, so both sit
+   * outside the UI budget. The sway is slow on purpose: faster read as a
+   * nervous twitch rather than a wave.
+   */
+  handRise: 0.9,
+  handSway: 1.8,
 } as const;
 
 /** Per-item stagger offsets (seconds). Use instead of literal `i * 0.05`. */
@@ -158,6 +185,62 @@ export const blurSwapVariants: Variants = {
     filter: "blur(4px)",
     y: -2,
     transition: { duration: duration.fast, ease: ease.out },
+  },
+};
+
+/**
+ * The intro headline's phrase swap, word by word. The container only
+ * orchestrates: each word runs `blurSwapVariants`, `stagger.base` apart, out
+ * and in. The entrance is held back by `duration.med` because the slot's width
+ * animates over that window (see HeroPhrase), so the order is: old words blur
+ * out one after another, the gap eases to the new phrase's width, the new
+ * words resolve into it. Entering alongside the width change put the incoming
+ * words on top of " to millions" while the line was still making room.
+ */
+export const phraseSwapVariants: Variants = {
+  hidden: {},
+  visible: { transition: { delayChildren: duration.med, staggerChildren: stagger.base } },
+  exit: { transition: { staggerChildren: stagger.base } },
+};
+
+/** One word of the intro phrase. See `phraseSwapVariants`. */
+export const phraseWordVariants: Variants = blurSwapVariants;
+
+/** Seconds for a phrase of `words` words to finish blurring out. */
+export function phraseExitSeconds(words: number): number {
+  return duration.fast + Math.max(0, words - 1) * stagger.base;
+}
+
+/**
+ * The graffiti hand beside the closing line. It waits below the section's
+ * bottom edge (clipped), rises once on a plain ease-out the first time the
+ * section comes into view, then swings like a slow pendulum from the wrist
+ * for as long as it is on screen.
+ *
+ * The swing is one target and `repeatType: "mirror"`, not a keyframe list.
+ * A list of keyframes applies the ease to every segment, so the hand slowed to
+ * a stop at each one, the resting pose included, and read as back, stop,
+ * forth. Two angles mirrored on `ease.sway` only slow at the two ends, which
+ * is where a real swing turns. The rise lands on one end of the swing
+ * (`HAND_TILT - HAND_SWING`) so the swing starts from where the hand already
+ * is, with no jump. Small on purpose: a couple of degrees reads as a hand
+ * waving; more read as a metronome.
+ */
+const HAND_TILT = 8;
+const HAND_SWING = 2.5;
+export const handRiseVariants: Variants = {
+  hidden: { y: "60%", rotate: HAND_TILT + 6, opacity: 0 },
+  visible: {
+    y: "0%",
+    rotate: HAND_TILT - HAND_SWING,
+    opacity: 1,
+    transition: { duration: duration.handRise, ease: ease.out },
+  },
+  sway: {
+    y: "0%",
+    rotate: HAND_TILT + HAND_SWING,
+    opacity: 1,
+    transition: { duration: duration.handSway, ease: ease.sway, repeat: Infinity, repeatType: "mirror" },
   },
 };
 

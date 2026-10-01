@@ -1,6 +1,5 @@
 import { BlogPosts } from "../../components/BlogPosts";
 import Container from "@/components/layout/Container";
-import PageBand from "@/components/layout/PageBand";
 import Label from "@/components/layout/Label";
 import { getBlogPosts } from "@/app/blogs/utils";
 import { baseUrl } from "@/app/sitemap";
@@ -35,8 +34,7 @@ export default function Page() {
   );
 
   return (
-    <main className="pb-8 md:pb-12">
-      <PageBand id="Blog" name={`${posts.length} posts`} />
+    <main className="pt-8 md:pt-12 pb-8 md:pb-12">
       <script
         type="application/ld+json"
         suppressHydrationWarning

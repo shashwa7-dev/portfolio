@@ -7,7 +7,6 @@ import { Link as LinkCTA } from "@/components/common/Link";
 import { baseUrl } from "@/app/sitemap";
 import { ogUrl, breadcrumbLd } from "@/lib/seo";
 import Container from "@/components/layout/Container";
-import PageBand from "@/components/layout/PageBand";
 
 type Props = {
   params: { slug: string };
@@ -97,8 +96,7 @@ export default function BookPage({ params }: Props) {
   const { read: completedCount, finished: isComplete } = readProgress(book);
 
   return (
-    <main className="min-h-screen pb-8 md:pb-12">
-      <PageBand id="Books" name={book.name} />
+    <main className="pt-8 md:pt-12 min-h-screen pb-8 md:pb-12">
       <script
         type="application/ld+json"
         suppressHydrationWarning

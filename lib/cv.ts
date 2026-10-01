@@ -161,3 +161,30 @@ export function parseCv(md: string): Cv {
 
   return { name, title, contact, blocks };
 }
+
+/**
+ * The page shows the name in title case. `data/cv.md` keeps it in capitals
+ * because that is how the PDF's header sets it; the page's heading is sentence
+ * styled like every other heading on the site.
+ */
+export function displayName(name: string): string {
+  if (name !== name.toUpperCase()) return name;
+  return name.toLowerCase().replace(/(^|\s)(\S)/g, (_, gap: string, c: string) => gap + c.toUpperCase());
+}
+
+/** The PDF separates header facts with pipes; the page uses middle dots. */
+export function dotSeparated(line: string): string {
+  return line.replace(/\s*\|\s*/g, " · ");
+}
+
+/**
+ * A header line's facts, split on the PDF's pipes. The page sets each one
+ * unbreakable and lets the line wrap only between them, so a phone number or
+ * "5+ Years" never splits across two lines.
+ */
+export function headerFacts(line: string): string[] {
+  return line
+    .split("|")
+    .map((s) => s.trim())
+    .filter(Boolean);
+}

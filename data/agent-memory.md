@@ -63,12 +63,12 @@ be Shashwat.
   - BCA, Amity University Mumbai (2018–2021), CGPA 9.7
   - 11th & 12th, Laxmi Vidyapeeth, Vapi
   - Hindustani Music, True School of Music, Lower Parel, Mumbai
-- **Working style:** remote-first, ships fast, design-system fluent
+- **Working style:** ships fast, design-system fluent. Works onsite at ShopOS (Bengaluru); Dehidden and Cope.Studio were remote. Open to remote roles.
 - **Open to work:** Yes, senior frontend / full-stack roles, plus freelance and consulting engagements
 
 ## Current engagement
 
-**ShopOS**, Frontend Engineer (**full-time**, Jan 2026 – Present)
+**ShopOS**, Frontend Engineer (**full-time, onsite**, Jan 2026 – Present)
 
 AI-native commerce platform. Shashwat builds ShopOS's AI products end to end,
 from the UI down to the integrations: **Sloosh** for creators, the **ShopOS**
@@ -87,7 +87,7 @@ app for brands, and **Spacelab**, the node canvas both of them run on.
 
 ## Past engagement
 
-**Dehidden**, Frontend Developer, Web3 (**contract**, Jan 2022 – Dec 2025)
+**Dehidden**, Frontend Developer, Web3 (**contract, remote**, Jan 2022 – Dec 2025)
 
 Built AI × Web3 products including DeFi platforms, NFT minting solutions,
 and blockchain integrations.
@@ -104,18 +104,19 @@ and blockchain integrations.
 - **1M+** users reached, Coinbase × Polygon NFT
 - **12+** production products shipped, across ShopOS (Sloosh, Spacelab, the ShopOS app) & Dehidden (9)
 - **30+** AI models shipped, in Spacelab
-- (Also true, no longer on the stat band: **100K** day-one mints, Coinbase × Polygon NFT)
-- **5+ years** building frontend
+- **100K** day-one mints, Coinbase × Polygon NFT (on the Dehidden page, not the homepage ticker)
+- **5+ years** building web apps
 
 ## Tech stack
 
-Grouped the same four ways the site's Toolkit section groups them, so an answer
-here matches what a visitor is looking at.
+Grouped four ways for answers; the homepage shows the everyday stack under
+Currently, as one row of pills tinted by kind (frontend and AI neutral, backend
+blue, testing green).
 
 - **Frontend:** JavaScript, TypeScript, React, Next.js, Tailwind, shadcn, Base UI, Chakra UI, styled-components, SCSS, GSAP, Framer Motion, React Query, Zustand, React Flow, tiptap / ProseMirror, wagmi, Solana, Web3.js
 - **AI:** OpenAI, Google Gemini, Claude (Anthropic), Vercel AI SDK
-- **Backend & data:** Node.js, Bun, PostgreSQL, Redis, MongoDB, Firebase, Supabase, REST, GraphQL, WebSocket, WebRTC
-- **Infra & tooling:** Git, GitHub, Docker, AWS, Cloudflare, Vercel, Playwright, Vitest, Sentry, PostHog, Google Analytics, Vercel Analytics, VS Code, Figma, Postman
+- **Backend & data:** Node.js, Express, Bun, PostgreSQL, Redis, MongoDB, Firebase, Supabase, REST, GraphQL, WebSocket, WebRTC
+- **Infra & tooling:** Git, GitHub, Docker, AWS, Cloudflare, Vercel, Playwright, Vitest, Jest, Testing Library, Sentry, PostHog, Google Analytics, Vercel Analytics, VS Code, Figma, Postman
 
 HTML and CSS are assumed rather than listed: they are table stakes at this level,
 and naming them alongside TypeScript invites a reader to calibrate downwards. Say
@@ -135,7 +136,7 @@ Coinbase, Polygon, Play AI, ShopOS
 
 ## Personal
 
-- **Location:** Bengaluru, India. The homepage hero shows it as "BLR" beside an Indian flag, and the contact section repeats it in full next to the timezone.
+- **Location:** Bengaluru, India. The homepage hero shows it as "BLR" beside an Indian flag, and the footer lists it in full under "Based in".
 - **Timezone:** IST, Asia/Kolkata. The homepage hero shows his current local time live next to the city, so if someone asks about overlap or working hours, answer from IST.
 - **Interests:** Music, Gym, Walking, Gaming, Cooking, Home Barista, Coffee Enthusiast
 - **Favorite series:** Big Bang Theory, Brooklyn 99, Silicon Valley, Breaking Bad, Young Sheldon

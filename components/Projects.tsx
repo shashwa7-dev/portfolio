@@ -1,32 +1,52 @@
+import Link from "next/link";
+import Image from "next/image";
+import { ArrowUpRight } from "@phosphor-icons/react/ssr";
 import { sideProjects } from "@/lib/projectsData";
-import { sideProjectToCard } from "@/lib/projectCards";
-import ProjectPreviewCard from "./ProjectPreviewCard";
+import { homeProjects } from "@/lib/home";
 import Section from "@/components/layout/Section";
 import { ViewAllLink } from "@/components/common/ViewAllLink";
-import { HOMEPAGE_SECTION_TOTAL } from "@/lib/sections";
+import MarginNote from "@/components/common/MarginNote";
 
+/**
+ * Two side projects, by name only. On hover or focus an underline draws in
+ * under the name, a small arrow appears, and the thumbnail fades in at the
+ * row's right end; touch
+ * visitors get the names and the project page one tap away. The full list
+ * lives on /projects.
+ */
 export default function Projects() {
   return (
     <Section
       id="projects"
-      number="02"
-      of={HOMEPAGE_SECTION_TOTAL}
-      label="Side Projects"
+      label="Projects"
       title="Things I build for fun"
-      width="reading"
-      action={
-        // A bordered sticker pill so it reads as pressable, but still mono and
-        // label-sized: it sits in the band beside the label, and body-sized
-        // text here made the band read as a row of content rather than as page
-        // structure.
-        <ViewAllLink href="/projects">View all</ViewAllLink>
-      }
+      action={<ViewAllLink href="/projects">View all</ViewAllLink>}
     >
-      <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-        {sideProjects.map((p, i) => (
-          <ProjectPreviewCard key={p.id} project={sideProjectToCard(p)} index={i} />
+      <ul className="space-y-1">
+        {homeProjects(sideProjects).map((p) => (
+          <li key={p.id} className="relative">
+            <Link
+              href={`/project/${p.slug}`}
+              className="group relative -mx-3 flex items-center gap-1.5 rounded-lg px-3 py-3 text-lg font-medium text-foreground"
+            >
+              <span className="bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_1px] bg-left-bottom bg-no-repeat pb-0.5 transition-[background-size] duration-med ease-out group-hover:bg-[length:100%_1px] group-focus-visible:bg-[length:100%_1px]">
+                {p.title}
+              </span>
+              <ArrowUpRight
+                aria-hidden
+                className="h-4 w-4 -translate-x-1 translate-y-0.5 text-subtle opacity-0 transition-[opacity,transform] duration-base ease-out group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:translate-y-0 group-focus-visible:opacity-100"
+              />
+              <span
+                aria-hidden
+                className="pointer-events-none absolute right-3 top-1/2 aspect-[16/10] w-40 -translate-y-1/2 scale-95 overflow-hidden rounded-md opacity-0 shadow-lg ring-1 ring-border transition-[opacity,transform] duration-base ease-out group-hover:scale-100 group-hover:opacity-100 group-focus-visible:scale-100 group-focus-visible:opacity-100"
+              >
+                <Image src={p.thumbnail} alt="" fill sizes="160px" className="object-cover" />
+              </span>
+            </Link>
+            <MarginNote id={p.slug} indent={false} />
+          </li>
         ))}
-      </div>
+      </ul>
     </Section>
   );
 }
