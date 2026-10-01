@@ -1,5 +1,8 @@
 import type { Config } from "tailwindcss";
-import { fontFamily } from "tailwindcss/defaultTheme";
+/* Tailwind v3's default fallback stacks, written out. They used to come from
+   `tailwindcss/defaultTheme`, which v4 no longer ships. */
+const SANS = ["ui-sans-serif", "system-ui", "sans-serif", '"Apple Color Emoji"', '"Segoe UI Emoji"', '"Segoe UI Symbol"', '"Noto Color Emoji"'];
+const MONO = ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", '"Liberation Mono"', '"Courier New"', "monospace"];
 import plugin from "tailwindcss/plugin";
 
 const config: Config = {
@@ -93,9 +96,9 @@ const config: Config = {
         "-sm": { max: "639px" },
       },
       fontFamily: {
-        sans: ["var(--font-sans)", ...fontFamily.sans],
-        mono: ["var(--font-mono)", ...fontFamily.mono],
-        display: ["var(--font-display)", "var(--font-sans)", ...fontFamily.sans],
+        sans: ["var(--font-sans)", ...SANS],
+        mono: ["var(--font-mono)", ...MONO],
+        display: ["var(--font-display)", "var(--font-sans)", ...SANS],
       },
       fontSize: {
         '2xs': ['0.625rem',  { lineHeight: '1.4' }],   // 10px, mono labels
