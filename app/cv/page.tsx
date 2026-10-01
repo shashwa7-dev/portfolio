@@ -47,6 +47,9 @@ export const metadata = {
 export default function CvPage() {
   const md = fs.readFileSync(path.join(process.cwd(), "data/cv.md"), "utf8");
   const cv = parseCv(md);
+  // Read from the file at build time, so the header can never advertise a size
+  // the PDF no longer has after `npm run cv:pdf`.
+  const pdfKb = Math.round(fs.statSync(path.join(process.cwd(), "public", PDF)).size / 1024);
 
   return (
     <main className="pt-8 md:pt-12 pb-8 md:pb-12">
@@ -64,25 +67,36 @@ export default function CvPage() {
       />
 
       <Container width="reading">
-        {/* The page action sits above the sheet, where it reads as something
-            the site offers rather than as document content. */}
-        <div className="flex justify-end">
+        {/* The page header, the same shape as /shelf and /blogs: a display
+            heading and a lede, plus what the download actually is. The button
+            lives here so the page's one action sits with the page's title
+            rather than floating above the document. */}
+        <header className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between sm:gap-8">
+          <div className="space-y-3">
+            <h1 className="text-[clamp(2rem,5vw,2.75rem)] font-medium tracking-tight">CV</h1>
+            <p className="max-w-[52ch] text-muted-foreground">
+              Five years of frontend for AI and Web3 products, from ShopOS back to
+              Dehidden. Read it here, or take the one-page PDF.
+            </p>
+            <p className="font-mono text-xs text-subtle">One page · PDF · {pdfKb} KB</p>
+          </div>
           <a
             href={PDF}
             download
-            className="inline-flex items-center gap-1.5 rounded-md bg-accent px-3.5 py-1.5 text-xs font-semibold text-accent-foreground transition-[color,background-color,transform] duration-fast ease-out hover:bg-accent-hover active:scale-[0.97]"
+            className="inline-flex shrink-0 items-center gap-1.5 self-start rounded-md bg-accent px-3.5 py-1.5 text-xs font-semibold text-accent-foreground transition-[color,background-color,transform] duration-fast ease-out hover:bg-accent-hover active:scale-[0.97] sm:self-auto"
           >
             <DownloadSimple aria-hidden className="h-3.5 w-3.5" />
             Download PDF
           </a>
-        </div>
+        </header>
 
         {/* The sheet: one plain page. It used to be a receipt, with a wavy
             masked edge, notches bitten out at a tear line, a perforated
             "tear off a copy" stub and a paper-grain layer, and next to the
             minimal homepage that read as a gimmick. What is left is what makes
-            it read as a document: a white page, a hairline edge, a soft
-            shadow, and a classic résumé layout that matches the PDF. In dark
+            it read as a document: a white page, a hairline edge, a barely
+            there contact shadow, and a classic résumé layout that matches the
+            PDF. A longer cast shadow was tried and read as a floating card. In dark
             mode the card surface and its border do the lifting, so the shadow
             is dropped there.
 
@@ -90,12 +104,13 @@ export default function CvPage() {
             inside the page's own gutter, two frames that left the text about
             290px of a 390px screen, so there the CV is set straight on the
             page instead. */}
-        <article className="mt-6 sm:mt-4 sm:rounded-md sm:border sm:border-border sm:bg-card sm:px-10 sm:py-10 sm:shadow-[0_1px_2px_rgb(0_0_0/0.04),0_12px_32px_rgb(0_0_0/0.06)] sm:dark:shadow-none md:px-12 md:py-12">
+        <article className="mt-8 border-t border-border pt-8 md:mt-10 sm:rounded-md sm:border sm:border-border sm:bg-card sm:px-10 sm:py-10 sm:shadow-[0_1px_2px_rgb(0_0_0/0.04)] sm:dark:shadow-none md:px-12 md:py-12">
           <header className="flex items-start justify-between gap-4 sm:gap-6">
             <div className="min-w-0">
-              <h1 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
+              {/* An h2: the page's h1 is "CV" in the header above. */}
+              <h2 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
                 {displayName(cv.name)}
-              </h1>
+              </h2>
               <Facts line={cv.title} className="mt-1 text-sm text-muted-foreground md:text-base" />
               <div className="mt-3 space-y-1 font-mono text-xs leading-relaxed text-subtle [&_a]:transition-colors [&_a]:duration-fast [&_a]:ease-out hover:[&_a]:text-foreground">
                 {cv.contact.map((line) => (
