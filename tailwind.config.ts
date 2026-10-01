@@ -3,7 +3,6 @@ import type { Config } from "tailwindcss";
    `tailwindcss/defaultTheme`, which v4 no longer ships. */
 const SANS = ["ui-sans-serif", "system-ui", "sans-serif", '"Apple Color Emoji"', '"Segoe UI Emoji"', '"Segoe UI Symbol"', '"Noto Color Emoji"'];
 const MONO = ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", '"Liberation Mono"', '"Courier New"', "monospace"];
-import plugin from "tailwindcss/plugin";
 
 const config: Config = {
   darkMode: ["class"],
@@ -216,9 +215,11 @@ const config: Config = {
     // `candy:` scopes a utility to the Candy theme. It is an attribute on
     // <html>, like `.dark` is a class there, so `candy:` and `dark:` never
     // both match: Candy never sets `.dark`.
-    plugin(({ addVariant }) => {
+    // A plain function rather than `plugin()` from "tailwindcss/plugin": the
+    // same contract, and one import fewer for the v4 loader to resolve.
+    ({ addVariant }: { addVariant: (name: string, selector: string) => void }) => {
       addVariant("candy", '[data-theme="candy"] &');
-    }),
+    },
   ],
 };
 
