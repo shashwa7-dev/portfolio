@@ -357,7 +357,7 @@ export default async function ShelfPage() {
         </Section>
       )}
 
-      <Container width="reading" className="pt-11 md:pt-[3.3rem]">
+      <Container width="reading" className="pt-12 md:pt-[3.65rem]">
         <Link
           href="/books"
           className="group flex items-center justify-between gap-4 rounded-2xl border border-border bg-card p-5 sticker candy:rounded-sticker candy:border-white candy:hover:border-white"

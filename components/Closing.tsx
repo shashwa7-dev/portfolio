@@ -20,7 +20,7 @@ import { socialLinks, contactEmail } from "@/lib/siteLinks";
 export default function Closing() {
   return (
     <section id="contact" className="relative -mb-12 overflow-hidden">
-      <Container width="reading" className="relative pt-11 pb-40 sm:pb-28 md:pt-[3.3rem] md:pb-32">
+      <Container width="reading" className="relative pt-12 pb-40 sm:pb-28 md:pt-[3.65rem] md:pb-32">
         <GraffitiHand className="-bottom-10 right-6 h-48 sm:-bottom-12 sm:right-2 sm:h-60 md:-bottom-14 md:right-0 md:h-72" />
         <p className="text-2xl font-medium tracking-tight text-foreground md:text-3xl">Let&apos;s build something good.</p>
         <div className="mt-6 flex flex-wrap items-center gap-3">
