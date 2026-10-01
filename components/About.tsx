@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/tooltip";
 import { SOCIAL_ICONS } from "@/components/common/socialIcons";
 import StatsTicker from "@/components/common/StatsTicker";
+import HeroPhrase from "@/components/common/HeroPhrase";
 import { socialLinks } from "@/lib/siteLinks";
 
 /**
@@ -205,7 +206,7 @@ export default function About() {
                 and the claim stays in full foreground, set in DM Sans's real
                 italic (loaded in app/layout.tsx). Candy keeps its butter chip. */}
             <span className="text-muted-foreground">I build interfaces that </span>
-            <span className="font-semibold italic candy:bg-candy-butter candy:px-2 candy:rounded-tag candy:[box-decoration-break:clone]">ship and scale</span>
+            <HeroPhrase className="font-semibold italic candy:bg-candy-butter candy:px-2 candy:rounded-tag candy:[box-decoration-break:clone]" />
             <span className="text-muted-foreground"> to millions.</span>
           </p>
 

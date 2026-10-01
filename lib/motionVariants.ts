@@ -56,6 +56,13 @@ export const duration = {
    * hover and does not run under reduced motion.
    */
   ticker: 40,
+  /**
+   * The intro headline's phrase cycle, in seconds: the wait after the intro
+   * comes into view before the first swap, and how long each phrase holds.
+   * Ambient like the ticker, not a response to input, so outside the budget.
+   */
+  phraseStart: 1.5,
+  phraseHold: 2.4,
 } as const;
 
 /** Per-item stagger offsets (seconds). Use instead of literal `i * 0.05`. */
@@ -164,6 +171,24 @@ export const blurSwapVariants: Variants = {
     filter: "blur(4px)",
     y: -2,
     transition: { duration: duration.fast, ease: ease.out },
+  },
+};
+
+/**
+ * The intro headline's phrase swap: `blurSwapVariants`, with the entrance held
+ * back by `duration.med`. The slot's width animates over that same window
+ * (see HeroPhrase), so the order is: old phrase blurs out, the gap eases to
+ * the new phrase's width, the new phrase resolves into it. Entering alongside
+ * the width change put the incoming words on top of " to millions" while the
+ * line was still making room for them.
+ */
+export const phraseSwapVariants: Variants = {
+  ...blurSwapVariants,
+  visible: {
+    opacity: 1,
+    filter: "blur(0px)",
+    y: 0,
+    transition: { duration: duration.base, ease: ease.out, delay: duration.med },
   },
 };
 

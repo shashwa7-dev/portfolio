@@ -343,6 +343,9 @@
   --duration-curtain: 1200ms;
   /* Mirrors duration.ticker in lib/motionVariants.ts. */
   --duration-ticker: 40s;
+  /* Mirror duration.phraseStart / phraseHold (the intro headline's cycle). */
+  --duration-phrase-start: 1500ms;
+  --duration-phrase-hold: 2400ms;
 }
 
 /* The dice on /card. The dice are made of the card's own paper. These
