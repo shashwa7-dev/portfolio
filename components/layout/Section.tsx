@@ -14,12 +14,14 @@ type Props = {
 
 /**
  * A homepage-style section. Whitespace is the only separator: no band, no
- * rule, no numbering. One vertical step (`py-10 md:py-12`) between sections.
+ * rule, no numbering. Top padding only (`pt-10 md:pt-12`), so the gap between
+ * two sections is one step, the same as the gap under the intro. With padding
+ * on both sides it was two steps, and the page read as looser below the hero.
  */
 export default function Section({ id, label, title, action, width = "reading", className, children }: Props) {
   return (
     <section id={id} className={className}>
-      <Container width={width} className="scroll-mt-16 py-10 md:py-12">
+      <Container width={width} className="scroll-mt-16 pt-10 md:pt-12">
         {(label || action) && (
           <div className="mb-2 flex items-center justify-between gap-4">
             {label && <p className="text-sm text-subtle">{label}</p>}
