@@ -49,13 +49,12 @@ export const stats: Stat[] = [
 ];
 
 /**
- * The intro ticker's items, in order. A superset of `stats`: the ticker has
- * room for one more fact than the OG card, so "10K+ spaces" lives here only.
+ * The intro ticker's items, in order. Leaves out the Spacelab model count (the
+ * OG card still quotes it): without the canvas on the page to explain it, the
+ * number read as noise in a scrolling line.
  */
 export const tickerStats: Stat[] = [
   { ...stats[0], c: "users reached", context: "Coinbase × Polygon" },
   stats[1],
-  { ...stats[2], c: "AI models in Spacelab" },
-  { n: "10K+", c: "spaces created" },
   stats[3],
 ];
