@@ -117,7 +117,11 @@ export default function Navbar() {
           })}
         </ul>
 
-        <div className="flex items-center gap-2">
+        {/* Every control here is a 32px box (CV pill, cowl, menu), 12px apart
+            on a phone and 8px from `md`, where the CV pill and the menu are
+            hidden and only the cowl remains. The cowl used to sit unboxed at
+            its own width, which crowded the pill and the menu around it. */}
+        <div className="flex items-center gap-3 md:gap-2">
           {/* CV, promoted out of the menu on mobile.
 
               On desktop it sits in the nav row above, one of six links and
@@ -148,7 +152,7 @@ export default function Navbar() {
                 type="button"
                 onClick={cycleTheme}
                 aria-label={`Theme: ${themeLabel(theme)}. Switch to ${themeLabel(upcoming).toLowerCase()}`}
-                className={`${control} w-auto justify-center bg-transparent hover:bg-transparent`}
+                className={`${control} w-8 justify-center bg-transparent hover:bg-transparent`}
               >
                 {toggleIcon(upcoming) === "treat" ? (
                   <Image
