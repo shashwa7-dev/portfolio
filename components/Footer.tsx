@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Envelope } from "@phosphor-icons/react/ssr";
 import Container from "@/components/layout/Container";
@@ -166,7 +167,7 @@ const Footer = () => {
         </div>
       </Container>
 
-      <Container className="grid grid-cols-2 gap-x-10 gap-y-9 pb-10 pt-9 md:grid-cols-4 candy:pb-8 candy:pt-7">
+      <Container className="relative grid grid-cols-2 gap-x-10 gap-y-9 pb-10 pt-9 md:grid-cols-4 candy:pb-8 candy:pt-7">
         <div className="col-span-2 md:col-span-1">
           <Label className="mb-3 block">Email</Label>
           <a
@@ -186,6 +187,25 @@ const Footer = () => {
           <p className="text-sm text-muted-foreground">{location.name}</p>
         </div>
 
+        {/* A tear in the footer: a ripped hole with a stack of $100 bills
+            looking back out through it. It has its own transparency, and in
+            the light theme its white torn edge melts into the off-white
+            footer, so it reads as this page being ripped open.
+
+            From `sm` up it sits at the far right of this row, in the space the
+            two facts leave empty. On a phone it is a row of its own under
+            "Based in", aligned left: the bottom-right corner there belongs to the
+            fixed chat launcher and its greeting at the foot of the page. Decorative (`alt=""`); below the
+            fold, so `next/image` lazy-loads it. */}
+        <Image
+          src="/images/footer-tear.webp"
+          alt=""
+          width={640}
+          height={232}
+          sizes="(min-width: 640px) 260px, 220px"
+          draggable={false}
+          className="col-span-2 w-[220px] -rotate-3 select-none transition-transform duration-med ease-out hover:-rotate-1 hover:scale-[1.03] sm:absolute sm:bottom-7 sm:right-6 sm:w-[260px] md:col-span-1"
+        />
       </Container>
 
       <div className="border-t border-border candy:border-0">
