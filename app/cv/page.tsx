@@ -70,9 +70,9 @@ export default function CvPage() {
           <a
             href={PDF}
             download
-            className="inline-flex items-center gap-2 rounded-md bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground transition-[color,background-color,transform] duration-fast ease-out hover:bg-accent-hover active:scale-[0.97]"
+            className="inline-flex items-center gap-1.5 rounded-md bg-accent px-3.5 py-1.5 text-xs font-semibold text-accent-foreground transition-[color,background-color,transform] duration-fast ease-out hover:bg-accent-hover active:scale-[0.97]"
           >
-            <DownloadSimple aria-hidden className="h-4 w-4" />
+            <DownloadSimple aria-hidden className="h-3.5 w-3.5" />
             Download PDF
           </a>
         </div>
