@@ -70,13 +70,13 @@ export const duration = {
   phraseStart: 1.5,
   phraseHold: 3.5,
   /**
-   * The graffiti hand in the closing section: its rise, and one full cycle of
-   * the idle sway that follows. Ambient, not a response to input, so both sit
+   * The graffiti hand in the closing section: its rise, and one half swing of
+   * the idle sway that follows (one side to the other). Ambient, not a response to input, so both sit
    * outside the UI budget. The sway is slow on purpose: faster read as a
    * nervous twitch rather than a wave.
    */
   handRise: 0.9,
-  handSway: 2.8,
+  handSway: 1.8,
 } as const;
 
 /** Per-item stagger offsets (seconds). Use instead of literal `i * 0.05`. */
@@ -214,27 +214,33 @@ export function phraseExitSeconds(words: number): number {
 /**
  * The graffiti hand beside the closing line. It waits below the section's
  * bottom edge (clipped), rises once on a plain ease-out the first time the
- * section comes into view, then sways from the wrist for as long as it is on
- * screen: a few degrees each way, with a slight bob, on `ease.sway`.
+ * section comes into view, then swings like a slow pendulum from the wrist
+ * for as long as it is on screen.
  *
- * The rise used to be a spring with overshoot followed by one quick wave, and
- * both read as jerky. The keyframes below start and end on the resting pose,
- * so each loop joins the next without a seam.
+ * The swing is one target and `repeatType: "mirror"`, not a keyframe list.
+ * A list of keyframes applies the ease to every segment, so the hand slowed to
+ * a stop at each one, the resting pose included, and read as back, stop,
+ * forth. Two angles mirrored on `ease.sway` only slow at the two ends, which
+ * is where a real swing turns. The rise lands on one end of the swing
+ * (`HAND_TILT - HAND_SWING`) so the swing starts from where the hand already
+ * is, with no jump. Small on purpose: a couple of degrees reads as a hand
+ * waving; more read as a metronome.
  */
 const HAND_TILT = 8;
+const HAND_SWING = 2.5;
 export const handRiseVariants: Variants = {
   hidden: { y: "60%", rotate: HAND_TILT + 6, opacity: 0 },
   visible: {
     y: "0%",
-    rotate: HAND_TILT,
+    rotate: HAND_TILT - HAND_SWING,
     opacity: 1,
     transition: { duration: duration.handRise, ease: ease.out },
   },
   sway: {
-    y: ["0%", "-1.2%", "0%", "-0.6%", "0%"],
-    rotate: [HAND_TILT, HAND_TILT + 4, HAND_TILT, HAND_TILT - 3, HAND_TILT],
+    y: "0%",
+    rotate: HAND_TILT + HAND_SWING,
     opacity: 1,
-    transition: { duration: duration.handSway, ease: ease.sway, repeat: Infinity },
+    transition: { duration: duration.handSway, ease: ease.sway, repeat: Infinity, repeatType: "mirror" },
   },
 };
 
