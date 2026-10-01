@@ -2,13 +2,22 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { HERO_PHRASES, nextPhrase } from "@/lib/heroPhrases";
-import { duration, ease, phraseSwapVariants } from "@/lib/motionVariants";
+import { HERO_PHRASES, nextPhrase, phraseWords } from "@/lib/heroPhrases";
+import {
+  duration,
+  ease,
+  phraseExitSeconds,
+  phraseSwapVariants,
+  phraseWordVariants,
+} from "@/lib/motionVariants";
 
 /**
  * The emphasised phrase in the intro headline. Renders "ship and scale" on the
  * server and under reduced motion; otherwise, once the intro is on screen, it
  * cycles through `HERO_PHRASES`.
+ *
+ * The swap is word by word: the outgoing words blur away one after another,
+ * then the incoming ones resolve the same way.
  *
  * The width is animated, not just the words. Every phrase is measured in a
  * hidden copy (re-read on resize and once fonts load, since the headline's
@@ -26,6 +35,7 @@ export default function HeroPhrase({ className }: { className?: string }) {
   const [widths, setWidths] = useState<number[] | null>(null);
   const [active, setActive] = useState(false);
   const cycled = useRef(false);
+  const prev = useRef(0);
   const slotRef = useRef<HTMLSpanElement>(null);
   const measureRef = useRef<HTMLSpanElement>(null);
 
@@ -63,7 +73,10 @@ export default function HeroPhrase({ className }: { className?: string }) {
     const wait = cycled.current ? duration.phraseHold : duration.phraseStart;
     const t = setTimeout(() => {
       cycled.current = true;
-      setIndex(nextPhrase);
+      setIndex((i) => {
+        prev.current = i;
+        return nextPhrase(i);
+      });
     }, wait * 1000);
     return () => clearTimeout(t);
   }, [reduce, active, widths, index]);
@@ -77,7 +90,12 @@ export default function HeroPhrase({ className }: { className?: string }) {
         className="inline-block whitespace-nowrap"
         initial={false}
         animate={widths ? { width: widths[index] } : undefined}
-        transition={{ duration: duration.med, ease: ease.out, delay: duration.fast }}
+        // Starts once the last outgoing word has gone; see phraseSwapVariants.
+        transition={{
+          duration: duration.med,
+          ease: ease.out,
+          delay: phraseExitSeconds(phraseWords(HERO_PHRASES[prev.current]).length),
+        }}
       >
         <AnimatePresence mode="wait" initial={false}>
           <motion.span
@@ -88,7 +106,12 @@ export default function HeroPhrase({ className }: { className?: string }) {
             animate="visible"
             exit="exit"
           >
-            {HERO_PHRASES[index]}
+            {phraseWords(HERO_PHRASES[index]).map((word, i) => (
+              <motion.span key={i} className="inline-block" variants={phraseWordVariants}>
+                {i > 0 && "\u00a0"}
+                {word}
+              </motion.span>
+            ))}
           </motion.span>
         </AnimatePresence>
       </motion.span>

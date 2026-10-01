@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { HERO_PHRASES, nextPhrase } from "./heroPhrases";
+import { HERO_PHRASES, nextPhrase, phraseWords } from "./heroPhrases";
 
 describe("HERO_PHRASES", () => {
   it("opens on ship and scale, then the mixed set", () => {
@@ -15,5 +15,12 @@ describe("nextPhrase", () => {
   it("steps forward and wraps back to the first", () => {
     expect(nextPhrase(0)).toBe(1);
     expect(nextPhrase(HERO_PHRASES.length - 1)).toBe(0);
+  });
+});
+
+describe("phraseWords", () => {
+  it("splits a phrase into its words", () => {
+    expect(phraseWords("make AI usable")).toEqual(["make", "AI", "usable"]);
+    expect(phraseWords("feel  instant ")).toEqual(["feel", "instant"]);
   });
 });

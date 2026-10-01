@@ -175,22 +175,27 @@ export const blurSwapVariants: Variants = {
 };
 
 /**
- * The intro headline's phrase swap: `blurSwapVariants`, with the entrance held
- * back by `duration.med`. The slot's width animates over that same window
- * (see HeroPhrase), so the order is: old phrase blurs out, the gap eases to
- * the new phrase's width, the new phrase resolves into it. Entering alongside
- * the width change put the incoming words on top of " to millions" while the
- * line was still making room for them.
+ * The intro headline's phrase swap, word by word. The container only
+ * orchestrates: each word runs `blurSwapVariants`, `stagger.base` apart, out
+ * and in. The entrance is held back by `duration.med` because the slot's width
+ * animates over that window (see HeroPhrase), so the order is: old words blur
+ * out one after another, the gap eases to the new phrase's width, the new
+ * words resolve into it. Entering alongside the width change put the incoming
+ * words on top of " to millions" while the line was still making room.
  */
 export const phraseSwapVariants: Variants = {
-  ...blurSwapVariants,
-  visible: {
-    opacity: 1,
-    filter: "blur(0px)",
-    y: 0,
-    transition: { duration: duration.base, ease: ease.out, delay: duration.med },
-  },
+  hidden: {},
+  visible: { transition: { delayChildren: duration.med, staggerChildren: stagger.base } },
+  exit: { transition: { staggerChildren: stagger.base } },
 };
+
+/** One word of the intro phrase. See `phraseSwapVariants`. */
+export const phraseWordVariants: Variants = blurSwapVariants;
+
+/** Seconds for a phrase of `words` words to finish blurring out. */
+export function phraseExitSeconds(words: number): number {
+  return duration.fast + Math.max(0, words - 1) * stagger.base;
+}
 
 // ──────────────────────────────────────────────────────────────────────
 // Dice cube (CubeDice) — a real `preserve-3d` cube rather than a flat

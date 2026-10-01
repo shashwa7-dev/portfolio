@@ -10,3 +10,8 @@ export const HERO_PHRASES = ["ship and scale", "feel effortless", "make AI usabl
 export function nextPhrase(i: number): number {
   return (i + 1) % HERO_PHRASES.length;
 }
+
+/** A phrase's words, for the word-by-word swap. Extra spaces are ignored. */
+export function phraseWords(phrase: string): string[] {
+  return phrase.split(/\s+/).filter(Boolean);
+}
