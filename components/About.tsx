@@ -114,24 +114,50 @@ export default function About() {
                 `block` because an `<a>` is inline by default. Flex would
                 blockify it here anyway, but the `overflow-hidden` that clips
                 the band to the rounded corners should not depend on that. */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="/offcod8"
-                  className="group relative block shrink-0 overflow-hidden rounded-2xl border border-border-strong shadow-md shadow-black/10 dark:shadow-lg dark:shadow-black/40 sticker candy:rounded-full tilt-i"
-                >
-                  <AvatarHover />
-                  <Shimmer className="absolute inset-x-0 bottom-0 block">
-                    <span className="pointer-events-none flex items-center justify-center gap-1 bg-black/65 py-px font-mono text-2xs font-medium uppercase tracking-label text-white backdrop-blur-[2px]">
-                      <span className="h-1 w-1 rounded-full bg-emerald-400" />
-                      <span aria-hidden>Open</span>
-                      <span className="sr-only">Open to work</span>
-                    </span>
-                  </Shimmer>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent>Open to work</TooltipContent>
-            </Tooltip>
+            {/* The portrait sits on a chrome flourish: a liquid-metal tag cut out
+                of its white background (public/images/chrome-flourish.webp),
+                tilted behind the avatar so its spikes break out above and to
+                the left. Behind, not over: it frames the face and the "Open"
+                band without covering either.
+
+                Decorative, so `alt=""` and outside the link, which keeps the
+                link's accessible name and hit area exactly the portrait. Its
+                own stacking context (`isolate`) keeps the flourish under the
+                avatar and above the page. It catches a little light on hover,
+                on the same group as the avatar's own colour reveal.
+
+                Narrower on a phone: the avatar sits on the container's 24px
+                gutter, so the desktop offset would push the left spike off
+                screen. */}
+            <div className="group/avatar relative isolate shrink-0">
+              <Image
+                src="/images/chrome-flourish.webp"
+                alt=""
+                width={300}
+                height={155}
+                sizes="150px"
+                className="pointer-events-none absolute -left-5 -top-5 -z-10 w-[120px] max-w-none -rotate-8 select-none transition-[transform,filter] duration-med ease-out group-hover/avatar:-translate-y-0.5 group-hover/avatar:-rotate-4 group-hover/avatar:brightness-110 sm:-left-[46px] sm:-top-[26px] sm:w-[150px]"
+                draggable={false}
+              />
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href="/offcod8"
+                    className="group relative block shrink-0 overflow-hidden rounded-2xl border border-border-strong shadow-md shadow-black/10 dark:shadow-lg dark:shadow-black/40 sticker candy:rounded-full tilt-i"
+                  >
+                    <AvatarHover />
+                    <Shimmer className="absolute inset-x-0 bottom-0 block">
+                      <span className="pointer-events-none flex items-center justify-center gap-1 bg-black/65 py-px font-mono text-2xs font-medium uppercase tracking-label text-white backdrop-blur-[2px]">
+                        <span className="h-1 w-1 rounded-full bg-emerald-400" />
+                        <span aria-hidden>Open</span>
+                        <span className="sr-only">Open to work</span>
+                      </span>
+                    </Shimmer>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>Open to work</TooltipContent>
+              </Tooltip>
+            </div>
             {/* `min-h-16`, not `h-16`. It is the avatar's exact height so the
                 edges still line up, but a fixed height would overflow instead of
                 growing if the availability row ever wrapped on a narrow screen. */}
