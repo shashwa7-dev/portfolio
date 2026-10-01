@@ -30,6 +30,9 @@
   --good: 150 42% 32%;
   --caution: 32 80% 38%;
   --border: 36 16% 89.5%;
+  /* Stack pill tints (Currently): backend blue, testing green. */
+  --backend: 210 34% 38%;
+  --testing: 132 22% 33%;
   --border-strong: 36 14% 81%;
   --input: 36 16% 89.5%;
   --ring: 35 9% 30%;
@@ -99,6 +102,8 @@
     --good: 150 40% 58%;
     --caution: 36 80% 60%;
     --border: 30 6% 16%;
+    --backend: 210 45% 72%;
+    --testing: 130 30% 66%;
     --border-strong: 30 6% 24%;
     --input: 30 6% 16%;
     --ring: 35 6% 70%;

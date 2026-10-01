@@ -58,6 +58,9 @@ import {
   siSentry,
   siGoogleanalytics,
   siVitest,
+  siJest,
+  siTestinglibrary,
+  siRedis,
 } from "simple-icons";
 
 
@@ -114,6 +117,9 @@ const iconMap: Partial<Record<StackName, SI>> = {
   sentry: siSentry,
   googleAnalytics: siGoogleanalytics,
   vitest: siVitest,
+  jest: siJest,
+  testingLibrary: siTestinglibrary,
+  redis: siRedis,
   // canva, openai, aws, zustand, vscode, restAPI, coffee, playwright,
   // vercelAnalytics → text fallback (no simple-icons entry)
 };
@@ -124,14 +130,26 @@ type StackProps = {
   size?: number;
   showLabel?: boolean;
   showTooltip?: boolean;
+  /** Tints the pill by kind of tool. Omitted, the pill stays neutral. */
+  tone?: "backend" | "testing";
   className?: string;
 };
+
+/* Override the neutral pill's border, fill and text, hover included. The
+   icon follows via `text-current` below, so a tinted pill reads as one colour. */
+const toneClass = {
+  backend:
+    "border-backend/25 bg-backend/10 text-backend hover:border-backend/50 hover:bg-backend/15 hover:text-backend",
+  testing:
+    "border-testing/25 bg-testing/10 text-testing hover:border-testing/50 hover:bg-testing/15 hover:text-testing",
+} as const;
 
 export default function StackIcon({
   name,
   size = 14,
   showLabel = true,
   showTooltip = false,
+  tone,
   className = "",
 }: StackProps) {
   const label = stackLabel(name);
@@ -198,6 +216,7 @@ export default function StackIcon({
            components. */
         "group inline-flex items-center gap-2 rounded-sm border border-border bg-card px-3.5 py-2 text-xs text-muted-foreground transition-colors duration-base ease-out hover:border-border-strong hover:bg-elevated hover:text-foreground",
         "sticker sticker-sm candy:rounded-full candy:font-semibold candy:text-foreground candy:hover:bg-white candy:px-3 candy:py-1.5",
+        tone && toneClass[tone],
         className
       )}
     >
@@ -213,7 +232,12 @@ export default function StackIcon({
           all, having pulled it over trademark policy. So this is the normal
           case for a real slice of the set, not a fallback. */}
       {glyph && (
-        <span className="text-subtle transition-colors group-hover:text-foreground candy:text-foreground">
+        <span
+          className={cn(
+            "text-subtle transition-colors group-hover:text-foreground candy:text-foreground",
+            tone && "text-current group-hover:text-current"
+          )}
+        >
           {glyph}
         </span>
       )}

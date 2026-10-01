@@ -110,12 +110,13 @@ and blockchain integrations.
 ## Tech stack
 
 Grouped four ways for answers; the homepage shows the everyday stack under
-Currently.
+Currently, as one row of pills tinted by kind (frontend and AI neutral, backend
+blue, testing green).
 
 - **Frontend:** JavaScript, TypeScript, React, Next.js, Tailwind, shadcn, Base UI, Chakra UI, styled-components, SCSS, GSAP, Framer Motion, React Query, Zustand, React Flow, tiptap / ProseMirror, wagmi, Solana, Web3.js
 - **AI:** OpenAI, Google Gemini, Claude (Anthropic), Vercel AI SDK
-- **Backend & data:** Node.js, Bun, PostgreSQL, Redis, MongoDB, Firebase, Supabase, REST, GraphQL, WebSocket, WebRTC
-- **Infra & tooling:** Git, GitHub, Docker, AWS, Cloudflare, Vercel, Playwright, Vitest, Sentry, PostHog, Google Analytics, Vercel Analytics, VS Code, Figma, Postman
+- **Backend & data:** Node.js, Express, Bun, PostgreSQL, Redis, MongoDB, Firebase, Supabase, REST, GraphQL, WebSocket, WebRTC
+- **Infra & tooling:** Git, GitHub, Docker, AWS, Cloudflare, Vercel, Playwright, Vitest, Jest, Testing Library, Sentry, PostHog, Google Analytics, Vercel Analytics, VS Code, Figma, Postman
 
 HTML and CSS are assumed rather than listed: they are table stakes at this level,
 and naming them alongside TypeScript invites a reader to calibrate downwards. Say

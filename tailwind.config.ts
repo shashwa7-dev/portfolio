@@ -195,6 +195,8 @@ const config: Config = {
           foreground: "hsl(var(--destructive-foreground))",
         },
         good: "hsl(var(--good))",
+        backend: "hsl(var(--backend))",
+        testing: "hsl(var(--testing))",
         caution: "hsl(var(--caution))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

@@ -68,6 +68,9 @@ export type StackName =
   | "opensea"
   | "playwright"
   | "vitest"
+  | "jest"
+  | "testingLibrary"
+  | "redis"
   | "posthog"
   | "sentry"
   | "googleAnalytics"
@@ -129,6 +132,9 @@ const labelMap: Record<StackName, string> = {
   docker: "Docker",
   playwright: "Playwright",
   vitest: "Vitest",
+  jest: "Jest",
+  testingLibrary: "Testing Library",
+  redis: "Redis",
   posthog: "PostHog",
   sentry: "Sentry",
   googleAnalytics: "Google Analytics",
