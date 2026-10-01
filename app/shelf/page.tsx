@@ -81,20 +81,14 @@ export default async function ShelfPage() {
         }}
       />
 
-      {/* The page header.
-
-          It carries its own bottom padding rather than leaning on whatever
-          follows, because what follows is a Section whose band draws a
-          full-bleed rule across the page: with nothing between them the lede's
-          last line sat directly on that rule. The value is Section's own
-          `py-10 md:py-14`, so the air above band 01 is the same air every other
-          band gets, and the header reads as part of the same rhythm rather than
-          as something dropped in above it.
+      {/* The page header. No bottom padding of its own: the first Section's
+          top padding is the gap, so the header sits one spacing step above
+          Coffee, the same step as between every section here and on the
+          homepage.
 
           The display size is the one in `docs/design-system.md`, matching
-          /blogs and /projects. This page was on `text-3xl font-semibold`, half
-          a step smaller and a weight heavier than every other route's h1. */}
-      <Container width="reading" className="space-y-4 pb-10 md:pb-14">
+          /blogs and /projects. */}
+      <Container width="reading" className="space-y-4">
         <h1 className="text-[clamp(2rem,5vw,2.75rem)] font-medium tracking-tight">
           Things I&apos;m into
         </h1>
@@ -363,7 +357,7 @@ export default async function ShelfPage() {
         </Section>
       )}
 
-      <Container width="reading" className="pb-10">
+      <Container width="reading" className="pt-11 md:pt-[3.3rem]">
         <Link
           href="/books"
           className="group flex items-center justify-between gap-4 rounded-2xl border border-border bg-card p-5 sticker candy:rounded-sticker candy:border-white candy:hover:border-white"
