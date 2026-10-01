@@ -3,21 +3,16 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { HERO_PHRASES, nextPhrase, phraseWords } from "@/lib/heroPhrases";
-import {
-  duration,
-  ease,
-  phraseExitSeconds,
-  phraseSwapVariants,
-  phraseWordVariants,
-} from "@/lib/motionVariants";
+import { duration, ease, phraseSwapVariants, phraseWordVariants } from "@/lib/motionVariants";
 
 /**
  * The emphasised phrase in the intro headline. Renders "ship and scale" on the
  * server and under reduced motion; otherwise, once the intro is on screen, it
  * cycles through `HERO_PHRASES`.
  *
- * The swap is word by word: the outgoing words blur away one after another,
- * then the incoming ones resolve the same way.
+ * The swap is word by word, and overlapped: the outgoing words blur away one
+ * after another while the incoming ones resolve in their place. It used to run
+ * out, then width, then in, which left a third of a second of empty slot.
  *
  * The width is animated, not just the words. Every phrase is measured in a
  * hidden copy (re-read on resize and once fonts load, since the headline's
@@ -80,23 +75,23 @@ export default function HeroPhrase({ className }: { className?: string }) {
   return (
     <span className="relative inline-block">
       <span className="sr-only">{HERO_PHRASES[0]}</span>
+      {/* The slot. Its width eases to the incoming phrase at the same moment
+          the words swap, and it clips horizontally so a longer phrase cannot
+          paint over " to millions" while the width catches up. The clip margin
+          leaves room for the italic's overhang on the last letter. */}
       <motion.span
         ref={slotRef}
         aria-hidden
-        className="inline-block whitespace-nowrap"
+        className="relative inline-block whitespace-nowrap align-bottom [overflow-clip-margin:0.2em] [overflow-x:clip]"
         initial={false}
         animate={widths ? { width: widths[index] } : undefined}
-        // Starts once the last outgoing word has gone; see phraseSwapVariants.
-        transition={{
-          duration: duration.med,
-          ease: ease.out,
-          // The outgoing phrase is always the one before this one.
-          delay: phraseExitSeconds(
-            phraseWords(HERO_PHRASES[(index + HERO_PHRASES.length - 1) % HERO_PHRASES.length]).length,
-          ),
-        }}
+        transition={{ duration: duration.med, ease: ease.out }}
       >
-        <AnimatePresence mode="wait" initial={false}>
+        {/* `popLayout`: the outgoing phrase is lifted out of the flow the
+            moment it starts leaving, so the incoming one takes its place and
+            both animate together. The old words blur away while the new ones
+            resolve in the same spot: a morph, with no empty beat between. */}
+        <AnimatePresence mode="popLayout" initial={false}>
           <motion.span
             key={index}
             className={`inline-block ${className ?? ""}`}

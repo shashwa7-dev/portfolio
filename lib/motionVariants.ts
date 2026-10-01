@@ -191,25 +191,20 @@ export const blurSwapVariants: Variants = {
 /**
  * The intro headline's phrase swap, word by word. The container only
  * orchestrates: each word runs `blurSwapVariants`, `stagger.base` apart, out
- * and in. The entrance is held back by `duration.med` because the slot's width
- * animates over that window (see HeroPhrase), so the order is: old words blur
- * out one after another, the gap eases to the new phrase's width, the new
- * words resolve into it. Entering alongside the width change put the incoming
- * words on top of " to millions" while the line was still making room.
+ * and in. The two phrases overlap (HeroPhrase uses AnimatePresence's
+ * `popLayout`), and the incoming words wait one stagger step so the first old
+ * word is already blurring before the first new one appears. That reads as one
+ * phrase morphing into the next. It used to run out, then width, then in, and
+ * the slot stood empty for about a third of a second in the middle.
  */
 export const phraseSwapVariants: Variants = {
   hidden: {},
-  visible: { transition: { delayChildren: duration.med, staggerChildren: stagger.base } },
+  visible: { transition: { delayChildren: stagger.base, staggerChildren: stagger.base } },
   exit: { transition: { staggerChildren: stagger.base } },
 };
 
 /** One word of the intro phrase. See `phraseSwapVariants`. */
 export const phraseWordVariants: Variants = blurSwapVariants;
-
-/** Seconds for a phrase of `words` words to finish blurring out. */
-export function phraseExitSeconds(words: number): number {
-  return duration.fast + Math.max(0, words - 1) * stagger.base;
-}
 
 /**
  * The graffiti hand beside the closing line. It waits below the section's
