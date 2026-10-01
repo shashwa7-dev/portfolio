@@ -151,7 +151,7 @@ function PopoverContent({
     <div
       ref={contentRef}
       className={cn(
-        "absolute top-full z-50 mt-2 min-w-[9rem] rounded-md border border-border bg-elevated p-1 shadow-lg",
+        "absolute top-full z-50 mt-2 min-w-36 rounded-md border border-border bg-elevated p-1 shadow-lg",
         align === "end" ? "right-0" : "left-0",
         className
       )}

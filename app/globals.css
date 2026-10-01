@@ -1,6 +1,25 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* Tailwind 4 reads the JS config through @config, so the tokens, the type
+   scale, the radii and the `candy:` variant stay in tailwind.config.ts. */
+@config "../tailwind.config.ts";
+
+/* Tailwind 4 compatibility, from its upgrade guide. v4 changed two preflight
+   defaults this site relied on: an unclassed border now takes `currentColor`
+   (v3: the theme's border colour), and buttons lost `cursor: pointer`. */
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: hsl(var(--border));
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
 
 @layer base {
 :root {

@@ -112,7 +112,7 @@ export default function CvPage() {
                 {displayName(cv.name)}
               </h2>
               <Facts line={cv.title} className="mt-1 text-sm text-muted-foreground md:text-base" />
-              <div className="mt-3 space-y-1 font-mono text-xs leading-relaxed text-subtle [&_a]:transition-colors [&_a]:duration-fast [&_a]:ease-out hover:[&_a]:text-foreground">
+              <div className="mt-3 space-y-1 font-mono text-xs leading-relaxed text-subtle [&_a]:transition-colors [&_a]:duration-fast [&_a]:ease-out [&_a]:hover:text-foreground">
                 {cv.contact.map((line) => (
                   <Facts key={line} line={line} />
                 ))}

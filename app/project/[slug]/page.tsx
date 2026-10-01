@@ -92,7 +92,7 @@ export default async function ProjectPage(props: { params: Promise<{ slug: strin
           <Label>
             {["Case Study", cs.year, cs.role].filter(Boolean).join(" · ")}
           </Label>
-          <h1 className="text-[clamp(2.2rem,5vw,3rem)] font-medium leading-[1.03] tracking-[-0.02em]">
+          <h1 className="text-[clamp(2.2rem,5vw,3rem)] font-medium leading-[1.03] tracking-tight">
             {project.title}
           </h1>
           <p className="text-lg text-muted-foreground">{project.tagline}</p>

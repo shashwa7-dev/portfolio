@@ -22,11 +22,11 @@ import Container from "@/components/layout/Container";
  * wash off `--border-strong` lands about four points darker in light and three
  * lighter in dark, so one value reads in both themes.
  *
- * `backdrop-blur-sm` went with the border: it existed to let the header's blur
+ * `backdrop-blur-xs` went with the border: it existed to let the header's blur
  * show through a translucent control, and an opaque fill has nothing to show.
  */
 const control =
-  "flex h-8 items-center rounded-md bg-elevated text-muted-foreground transition-[color,background-color,transform] duration-fast ease-out hover:bg-border-strong/30 hover:text-foreground active:scale-[0.94] sticker sticker-sm candy:rounded-full candy:bg-white candy:text-foreground candy:hover:bg-white";
+  "flex h-8 items-center rounded-md bg-elevated text-muted-foreground transition-[color,background-color,transform] duration-fast ease-out hover:bg-border-strong/30 hover:text-foreground active:scale-[0.94] sticker sticker-sm candy:rounded-full candy:bg-white candy:text-foreground hover:candy:bg-white";
 
 export default function Navbar() {
   const { theme, cycleTheme } = useTheme();
@@ -135,7 +135,7 @@ export default function Navbar() {
           <Link
             href="/cv"
             aria-current={pathname.startsWith("/cv") ? "page" : undefined}
-            className="flex h-8 items-center rounded-md bg-accent px-3 text-sm font-semibold leading-none text-accent-foreground transition-[background-color,transform] duration-fast ease-out hover:bg-accent-hover active:scale-[0.94] md:hidden sticker sticker-sm candy:rounded-full candy:bg-candy-butter candy:text-foreground candy:hover:bg-candy-butter tilt-d"
+            className="flex h-8 items-center rounded-md bg-accent px-3 text-sm font-semibold leading-none text-accent-foreground transition-[background-color,transform] duration-fast ease-out hover:bg-accent-hover active:scale-[0.94] md:hidden sticker sticker-sm candy:rounded-full candy:bg-candy-butter candy:text-foreground hover:candy:bg-candy-butter tilt-d"
           >
             CV
           </Link>
@@ -248,7 +248,7 @@ export default function Navbar() {
                             : undefined
                         }
                         onClick={() => setMobileOpen(false)}
-                        className="block py-3 text-base text-muted-foreground transition-colors duration-fast ease-out hover:text-foreground aria-[current=page]:text-foreground sticker sticker-sm candy:rounded-full candy:px-4 candy:py-2.5 candy:font-semibold candy:text-foreground candy:aria-[current=page]:bg-candy-pink"
+                        className="block py-3 text-base text-muted-foreground transition-colors duration-fast ease-out hover:text-foreground aria-[current=page]:text-foreground sticker sticker-sm candy:rounded-full candy:px-4 candy:py-2.5 candy:font-semibold candy:text-foreground aria-[current=page]:candy:bg-candy-pink"
                       >
                         {l.label}
                       </Link>

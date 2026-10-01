@@ -92,7 +92,7 @@ export default function LaunchNudge() {
 
   return (
     <div
-      className={`fixed bottom-4 left-4 z-40 max-w-[12rem] transition-[opacity,transform] ease-out motion-reduce:translate-y-0 sm:max-w-[16.5rem] ${
+      className={`fixed bottom-4 left-4 z-40 max-w-48 transition-[opacity,transform] ease-out motion-reduce:translate-y-0 sm:max-w-66 ${
         shown
           ? "translate-y-0 opacity-100 duration-med"
           : "translate-y-2 opacity-0 duration-fast"
@@ -103,7 +103,7 @@ export default function LaunchNudge() {
         target="_blank"
         rel="noopener noreferrer"
         onClick={dismiss}
-        className="group relative block overflow-hidden rounded-lg border border-border-strong bg-card/95 px-3.5 py-3 shadow-lg backdrop-blur transition-[border-color,transform] duration-base ease-out hover:border-foreground/25 active:scale-[0.98] sticker candy:rounded-tile candy:border-white candy:hover:border-white"
+        className="group relative block overflow-hidden rounded-lg border border-border-strong bg-card/95 px-3.5 py-3 shadow-lg backdrop-blur-sm transition-[border-color,transform] duration-base ease-out hover:border-foreground/25 active:scale-[0.98] sticker candy:rounded-tile candy:border-white hover:candy:border-white"
       >
         {/* Thumbnail, anchored top right and faded out toward the copy. */}
         <span
@@ -116,7 +116,7 @@ export default function LaunchNudge() {
             fill
             sizes="264px"
             quality={70}
-            className="object-cover object-right-top opacity-[0.22] grayscale candy:grayscale-0 candy:opacity-[0.3] dark:opacity-[0.28]"
+            className="object-cover object-top-right opacity-[0.22] grayscale candy:grayscale-0 candy:opacity-[0.3] dark:opacity-[0.28]"
             style={{
               maskImage: "linear-gradient(to bottom left, black 0%, transparent 62%)",
               WebkitMaskImage:

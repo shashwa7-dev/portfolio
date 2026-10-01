@@ -127,7 +127,7 @@ function DiaryMediaGrid({ media }: { media?: TDiaryMedia[] }) {
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
       {slots.map((m, i) => (
         <figure key={i} className={slots.length % 2 === 1 && i === 0 ? "space-y-1.5 sm:col-span-2" : "space-y-1.5"}>
-          <div className="relative aspect-[16/10] overflow-hidden rounded-lg bg-muted ring-1 ring-border">
+          <div className="relative aspect-16/10 overflow-hidden rounded-lg bg-muted ring-1 ring-border">
             {!m.src ? (
               <div className="flex h-full items-center justify-center border border-dashed border-border-strong p-4 text-center font-mono text-2xs uppercase tracking-label text-subtle">
                 {m.kind} slot

@@ -10,9 +10,9 @@ export default function ProjectShowcaseCard({ project, index = 0 }: { project: P
   return (
     <Link
       href={project.href}
-      className={`group block overflow-hidden rounded-2xl border border-border bg-card transition-[transform,border-color] duration-base ease-out hover:-translate-y-0.5 hover:border-border-strong active:scale-[0.99] sticker candy:rounded-sticker candy:border-white candy:hover:border-white candy:shadow-sticker-4 ${tiltMd(index + 1)}`}
+      className={`group block overflow-hidden rounded-2xl border border-border bg-card transition-[transform,border-color] duration-base ease-out hover:-translate-y-0.5 hover:border-border-strong active:scale-[0.99] sticker candy:rounded-sticker candy:border-white hover:candy:border-white candy:shadow-sticker-4 ${tiltMd(index + 1)}`}
     >
-      <div className={`relative aspect-[16/10] overflow-hidden bg-elevated candy:border-b-2 candy:border-foreground ${tint(index)}`}>
+      <div className={`relative aspect-16/10 overflow-hidden bg-elevated candy:border-b-2 candy:border-foreground ${tint(index)}`}>
         <Image
           src={project.thumbnail}
           alt={project.title}
@@ -26,7 +26,7 @@ export default function ProjectShowcaseCard({ project, index = 0 }: { project: P
         {project.badge && (
           <Shimmer
             tone="surface"
-            className="absolute left-3 top-3 inline-block rounded-sm border border-border-strong bg-background/80 backdrop-blur candy:rounded-tag candy:border-foreground candy:bg-white tilt-a"
+            className="absolute left-3 top-3 inline-block rounded-sm border border-border-strong bg-background/80 backdrop-blur-sm candy:rounded-tag candy:border-foreground candy:bg-white tilt-a"
           >
             <span className="block px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-foreground">
               {project.badge}
@@ -34,12 +34,12 @@ export default function ProjectShowcaseCard({ project, index = 0 }: { project: P
           </Shimmer>
         )}
         {project.metric && (
-          <span className="absolute bottom-3 left-3 rounded-sm border border-border-strong bg-background/80 px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-foreground backdrop-blur candy:rounded-tag candy:border-foreground candy:bg-candy-butter candy:text-foreground tilt-d">
+          <span className="absolute bottom-3 left-3 rounded-sm border border-border-strong bg-background/80 px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-foreground backdrop-blur-sm candy:rounded-tag candy:border-foreground candy:bg-candy-butter candy:text-foreground tilt-d">
             {project.metric}
           </span>
         )}
         {project.preview && (
-          <span className="absolute bottom-3 right-3 grid h-7 w-7 place-items-center rounded-full bg-background/80 text-foreground backdrop-blur candy:bg-candy-pink candy:text-foreground candy:border-2 candy:border-foreground candy:shadow-sticker-1 candy:h-8 candy:w-8">
+          <span className="absolute bottom-3 right-3 grid h-7 w-7 place-items-center rounded-full bg-background/80 text-foreground backdrop-blur-sm candy:bg-candy-pink candy:text-foreground candy:border-2 candy:border-foreground candy:shadow-sticker-1 candy:h-8 candy:w-8">
             <Play className="h-3.5 w-3.5 fill-current" />
           </span>
         )}

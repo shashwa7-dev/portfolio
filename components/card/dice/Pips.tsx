@@ -31,7 +31,7 @@ export default function Pips({ value, className }: { value: Die; className?: str
         width="27"
         height="27"
         rx="6"
-        className="fill-[var(--dice-stock)] stroke-[var(--dice-ink)]"
+        className="fill-(--dice-stock) stroke-(--dice-ink)"
         strokeWidth="2"
       />
       {PIPS[value].map((slot) => (
@@ -40,7 +40,7 @@ export default function Pips({ value, className }: { value: Die; className?: str
           cx={8 + (slot % 3) * 7}
           cy={8 + Math.floor(slot / 3) * 7}
           r="2.1"
-          className="fill-[var(--dice-ink)]"
+          className="fill-(--dice-ink)"
         />
       ))}
     </svg>

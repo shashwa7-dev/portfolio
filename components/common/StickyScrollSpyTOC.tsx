@@ -58,7 +58,7 @@ export default function StickyScrollSpyTOC({
            this a scroll container, which clips descendants at its padding box,
            and the rows are exactly as wide as it is, so a 2px ring painted
            outside their border box lost its left and right edges. */
-        "max-h-[70vh] overflow-y-auto overscroll-contain p-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+        "max-h-[70vh] overflow-y-auto overscroll-contain p-0.5 scrollbar-none [&::-webkit-scrollbar]:hidden",
         className
       )}
     >
@@ -84,7 +84,7 @@ export default function StickyScrollSpyTOC({
                 onClick={(e) => go(e, s.id)}
                 aria-current={current ? "location" : undefined}
                 className={cn(
-                  "flex h-3.5 items-center justify-end gap-3 rounded pl-3 outline-none",
+                  "flex h-3.5 items-center justify-end gap-3 rounded pl-3 outline-hidden",
                   "transition-[height] duration-base ease-out motion-reduce:transition-none",
                   "group-hover:h-6 group-focus-within:h-6",
                   "focus-visible:ring-2 focus-visible:ring-ring"
@@ -102,8 +102,8 @@ export default function StickyScrollSpyTOC({
                   className={cn(
                     "max-w-0 truncate text-right text-xs leading-none opacity-0",
                     "transition-[max-width,opacity] duration-base ease-out motion-reduce:transition-none",
-                    "group-hover:max-w-[10rem] group-hover:opacity-100 group-focus-within:max-w-[10rem] group-focus-within:opacity-100",
-                    "2xl:group-hover:max-w-[15rem] 2xl:group-focus-within:max-w-[15rem]",
+                    "group-hover:max-w-40 group-hover:opacity-100 group-focus-within:max-w-40 group-focus-within:opacity-100",
+                    "2xl:group-hover:max-w-60 2xl:group-focus-within:max-w-60",
                     current ? "text-foreground" : "text-muted-foreground"
                   )}
                 >
@@ -115,7 +115,7 @@ export default function StickyScrollSpyTOC({
                 <span
                   aria-hidden
                   className={cn(
-                    "h-px shrink-0 transition-[width,background-color] duration-base ease-out motion-reduce:transition-none candy:h-1 candy:rounded-full candy:outline candy:outline-[1.5px] candy:outline-foreground",
+                    "h-px shrink-0 transition-[width,background-color] duration-base ease-out motion-reduce:transition-none candy:h-1 candy:rounded-full candy:outline-solid candy:outline-[1.5px] candy:outline-foreground",
                     current
                       ? "w-6 bg-foreground candy:bg-candy-pink candy:w-7"
                       : "w-3 bg-border-strong group-hover:bg-muted-foreground"

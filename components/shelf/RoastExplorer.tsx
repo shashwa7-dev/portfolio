@@ -186,7 +186,7 @@ function RoastPanel({ stop }: { stop: RoastStop }) {
              narrows `transition-property` to colour and opacity, so this
              arrives instantly for anyone who asked for that, with no
              `motion-reduce` variant needed here. */
-          className="h-14 w-14 shrink-0 object-contain transition-transform duration-base ease-out group-hover:scale-110 [filter:var(--roast)_saturate(1.25)_contrast(1.06)_drop-shadow(0_2px_3px_rgb(0_0_0/0.22))] dark:[filter:var(--roast)] sm:h-16 sm:w-16"
+          className="h-14 w-14 shrink-0 object-contain transition-transform duration-base ease-out group-hover:scale-110 filter-[var(--roast)_saturate(1.25)_contrast(1.06)_drop-shadow(0_2px_3px_rgb(0_0_0/0.22))] dark:filter-(--roast) sm:h-16 sm:w-16"
           style={{ "--roast": stop.beanFilter ?? "brightness(1)" } as CSSProperties}
         />
         <div className="min-w-0">

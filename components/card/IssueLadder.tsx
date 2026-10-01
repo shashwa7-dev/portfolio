@@ -250,7 +250,7 @@ export default function IssueLadder({ card }: { card: CardData | null }) {
                   setZoomed(issue.key);
                 }}
                 aria-label={`Enlarge the ${issue.name} card`}
-                className="block w-11 rounded-[3px] transition-transform duration-fast ease-out hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                className="block w-11 rounded-[3px] transition-transform duration-fast ease-out hover:scale-105 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 {/* The shared-layout source. The overlay carries the same
                     `layoutId`, so opening animates this exact box out to the
@@ -271,7 +271,7 @@ export default function IssueLadder({ card }: { card: CardData | null }) {
                   <CardBlit
                     key={drawn}
                     master={masterFor(issue.key, own)}
-                    className="block w-full rounded-[3px] shadow-sm ring-1 ring-border-strong"
+                    className="block w-full rounded-[3px] shadow-xs ring-1 ring-border-strong"
                     label={
                       mine
                         ? `Your ${issue.name} card`
@@ -340,7 +340,7 @@ export default function IssueLadder({ card }: { card: CardData | null }) {
                 animate="visible"
                 exit="exit"
                 onClick={close}
-                className="pointer-events-auto absolute inset-0 bg-background/85 backdrop-blur-sm"
+                className="pointer-events-auto absolute inset-0 bg-background/85 backdrop-blur-xs"
                 aria-hidden="true"
               />
 
@@ -403,7 +403,7 @@ export default function IssueLadder({ card }: { card: CardData | null }) {
                 onClick={close}
                 autoFocus
                 aria-label="Close"
-                className="pointer-events-auto absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-full bg-elevated text-muted-foreground ring-1 ring-border-strong transition-colors duration-fast ease-out hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="pointer-events-auto absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-full bg-elevated text-muted-foreground ring-1 ring-border-strong transition-colors duration-fast ease-out hover:text-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <X className="h-4 w-4" aria-hidden="true" />
               </motion.button>

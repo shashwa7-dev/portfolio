@@ -78,7 +78,7 @@ export default function CardFan({
           on top. It keeps a border like the other two: against a near-black
           page in dark theme it would otherwise have no edge at all. */}
       <span
-        className={cn(card, "shadow-sm")}
+        className={cn(card, "shadow-xs")}
         style={{
           ...box,
           backgroundColor: FAN_STOCKS[2],

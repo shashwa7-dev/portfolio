@@ -46,7 +46,7 @@ export default function AvatarHover() {
       /* No ring here. The visible edge is a `border` on the wrapper in About.tsx,
          which owns both this and the availability band and so traces the whole
          object. Two earlier attempts put it here and both were wrong: a plain
-         `ring` is a box-shadow, so the wrapper's `overflow-hidden` clipped it away
+         `ring-3` is a box-shadow, so the wrapper's `overflow-hidden` clipped it away
          entirely, and `ring-inset` then drew a pixel inside the artwork rather
          than around it. */
       className="group relative h-16 w-16 overflow-hidden rounded-2xl"

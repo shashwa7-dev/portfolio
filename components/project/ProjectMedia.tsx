@@ -17,7 +17,7 @@ export default function ProjectMedia({
   const [open, setOpen] = useState(false);
   return (
     <>
-      <div className="group relative aspect-[16/8] overflow-hidden rounded-2xl bg-elevated">
+      <div className="group relative aspect-16/8 overflow-hidden rounded-2xl bg-elevated">
         <Image
           src={thumbnail}
           alt={title}

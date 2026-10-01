@@ -17,7 +17,7 @@ export default function MarginNote({ id, indent = true }: { id: string; indent?:
   if (!note) return null;
   return (
     <p
-      className={`pb-1 ${indent ? "pl-10" : ""} text-lg leading-none text-amber-700 dark:text-amber-300/90 lg:absolute lg:left-full lg:top-2 lg:ml-4 lg:w-24 lg:pb-0 lg:pl-0 lg:[transform:rotate(var(--note-rotate))]`}
+      className={`pb-1 ${indent ? "pl-10" : ""} text-lg leading-none text-amber-700 dark:text-amber-300/90 lg:absolute lg:left-full lg:top-2 lg:ml-4 lg:w-24 lg:pb-0 lg:pl-0 lg:transform-[rotate(var(--note-rotate))]`}
       style={{ fontFamily: "var(--font-hand), cursive", ["--note-rotate" as string]: `${note.rotate}deg` }}
     >
       {note.text}

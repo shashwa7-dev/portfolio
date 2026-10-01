@@ -89,7 +89,7 @@ const RollPill = forwardRef<HTMLButtonElement, RollPillProps>(function RollPill(
         disabled={disabled}
         aria-label={`${label}. ${caption}`}
         style={{ WebkitTapHighlightColor: "transparent" }}
-        className="group relative h-[60px] w-[min(280px,calc(100vw-3rem))] overflow-visible rounded-md bg-accent text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-70"
+        className="group relative h-[60px] w-[min(280px,calc(100vw-3rem))] overflow-visible rounded-md bg-accent text-accent-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-70"
       >
         {/* The fill: clipped to its own wrapper so it never spills past the
             pill's corners, while the pill itself stays overflow-visible so
@@ -155,10 +155,10 @@ const RollPill = forwardRef<HTMLButtonElement, RollPillProps>(function RollPill(
             their docks match. At the 340px cap, the dock's left edge is at
             250px and the label's right edge at 209px, 41px of clearance,
             again the same for both. */}
-        <span className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center text-lg font-semibold">
+        <span className="pointer-events-none absolute inset-0 z-1 flex items-center justify-center text-lg font-semibold">
           {label}
         </span>
-        <span className="absolute right-4 top-1/2 z-[1] -translate-y-1/2">{children}</span>
+        <span className="absolute right-4 top-1/2 z-1 -translate-y-1/2">{children}</span>
       </button>
 
       {/* The caption. Every roll-count update (0, 1, 2, "N rolled") just

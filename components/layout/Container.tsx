@@ -23,7 +23,7 @@ export default function Container({
         // Through the token, not a literal: the measure lives in one place
         // (`--measure` in app/globals.css), so every reading column and the
         // band gutters derived from it stay in step.
-        width === "reading" ? "max-w-[var(--measure)]" : "max-w-[1080px]",
+        width === "reading" ? "max-w-(--measure)" : "max-w-[1080px]",
         className
       )}
     >
