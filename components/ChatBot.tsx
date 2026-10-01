@@ -357,11 +357,13 @@ const S7Bot = () => {
             whileTap={tapPress}
             onClick={() => setIsOpen(true)}
             aria-label="Chat with Truffy"
-            className="group fixed bottom-4 right-4 -md:right-2.5 grid h-12 w-12 place-items-center rounded-[22%] shadow-lg ring-1 ring-border tilt-i"
+            className="group fixed bottom-4 right-4 -md:right-2.5 grid h-12 w-12 place-items-center rounded-[22%] shadow-lg ring-2 ring-foreground/30 ring-offset-2 ring-offset-background transition-shadow duration-base ease-out hover:ring-foreground/60 tilt-i"
           >
             {/* Truffy's icon is a finished app tile with its own rounded
                 corners and depth, so it is the button rather than art sitting
-                on a white tile. 192px source for a 48px button, so it stays
+                on a white tile. The outline is a 2px ring held off the icon by
+                a 2px gap in the page colour, so the tile reads as a badge and
+                lifts off a light page as well as a dark one. 192px source for a 48px button, so it stays
                 sharp at 2x and 3x. Decorative: the button's label names it. */}
             <Image
               src="/truffy.webp"
