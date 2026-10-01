@@ -62,7 +62,7 @@ export const duration = {
    * Ambient like the ticker, not a response to input, so outside the budget.
    */
   phraseStart: 1.5,
-  phraseHold: 2.4,
+  phraseHold: 3.5,
 } as const;
 
 /** Per-item stagger offsets (seconds). Use instead of literal `i * 0.05`. */
