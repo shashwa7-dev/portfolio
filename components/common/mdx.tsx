@@ -160,6 +160,7 @@ const components = {
 };
 
 interface CustomMDXProps {
+  source: string;
   components?: Record<string, React.ComponentType<any>>;
   [key: string]: any;
 }

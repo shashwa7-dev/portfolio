@@ -18,11 +18,12 @@ import { baseUrl } from "@/app/sitemap";
  * browser bundle. A server layout gets the same `params` and keeps the boundary
  * where it belongs, without having to refactor the page.
  */
-export async function generateMetadata({
-  params,
-}: {
-  params: { org: string; project: string };
-}) {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ org: string; project: string }>;
+  }
+) {
+  const params = await props.params;
   const org = getOrganization(params.org);
   const project = getProjectFromOrg(params.org, params.project);
   if (!org || !project) return { title: "Not Found" };
@@ -54,13 +55,18 @@ export async function generateMetadata({
   };
 }
 
-export default function WorkProjectLayout({
-  children,
-  params,
-}: {
-  children: React.ReactNode;
-  params: { org: string; project: string };
-}) {
+export default async function WorkProjectLayout(
+  props: {
+    children: React.ReactNode;
+    params: Promise<{ org: string; project: string }>;
+  }
+) {
+  const params = await props.params;
+
+  const {
+    children
+  } = props;
+
   const org = getOrganization(params.org);
   const project = getProjectFromOrg(params.org, params.project);
 

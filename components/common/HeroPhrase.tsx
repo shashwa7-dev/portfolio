@@ -35,7 +35,6 @@ export default function HeroPhrase({ className }: { className?: string }) {
   const [widths, setWidths] = useState<number[] | null>(null);
   const [active, setActive] = useState(false);
   const cycled = useRef(false);
-  const prev = useRef(0);
   const slotRef = useRef<HTMLSpanElement>(null);
   const measureRef = useRef<HTMLSpanElement>(null);
 
@@ -73,10 +72,7 @@ export default function HeroPhrase({ className }: { className?: string }) {
     const wait = cycled.current ? duration.phraseHold : duration.phraseStart;
     const t = setTimeout(() => {
       cycled.current = true;
-      setIndex((i) => {
-        prev.current = i;
-        return nextPhrase(i);
-      });
+      setIndex(nextPhrase);
     }, wait * 1000);
     return () => clearTimeout(t);
   }, [reduce, active, widths, index]);
@@ -94,7 +90,10 @@ export default function HeroPhrase({ className }: { className?: string }) {
         transition={{
           duration: duration.med,
           ease: ease.out,
-          delay: phraseExitSeconds(phraseWords(HERO_PHRASES[prev.current]).length),
+          // The outgoing phrase is always the one before this one.
+          delay: phraseExitSeconds(
+            phraseWords(HERO_PHRASES[(index + HERO_PHRASES.length - 1) % HERO_PHRASES.length]).length,
+          ),
         }}
       >
         <AnimatePresence mode="wait" initial={false}>

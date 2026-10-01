@@ -12,7 +12,7 @@ import { NextRequest, NextResponse } from "next/server";
 const blogRoute = /^\/blogs\/([^/]+)\/?$/;
 const orgRoute = /^\/work\/([^/]+)\/?$/;
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const accept = req.headers.get("accept");
   const wantsMarkdown =
     !!accept && accept.toLowerCase().includes("text/markdown");

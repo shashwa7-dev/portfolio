@@ -22,7 +22,8 @@ export async function generateStaticParams() {
   }));
 }
 
-export function generateMetadata({ params }: any) {
+export async function generateMetadata(props: any) {
+  const params = await props.params;
   let post = getBlogPosts().find((post) => post.slug === params.slug);
   if (!post) {
     return;
@@ -76,7 +77,8 @@ export function generateMetadata({ params }: any) {
   };
 }
 
-export default function Blog({ params }: any) {
+export default async function Blog(props: any) {
+  const params = await props.params;
   const posts = getBlogPosts().sort((a, b) =>
     new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt) ? -1 : 1
   );

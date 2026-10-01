@@ -40,11 +40,6 @@ const nextConfig = {
       },
     ],
   },
-  eslint: {
-    // Lint runs as its own step (`npm run lint`); warnings must not fail the
-    // production build / deployment.
-    ignoreDuringBuilds: true,
-  },
   async headers() {
     return [
       {

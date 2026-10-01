@@ -6,7 +6,7 @@ Project memory for Claude Code agents (and any other coding-LLM-driven sessions)
 
 ## Project at a glance
 
-- **Stack:** Next.js 14 App Router · TypeScript · Tailwind CSS · React 18 · Framer Motion · Vercel
+- **Stack:** Next.js 16 App Router · TypeScript · Tailwind CSS · React 19 · Framer Motion · Vercel
 - **Owner:** Shashwat Tripathi — frontend engineer portfolio at `shashwa7.in`
 - **Default branch:** `master`
 - **Package manager:** `npm` (lockfile committed)
@@ -56,7 +56,7 @@ Concrete triggers that REQUIRE a memory-file update:
 - **The measure lives in one place**, `--measure` in `app/globals.css`. `Container width="reading"` reads it. Never write `760px` into a component.
 - **Page padding**: every secondary route's `<main>` carries `pt-8 md:pt-12 pb-8 md:pb-12` (a blog post puts the same on its section). There is no header row above the content any more, so the top padding lives on the page. Match this when adding a new top-level route.
 - **The global `<Navbar />`** is rendered once in `app/layout.tsx`. Per-page Navbar imports are forbidden.
-- **Markdown-for-agents** is wired in `middleware.ts` — when adding a new route family with a `text/markdown` rendition, add it both to the matcher and to the rewrite branches there.
+- **Markdown-for-agents** is wired in `proxy.ts` (Next 16's name for middleware; the function is `proxy`). When adding a new route family with a `text/markdown` rendition, add it both to the matcher and to the rewrite branches there.
 - **Candy is disabled** by `CANDY_ENABLED = false` in `lib/theme.ts`. A stored `candy` preference falls back to the system theme and the palette hides the Candy action. Its styles and `candy:` classes stay in place; flip the flag (and verify check C18) only when Shashwat asks for it back.
 - **Intro stats ticker**: `components/common/StatsTicker.tsx` renders `tickerStats` from `lib/stats.ts` (`stats` keeps its first three for the OG card). The loop length is `duration.ticker` / `--duration-ticker`; it pauses on hover and wraps statically under reduced motion. Never name it or import anything as `Marquee` (verify check C13).
 - **Intro phrase cycle**: the italic phrase in the `About.tsx` headline is `components/common/HeroPhrase.tsx`, cycling `HERO_PHRASES` from `lib/heroPhrases.ts` (the first, "ship and scale", is the SSR and reduced-motion text). Swap order is word-by-word blur out, width eases to the next phrase's measured width, word-by-word blur in (`phraseSwapVariants` + `phraseWordVariants`, `duration.phraseStart` / `phraseHold`). Runs only while the hero is in view and the tab is visible. Never name it or a token `wordCycle` (verify check C09).
@@ -78,7 +78,7 @@ Concrete triggers that REQUIRE a memory-file update:
 ```bash
 npm run dev      # next dev (port 3000 by default; this repo uses 3001 in practice)
 npm run build    # next build
-npm run lint     # next lint
+npm run lint     # eslint . (flat config in eslint.config.mjs; Next 16 removed next lint)
 npm test         # vitest run (pure lib modules: card's seed, issues, types, dice, toss, revealSequence, plus chatStream)
 npm run cv:pdf   # re-render public/shashwat-tripathi-cv.pdf from data/cv.md (system Chrome; aims for one page)
 ```
@@ -93,4 +93,4 @@ After any edit to `data/cv.md`, run `npm run cv:pdf` in the same change, or the 
 - Org page: `app/work/[org]/page.tsx` — header + key contributions + projects + inline diary.
 - Project case-study: `app/work/[org]/[project]/page.tsx`.
 - Blog: `app/blogs/*` with MDX posts under `app/blogs/posts/`.
-- Agent discovery: `app/robots.txt/route.ts`, `public/.well-known/llms.txt`, `app/markdown/route.ts`, `middleware.ts`, `docs/dns-aid.md`.
+- Agent discovery: `app/robots.txt/route.ts`, `public/.well-known/llms.txt`, `app/markdown/route.ts`, `proxy.ts`, `docs/dns-aid.md`.
