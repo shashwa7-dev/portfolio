@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { List, Moon, Sun, X } from "@phosphor-icons/react/ssr";
+import { List, X } from "@phosphor-icons/react/ssr";
 import Image from "next/image";
 import CandyMusic from "@/components/CandyMusic";
 import { useTheme } from "@/app/hooks/useTheme";
-import { nextTheme, themeLabel, toggleIcon } from "@/lib/theme";
+import { nextTheme, themeLabel, toggleCowl, toggleIcon } from "@/lib/theme";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { navLinks } from "@/lib/siteLinks";
 import Container from "@/components/layout/Container";
@@ -148,7 +148,7 @@ export default function Navbar() {
                 type="button"
                 onClick={cycleTheme}
                 aria-label={`Theme: ${themeLabel(theme)}. Switch to ${themeLabel(upcoming).toLowerCase()}`}
-                className={`${control} justify-center ${toggleIcon(upcoming) === "treat" ? "w-auto bg-transparent hover:bg-transparent" : "w-8"}`}
+                className={`${control} w-auto justify-center bg-transparent hover:bg-transparent`}
               >
                 {toggleIcon(upcoming) === "treat" ? (
                   <Image
@@ -159,10 +159,25 @@ export default function Navbar() {
                     unoptimized
                     className="h-8 w-auto"
                   />
-                ) : toggleIcon(upcoming) === "moon" ? (
-                  <Moon className="h-4 w-4" />
                 ) : (
-                  <Sun className="h-4 w-4" />
+                  /* The cowl of the theme you are in: black in dark, white in
+                     light. Both are rendered and crossfade on a switch, so the
+                     click reads as the mask changing rather than an icon
+                     popping in. */
+                  <span aria-hidden className="relative block h-7 w-[1.2rem] transition-transform duration-fast ease-out hover:-rotate-6">
+                    {(["black", "white"] as const).map((cowl) => (
+                      <Image
+                        key={cowl}
+                        src={`/theme/cowl-${cowl}.webp`}
+                        alt=""
+                        width={88}
+                        height={128}
+                        className={`absolute inset-0 h-7 w-auto drop-shadow-[0_1px_2px_rgba(0,0,0,0.25)] transition-[opacity,transform] duration-base ease-out ${
+                          toggleCowl(theme) === cowl ? "scale-100 opacity-100" : "scale-90 opacity-0"
+                        }`}
+                      />
+                    ))}
+                  </span>
                 )}
               </button>
             </TooltipTrigger>

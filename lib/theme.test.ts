@@ -9,6 +9,7 @@ import {
   applyTheme,
   themeLabel,
   toggleIcon,
+  toggleCowl,
   THEME_BOOT_SCRIPT,
 } from "./theme";
 
@@ -151,5 +152,15 @@ describe("toggleIcon", () => {
   });
   it("shows the candy treat only when candy is next", () => {
     expect(toggleIcon("candy")).toBe("treat");
+  });
+});
+
+describe("toggleCowl", () => {
+  it("wears the cowl of the theme you are in", () => {
+    expect(toggleCowl("dark")).toBe("black");
+    expect(toggleCowl("light")).toBe("white");
+  });
+  it("treats candy as a light theme", () => {
+    expect(toggleCowl("candy")).toBe("white");
   });
 });

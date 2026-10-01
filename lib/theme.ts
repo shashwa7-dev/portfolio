@@ -53,6 +53,16 @@ export function toggleIcon(upcoming: Theme): "treat" | "moon" | "sun" {
   return upcoming === "candy" ? "treat" : upcoming === "dark" ? "moon" : "sun";
 }
 
+/**
+ * The theme button's artwork: a black cowl in the dark theme, a white one in
+ * the light theme. Unlike `toggleIcon`, this shows the theme you are IN, not
+ * the one the click leads to, because the cowl reads as "this is the mode",
+ * the way the page itself does. Candy is a light theme, so it gets white.
+ */
+export function toggleCowl(current: Theme): "black" | "white" {
+  return current === "dark" ? "black" : "white";
+}
+
 type RootLike = {
   dataset: DOMStringMap;
   classList: { toggle(name: string, force: boolean): unknown };
