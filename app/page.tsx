@@ -23,9 +23,9 @@ export default function Home() {
       />
       <About />
       <ExperienceWork />
-      <Projects />
       <Writing />
       <Currently />
+      <Projects />
       <Faq />
       {/* The closing line, directly above the footer rendered from
           `app/layout.tsx`. It carries the visitor-card nudge at its foot:
