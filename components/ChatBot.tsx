@@ -12,7 +12,8 @@ import {
 } from "@/lib/chatStream";
 import { CONNECTION_TROUBLE } from "@/lib/chatMessages";
 import IconSwap from "@/components/common/IconSwap";
-import Image from "next/image";
+import TruffyFace from "./chat/TruffyFace";
+import type { ChatPhase } from "@/lib/truffyFace";
 import {
   popoverUpVariants,
   fabPopVariants,
@@ -262,6 +263,17 @@ const S7Bot = () => {
     }
   };
 
+  // What the header face reacts to: a sent message with no reply yet, reply
+  // text arriving, or the visitor typing.
+  const lastMessage = messages[messages.length - 1];
+  const chatPhase: ChatPhase = isStreaming
+    ? lastMessage?.role === "assistant" && lastMessage.content
+      ? "replying"
+      : "thinking"
+    : message.trim()
+      ? "typing"
+      : "idle";
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     sendMessage(message);
@@ -333,7 +345,7 @@ const S7Bot = () => {
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="fixed bottom-[60px] right-4 -md:right-2.5 -md:hidden"
+            className="fixed bottom-[68px] right-4 -md:right-2.5 -md:hidden"
           >
             <div className="rounded-lg border border-border-strong bg-card shadow-md px-3 py-2 max-w-[200px] sticker sticker-sm candy:rounded-tile candy:border-white candy:bg-candy-butter candy:shadow-sticker-2 tilt-b">
               <p className="text-xs text-card-foreground candy:font-semibold candy:text-foreground">
@@ -357,23 +369,14 @@ const S7Bot = () => {
             whileTap={tapPress}
             onClick={() => setIsOpen(true)}
             aria-label="Chat with Truffy"
-            className="group fixed bottom-4 right-4 -md:right-2.5 grid h-12 w-12 place-items-center rounded-[22%] shadow-lg ring-2 ring-foreground/30 ring-offset-2 ring-offset-background transition-shadow duration-base ease-out hover:ring-foreground/60 tilt-i"
+            className="group fixed bottom-4 right-4 -md:right-2.5 h-14 w-14 rounded-full bg-white p-1 shadow-lg ring-2 ring-foreground/30 ring-offset-2 ring-offset-background transition-shadow duration-base ease-out hover:ring-foreground/60 sticker sticker-sm tilt-i candy:rounded-full candy:ring-0 candy:ring-offset-0"
           >
-            {/* Truffy's icon is a finished app tile with its own rounded
-                corners and depth, so it is the button rather than art sitting
-                on a white tile. The outline is a 2px ring held off the icon by
-                a 2px gap in the page colour, so the tile reads as a badge and
-                lifts off a light page as well as a dark one. 192px source for a 48px button, so it stays
-                sharp at 2x and 3x. Decorative: the button's label names it. */}
-            <Image
-              src="/truffy.webp"
-              alt=""
-              width={192}
-              height={192}
-              priority={false}
-              className="h-12 w-12 select-none rounded-[22%]"
-              draggable={false}
-            />
+            {/* Truffy's face, alive: it watches the cursor, blinks, squints
+                when you come close and dozes off if you leave it alone. The
+                head is this button, white in every theme so the ink face
+                reads on a dark page too; the ring holds it off the page the
+                way it held the old app tile. Decorative: the label names it. */}
+            <TruffyFace chat="closed" />
           </motion.button>
         )}
       </AnimatePresence>
@@ -392,8 +395,8 @@ const S7Bot = () => {
             {/* Header */}
             <div className="flex items-center justify-between border-b border-border bg-card px-4 py-3 candy:border-b-2 candy:border-foreground candy:bg-candy-pink">
               <div className="flex items-center gap-2">
-                <div className="relative h-9 w-9 shrink-0 tilt-a">
-                  <Image src="/truffy.webp" alt="" width={192} height={192} className="h-9 w-9 rounded-[22%]" />
+                <div className="relative h-9 w-9 shrink-0 rounded-full bg-white p-0.5 ring-1 ring-border candy:ring-[1.5px] candy:ring-foreground tilt-a">
+                  <TruffyFace chat={chatPhase} />
                   <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-card candy:ring-candy-pink" />
                 </div>
                 <div>
