@@ -45,9 +45,9 @@ export default function NotFound() {
     <main className="pt-8 md:pt-12 pb-8 md:pb-12">
       <Container width="reading">
         <div className="flex min-h-[70vh] flex-col justify-center">
-          {/* A tear in the page, with a stack of $100 bills looking back out
-              through it, and the eyes follow the pointer: the hole this link
-              fell into, watching you. See PeekingEyes. */}
+          {/* The page rolled back from a ₹500 note, and Gandhi's eyes follow
+              the pointer: the hole this link fell into, watching you. See
+              PeekingEyes. */}
           <PeekingEyes className="w-full max-w-[720px] -translate-x-1 -rotate-2" />
 
           <div className="mt-8 grid gap-10 md:mt-10 md:grid-cols-[1fr_auto] md:items-end md:gap-16">
