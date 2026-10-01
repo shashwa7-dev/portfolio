@@ -204,7 +204,7 @@ const Footer = () => {
           height={232}
           sizes="(min-width: 640px) 260px, 220px"
           draggable={false}
-          className="col-span-2 w-[220px] -rotate-3 select-none transition-transform duration-med ease-out hover:-rotate-1 hover:scale-[1.03] sm:absolute sm:bottom-7 sm:right-6 sm:w-[260px] md:col-span-1"
+          className="pointer-events-none col-span-2 w-[220px] -rotate-3 select-none sm:absolute sm:bottom-7 sm:right-6 sm:w-[260px] md:col-span-1"
         />
       </Container>
 
