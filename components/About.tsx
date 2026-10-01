@@ -31,9 +31,8 @@ import { socialLinks } from "@/lib/siteLinks";
  *
  * - The brand avatars in the stat cells, and later the "Worked with" row that
  *   replaced them. Both were removed: the hero is the claim, the lede and the
- *   numbers, and the brands are named where they mean something, per
- *   engagement, by `ClientStrip` inside Experience. Do not re-add a brand row
- *   here.
+ *   numbers, and the brands are named where they mean something, in each
+ *   Work row's one-line summary. Do not re-add a brand row here.
  * - The bento box. A `rounded-2xl` bordered container with internal hairlines
  *   made no sense on a page whose structural idea is full-bleed bands crossing
  *   two rails. The stats are a band now, so the hero uses the page's own

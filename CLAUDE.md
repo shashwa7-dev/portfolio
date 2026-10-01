@@ -20,7 +20,7 @@ Project memory for Claude Code agents (and any other coding-LLM-driven sessions)
 | `lib/workData.ts` | Organizations (ShopOS, Dehidden, …), roles, employment type, projects | Manually as work history evolves |
 | `lib/clients.ts` | Brand affiliations, read by the OG card and the markdown homepage route. The homepage itself shows no brand row: each Work row carries a hand-written `summary` from `lib/workData.ts` that names partners where it matters. Do not re-add a hero brand row or a standalone brand strip. | Manually when a brand is added or dropped. **Update `data/agent-memory.md`'s "Worked with" line in the same change.** |
 | `lib/diaryData.ts` | Long-form contributions log per org (the `/work/<org>` diary entries) | Manually when a notable contribution ships |
-| `components/About.tsx` | Hero: identity row, headline, lede copy, and the full-bleed stat band | Manually when positioning changes |
+| `components/About.tsx` | Hero: identity row, headline (with the cycling `HeroPhrase`), lede copy, and the stats ticker | Manually when positioning changes |
 | **`data/agent-memory.md`** | **Truffy chat assistant's system prompt** | **MUST be updated whenever any of the above changes** |
 
 ---
