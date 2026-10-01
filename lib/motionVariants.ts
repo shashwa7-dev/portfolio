@@ -18,6 +18,12 @@ export const ease = {
    * this file is that no ease-out can describe an arc that comes back down.
    */
   throw: [0.33, 0.02, 0.62, 1] as const,
+  /**
+   * A sine in-out, for the graffiti hand's idle sway only. A loop that
+   * reverses needs to slow at both ends, or it reads as hitting a wall; an
+   * ease-out cannot do that. Not a UI curve.
+   */
+  sway: [0.45, 0, 0.55, 1] as const,
 } as const;
 
 export const duration = {
@@ -64,10 +70,13 @@ export const duration = {
   phraseStart: 1.5,
   phraseHold: 3.5,
   /**
-   * The graffiti hand's wave in the closing section. A gesture, played once
-   * after it rises and again on hover, so it is allowed past the UI budget.
+   * The graffiti hand in the closing section: its rise, and one full cycle of
+   * the idle sway that follows. Ambient, not a response to input, so both sit
+   * outside the UI budget. The sway is slow on purpose: faster read as a
+   * nervous twitch rather than a wave.
    */
-  wave: 0.9,
+  handRise: 0.9,
+  handSway: 2.8,
 } as const;
 
 /** Per-item stagger offsets (seconds). Use instead of literal `i * 0.05`. */
@@ -204,25 +213,28 @@ export function phraseExitSeconds(words: number): number {
 
 /**
  * The graffiti hand beside the closing line. It waits below the section's
- * bottom edge (clipped), rises on a spring with a little overshoot the first
- * time the section comes into view, then waves once. `wave` is replayed on
- * hover. The resting tilt is part of every state, so the hand never snaps
- * upright between them.
+ * bottom edge (clipped), rises once on a plain ease-out the first time the
+ * section comes into view, then sways from the wrist for as long as it is on
+ * screen: a few degrees each way, with a slight bob, on `ease.sway`.
+ *
+ * The rise used to be a spring with overshoot followed by one quick wave, and
+ * both read as jerky. The keyframes below start and end on the resting pose,
+ * so each loop joins the next without a seam.
  */
 const HAND_TILT = 8;
 export const handRiseVariants: Variants = {
-  hidden: { y: "75%", rotate: HAND_TILT + 14, opacity: 0 },
+  hidden: { y: "60%", rotate: HAND_TILT + 6, opacity: 0 },
   visible: {
     y: "0%",
     rotate: HAND_TILT,
     opacity: 1,
-    transition: { type: "spring", stiffness: 210, damping: 15, opacity: { duration: duration.base } },
+    transition: { duration: duration.handRise, ease: ease.out },
   },
-  wave: {
-    y: "0%",
-    rotate: [HAND_TILT, HAND_TILT - 9, HAND_TILT + 6, HAND_TILT - 4, HAND_TILT],
+  sway: {
+    y: ["0%", "-1.2%", "0%", "-0.6%", "0%"],
+    rotate: [HAND_TILT, HAND_TILT + 4, HAND_TILT, HAND_TILT - 3, HAND_TILT],
     opacity: 1,
-    transition: { duration: duration.wave, ease: ease.out },
+    transition: { duration: duration.handSway, ease: ease.sway, repeat: Infinity },
   },
 };
 

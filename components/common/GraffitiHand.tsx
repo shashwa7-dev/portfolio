@@ -15,24 +15,30 @@ import { handRiseVariants } from "@/lib/motionVariants";
  * starts clipped out of sight and a clipped element never reports as
  * intersecting.
  *
- * Plays once per page load. Under reduced motion the hand is simply there, and
- * hover does nothing. Decorative, so hidden from assistive tech.
+ * Rises once, the first time the section is in view, then sways gently. The
+ * sway stops while the section is off screen and picks up again when it
+ * returns. Under reduced motion the hand is simply there. Decorative, so
+ * hidden from assistive tech.
  */
 export default function GraffitiHand({ className }: { className?: string }) {
   const zoneRef = useRef<HTMLDivElement>(null);
-  const inView = useInView(zoneRef, { once: true, amount: 0.5 });
+  const inView = useInView(zoneRef, { amount: 0.5 });
   const reduce = useReducedMotion();
   const controls = useAnimationControls();
-  const settled = useRef(false);
+  const risen = useRef(false);
 
   useEffect(() => {
-    if (!inView || reduce) return;
+    if (reduce) return;
+    if (!inView) {
+      if (risen.current) controls.start("visible");
+      return;
+    }
     let live = true;
-    controls.start("visible").then(() => {
+    const rise = risen.current ? Promise.resolve() : controls.start("visible");
+    rise.then(() => {
       if (!live) return;
-      return controls.start("wave").then(() => {
-        settled.current = true;
-      });
+      risen.current = true;
+      controls.start("sway");
     });
     return () => {
       live = false;
@@ -42,13 +48,10 @@ export default function GraffitiHand({ className }: { className?: string }) {
   return (
     <div ref={zoneRef} aria-hidden className="pointer-events-none absolute inset-0">
       <motion.div
-        className={`pointer-events-auto absolute origin-[35%_100%] ${className ?? ""}`}
+        className={`absolute origin-[35%_100%] ${className ?? ""}`}
         variants={handRiseVariants}
         initial={reduce ? "visible" : "hidden"}
         animate={controls}
-        onHoverStart={() => {
-          if (!reduce && settled.current) controls.start("wave");
-        }}
       >
         <Image
           src="/graffiti-hand.webp"
