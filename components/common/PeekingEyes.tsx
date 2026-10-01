@@ -6,8 +6,8 @@ import { useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
 
 /**
- * The 404 tear: the page rolled back from a ₹500 note, and Gandhi's eyes, behind
- * his round glasses, follow the pointer.
+ * The 404 tear: a ripped hole in the page with a stack of $100 bills looking
+ * out, and the eyes follow the pointer.
  *
  * The eyes are part of a photograph, so they are separated out of it. The base
  * image has both irises painted over (lid shadow above, the eye's own cream
@@ -16,27 +16,24 @@ import { cn } from "@/lib/utils";
  * painted white of the eye on the other side, and the clip lets the lids cover
  * the iris when it looks up or down.
  *
- * Geometry is in the trimmed source's pixels (1319x603), so it scales with the
- * rendered width. The eyes are narrow and smiling, so each has its own clip
- * (the almond of the opening) and the travel is small: any more and the iris
- * slides past the corner of the eye onto the cheek. Pointer work is one requestAnimationFrame pass per frame,
+ * Geometry is in the trimmed source's pixels (1632x592), so it scales with the
+ * rendered width. Pointer work is one requestAnimationFrame pass per frame,
  * the follow is a short ease toward the target, and frames stop being
  * scheduled once the eyes settle. No React state: transforms are written to
  * the two sprites directly. Under reduced motion the eyes stay centred.
  */
-const SRC_W = 1319;
-const SRC_H = 603;
+const SRC_W = 1632;
+const SRC_H = 592;
 
-/** Iris centres and radii, and the eye opening's half-width and half-height
- *  (the clip), in source pixels. */
+/** Iris centres and radii, in source pixels. */
 const EYES = [
-  { id: "l", x: 724, y: 260, r: 9, rx: 16, ry: 8 },
-  { id: "r", x: 834, y: 266, r: 9, rx: 17, ry: 8.5 },
+  { id: "l", x: 727, y: 313, r: 28 },
+  { id: "r", x: 1006, y: 318, r: 27 },
 ] as const;
 
 /** How far an iris travels, in source pixels, at full deflection. */
-const MAX_DX = 4;
-const MAX_DY = 1.5;
+const MAX_DX = 18;
+const MAX_DY = 7;
 /** Pointer distance (CSS px) from an eye at which it is fully deflected. */
 const REACH = 420;
 /** Share of the remaining distance covered each frame. */
@@ -115,10 +112,10 @@ export default function PeekingEyes({ className }: { className?: string }) {
   return (
     <div ref={boxRef} aria-hidden className={cn("pointer-events-none relative select-none", className)}>
       <Image
-        src="/images/404-rupee.webp"
+        src="/images/404-tear.webp"
         alt=""
         width={1280}
-        height={585}
+        height={464}
         sizes="(min-width: 768px) 720px, 100vw"
         priority
         draggable={false}
@@ -126,8 +123,8 @@ export default function PeekingEyes({ className }: { className?: string }) {
       />
       {EYES.map((eye, i) => {
         // The clip is the eye opening, an ellipse wider than it is tall.
-        const cw = eye.rx * 2;
-        const ch = eye.ry * 2;
+        const cw = eye.r * 3.8;
+        const ch = eye.r * 2.1;
         const sprite = (eye.r + 2) * 2;
         return (
           <span
@@ -145,7 +142,7 @@ export default function PeekingEyes({ className }: { className?: string }) {
               ref={(el) => {
                 irisRefs.current[i] = el;
               }}
-              src={`/images/404-rupee-iris-${eye.id}.webp`}
+              src={`/images/404-iris-${eye.id}.webp`}
               alt=""
               draggable={false}
               className="absolute max-w-none will-change-transform"
