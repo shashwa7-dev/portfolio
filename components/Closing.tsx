@@ -1,5 +1,6 @@
 import Container from "@/components/layout/Container";
 import CardNudge from "@/components/CardNudge";
+import GraffitiHand from "@/components/common/GraffitiHand";
 import { SOCIAL_ICONS } from "@/components/common/socialIcons";
 import { socialLinks, contactEmail } from "@/lib/siteLinks";
 
@@ -7,11 +8,20 @@ import { socialLinks, contactEmail } from "@/lib/siteLinks";
  * The page's last word: one line, the address, the three profiles. No section
  * label: it closes the page rather than opening a section. The visitor-card
  * nudge stays beside the address, where someone who scrolled this far finds it.
+ *
+ * The graffiti hand rises out of this section's bottom edge on the right, from
+ * `sm` up (on a phone the column has no room beside the line). The section is
+ * `relative overflow-hidden` for it: the artwork's forearm is cut flat and has
+ * to stay below the edge. At `sm`+ the section also pulls down over the
+ * footer's `mt-12` (`-mb-12`, with that much more bottom padding), so its
+ * clipped edge is the footer's top border and the hand grows out of that line
+ * instead of stopping in mid-air above it.
  */
 export default function Closing() {
   return (
-    <section id="contact">
-      <Container width="reading" className="pt-11 pb-10 md:pt-[3.3rem] md:pb-12">
+    <section id="contact" className="relative overflow-hidden sm:-mb-12">
+      <Container width="reading" className="relative pt-11 pb-10 sm:pb-28 md:pt-[3.3rem] md:pb-32">
+        <GraffitiHand className="-bottom-12 right-2 hidden h-60 sm:block md:-bottom-14 md:right-0 md:h-72" />
         <p className="text-2xl font-medium tracking-tight text-foreground md:text-3xl">Let&apos;s build something good.</p>
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <a

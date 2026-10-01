@@ -63,6 +63,11 @@ export const duration = {
    */
   phraseStart: 1.5,
   phraseHold: 3.5,
+  /**
+   * The graffiti hand's wave in the closing section. A gesture, played once
+   * after it rises and again on hover, so it is allowed past the UI budget.
+   */
+  wave: 0.9,
 } as const;
 
 /** Per-item stagger offsets (seconds). Use instead of literal `i * 0.05`. */
@@ -196,6 +201,30 @@ export const phraseWordVariants: Variants = blurSwapVariants;
 export function phraseExitSeconds(words: number): number {
   return duration.fast + Math.max(0, words - 1) * stagger.base;
 }
+
+/**
+ * The graffiti hand beside the closing line. It waits below the section's
+ * bottom edge (clipped), rises on a spring with a little overshoot the first
+ * time the section comes into view, then waves once. `wave` is replayed on
+ * hover. The resting tilt is part of every state, so the hand never snaps
+ * upright between them.
+ */
+const HAND_TILT = 8;
+export const handRiseVariants: Variants = {
+  hidden: { y: "75%", rotate: HAND_TILT + 14, opacity: 0 },
+  visible: {
+    y: "0%",
+    rotate: HAND_TILT,
+    opacity: 1,
+    transition: { type: "spring", stiffness: 210, damping: 15, opacity: { duration: duration.base } },
+  },
+  wave: {
+    y: "0%",
+    rotate: [HAND_TILT, HAND_TILT - 9, HAND_TILT + 6, HAND_TILT - 4, HAND_TILT],
+    opacity: 1,
+    transition: { duration: duration.wave, ease: ease.out },
+  },
+};
 
 // ──────────────────────────────────────────────────────────────────────
 // Dice cube (CubeDice) — a real `preserve-3d` cube rather than a flat
