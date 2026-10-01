@@ -3,28 +3,35 @@ import Section from "@/components/layout/Section";
 import StackIcon from "@/components/common/StackIcon";
 import { books } from "@/lib/books";
 import { currently } from "@/lib/currently";
-import { currentBook } from "@/lib/home";
+import { readingNow } from "@/lib/home";
 
 /**
  * What is happening now, in three short rows. Replaced the Toolkit wall and
  * the "Now" bento: one line each for building and reading, and the everyday
- * stack. The Reading row is left out entirely when no book is in progress.
+ * stack. The Reading row is left out entirely when none of its books exist.
  */
 export default function Currently() {
-  const book = currentBook(books);
+  const reading = readingNow(books);
   const rows: { label: string; value: React.ReactNode }[] = [
     { label: "Building", value: currently.building },
-    ...(book
+    ...(reading.length
       ? [
           {
             label: "Reading",
             value: (
-              <Link
-                href={`/books/${book.slug}`}
-                className="underline decoration-border-strong underline-offset-4 transition-colors duration-fast ease-out hover:decoration-foreground"
-              >
-                {book.name}
-              </Link>
+              <span>
+                {reading.map((b, i) => (
+                  <span key={b.slug}>
+                    {i > 0 && <span className="text-subtle">, </span>}
+                    <Link
+                      href={`/books/${b.slug}`}
+                      className="underline decoration-border-strong underline-offset-4 transition-colors duration-fast ease-out hover:decoration-foreground"
+                    >
+                      {b.name}
+                    </Link>
+                  </span>
+                ))}
+              </span>
             ),
           },
         ]

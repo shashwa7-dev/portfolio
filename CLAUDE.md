@@ -87,7 +87,7 @@ After any edit to `data/cv.md`, run `npm run cv:pdf` in the same change, or the 
 
 ## Useful entry points
 
-- Homepage layout composition: `app/page.tsx` → `<About>`, `<ExperienceWork>`, `<Projects>`, `<Currently>`, `<Faq>`, `<Closing>`. Sections use `Section` with a plain `label` and `title` and are separated by whitespace only: no bands, no rules, no numbering (`HOMEPAGE_SECTION_TOTAL` and `lib/sections.ts` are gone). Work and Projects are rows, not cards; Work shows no project cards (they live on `/work/<org>`). `<CommandPalette>` mounts globally from `app/layout.tsx`. `<ChatBot>` is homepage-only, mounted from `app/page.tsx`: as a fixed bottom-right bubble it collided with anything else anchored to that corner on other routes.
+- Homepage layout composition: `app/page.tsx` → `<About>`, `<ExperienceWork>`, `<Projects>`, `<Writing>`, `<Currently>`, `<Faq>`, `<Closing>`. Sections use `Section` with a plain `label` and `title` and are separated by whitespace only: no bands, no rules, no numbering (`HOMEPAGE_SECTION_TOTAL` and `lib/sections.ts` are gone). Work and Projects are rows, not cards; Work shows no project cards (they live on `/work/<org>`). `<CommandPalette>` mounts globally from `app/layout.tsx`. `<ChatBot>` is homepage-only, mounted from `app/page.tsx`: as a fixed bottom-right bubble it collided with anything else anchored to that corner on other routes.
 - Org page: `app/work/[org]/page.tsx` — header + key contributions + projects + inline diary.
 - Project case-study: `app/work/[org]/[project]/page.tsx`.
 - Blog: `app/blogs/*` with MDX posts under `app/blogs/posts/`.

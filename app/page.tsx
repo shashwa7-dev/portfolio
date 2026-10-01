@@ -1,6 +1,7 @@
 import About from "@/components/About";
 import ExperienceWork from "@/components/ExperienceWork";
 import Projects from "@/components/Projects";
+import Writing from "@/components/Writing";
 import Currently from "@/components/Currently";
 import Faq from "@/components/Faq";
 import Closing from "@/components/Closing";
@@ -23,6 +24,7 @@ export default function Home() {
       <About />
       <ExperienceWork />
       <Projects />
+      <Writing />
       <Currently />
       <Faq />
       {/* The closing line, directly above the footer rendered from

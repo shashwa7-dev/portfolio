@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { organizations } from "./workData";
-import { currentBook, homeProjects } from "./home";
+import { readingNow, homeProjects, latestPosts } from "./home";
+import { books } from "./books";
 import { sideProjects } from "./projectsData";
 import type { Book } from "./books";
 
@@ -32,12 +33,12 @@ describe("org summaries", () => {
 const book = (slug: string, isDone: boolean): Book =>
   ({ slug, name: slug, link: "", author: "", cover: "", isDone, chapters: [] });
 
-describe("currentBook", () => {
-  it("is the first unfinished book", () => {
-    expect(currentBook([book("a", true), book("b", false), book("c", false)])?.slug).toBe("b");
+describe("readingNow", () => {
+  it("lists Advanced React and Can't Hurt Me, in that order", () => {
+    expect(readingNow(books).map((b) => b.slug)).toEqual(["advanced-react", "cant-hurt-me"]);
   });
-  it("is undefined when every book is finished", () => {
-    expect(currentBook([book("a", true)])).toBeUndefined();
+  it("is empty when none of the listed books exist, so the row is left out", () => {
+    expect(readingNow([book("a", false)])).toEqual([]);
   });
 });
 
@@ -47,5 +48,18 @@ describe("homeProjects", () => {
   });
   it("skips a listed slug that no longer exists instead of breaking", () => {
     expect(homeProjects(sideProjects.filter((p) => p.slug !== "kiryoku")).map((p) => p.slug)).toEqual(["mehfil"]);
+  });
+});
+
+describe("latestPosts", () => {
+  const post = (slug: string, publishedAt: string) => ({ slug, metadata: { publishedAt } });
+  it("returns the newest posts first, capped at the limit", () => {
+    const posts = [post("a", "2026-01-01"), post("b", "2026-08-22"), post("c", "2026-05-10"), post("d", "2025-12-01")];
+    expect(latestPosts(posts, 3).map((p) => p.slug)).toEqual(["b", "c", "a"]);
+  });
+  it("does not reorder the list it was given", () => {
+    const posts = [post("a", "2026-01-01"), post("b", "2026-08-22")];
+    latestPosts(posts, 3);
+    expect(posts.map((p) => p.slug)).toEqual(["a", "b"]);
   });
 });
