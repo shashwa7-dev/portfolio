@@ -93,7 +93,7 @@ export default function LaunchNudge() {
       target="_blank"
       rel="noopener noreferrer"
       onClick={dismiss}
-      className={`group fixed bottom-4 left-4 z-40 block max-w-[16.5rem] overflow-hidden rounded-lg border border-border-strong bg-card/95 px-3.5 py-3 shadow-lg backdrop-blur transition-[opacity,transform,border-color] ease-out active:scale-[0.98] motion-reduce:translate-y-0 sticker candy:rounded-tile candy:border-white candy:hover:border-white ${
+      className={`group fixed bottom-4 left-4 z-40 block max-w-[12rem] sm:max-w-[16.5rem] overflow-hidden rounded-lg border border-border-strong bg-card/95 px-3.5 py-3 shadow-lg backdrop-blur transition-[opacity,transform,border-color] ease-out active:scale-[0.98] motion-reduce:translate-y-0 sticker candy:rounded-tile candy:border-white candy:hover:border-white ${
         shown
           ? "translate-y-0 opacity-100 duration-med"
           : "translate-y-2 opacity-0 duration-fast"
@@ -126,7 +126,7 @@ export default function LaunchNudge() {
         Mehfil
         <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-subtle transition-[transform,color] duration-base ease-out group-hover:translate-x-0.5 group-hover:text-foreground motion-reduce:group-hover:translate-x-0" />
       </p>
-      <p className="relative mt-1 text-2xs leading-relaxed text-muted-foreground candy:text-foreground/80">
+      <p className="relative mt-1 hidden text-2xs leading-relaxed sm:block text-muted-foreground candy:text-foreground/80">
         Golden-era Hindi film music, 3,916 songs across 66 stations.
       </p>
     </a>

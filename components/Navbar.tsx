@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Moon, Sun } from "@phosphor-icons/react/ssr";
+import { List, Moon, Sun, X } from "@phosphor-icons/react/ssr";
 import Image from "next/image";
 import CandyMusic from "@/components/CandyMusic";
 import { useTheme } from "@/app/hooks/useTheme";
@@ -33,6 +33,16 @@ export default function Navbar() {
   const upcoming = nextTheme(theme);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
+
+  // Escape closes the mobile menu, and so does any navigation: a hash link to
+  // a homepage section changes no route, so each link also closes it on click.
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMobileOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [mobileOpen]);
+  useEffect(() => setMobileOpen(false), [pathname]);
 
   return (
     <header className="site-navbar sticky top-0 z-40 bg-background/70 backdrop-blur-xl">
@@ -162,12 +172,29 @@ export default function Navbar() {
           <button
             type="button"
             onClick={() => setMobileOpen((o) => !o)}
-            aria-label="Toggle menu"
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
             aria-controls="mobile-nav"
-            className={`${control} px-2.5 text-sm leading-none md:hidden`}
+            className={`${control} relative w-8 justify-center md:hidden`}
           >
-            Menu
+            {/* A hamburger that turns into a close mark. Both glyphs are always
+                rendered and crossfade with a quarter turn, so the swap reads as
+                one control changing state rather than one icon replacing
+                another. */}
+            <List
+              aria-hidden
+              weight="bold"
+              className={`absolute h-4 w-4 transition-[opacity,transform] duration-base ease-out ${
+                mobileOpen ? "rotate-90 opacity-0" : "rotate-0 opacity-100"
+              }`}
+            />
+            <X
+              aria-hidden
+              weight="bold"
+              className={`absolute h-4 w-4 transition-[opacity,transform] duration-base ease-out ${
+                mobileOpen ? "rotate-0 opacity-100" : "-rotate-90 opacity-0"
+              }`}
+            />
           </button>
         </div>
       </Container>
@@ -206,7 +233,7 @@ export default function Navbar() {
                             : undefined
                         }
                         onClick={() => setMobileOpen(false)}
-                        className="block py-3 text-sm text-muted-foreground transition-colors duration-fast ease-out hover:text-foreground aria-[current=page]:text-foreground sticker sticker-sm candy:rounded-full candy:px-4 candy:py-2.5 candy:font-semibold candy:text-foreground candy:aria-[current=page]:bg-candy-pink"
+                        className="block py-3 text-base text-muted-foreground transition-colors duration-fast ease-out hover:text-foreground aria-[current=page]:text-foreground sticker sticker-sm candy:rounded-full candy:px-4 candy:py-2.5 candy:font-semibold candy:text-foreground candy:aria-[current=page]:bg-candy-pink"
                       >
                         {l.label}
                       </Link>

@@ -26,7 +26,13 @@ export default function ExperienceWork() {
                   <Image src={org.logo} alt="" fill sizes="28px" className="object-cover" />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block font-medium text-foreground">{org.name}</span>
+                  {/* Dates on the name line rather than in a column of their
+                      own: as a column they took ~110px from every line below,
+                      which on a phone squeezed the summary to a few words a line. */}
+                  <span className="flex items-baseline justify-between gap-3">
+                    <span className="font-medium text-foreground">{org.name}</span>
+                    <span className="shrink-0 font-mono text-xs tabular-nums text-subtle">{formatPeriod(org.period)}</span>
+                  </span>
                   <span className="mt-1 flex flex-wrap items-center gap-1.5 text-sm text-foreground/80">
                     <span className="mr-0.5">{org.role}</span>
                     <EmploymentTag employment={org.employment} />
@@ -34,7 +40,6 @@ export default function ExperienceWork() {
                   </span>
                   {org.summary && <span className="mt-1 block text-sm text-muted-foreground">{org.summary}</span>}
                 </span>
-                <span className="mt-1 shrink-0 font-mono text-xs tabular-nums text-subtle">{formatPeriod(org.period)}</span>
               </Link>
               <MarginNote id={org.slug} />
             </li>

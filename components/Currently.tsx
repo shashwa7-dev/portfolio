@@ -5,6 +5,13 @@ import { books } from "@/lib/books";
 import { currently, type StackGroup } from "@/lib/currently";
 import { readingNow } from "@/lib/home";
 
+/**
+ * One row: label beside value from `sm` up. On a phone the label sits above
+ * its value instead, because a 6rem label column left the stack pills a strip
+ * about 200px wide and nineteen pills ran nine rows deep.
+ */
+const ROW = "grid grid-cols-1 gap-1.5 text-base sm:grid-cols-[6rem_1fr] sm:gap-4";
+
 /** Legend order and wording; `core` pills stay neutral, the others are tinted. */
 const GROUPS: { group: StackGroup; label: string; swatch: string }[] = [
   { group: "core", label: "Frontend & AI", swatch: "border-border bg-card" },
@@ -48,18 +55,24 @@ export default function Currently() {
     <Section id="currently" label="Currently" title="What I'm building, reading and using">
       <dl className="space-y-3">
         {rows.map((r) => (
-          <div key={r.label} className="grid grid-cols-[6rem_1fr] gap-4 text-base">
+          <div key={r.label} className={ROW}>
             <dt className="text-subtle">{r.label}</dt>
             <dd className="text-foreground">{r.value}</dd>
           </div>
         ))}
-        <div className="grid grid-cols-[6rem_1fr] gap-4 text-base">
+        <div className={ROW}>
           <dt className="text-subtle">Stack</dt>
           <dd>
             <div className="flex flex-wrap gap-1.5">
               {GROUPS.flatMap(({ group }) =>
                 currently.stack[group].map((name) => (
-                  <StackIcon key={name} name={name} size={12} tone={group === "core" ? undefined : group} />
+                  <StackIcon
+                    key={name}
+                    name={name}
+                    size={12}
+                    tone={group === "core" ? undefined : group}
+                    className="px-3 py-1.5 sm:px-3.5 sm:py-2"
+                  />
                 )),
               )}
             </div>
