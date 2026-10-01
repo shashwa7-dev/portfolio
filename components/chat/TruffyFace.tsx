@@ -97,10 +97,19 @@ export default function TruffyFace({
     let tapTimer: ReturnType<typeof setTimeout> | undefined;
     let glanceTimer: ReturnType<typeof setTimeout> | undefined;
 
-    const centre = (): Point | null => {
+    // The face sits in fixed-position UI (the launcher, the chat header), so
+    // its centre only moves when the viewport or the element resizes. Reading
+    // the rect once per resize, not once per pointer event, keeps the pointer
+    // path free of layout reads that could force a reflow.
+    let rect: Point | null = null;
+    const measure = () => {
       const r = svgRef.current?.getBoundingClientRect();
-      return r ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : null;
+      rect = r ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : null;
     };
+    const centre = (): Point | null => rect;
+    measure();
+    const resizeObserver = new ResizeObserver(measure);
+    if (svgRef.current) resizeObserver.observe(svgRef.current);
 
     const aim = () => {
       if (reduceRef.current) {
@@ -121,6 +130,10 @@ export default function TruffyFace({
 
     const tick = () => {
       const now = performance.now();
+      // Re-measured here as well: a transform (the chat window scaling in)
+      // moves the face without resizing it, which ResizeObserver cannot see.
+      // At this clock's rate it stays well off the pointer path.
+      measure();
       const c = centre();
       currentMood = pickMood({
         hidden,
@@ -134,17 +147,29 @@ export default function TruffyFace({
       aim();
     };
 
-    const onMove = (e: PointerEvent) => {
+    // Pointer work is coalesced to one pass per frame: the handler only
+    // records the latest position, and the frame callback does the maths. A
+    // 1000Hz mouse costs the same as a 60Hz one.
+    let moveFrame = 0;
+    let pending: { x: number; y: number } | null = null;
+    const applyMove = () => {
+      moveFrame = 0;
+      if (!pending) return;
       const now = performance.now();
       if (last) {
         const dt = now - last.t;
-        const speed = dt > 0 ? Math.hypot(e.clientX - last.x, e.clientY - last.y) / dt : 0;
+        const speed = dt > 0 ? Math.hypot(pending.x - last.x, pending.y - last.y) / dt : 0;
         if (dt < 100 && speed > FACE.fastPxPerMs) lastFast = now;
       }
-      last = { x: e.clientX, y: e.clientY, t: now };
-      pointer = { x: e.clientX, y: e.clientY };
+      last = { x: pending.x, y: pending.y, t: now };
+      pointer = pending;
+      pending = null;
       lastActivity = now;
       aim();
+    };
+    const onMove = (e: PointerEvent) => {
+      pending = { x: e.clientX, y: e.clientY };
+      if (!moveFrame) moveFrame = requestAnimationFrame(applyMove);
     };
 
     const onDown = (e: PointerEvent) => {
@@ -188,11 +213,25 @@ export default function TruffyFace({
       aim();
     };
 
+    // The mood clock only runs while the tab is visible. One last tick on the
+    // way out lets the face look down; the clock restarts on return.
+    let interval: ReturnType<typeof setInterval> | undefined;
+    const startClock = () => {
+      if (!interval) interval = setInterval(tick, TICK_MS);
+    };
+    const stopClock = () => {
+      clearInterval(interval);
+      interval = undefined;
+    };
     const onVisibility = () => {
       hidden = document.hidden;
       if (!hidden) {
         backAt = performance.now();
         lastActivity = backAt;
+        measure();
+        startClock();
+      } else {
+        stopClock();
       }
       tick();
     };
@@ -203,7 +242,8 @@ export default function TruffyFace({
     window.addEventListener("keydown", onKey);
     window.addEventListener("mouseout", onLeave);
     document.addEventListener("visibilitychange", onVisibility);
-    const interval = setInterval(tick, TICK_MS);
+    window.addEventListener("resize", measure, { passive: true });
+    if (!hidden) startClock();
 
     return () => {
       window.removeEventListener("pointermove", onMove);
@@ -212,7 +252,10 @@ export default function TruffyFace({
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("mouseout", onLeave);
       document.removeEventListener("visibilitychange", onVisibility);
-      clearInterval(interval);
+      window.removeEventListener("resize", measure);
+      resizeObserver.disconnect();
+      cancelAnimationFrame(moveFrame);
+      stopClock();
       clearTimeout(tapTimer);
       clearTimeout(glanceTimer);
     };
