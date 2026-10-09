@@ -53,9 +53,9 @@ export const sideProjects: TSideProject[] = [
       "A daily tracker built around Indian food. Log a katori of dal instead of 143 grams of it, scan any pack for an honest A to E grade, and see what you have eaten against what you have burned. It began in 2025 as Eatri8.ai, a food label scanner, and was rebuilt and renamed in October 2026.",
     longDescription: `Santul means balance. The first version, Eatri8.ai, did one thing: read a photo of a food label and say how healthy it was. The rebuild keeps that and wraps a full tracker around it, because a grade is only useful next to what you actually ate that day.
 
-  Food comes from three open datasets (INDB, USDA FNDDS and Open Food Facts India), about 14,800 foods in all, with Indian dishes measured the way they are served: a katori, a roti, a glass. Barcodes resolve for free against the catalogue; a photo of a label or a plate is read by Gemini, and each of those costs one credit from a monthly allowance kept in a ledger.
+  You log food the way you eat it. Search for dal and add a katori, not a number of grams; a roti is a roti, a glass of milk is a glass. For anything in a packet, scan the barcode, or photograph the label or the plate and let the app read it. Every food gets a grade from A to E for your diet, allergies and goal, with the reasons written out underneath.
 
-  Workouts and weight sit beside the food rather than in a separate app. Log a gym session set by set, or a walk, and Today shows eaten, burned and what is left as one line.`,
+  Workouts and weight sit beside the food rather than in a separate app. Log a gym session set by set, or just a walk, and Today shows eaten, burned and what is left as one line.`,
     highlights: [
       "About 14,800 foods from three open datasets, with Indian dishes in real portions",
       "Scan a barcode for free, or photograph a label or a meal and have it read and graded A to E, with the reasons spelled out",
@@ -77,31 +77,20 @@ export const sideProjects: TSideProject[] = [
       role: "Design and engineering, end to end",
       year: "2026",
       overview:
-        "A mobile-first tracker for food, workouts and weight, personalised to a diet, allergies and a goal. Pages are rendered on the server for the first paint; search, sheets and the scanner run on the client through React Query.",
+        "A daily tracker for food, workouts and weight, made for how people in India actually eat. It is personal from the first screen: you tell it your diet, your allergies and your goal, and every grade, warning and target after that is worked out for you rather than for an average person.",
       problem:
         "Most trackers assume packaged Western food weighed in grams. Indian meals are cooked at home and served by the katori, so logging them means guessing. And a calorie count alone does not say whether a food is a good idea for this person, with this diet and these allergies.",
       constraints: [
-        "Nutrition data has to come from open sources, and the app has to say which",
-        "AI reads cost money per call, so they need a per-user allowance that cannot be gamed by deleting an account or looping refunds",
-        "It is used one-handed on a phone, so the primary action always sits in thumb reach",
-        "Nothing here is medical advice, and the copy has to keep saying so",
-      ],
-      architecture: [
-        "Next.js App Router on Vercel, Postgres on Neon through Drizzle, Google sign-in through Better Auth",
-        "One seeded catalogue from INDB, USDA FNDDS and Open Food Facts India; barcode misses fall through to the Open Food Facts API",
-        "Photo scans go to Gemini from memory and are never written to disk. A successful scan keeps one 480 px WebP in a private Cloudflare R2 bucket, served through short-lived signed URLs",
-        "Credits are a ledger, not a counter: every grant, debit and refund is a row with an idempotency key, so a retried request can never charge twice",
-        "The session rides in a signed cookie for five minutes, and the layout, the page and the services they call share one profile read per render",
+        "Logging a meal has to take seconds, or it never becomes a habit",
+        "It is used one-handed on a phone, so the main action always sits within thumb reach",
+        "A grade with no explanation is just a verdict. Every one has to say why",
+        "Nothing here is medical advice, and the app has to keep saying so",
       ],
       tradeoffs: [
         "Workouts are shown beside the food and never added back to the calorie target. Eating back exercise is the easiest way to undo a deficit",
-        "A deleted account leaves a hashed tombstone for the rest of the month, so signing up again does not reset the scan allowance. It holds no readable personal data and is pruned when the month ends",
-        "Signing out on one device can take up to five minutes to reach another. That is the price of not asking the database who you are on every request",
-      ],
-      performance: [
-        "Database queries to render Today went from 19 to 9, and the food search page from 11 to 3, mostly by not asking the same question twice in one render",
-        "The home page is static and each main page has a loading skeleton shaped like its content, so a tap paints at once",
-        "Visited pages are kept in the browser for a minute, and any save clears them",
+        "Five grades, A to E, instead of a score out of 100. A number that precise would claim more than the data can support",
+        "Scanning a barcode is always free; reading a photo is limited each month. The free path had to be good enough that most people never notice the limit",
+        "One way to sign in, with Google. No passwords to create or forget",
       ],
       lessons: [
         "The slow production site was geography, not code. The functions ran in the United States and the database in Singapore, so every query crossed an ocean. Counting queries per page was worth doing, but measuring where the time went came first.",
