@@ -8,7 +8,7 @@
 export const marginNotes: Record<string, { text: string; rotate: number }> = {
   shopos: { text: "three apps, one canvas", rotate: -4 },
   dehidden: { text: "1M users on launch day!", rotate: 3 },
-  santul: { text: "dal by the katori, not the gram", rotate: 3 },
+  santul: { text: "dal, by the katori", rotate: 3 },
   mehfil: { text: "Carvaan, but in your browser", rotate: -3 },
   kiryoku: { text: "a tiny proxy that says no", rotate: 2 },
 };

@@ -16,7 +16,7 @@ describe("marginNotes", () => {
     }
   });
   it("gives each project its own voice", () => {
-    expect(marginNotes.santul.text).toBe("dal by the katori, not the gram");
+    expect(marginNotes.santul.text).toBe("dal, by the katori");
     expect(marginNotes.mehfil.text).toBe("Carvaan, but in your browser");
     expect(marginNotes.kiryoku.text).toBe("a tiny proxy that says no");
   });
