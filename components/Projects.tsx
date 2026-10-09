@@ -8,7 +8,7 @@ import { ViewAllLink } from "@/components/common/ViewAllLink";
 import MarginNote from "@/components/common/MarginNote";
 
 /**
- * Two side projects, by name only. On hover or focus an underline draws in
+ * Three side projects, by name only. On hover or focus an underline draws in
  * under the name, a small arrow appears, and the thumbnail fades in at the
  * row's right end; touch
  * visitors get the names and the project page one tap away. The full list
