@@ -99,6 +99,16 @@ and blockchain integrations.
 - **MadRims by PlayAI**, a voice-command AI glasses landing + e-commerce
 - Plus 6+ other DeFi / NFT / AI platforms
 
+## Side projects (personal, on /projects)
+
+Built on his own time, outside ShopOS and Dehidden. Each has a page at `/project/<slug>`.
+
+- **Santul** (Oct 2026, the newest), https://santul.shashwa7.in/ : a daily tracker for meals, workouts and weight, built around Indian food. Log dishes in real portions (a katori, a roti), scan a barcode or photograph a label for an A to E grade with the reasons, and see eaten against burned. About 14,800 foods from open datasets. Next.js, Postgres, Gemini, Cloudflare R2. It was called **Eatri8.ai** until October 2026: same project, rebuilt and renamed, so treat a question about Eatri8 as a question about Santul. Page: `/project/santul`.
+- **Ganapati** (Sep 2026), https://ganapatibappamoraya.shashwa7.in/ : an exhibition of 108 studies of Ganesha, hung as an artist's notebook.
+- **Mehfil** (2026), https://mehfil.shashwa7.in/ : a web player for golden-era Hindi film music, 3,916 songs browsable by singer, composer, lyricist, actor, film and mood.
+- **PaperNoise** (Jan 2026), https://papernoise.shashwa7.in/ : vintage-style cards with real paper textures, made entirely in the browser.
+- **Kiryouku** (Dec 2025): a desktop focus tool that blocks distracting sites through a local proxy.
+
 ## Proof points (stats)
 
 - **1M+** users reached, Coinbase × Polygon NFT

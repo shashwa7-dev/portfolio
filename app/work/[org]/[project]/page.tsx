@@ -1,232 +1,133 @@
-"use client";
-
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, ArrowUpRight, ArrowSquareOut, Play } from "@phosphor-icons/react/ssr";
-import {  getOrganization, getProjectFromOrg } from "@/lib/workData";
+import { ArrowLeft } from "@phosphor-icons/react/ssr";
+import { getOrganization, getProjectFromOrg } from "@/lib/workData";
 import { ActiveBadge } from "@/components/common/ActiveBadge";
 import StackIcon from "@/components/common/StackIcon";
-import VideoModal from "@/components/common/VideoModal";
 import Container from "@/components/layout/Container";
-import { motion } from "motion/react";
-import { useState, use } from "react";
-import { slideUpVariants, stagger } from "@/lib/motionVariants";
+import Label from "@/components/layout/Label";
+import ProseGutter from "@/components/layout/ProseGutter";
+import ProjectMedia from "@/components/project/ProjectMedia";
 
-export default function WorkProjectPage(
-  props: {
-    params: Promise<{ org: string; project: string }>;
-  }
-) {
-  const params = use(props.params);
-  const { org: orgSlug, project: projectSlug } = params;
-  const org = getOrganization(orgSlug);
-  const project = getProjectFromOrg(orgSlug, projectSlug);
-  const [videoOpen, setVideoOpen] = useState(false);
+const LINKS = [
+  ["web", "Live"],
+  ["github", "GitHub"],
+  ["twitter", "Twitter"],
+  ["opensea", "OpenSea"],
+  ["other", "More"],
+] as const;
 
-  if (!org || !project) {
-    notFound();
-  }
+/**
+ * A project shipped at an organisation. Laid out like a side project's page
+ * (`app/project/[slug]/page.tsx`) so the two read as one family: a back link,
+ * a label line, the title, the media, then a gutter of facts (who it was built
+ * at, when, the stack as icons, links) beside the writing.
+ *
+ * A server component. The one interactive part, the preview video, lives in
+ * `ProjectMedia`. Metadata and the breadcrumb JSON-LD are in `layout.tsx`.
+ */
+export default async function WorkProjectPage(props: { params: Promise<{ org: string; project: string }> }) {
+  const params = await props.params;
+  const org = getOrganization(params.org);
+  const project = getProjectFromOrg(params.org, params.project);
+  if (!org || !project) return notFound();
 
   const stack = [...(project.stack.fe || []), ...(project.stack.be || [])];
+  const links = LINKS.flatMap(([key, label]) => (project.links?.[key] ? [{ label, href: project.links[key]! }] : []));
 
   return (
-    <main className="pt-8 md:pt-12 min-h-screen pb-8 md:pb-12">
+    <main className="pt-8 md:pt-12 pb-8 md:pb-12">
       <Container width="reading" className="space-y-8">
-        {/* Back link */}
-        <Link
-          href={`/work/${org.slug}`}
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-[color,transform] duration-150 ease-out active:scale-[0.97]"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to {org.name}
+        <Link href={`/work/${org.slug}`} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+          <ArrowLeft className="h-4 w-4" /> Back to {org.name}
         </Link>
 
-        {/* Header */}
-        <motion.div
-          variants={slideUpVariants}
-          initial="hidden"
-          animate="visible"
-          className="space-y-4"
-        >
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                {project.isActive && (
-                  <ActiveBadge label="Active Project" />
-                )}
-                {project.date && (
-                  <span className="text-sm text-muted-foreground">
-                    {project.date}
+        <div className="space-y-4">
+          <Label>{[`Built at ${org.name}`, project.date].filter(Boolean).join(" · ")}</Label>
+          <h1 className="text-[clamp(2.2rem,5vw,3rem)] font-medium leading-[1.03] tracking-tight">{project.title}</h1>
+          {project.metric && <p className="text-lg text-muted-foreground">{project.metric}</p>}
+        </div>
+
+        <ProjectMedia thumbnail={project.thumbnail} preview={project.preview} title={project.title} />
+
+        <ProseGutter
+          gutter={
+            <div className="space-y-5">
+              <div>
+                <div className="mb-1.5 font-mono text-2xs uppercase tracking-label text-subtle">Built at</div>
+                <Link href={`/work/${org.slug}`} className="inline-flex items-center gap-2 text-sm text-foreground hover:underline hover:decoration-border-strong hover:underline-offset-4">
+                  {/* Logos stay in colour; only thumbnails are greyscale. */}
+                  <span className="relative h-5 w-5 shrink-0 overflow-hidden rounded-md bg-elevated">
+                    <Image src={org.logo} alt="" fill sizes="20px" className="object-cover" />
                   </span>
-                )}
+                  {org.name}
+                </Link>
               </div>
-              <h1 className="text-3xl font-semibold tracking-tight">
-                {project.title}
-              </h1>
+              {project.date && <GutterItem k="When" v={project.date} />}
+              {project.isActive && (
+                <div>
+                  <div className="mb-1.5 font-mono text-2xs uppercase tracking-label text-subtle">Status</div>
+                  <ActiveBadge label="Active project" />
+                </div>
+              )}
+              <div>
+                <div className="mb-1.5 font-mono text-2xs uppercase tracking-label text-subtle">Stack</div>
+                {/* Marks only, each named by a tooltip (and by its aria-label for screen readers). */}
+                <div className="flex flex-wrap items-center gap-3">
+                  {stack.map((t) => (
+                    <StackIcon key={t} name={t} size={18} showLabel={false} showTooltip />
+                  ))}
+                </div>
+              </div>
+              {links.length > 0 && (
+                <div>
+                  <div className="mb-1.5 font-mono text-2xs uppercase tracking-label text-subtle">Links</div>
+                  <div className="flex flex-col gap-1 text-sm">
+                    {links.map((l) => (
+                      <a key={l.label} className="hover:text-foreground" href={l.href} target="_blank" rel="noopener noreferrer">
+                        {l.label} ↗
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
-
-          {/* Organization badge — links back to /work/[org] */}
-          <Link
-            href={`/work/${org.slug}`}
-            className="group inline-flex items-center gap-2 self-start rounded-lg border border-border bg-card px-2.5 py-1.5 transition-colors hover:border-border-strong"
-          >
-            {/* Logos stay in colour; only thumbnails are greyscale. */}
-            <span className="relative h-5 w-5 shrink-0 overflow-hidden rounded-md bg-elevated">
-              <Image
-                src={org.logo}
-                alt={org.name}
-                fill
-                sizes="20px"
-                className="object-cover"
-              />
-            </span>
-            <span className="text-sm text-muted-foreground transition-colors group-hover:text-foreground">
-              Built at <span className="font-semibold text-foreground">{org.name}</span>
-            </span>
-            <ArrowUpRight className="h-3.5 w-3.5 text-subtle transition-[color,transform] duration-base ease-out group-hover:-translate-y-0.5 group-hover:text-foreground" />
-          </Link>
-        </motion.div>
-
-        {/* Thumbnail / Video */}
-        <motion.div
-          variants={slideUpVariants}
-          initial="hidden"
-          animate="visible"
-          transition={{ delay: stagger.loose }}
-          className="relative aspect-video rounded-lg overflow-hidden bg-secondary group"
+          }
         >
-          <Image
-            src={project.thumbnail}
-            alt={project.title}
-            fill
-            className="object-cover grayscale candy:grayscale-0 transition-[filter] duration-base ease-out group-hover:grayscale-0"
-            priority
-          />
-          {project.preview && (
-            <button
-              onClick={() => setVideoOpen(true)}
-              className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity"
-            >
-              <div className="flex items-center gap-2 rounded-md bg-white px-4 py-2 text-black font-medium">
-                <Play className="w-5 h-5 fill-current" />
-                Watch Preview
-              </div>
-            </button>
-          )}
-        </motion.div>
+          <div className="space-y-9">
+            <section className="space-y-2">
+              <div className="font-mono text-2xs uppercase tracking-label text-foreground">Overview</div>
+              <h2 className="text-2xl">What it is</h2>
+              <p className="max-w-[62ch] text-base text-muted-foreground">{project.description}</p>
+            </section>
 
-        {/* Description */}
-        <motion.div
-          variants={slideUpVariants}
-          initial="hidden"
-          animate="visible"
-          transition={{ delay: stagger.loose * 2 }}
-          className="space-y-6"
-        >
-          <p className="text-muted-foreground leading-relaxed">
-            {project.description}
-          </p>
-
-          {/* Highlights */}
-          {project.highlights && project.highlights.length > 0 && (
-            <div className="space-y-3">
-              <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-label">
-                Key Features
-              </h2>
-              <ul className="space-y-2">
-                {project.highlights.map((highlight, idx) => (
-                  <li
-                    key={idx}
-                    className="flex items-start gap-3 text-sm text-muted-foreground"
-                  >
-                    <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-foreground shrink-0" />
-                    <span>{highlight}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Tech Stack */}
-          <div className="space-y-3">
-            <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-label">
-              Tech Stack
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {stack.map((tech) => (
-                <StackIcon key={tech} name={tech} showLabel />
-              ))}
-            </div>
+            {project.highlights && project.highlights.length > 0 && (
+              <section className="space-y-2">
+                <div className="font-mono text-2xs uppercase tracking-label text-foreground">Highlights</div>
+                <h2 className="text-2xl">Key features</h2>
+                <ul className="space-y-1.5">
+                  {project.highlights.map((line, i) => (
+                    <li key={i} className="flex gap-2.5 text-base text-muted-foreground">
+                      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-muted-foreground" />
+                      {line}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
           </div>
-
-          {/* Links */}
-          {project.links && Object.keys(project.links).length > 0 && (
-            <div className="space-y-3">
-              <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-label">
-                Links
-              </h2>
-              <div className="flex flex-wrap gap-3">
-                {project.links.web && (
-                  <a
-                    href={project.links.web}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-md bg-secondary px-4 py-2 text-sm transition-[color,background-color,transform] duration-fast ease-out hover:bg-secondary/80 active:scale-[0.97]"
-                  >
-                    <ArrowSquareOut className="w-4 h-4" />
-                    Visit Website
-                  </a>
-                )}
-                {project.links.github && (
-                  <a
-                    href={project.links.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-md bg-secondary px-4 py-2 text-sm transition-[color,background-color,transform] duration-fast ease-out hover:bg-secondary/80 active:scale-[0.97]"
-                  >
-                    <ArrowSquareOut className="w-4 h-4" />
-                    GitHub
-                  </a>
-                )}
-                {project.links.twitter && (
-                  <a
-                    href={project.links.twitter}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-md bg-secondary px-4 py-2 text-sm transition-[color,background-color,transform] duration-fast ease-out hover:bg-secondary/80 active:scale-[0.97]"
-                  >
-                    <ArrowSquareOut className="w-4 h-4" />
-                    Twitter
-                  </a>
-                )}
-                {project.links.opensea && (
-                  <a
-                    href={project.links.opensea}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-md bg-secondary px-4 py-2 text-sm transition-[color,background-color,transform] duration-fast ease-out hover:bg-secondary/80 active:scale-[0.97]"
-                  >
-                    <ArrowSquareOut className="w-4 h-4" />
-                    OpenSea
-                  </a>
-                )}
-              </div>
-            </div>
-          )}
-        </motion.div>
+        </ProseGutter>
       </Container>
-
-      {/* Video Modal */}
-      {project.preview && (
-        <VideoModal
-          isOpen={videoOpen}
-          onClose={() => setVideoOpen(false)}
-          videoUrl={project.preview}
-          title={project.title}
-        />
-      )}
     </main>
+  );
+}
+
+function GutterItem({ k, v }: { k: string; v: string }) {
+  return (
+    <div>
+      <div className="mb-1 font-mono text-2xs uppercase tracking-label text-subtle">{k}</div>
+      <div className="text-sm text-foreground">{v}</div>
+    </div>
   );
 }

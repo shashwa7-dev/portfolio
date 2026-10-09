@@ -43,11 +43,11 @@ describe("readingNow", () => {
 });
 
 describe("homeProjects", () => {
-  it("shows only Mehfil and Kiryoku, in that order", () => {
-    expect(homeProjects(sideProjects).map((p) => p.slug)).toEqual(["mehfil", "kiryoku"]);
+  it("shows only Santul, Mehfil and Kiryoku, in that order", () => {
+    expect(homeProjects(sideProjects).map((p) => p.slug)).toEqual(["santul", "mehfil", "kiryoku"]);
   });
   it("skips a listed slug that no longer exists instead of breaking", () => {
-    expect(homeProjects(sideProjects.filter((p) => p.slug !== "kiryoku")).map((p) => p.slug)).toEqual(["mehfil"]);
+    expect(homeProjects(sideProjects.filter((p) => p.slug !== "kiryoku")).map((p) => p.slug)).toEqual(["santul", "mehfil"]);
   });
 });
 

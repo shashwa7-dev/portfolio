@@ -6,17 +6,10 @@ import { baseUrl } from "@/app/sitemap";
  * Carries this route's server-only metadata: the breadcrumb JSON-LD, and the
  * page metadata including its OG card.
  *
- * The metadata has to live here for the same reason the JSON-LD does. A client
- * component cannot export `generateMetadata`, so before this the case-study pages
- * had no OG image of their own and fell back to the site-wide default, meaning
- * every shared case study looked identical.
- *
- * The page itself is a client component (`"use client"`, for the video modal's
- * `useState` and its motion variants), and `lib/seo.ts` reads `baseUrl` from
- * `app/sitemap.ts`, which imports `app/blogs/utils.ts` and its `fs` usage.
- * Importing the helper into the client page would therefore pull `fs` into the
- * browser bundle. A server layout gets the same `params` and keeps the boundary
- * where it belongs, without having to refactor the page.
+ * It predates the page becoming a server component: the page used to be a
+ * client one, which cannot export `generateMetadata`. The page could carry
+ * this itself now; it stays here so the page file is only the layout of the
+ * content, and so every shared case study keeps its own OG card.
  */
 export async function generateMetadata(
   props: {

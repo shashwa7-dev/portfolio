@@ -44,10 +44,71 @@ export type TSideProject = {
 
 export const sideProjects: TSideProject[] = [
   {
+    id: "santul",
+    slug: "santul",
+    title: "Santul",
+    isRecent: true,
+    tagline: "Meals, workouts and weight, kept in balance.",
+    description:
+      "A daily tracker built around Indian food. Log a katori of dal instead of 143 grams of it, scan any pack for an honest A to E grade, and see what you have eaten against what you have burned. It began in 2025 as Eatri8.ai, a food label scanner, and was rebuilt and renamed in October 2026.",
+    longDescription: `Santul means balance. The first version, Eatri8.ai, did one thing: read a photo of a food label and say how healthy it was. The rebuild keeps that and wraps a full tracker around it, because a grade is only useful next to what you actually ate that day.
+
+  You log food the way you eat it. Search for dal and add a katori, not a number of grams; a roti is a roti, a glass of milk is a glass. For anything in a packet, scan the barcode, or photograph the label or the plate and let the app read it. Every food gets a grade from A to E for your diet, allergies and goal, with the reasons written out underneath.
+
+  Workouts and weight sit beside the food rather than in a separate app. Log a gym session set by set, or just a walk, and Today shows eaten, burned and what is left as one line.`,
+    highlights: [
+      "About 14,800 foods from three open datasets, with Indian dishes in real portions",
+      "Scan a barcode for free, or photograph a label or a meal and have it read and graded A to E, with the reasons spelled out",
+      "Live gym sessions with sets, personal records and a weekly goal, plus a 30-day weight trend",
+      "One energy line for the day: eaten, minus burned, equals what is left",
+    ],
+    thumbnail: "/projects/project_santul.jpg",
+    date: "Oct 2026",
+    links: {
+      web: "https://santul.shashwa7.in/",
+      github: "https://github.com/shashwa7-dev/food-analyzer",
+    },
+    stack: {
+      fe: ["next", "react", "typescript", "tailwind", "shadcn", "reactQuery"],
+      be: ["postgres", "googleGemini", "cloudflare", "vercel", "vitest"],
+    },
+    tags: ["Health", "AI", "Next.js"],
+    caseStudy: {
+      role: "Design and engineering, end to end",
+      year: "2026",
+      overview:
+        "A daily tracker for food, workouts and weight, made for how people in India actually eat. It is personal from the first screen: you tell it your diet, your allergies and your goal, and every grade, warning and target after that is worked out for you rather than for an average person.",
+      problem:
+        "Most trackers assume packaged Western food weighed in grams. Indian meals are cooked at home and served by the katori, so logging them means guessing. And a calorie count alone does not say whether a food is a good idea for this person, with this diet and these allergies.",
+      constraints: [
+        "Logging a meal has to take seconds, or it never becomes a habit",
+        "It is used one-handed on a phone, so the main action always sits within thumb reach",
+        "A grade with no explanation is just a verdict. Every one has to say why",
+        "Nothing here is medical advice, and the app has to keep saying so",
+      ],
+      architecture: [
+        "A Next.js app on Vercel, written in TypeScript with Tailwind and shadcn/ui. Sign-in is Google only",
+        "Everything you log (meals, workouts, weight, your profile) lives in a Postgres database on Neon",
+        "The food catalogue is seeded from three open datasets: INDB for Indian dishes, USDA FNDDS, and Open Food Facts India for packaged food. A barcode that is not in it is looked up live on Open Food Facts",
+        "Photo scans are read by Google Gemini. The photos themselves are never saved: a successful scan keeps one small image, 480 px wide, in a private Cloudflare R2 bucket, and deleting the scan or the account deletes it",
+      ],
+      tradeoffs: [
+        "Workouts are shown beside the food and never added back to the calorie target. Eating back exercise is the easiest way to undo a deficit",
+        "Five grades, A to E, instead of a score out of 100. A number that precise would claim more than the data can support",
+        "Scanning a barcode is always free; reading a photo is limited each month. The free path had to be good enough that most people never notice the limit",
+        "One way to sign in, with Google. No passwords to create or forget",
+      ],
+      lessons: [
+        "The slow production site was geography, not code. The functions ran in the United States and the database in Singapore, so every query crossed an ocean. Counting queries per page was worth doing, but measuring where the time went came first.",
+        "A check that only passes on your own machine is not a check. One test kept failing in CI, unnoticed, because it relied on an environment variable being unset, which it never is there.",
+        "Errors that are swallowed turn into mysteries. Sign-out quietly stopped working after a domain change because the failure was ignored and the user was sent back into the app.",
+      ],
+    },
+  },
+  {
     id: "ganapati",
     slug: "ganapati",
     title: "Ganapati",
-    isRecent: true,
     tagline: "A sketchbook of Ganesha studies, hung in two pages.",
     description:
       "An exhibition of 108 studies of Ganesha, catalogued by posture, material, trunk, companion and offering, pinned into an artist's notebook with margin notes, parallax and a like on every work. A second page tells the story of the festival: why he comes home, how it travelled, Lalbaugcha Raja, the hundred and eight names, and visarjan.",
@@ -223,32 +284,6 @@ I built this after seeing similar features as premium offerings in apps like sta
     },
     thumbnail: "/projects/kiryoku.webp",
     date: "Dec 2025",
-  },
-  {
-    id: "eatri8",
-    slug: "eatri8-ai",
-    title: "Eatri8.ai",
-    tagline: "AI-powered food health assessment",
-    description:
-      "Health assessment app using Google Gemini AI to analyze food products from label images.",
-    longDescription: `Eatri8.ai helps users make informed dietary decisions by analyzing food product labels using AI. Simply upload a photo of a food label, and the app provides:
-
-Built with Next.js and powered by Google Gemini Flash 1.5, the app processes images in real-time to extract and analyze nutritional information.`,
-    highlights: [
-      "Google Gemini Flash 1.5 AI integration",
-      "Real-time image processing",
-      "Nutritional analysis and scoring",
-      "Personalized consumption advice",
-    ],
-    stack: {
-      fe: ["next", "typescript", "googleGemini", "tailwind", "shadcn"],
-    },
-    links: {
-      github: "https://github.com/shashwa7-dev/food-analyzer",
-    },
-    preview: "/projects/preview_eatri8.mp4",
-    thumbnail: "/projects/project_eatri8.JPG",
-    date: "Jul 2025",
   },
 ];
 
