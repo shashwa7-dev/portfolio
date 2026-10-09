@@ -107,9 +107,10 @@ export default async function ProjectPage(props: { params: Promise<{ slug: strin
               {cs.year && <GutterItem k="Year" v={cs.year} />}
               <div>
                 <div className="mb-1.5 font-mono text-2xs uppercase tracking-label text-subtle">Stack</div>
-                <div className="flex flex-wrap gap-2">
+                {/* Marks only, each named by a tooltip (and by its aria-label for screen readers). */}
+                <div className="flex flex-wrap items-center gap-3">
                   {stack.map((t) => (
-                    <StackIcon key={t} name={t} size={14} showLabel />
+                    <StackIcon key={t} name={t} size={18} showLabel={false} showTooltip />
                   ))}
                 </div>
               </div>
