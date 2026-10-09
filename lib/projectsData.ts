@@ -103,11 +103,6 @@ export const sideProjects: TSideProject[] = [
         "The home page is static and each main page has a loading skeleton shaped like its content, so a tap paints at once",
         "Visited pages are kept in the browser for a minute, and any save clears them",
       ],
-      results: [
-        { value: "14,800", caption: "foods, with Indian dishes in real portions" },
-        { value: "19 to 9", caption: "database queries to render the Today page" },
-        { value: "1,000+", caption: "automated tests, unit and integration" },
-      ],
       lessons: [
         "The slow production site was geography, not code. The functions ran in the United States and the database in Singapore, so every query crossed an ocean. Counting queries per page was worth doing, but measuring where the time went came first.",
         "A check that only passes on your own machine is not a check. One test had been failing in CI for days because it relied on an environment variable being unset, which it never is there.",
