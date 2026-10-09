@@ -238,7 +238,7 @@ import Section from "@/components/layout/Section";
   loop length `--duration-ticker`. Pauses on hover; static and wrapped under
   reduced motion.
 - `MarginNote` (`components/common/`): a short handwritten note in Caveat
-  beside a homepage row, from `lib/marginNotes.ts`. Four at most. Right margin
+  beside a homepage row, from `lib/marginNotes.ts`. Five at most. Right margin
   from `lg`, inline below it.
 
 ### Bento
