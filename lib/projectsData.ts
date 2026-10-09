@@ -86,6 +86,12 @@ export const sideProjects: TSideProject[] = [
         "A grade with no explanation is just a verdict. Every one has to say why",
         "Nothing here is medical advice, and the app has to keep saying so",
       ],
+      architecture: [
+        "A Next.js app on Vercel, written in TypeScript with Tailwind and shadcn/ui. Sign-in is Google only",
+        "Everything you log (meals, workouts, weight, your profile) lives in a Postgres database on Neon",
+        "The food catalogue is seeded from three open datasets: INDB for Indian dishes, USDA FNDDS, and Open Food Facts India for packaged food. A barcode that is not in it is looked up live on Open Food Facts",
+        "Photo scans are read by Google Gemini. The photos themselves are never saved: a successful scan keeps one small image, 480 px wide, in a private Cloudflare R2 bucket, and deleting the scan or the account deletes it",
+      ],
       tradeoffs: [
         "Workouts are shown beside the food and never added back to the calorie target. Eating back exercise is the easiest way to undo a deficit",
         "Five grades, A to E, instead of a score out of 100. A number that precise would claim more than the data can support",
