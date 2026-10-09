@@ -94,7 +94,7 @@ export const sideProjects: TSideProject[] = [
       ],
       lessons: [
         "The slow production site was geography, not code. The functions ran in the United States and the database in Singapore, so every query crossed an ocean. Counting queries per page was worth doing, but measuring where the time went came first.",
-        "A check that only passes on your own machine is not a check. One test had been failing in CI for days because it relied on an environment variable being unset, which it never is there.",
+        "A check that only passes on your own machine is not a check. One test kept failing in CI, unnoticed, because it relied on an environment variable being unset, which it never is there.",
         "Errors that are swallowed turn into mysteries. Sign-out quietly stopped working after a domain change because the failure was ignored and the user was sent back into the app.",
       ],
     },
