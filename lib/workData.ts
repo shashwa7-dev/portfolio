@@ -100,7 +100,7 @@ export const organizations: TOrganization[] = [
       "ShopOS: an AI workspace where brands run agents for marketing, creative, storefront and GEO. Its enterprise review is used by Celio, Bear House and Holy Drip.",
     ],
     products: [
-      { name: "Sloosh", logo: "/images/sloosh.png" },
+      { name: "Sloosh", logo: "/images/sloosh.png", link: "https://sloosh.ai/" },
       { name: "Spacelab", logo: "/images/spacelab.svg" },
       { name: "ShopOS", logo: "/images/shopos.jpeg", link: "https://app.shopos.ai/" },
     ],

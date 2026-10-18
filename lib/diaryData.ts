@@ -23,6 +23,8 @@ export type TDiaryEntry = {
   date: string;
   /** Product mark shown beside the title. */
   logo?: string;
+  /** The live product, shown as "Live ↗" in the meta line. */
+  link?: string;
   context?: string;
   contributions: string[];
   impact?: string;
@@ -47,6 +49,7 @@ export const diaries: TOrgDiary[] = [
         id: "sloosh",
         title: "Sloosh",
         logo: "/images/sloosh.png",
+        link: "https://sloosh.ai/",
         summary:
           "The creator app from ShopOS. Pick a space, fill in the inputs, get the outcome.",
         date: "Sep 2026",

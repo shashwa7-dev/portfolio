@@ -365,6 +365,15 @@
   /* Mirror duration.phraseStart / phraseHold (the intro headline's cycle). */
   --duration-phrase-start: 1500ms;
   --duration-phrase-hold: 3500ms;
+  /* Mirrors duration.liveSheen (the Live link's shimmer loop). */
+  --duration-live-sheen: 2800ms;
+  /* Mirror duration.gogglesOn / gogglesOff / gogglesGlint (the hero goggles).
+     On overshoots so they settle onto the face; off accelerates out of frame. */
+  --duration-goggles-on: 420ms;
+  --duration-goggles-off: 240ms;
+  --duration-goggles-glint: 650ms;
+  --ease-goggles-on: cubic-bezier(0.3, 1.4, 0.5, 1);
+  --ease-goggles-off: cubic-bezier(0.5, 0, 0.75, 0);
 }
 
 /* The dice on /card. The dice are made of the card's own paper. These
@@ -870,3 +879,117 @@ table {
   }
 }
 
+/* ── Live link shimmer ──────────────────────────────────────────────────
+   A light band sweeping over LiveLink's label and arrow, on a loop. It is a
+   mask rather than a gradient fill so the arrow icon catches the same light
+   as the text. Between sweeps everything sits
+   a little dimmed; the band lifts it to full strength as it passes. The
+   sweep takes the first ~45% of the cycle, then the label rests. */
+@layer components {
+  .live-shimmer {
+    -webkit-mask-image: linear-gradient(100deg, rgb(0 0 0 / var(--sheen-rest, 0.4)) 36%, #000 50%, rgb(0 0 0 / var(--sheen-rest, 0.4)) 64%);
+    mask-image: linear-gradient(100deg, rgb(0 0 0 / var(--sheen-rest, 0.4)) 36%, #000 50%, rgb(0 0 0 / var(--sheen-rest, 0.4)) 64%);
+    -webkit-mask-size: 300% 100%;
+    mask-size: 300% 100%;
+    -webkit-mask-position: 100% 0;
+    mask-position: 100% 0;
+    animation: live-sheen var(--duration-live-sheen) linear infinite;
+  }
+  .group:hover .live-shimmer {
+    -webkit-mask-image: linear-gradient(100deg, rgb(0 0 0 / 0.7) 36%, #000 50%, rgb(0 0 0 / 0.7) 64%);
+    mask-image: linear-gradient(100deg, rgb(0 0 0 / 0.7) 36%, #000 50%, rgb(0 0 0 / 0.7) 64%);
+  }
+  @keyframes live-sheen {
+    0% { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
+    45%, 100% { -webkit-mask-position: 0% 0; mask-position: 0% 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .live-shimmer,
+    .group:hover .live-shimmer {
+      animation: none;
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+  }
+}
+
+/* ── Hero goggles ───────────────────────────────────────────────────────
+   Slide onto the portrait on hover (AvatarHover + Goggles). Placed in percent
+   of the photo, measured from its glasses: lens centres 32/180 apart at
+   y 74/180, midpoint x 92.5/180. In the 200 x 176 drawing the lens centres
+   are 76 apart at y 134, which gives the width, left and top below. At rest
+   they sit above the frame and the photo's overflow-hidden hides them.
+   `translate`, not `transform`, so nothing stacks with a Tailwind translate.
+   Hover only where hover is real, so a tap on a phone never leaves them stuck. */
+@layer components {
+  .goggles {
+    position: absolute;
+    left: 28%;
+    top: 9.7%;
+    width: 46.8%;
+    aspect-ratio: 200 / 176;
+    pointer-events: none;
+    translate: 0 -130%;
+    transition: translate var(--duration-goggles-off) var(--ease-goggles-off);
+  }
+  .goggles-glint {
+    translate: -90px 0;
+  }
+  @keyframes goggles-glint {
+    to { translate: 230px 0; }
+  }
+  @media (hover: hover) {
+    .group:hover .goggles {
+      translate: 0 0;
+      transition: translate var(--duration-goggles-on) var(--ease-goggles-on);
+    }
+    .group:hover .goggles .goggles-glint {
+      animation: goggles-glint var(--duration-goggles-glint) var(--ease-out) var(--duration-goggles-on) forwards;
+    }
+  }
+  /* Reduced motion: no slide and no glint, the goggles just fade on and off. */
+  @media (prefers-reduced-motion: reduce) {
+    .goggles {
+      translate: none;
+      opacity: 0;
+      transition: opacity var(--duration-base) var(--ease-out);
+    }
+    .group:hover .goggles {
+      translate: none;
+      opacity: 1;
+      transition: opacity var(--duration-base) var(--ease-out);
+    }
+    .goggles-glint {
+      display: none;
+    }
+  }
+}
+
+/* ── Hero stamp ─────────────────────────────────────────────────────────
+   The portrait as a postage stamp (About.tsx). The perforations are a mask:
+   a grid of holes tiled from half a pitch outside the box, so each hole is
+   centred on the edge and bites a half circle out of it, plus a solid fill
+   for everything inside that border strip. `round` resizes the tile so the
+   holes land evenly on both ends of each side. */
+@layer components {
+  .stamp-edge {
+    --stamp-hole: 1.5px;
+    --stamp-pitch: 5px;
+    --stamp-mask:
+      radial-gradient(circle var(--stamp-hole) at center, #0000 96%, #000)
+        calc(var(--stamp-pitch) / -2) calc(var(--stamp-pitch) / -2) / var(--stamp-pitch) var(--stamp-pitch) round,
+      linear-gradient(#000 0 0) center / calc(100% - var(--stamp-pitch)) calc(100% - var(--stamp-pitch)) no-repeat;
+    -webkit-mask: var(--stamp-mask);
+    mask: var(--stamp-mask);
+  }
+  /* The OPEN postmark: dark ink, multiplied so it reads like a print on the
+     paper and the photo's white, and vanishes into dark pixels. It is always
+     on white paper, so one ink works in both themes. Rests brighter between
+     shimmer sweeps than a Live link does, so the mark never fades out. */
+  .postmark {
+    color: hsl(30 7% 11%);
+    opacity: 0.62;
+    mix-blend-mode: multiply;
+    --sheen-rest: 0.55;
+  }
+}

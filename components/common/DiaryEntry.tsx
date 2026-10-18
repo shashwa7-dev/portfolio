@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Lightning } from "@phosphor-icons/react/ssr";
+import LiveLink from "@/components/common/LiveLink";
 import Label from "@/components/layout/Label";
 import Callout from "@/components/common/Callout";
 import StackIcon from "@/components/common/StackIcon";
@@ -14,7 +15,7 @@ import type { TDiaryEntry, TDiaryMedia } from "@/lib/diaryData";
  * Three parts, top to bottom:
  * 1. Masthead: the product mark (optional: an entry whose mark would just
  *    repeat the org logo leaves it out), title and summary, then a meta line
- *    (position when there is more than one entry, date) and the stack. The stack lives in
+ *    (position when there is more than one entry, date, live link) and the stack. The stack lives in
  *    the masthead so the entry ends on its media or Impact, not on chips.
  * 2. Body: context as an unlabelled lede, then the contributions as a
  *    definition list. Contributions are written "Feature: what it does", and
@@ -54,6 +55,12 @@ export default function DiaryEntry({
               </>
             )}
             <span>{entry.date}</span>
+            {entry.link && (
+              <>
+                <span aria-hidden className="text-border-strong">·</span>
+                <LiveLink href={entry.link} />
+              </>
+            )}
           </div>
           {entry.stack && entry.stack.length > 0 && (
             <div className="flex flex-wrap gap-1.5">

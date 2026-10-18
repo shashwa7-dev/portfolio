@@ -69,7 +69,7 @@ function serializeEntry(entry: TDiaryEntry, index: number): string[] {
   const lines: string[] = [
     `### ${num} · ${entry.title}`,
     "",
-    `*${entry.date}*`,
+    entry.link ? `*${entry.date}* · [Live](${entry.link})` : `*${entry.date}*`,
     "",
     entry.summary,
     "",

@@ -77,6 +77,20 @@ export const duration = {
    */
   handRise: 0.9,
   handSway: 1.8,
+  /**
+   * One cycle of the Live link's shimmer (LiveLink.tsx): a sweep, then a
+   * rest. Ambient and looping on purpose, since that link is meant to be
+   * noticed, so outside the UI budget. Stops under reduced motion.
+   */
+  liveSheen: 2.8,
+  /**
+   * The hero goggles (AvatarHover). They slide on with a small overshoot and
+   * off faster, accelerating out of frame. Mirrored as --duration-goggles-*.
+   */
+  gogglesOn: 0.42,
+  gogglesOff: 0.24,
+  /** The one glint across the goggles' lenses after they land. */
+  gogglesGlint: 0.65,
 } as const;
 
 /** Per-item stagger offsets (seconds). Use instead of literal `i * 0.05`. */

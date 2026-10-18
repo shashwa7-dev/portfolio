@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import LiveLink from "@/components/common/LiveLink";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft } from "@phosphor-icons/react/ssr";
@@ -34,7 +35,7 @@ export default async function WorkProjectPage(props: { params: Promise<{ org: st
   if (!org || !project) return notFound();
 
   const stack = [...(project.stack.fe || []), ...(project.stack.be || [])];
-  const links = LINKS.flatMap(([key, label]) => (project.links?.[key] ? [{ label, href: project.links[key]! }] : []));
+  const links = LINKS.flatMap(([key, label]) => (project.links?.[key] ? [{ key, label, href: project.links[key]! }] : []));
 
   return (
     <main className="pt-8 md:pt-12 pb-8 md:pb-12">
@@ -84,11 +85,15 @@ export default async function WorkProjectPage(props: { params: Promise<{ org: st
                 <div>
                   <div className="mb-1.5 font-mono text-2xs uppercase tracking-label text-subtle">Links</div>
                   <div className="flex flex-col gap-1 text-sm">
-                    {links.map((l) => (
-                      <a key={l.label} className="hover:text-foreground" href={l.href} target="_blank" rel="noopener noreferrer">
-                        {l.label} ↗
-                      </a>
-                    ))}
+                    {links.map((l) =>
+                      l.key === "web" ? (
+                        <LiveLink key={l.label} href={l.href} />
+                      ) : (
+                        <a key={l.label} className="hover:text-foreground" href={l.href} target="_blank" rel="noopener noreferrer">
+                          {l.label} ↗
+                        </a>
+                      )
+                    )}
                   </div>
                 </div>
               )}
