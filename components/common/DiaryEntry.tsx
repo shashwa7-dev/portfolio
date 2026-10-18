@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { ArrowUpRight, Lightning } from "@phosphor-icons/react/ssr";
+import { ArrowUpRight, Lightning, Star } from "@phosphor-icons/react/ssr";
 import Shimmer from "@/components/common/Shimmer";
 import Label from "@/components/layout/Label";
 import Callout from "@/components/common/Callout";
@@ -58,14 +58,14 @@ export default function DiaryEntry({
             {entry.link && (
               <>
                 <span aria-hidden className="text-border-strong">·</span>
-                {/* Same shape as ActiveBadge (bordered, green dot) so "live"
-                    reads alike site-wide; the sheen fires once per hover. */}
+                {/* Same bordered shape as ActiveBadge, with a star in the
+                    margin notes' amber; the sheen fires once per hover. */}
                 <a href={entry.link} target="_blank" rel="noopener noreferrer" className="group whitespace-nowrap">
                   <Shimmer
                     tone="surface"
                     className="inline-flex items-center gap-1.5 rounded-sm border border-border-strong px-2 py-0.5 font-medium text-foreground transition-colors group-hover:border-foreground/40"
                   >
-                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" aria-hidden />
+                    <Star size={11} weight="fill" aria-hidden className="shrink-0 text-amber-700 transition-transform duration-med ease-out group-hover:rotate-[72deg] dark:text-amber-300" />
                     Live
                     <ArrowUpRight size={10} weight="bold" aria-hidden className="transition-transform group-hover:-translate-y-px group-hover:translate-x-px" />
                   </Shimmer>

@@ -76,9 +76,13 @@ const config: Config = {
         },
         // Travels a full width past each edge so the sheen enters and leaves
         // completely, rather than appearing and vanishing inside the surface.
+        // Animates `translate`, not `transform`: Shimmer parks the sheen with
+        // `-translate-x-full`, which Tailwind 4 writes to `translate`. With
+        // `transform` here the two added up, so the sweep ran -200% to 0% and
+        // stopped on top of the surface before snapping away.
         shimmer: {
-          from: { transform: "translateX(-100%)" },
-          to: { transform: "translateX(100%)" },
+          from: { translate: "-100% 0" },
+          to: { translate: "100% 0" },
         },
       },
       container: {
