@@ -1,25 +1,21 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Goggles, { GOGGLES } from "@/components/common/Goggles";
+import Goggles from "@/components/common/Goggles";
 import Postmark from "@/components/common/Postmark";
-import { duration } from "@/lib/motionVariants";
 
 /**
- * The hero avatar. On hover a pair of goggles slides down onto the portrait's
- * glasses, and slides back up out of frame when the pointer leaves.
+ * The hero avatar. On hover a pair of goggles (a matte black visor) slides
+ * down onto the portrait's glasses, and slides back up out of frame when the
+ * pointer leaves.
  *
- * Each hover brings the next of four looks (`GOGGLES`: gold round, chrome
- * oval, stealth visor, volt hex). The swap waits until the goggles have slid
- * fully out, so nobody sees one pair turn into another. Every page load starts
- * on gold.
+ * A client component only because the drawings take ids from `useId`.
  *
  * The goggles sit inside their own `overflow-hidden` layer the size of the
  * photo, so at rest they are simply above the frame, not hidden by opacity.
  * They are placed in percent of the photo, measured from the portrait's own
- * glasses, so they line up at any size. The motion and placement live in `.goggles` in globals.css. It is
- * hover only: touch never fires it, and under reduced motion the goggles fade
- * instead of sliding.
+ * glasses, so they line up at any size. The motion and placement live in
+ * `.goggles` in globals.css. It is hover only: touch never fires it, and under
+ * reduced motion the goggles fade instead of sliding.
  *
  * This replaced an animated GIF on hover, about 1MB, which only played for
  * mouse users anyway.
@@ -41,32 +37,11 @@ import { duration } from "@/lib/motionVariants";
  * matches every other image surface in the app. The goggles stay in colour.
  */
 export default function AvatarHover() {
-  const [look, setLook] = useState(0);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => () => {
-    if (timer.current) clearTimeout(timer.current);
-  }, []);
-
-  const pair = GOGGLES[look];
-
   return (
     <div
       /* No edge here. The stamp's perforated paper in About.tsx is the edge,
          and it clips everything in this box to its shape. */
       className="group relative h-16 w-16"
-      onPointerEnter={() => {
-        // Back in before the last swap fired: keep the pair that is sliding out.
-        if (timer.current) clearTimeout(timer.current);
-        timer.current = null;
-      }}
-      onPointerLeave={(e) => {
-        if (e.pointerType !== "mouse") return;
-        timer.current = setTimeout(() => {
-          setLook((i) => (i + 1) % GOGGLES.length);
-          timer.current = null;
-        }, duration.gogglesOff * 1000);
-      }}
     >
       {/* The portrait has its own file. It used to be served from
           `/apple-touch-icon.png`, which meant the hero's face and the home
@@ -84,7 +59,7 @@ export default function AvatarHover() {
           trimmed away by the stamp's perforated mask. */}
       <Postmark className="postmark live-shimmer absolute -right-2.75 -top-2.75 h-8.5 w-8.5" />
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <Goggles key={look} shape={pair.shape} colour={pair.colour} className="goggles" />
+        <Goggles className="goggles" />
       </div>
     </div>
   );

@@ -85,9 +85,7 @@ export const duration = {
   liveSheen: 2.8,
   /**
    * The hero goggles (AvatarHover). They slide on with a small overshoot and
-   * off faster, accelerating out of frame. `gogglesOff` is also the wait
-   * before the next pair is swapped in, so the swap is never seen: keep it
-   * equal to `--duration-goggles-off`.
+   * off faster, accelerating out of frame. Mirrored as --duration-goggles-*.
    */
   gogglesOn: 0.42,
   gogglesOff: 0.24,
