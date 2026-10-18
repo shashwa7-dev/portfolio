@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import LiveLink from "@/components/common/LiveLink";
 import Link from "next/link";
 import { ArrowLeft } from "@phosphor-icons/react/ssr";
 import { getSideProject, getAllSideProjects } from "@/lib/projectsData";
@@ -118,7 +119,7 @@ export default async function ProjectPage(props: { params: Promise<{ slug: strin
                 <div>
                   <div className="mb-1.5 font-mono text-2xs uppercase tracking-label text-subtle">Links</div>
                   <div className="flex flex-col gap-1 text-sm">
-                    {project.links.web && <a className="hover:text-foreground" href={project.links.web} target="_blank" rel="noopener noreferrer">Live ↗</a>}
+                    {project.links.web && <LiveLink href={project.links.web} />}
                     {project.links.github && <a className="hover:text-foreground" href={project.links.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a>}
                     {project.links.download && <a className="hover:text-foreground" href={project.links.download} target="_blank" rel="noopener noreferrer">Download ↗</a>}
                     {project.links.producthunt && <a className="hover:text-foreground" href={project.links.producthunt} target="_blank" rel="noopener noreferrer">Product Hunt ↗</a>}

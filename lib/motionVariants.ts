@@ -77,6 +77,12 @@ export const duration = {
    */
   handRise: 0.9,
   handSway: 1.8,
+  /**
+   * One cycle of the Live link's shimmer (LiveLink.tsx): a sweep, then a
+   * rest. Ambient and looping on purpose, since that link is meant to be
+   * noticed, so outside the UI budget. Stops under reduced motion.
+   */
+  liveSheen: 2.8,
 } as const;
 
 /** Per-item stagger offsets (seconds). Use instead of literal `i * 0.05`. */

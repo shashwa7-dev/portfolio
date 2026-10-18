@@ -365,6 +365,8 @@
   /* Mirror duration.phraseStart / phraseHold (the intro headline's cycle). */
   --duration-phrase-start: 1500ms;
   --duration-phrase-hold: 3500ms;
+  /* Mirrors duration.liveSheen (the Live link's shimmer loop). */
+  --duration-live-sheen: 2800ms;
 }
 
 /* The dice on /card. The dice are made of the card's own paper. These
@@ -870,3 +872,36 @@ table {
   }
 }
 
+/* ── Live link shimmer ──────────────────────────────────────────────────
+   A light band sweeping over LiveLink's label and icons, on a loop. It is a
+   mask rather than a gradient fill so the icons catch the same light as the
+   text, and so the star keeps its own amber. Between sweeps everything sits
+   a little dimmed; the band lifts it to full strength as it passes. The
+   sweep takes the first ~45% of the cycle, then the label rests. */
+@layer components {
+  .live-shimmer {
+    -webkit-mask-image: linear-gradient(100deg, rgb(0 0 0 / 0.4) 36%, #000 50%, rgb(0 0 0 / 0.4) 64%);
+    mask-image: linear-gradient(100deg, rgb(0 0 0 / 0.4) 36%, #000 50%, rgb(0 0 0 / 0.4) 64%);
+    -webkit-mask-size: 300% 100%;
+    mask-size: 300% 100%;
+    -webkit-mask-position: 100% 0;
+    mask-position: 100% 0;
+    animation: live-sheen var(--duration-live-sheen) linear infinite;
+  }
+  .group:hover .live-shimmer {
+    -webkit-mask-image: linear-gradient(100deg, rgb(0 0 0 / 0.7) 36%, #000 50%, rgb(0 0 0 / 0.7) 64%);
+    mask-image: linear-gradient(100deg, rgb(0 0 0 / 0.7) 36%, #000 50%, rgb(0 0 0 / 0.7) 64%);
+  }
+  @keyframes live-sheen {
+    0% { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
+    45%, 100% { -webkit-mask-position: 0% 0; mask-position: 0% 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .live-shimmer,
+    .group:hover .live-shimmer {
+      animation: none;
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+  }
+}
