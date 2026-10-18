@@ -3,7 +3,6 @@ import { Check, ArrowRight, Coffee } from "@phosphor-icons/react/ssr";
 import Container from "@/components/layout/Container";
 import AvatarHover from "@/components/AvatarHover";
 import LocalTime from "@/components/LocalTime";
-import Shimmer from "@/components/common/Shimmer";
 import Label from "@/components/layout/Label";
 import {
   Tooltip,
@@ -56,85 +55,48 @@ export default function About() {
       <Container width="reading">
         <div className="relative space-y-6 sm:space-y-7">
           <div className="flex items-start gap-3.5">
-            {/* Availability rides the avatar, LinkedIn style, instead of taking a
-                row of its own as a pill.
+            {/* The portrait is a postage stamp: a white perforated edge
+                (`.stamp-edge` in globals.css) around a square photo, postmarked
+                "OPEN" in the top-right corner (Postmark, inside AvatarHover).
+                The postmark replaced a dark "Open" band along the bottom; the
+                tooltip and the `sr-only` text still carry "Open to work".
 
-                The band is a fixed dark scrim, not a palette token, and that is
-                the point: it sits on photographic content, so it has to stay
-                legible against pixels nobody controls. Page-surface tokens all
-                assume a known background. `bg-foreground` was tried and failed
-                exactly there, inverting to near-white in dark mode against avatar
-                art that is already light, so the band lost its edge. A scrim
-                works in both themes with one value, and the codebase already does
-                this over media: see the `bg-black/40` play overlay on the work
-                case-study page.
+                The shadow is a `drop-shadow` on this link rather than a
+                box-shadow, because the stamp is masked and a box-shadow would
+                be cut away with the perforations. It is deeper in dark mode,
+                where a soft black shadow does very little against a near-black
+                page.
 
-                A solid emerald band was tried before that and dropped for a
-                different reason: it contradicted a decision recorded in this
-                file, that green is the dot and nothing else, because a filled hue
-                on a deliberately hueless page reads as an intrusion. The dot
-                survives, since a live-status colour is the one thing the hue
-                genuinely earns.
+                The whole stamp is the hover target for the goggles. It is also
+                a link, to /offcod8. Nothing else on the site points there and
+                nothing says it is there, which is the idea: the page is a letter
+                left for whoever pokes at the one thing on the homepage that
+                looks like a person rather than a control. The accessible name
+                is left to come from the contents, "Shashwat Tripathi" and "Open
+                to work", rather than being overridden with an `aria-label`
+                naming the destination, which keeps the surprise intact for
+                everyone equally.
 
-                The shadow is the avatar's "pop", split by theme because a black
-                shadow does very little against a near-black page: light mode gets
-                a soft one, dark mode a deeper one that reads as depth rather than
-                as a smudge.
-
-                The edge is a plain `border` on this wrapper. Earlier attempts put
-                a ring inside `AvatarHover` instead, which was the wrong place
-                twice over: a non-inset ring is a box-shadow and this wrapper's
-                `overflow-hidden` clipped it away entirely, and once inset it sat
-                a pixel inside the artwork rather than describing the shape. A
-                border on the wrapper is not clipped by that wrapper's own
-                overflow, and it traces the avatar and its band as one object,
-                which is what they are.
-
-                The visible word is just "Open". At `text-2xs` in mono, "Open to
-                work" measures about 84px against a 64px avatar, so the full
-                phrase needs either an off-scale type size or a band wider than
-                the image it sits on, and an overhang is what made this edge look
-                wrong to begin with. The tooltip and the `sr-only` text carry the
-                full phrase, so nothing is lost to a pointer or to assistive tech.
-
-                The whole avatar is the hover target, not just the band. It is a
-                far larger area to hit, and it keeps the band `pointer-events-none`
-                so it cannot swallow the hover that arms the avatar's own GIF.
-
-                It is also a link, to /offcod8. Nothing else on the site points
-                there and nothing says it is there, which is the idea: the page
-                is a letter left for whoever pokes at the one thing on the
-                homepage that looks like a person rather than a control. The
-                accessible name is left to come from the contents, "Shashwat
-                Tripathi" and "Open to work", rather than being overridden with
-                an `aria-label` naming the destination. That keeps the name it
-                has today and keeps the surprise intact for everyone equally.
-
-                `block` because an `<a>` is inline by default. Flex would
-                blockify it here anyway, but the `overflow-hidden` that clips
-                the band to the rounded corners should not depend on that. */}
+                `block` because an `<a>` is inline by default. */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
                   href="/offcod8"
-                  className="group relative block shrink-0 overflow-hidden rounded-2xl border border-border-strong shadow-md shadow-black/10 dark:shadow-lg dark:shadow-black/40 sticker candy:rounded-full tilt-i"
+                  className="group relative block shrink-0 drop-shadow-[0_1px_1.5px_rgb(0_0_0/0.25)] dark:drop-shadow-[0_2px_4px_rgb(0_0_0/0.6)] tilt-i"
                 >
-                  <AvatarHover />
-                  <Shimmer className="absolute inset-x-0 bottom-0 block">
-                    <span className="pointer-events-none flex items-center justify-center gap-1 bg-black/65 py-px font-mono text-2xs font-medium uppercase tracking-label text-white backdrop-blur-[2px]">
-                      <span className="h-1 w-1 rounded-full bg-emerald-400" />
-                      <span aria-hidden>Open</span>
-                      <span className="sr-only">Open to work</span>
-                    </span>
-                  </Shimmer>
+                  <span className="stamp-edge block bg-white p-1.25">
+                    <AvatarHover />
+                  </span>
+                  <span className="sr-only">Open to work</span>
                 </Link>
               </TooltipTrigger>
               <TooltipContent>Open to work</TooltipContent>
             </Tooltip>
-            {/* `min-h-16`, not `h-16`. It is the avatar's exact height so the
-                edges still line up, but a fixed height would overflow instead of
-                growing if the availability row ever wrapped on a narrow screen. */}
-            <div className="flex min-h-16 flex-col justify-between">
+            {/* `min-h-18.5`, not `h-18.5`. It is the stamp's exact height (the
+                64px photo plus its 5px paper edge) so the edges still line up,
+                but a fixed height would overflow instead of growing if the
+                availability row ever wrapped on a narrow screen. */}
+            <div className="flex min-h-18.5 flex-col justify-between">
               {/* The name is the page's h1.
 
                   It used to be a 17px div while the tagline below was the h1 at

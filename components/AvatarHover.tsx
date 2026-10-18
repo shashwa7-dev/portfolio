@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Goggles, { GOGGLES } from "@/components/common/Goggles";
+import Postmark from "@/components/common/Postmark";
 import { duration } from "@/lib/motionVariants";
 
 /**
@@ -13,10 +14,10 @@ import { duration } from "@/lib/motionVariants";
  * fully out, so nobody sees one pair turn into another. Every page load starts
  * on gold.
  *
- * The goggles sit inside this box's `overflow-hidden`, so at rest they are
- * simply above the frame, not hidden by opacity. They are placed in percent of
- * the photo, measured from the portrait's own glasses, so they line up at any
- * size. The motion and placement live in `.goggles` in globals.css. It is
+ * The goggles sit inside their own `overflow-hidden` layer the size of the
+ * photo, so at rest they are simply above the frame, not hidden by opacity.
+ * They are placed in percent of the photo, measured from the portrait's own
+ * glasses, so they line up at any size. The motion and placement live in `.goggles` in globals.css. It is
  * hover only: touch never fires it, and under reduced motion the goggles fade
  * instead of sliding.
  *
@@ -29,7 +30,12 @@ import { duration } from "@/lib/motionVariants";
  * `aspect-square` with `self-stretch` does not even do what it looks like, since
  * flex resolves an item's main size before its stretched cross size, so the
  * width came from content rather than from the height. The identity block is
- * tuned to 64px instead.
+ * tuned to the stamp around it instead.
+ *
+ * Between the photo and the goggles sits the "OPEN" postmark. It reaches past
+ * the photo into the stamp's margin (the stamp in About.tsx clips it to the
+ * perforated edge), so this box itself does not clip. It shimmers on a loop,
+ * the same sweep as the Live links.
  *
  * The photo is greyscale at rest and returns to colour on hover, so this
  * matches every other image surface in the app. The goggles stay in colour.
@@ -46,13 +52,9 @@ export default function AvatarHover() {
 
   return (
     <div
-      /* No ring here. The visible edge is a `border` on the wrapper in About.tsx,
-         which owns both this and the availability band and so traces the whole
-         object. Two earlier attempts put it here and both were wrong: a plain
-         `ring-3` is a box-shadow, so the wrapper's `overflow-hidden` clipped it away
-         entirely, and `ring-inset` then drew a pixel inside the artwork rather
-         than around it. */
-      className="group relative h-16 w-16 overflow-hidden rounded-2xl"
+      /* No edge here. The stamp's perforated paper in About.tsx is the edge,
+         and it clips everything in this box to its shape. */
+      className="group relative h-16 w-16"
       onPointerEnter={() => {
         // Back in before the last swap fired: keep the pair that is sliding out.
         if (timer.current) clearTimeout(timer.current);
@@ -78,7 +80,12 @@ export default function AvatarHover() {
         alt="Shashwat Tripathi"
         className="h-full w-full object-cover grayscale candy:grayscale-0 transition-[filter] duration-base ease-out group-hover:grayscale-0"
       />
-      <Goggles key={look} shape={pair.shape} colour={pair.colour} className="goggles" />
+      {/* Top-right corner of the stamp: 5px of margin plus 6px past the edge,
+          trimmed away by the stamp's perforated mask. */}
+      <Postmark className="postmark live-shimmer absolute -right-2.75 -top-2.75 h-8.5 w-8.5" />
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <Goggles key={look} shape={pair.shape} colour={pair.colour} className="goggles" />
+      </div>
     </div>
   );
 }
