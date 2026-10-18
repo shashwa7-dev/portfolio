@@ -873,9 +873,9 @@ table {
 }
 
 /* ── Live link shimmer ──────────────────────────────────────────────────
-   A light band sweeping over LiveLink's label and icons, on a loop. It is a
-   mask rather than a gradient fill so the icons catch the same light as the
-   text, and so the star keeps its own amber. Between sweeps everything sits
+   A light band sweeping over LiveLink's label and arrow, on a loop. It is a
+   mask rather than a gradient fill so the arrow icon catches the same light
+   as the text. Between sweeps everything sits
    a little dimmed; the band lifts it to full strength as it passes. The
    sweep takes the first ~45% of the cycle, then the label rests. */
 @layer components {

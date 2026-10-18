@@ -58,7 +58,7 @@ export default function DiaryEntry({
             {entry.link && (
               <>
                 <span aria-hidden className="text-border-strong">·</span>
-                <LiveLink href={entry.link} variant="outline" />
+                <LiveLink href={entry.link} />
               </>
             )}
           </div>
