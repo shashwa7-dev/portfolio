@@ -83,6 +83,16 @@ export const duration = {
    * noticed, so outside the UI budget. Stops under reduced motion.
    */
   liveSheen: 2.8,
+  /**
+   * The hero goggles (AvatarHover). They slide on with a small overshoot and
+   * off faster, accelerating out of frame. `gogglesOff` is also the wait
+   * before the next pair is swapped in, so the swap is never seen: keep it
+   * equal to `--duration-goggles-off`.
+   */
+  gogglesOn: 0.42,
+  gogglesOff: 0.24,
+  /** The one glint across the goggles' lenses after they land. */
+  gogglesGlint: 0.65,
 } as const;
 
 /** Per-item stagger offsets (seconds). Use instead of literal `i * 0.05`. */

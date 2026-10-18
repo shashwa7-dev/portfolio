@@ -1,28 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Goggles, { GOGGLES } from "@/components/common/Goggles";
+import { duration } from "@/lib/motionVariants";
 
 /**
- * The hero avatar. Swaps to an animated GIF on hover.
+ * The hero avatar. On hover a pair of goggles slides down onto the portrait's
+ * glasses, and slides back up out of frame when the pointer leaves.
  *
- * The GIF is roughly 1MB, which is a lot for a decorative flourish sitting above
- * the fold, so it is deliberately NOT part of the initial payload. Three guards
- * keep the cost off people who will never see it:
+ * Each hover brings the next of four looks (`GOGGLES`: gold round, chrome
+ * oval, stealth visor, volt hex). The swap waits until the goggles have slid
+ * fully out, so nobody sees one pair turn into another. Every page load starts
+ * on gold.
  *
- * 1. The <img> is not rendered until the first hover, so the file is only
- *    fetched when someone actually points at the avatar. Once armed it stays
- *    mounted, so repeat hovers are instant and it plays from cache.
- * 2. Arming is gated on `pointerType === "mouse"`. `onPointerEnter` also fires
- *    on touch, and a touch user would otherwise download 1MB for an effect they
- *    can never trigger, since the reveal itself is a `group-hover` rule and
- *    `hoverOnlyWhenSupported` is enabled in the Tailwind config.
- * 3. `motion-reduce:hidden` on the GIF layer. A GIF's loop cannot be paused by
- *    CSS, so `prefers-reduced-motion` has no effect on it otherwise. It is
- *    purely decorative, so hiding it costs those users nothing.
+ * The goggles sit inside this box's `overflow-hidden`, so at rest they are
+ * simply above the frame, not hidden by opacity. They are placed in percent of
+ * the photo, measured from the portrait's own glasses, so they line up at any
+ * size. The motion and placement live in `.goggles` in globals.css. It is
+ * hover only: touch never fires it, and under reduced motion the goggles fade
+ * instead of sliding.
  *
- * The static image stays in the DOM underneath rather than being replaced, so
- * there is no flash of empty space while the GIF decodes, and the crossfade has
- * something to fade from.
+ * This replaced an animated GIF on hover, about 1MB, which only played for
+ * mouse users anyway.
  *
  * The size is fixed at 64px and deliberately not driven by the copy beside it.
  * Stretching it to the identity block's height was tried and abandoned twice
@@ -32,14 +31,18 @@ import { useState } from "react";
  * width came from content rather than from the height. The identity block is
  * tuned to 64px instead.
  *
- * Both layers are greyscale at rest and return to colour together on hover, so
- * this matches every other image surface in the app. The GIF layer needs it too,
- * not just the static one: at rest it is transparent, but it becomes visible in
- * the same moment the hover fires, and if only the static layer desaturated the
- * reveal would flash from grey to colour mid-crossfade.
+ * The photo is greyscale at rest and returns to colour on hover, so this
+ * matches every other image surface in the app. The goggles stay in colour.
  */
 export default function AvatarHover() {
-  const [armed, setArmed] = useState(false);
+  const [look, setLook] = useState(0);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => () => {
+    if (timer.current) clearTimeout(timer.current);
+  }, []);
+
+  const pair = GOGGLES[look];
 
   return (
     <div
@@ -50,8 +53,17 @@ export default function AvatarHover() {
          entirely, and `ring-inset` then drew a pixel inside the artwork rather
          than around it. */
       className="group relative h-16 w-16 overflow-hidden rounded-2xl"
-      onPointerEnter={(e) => {
-        if (e.pointerType === "mouse") setArmed(true);
+      onPointerEnter={() => {
+        // Back in before the last swap fired: keep the pair that is sliding out.
+        if (timer.current) clearTimeout(timer.current);
+        timer.current = null;
+      }}
+      onPointerLeave={(e) => {
+        if (e.pointerType !== "mouse") return;
+        timer.current = setTimeout(() => {
+          setLook((i) => (i + 1) % GOGGLES.length);
+          timer.current = null;
+        }, duration.gogglesOff * 1000);
       }}
     >
       {/* The portrait has its own file. It used to be served from
@@ -66,15 +78,7 @@ export default function AvatarHover() {
         alt="Shashwat Tripathi"
         className="h-full w-full object-cover grayscale candy:grayscale-0 transition-[filter] duration-base ease-out group-hover:grayscale-0"
       />
-      {armed && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src="/images/avatar-hover.gif"
-          alt=""
-          aria-hidden
-          className="absolute inset-0 h-full w-full object-cover grayscale candy:grayscale-0 opacity-0 transition-[opacity,filter] duration-base ease-out group-hover:grayscale-0 group-hover:opacity-100 motion-reduce:hidden"
-        />
-      )}
+      <Goggles key={look} shape={pair.shape} colour={pair.colour} className="goggles" />
     </div>
   );
 }
