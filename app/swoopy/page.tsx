@@ -160,7 +160,8 @@ const features = [
 ];
 
 const faqs = [
-  { q: "Can it download videos?", a: "Not yet. Swoopy handles anything image-like: photos, backgrounds, SVGs, canvases, video thumbnails and lazy-loaded images." },
+  { q: "Does it save GIFs as real GIFs?", a: "Yes. On sites like Giphy and Tenor, Swoopy saves the actual animated .gif, not the still or WebP preview the page shows. Where a site plays a GIF as a short video, like X or Reddit, Download Image saves that original video file." },
+  { q: "Can it download videos?", a: "Only the short looping clips sites use as GIFs. Full videos and streaming players like YouTube aren't supported; for those Swoopy saves the cover image." },
   { q: "Is it allowed to save images like this?", a: "Swoopy only saves what is already loaded on your screen, much like a screenshot but sharper. What you do with an image is up to you: respect the creator's rights and each site's rules. The Terms of Service has the details." },
   { q: "Does it send my data anywhere?", a: "No. Everything runs in your browser. There is no account, no analytics and no tracking, and your history never leaves your device." },
   { q: "Why does Chrome say it can \"read and change data\" on websites?", a: "Chrome shows that warning for any extension that works on every site. Swoopy uses it only to look at the spot you right-click and find the image there." },
