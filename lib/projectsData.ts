@@ -7,9 +7,9 @@ export type TSideProject = {
   icon?: string;
   tagline: string;
   /**
-   * Flags the newest shipped project, surfaced as a "Recent" badge. Exactly one
-   * project should carry it: three did, which made it a category rather than a
-   * claim about what is new.
+   * Flags a recently shipped project, surfaced as a "Recent" badge on its card
+   * and beside its name in the homepage list. More than one may carry it, but
+   * keep it to the genuinely new ones, or it stops meaning anything.
    */
   isRecent?: boolean;
   /**
@@ -55,6 +55,7 @@ export const sideProjects: TSideProject[] = [
     slug: "swoopy",
     route: "/swoopy",
     title: "Swoopy",
+    isRecent: true,
     tagline: "A Chrome extension that saves the images Chrome won't.",
     description:
       "Right-click any image, even an Instagram post, a Pinterest pin, a CSS background, an SVG icon or a chart on a canvas, to download it, copy it as PNG, or inspect it. It pulls a palette out as design tokens, recolors SVGs with React export, and keeps a history of the last 100 images, all inside the browser.",
