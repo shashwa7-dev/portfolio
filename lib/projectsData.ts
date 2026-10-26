@@ -64,7 +64,7 @@ export const sideProjects: TSideProject[] = [
       "Palette, contrast and roles exported as CSS, JSON, Tailwind or SCSS tokens",
       "SVG color editor with React, React Native and Data URI export",
     ],
-    thumbnail: "/swoopy/screens/right-click-menu.webp",
+    thumbnail: "/swoopy/poster.webp",
     date: "Oct 2026",
     stack: { fe: ["javascript", "html", "css"] },
     tags: ["Chrome extension", "Design tools"],
