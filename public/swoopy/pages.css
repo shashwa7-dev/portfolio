@@ -18,6 +18,7 @@
 /* Light when Swoopy's Appearance is Light, or when it follows the system
    (and on the hosted pages, which have no setting) and the system is light. */
 :root[data-theme="light"] {
+  --swoosh: #a6d41c;
     --bg: #f3f4f6;
     --tile: #ffffff;
     --tile-2: #eef0f3;
@@ -29,6 +30,7 @@
 }
 @media (prefers-color-scheme: light) {
   :root:not([data-theme="dark"]):not([data-theme="light"]) {
+    --swoosh: #a6d41c;
     --bg: #f3f4f6;
       --tile: #ffffff;
       --tile-2: #eef0f3;
@@ -122,7 +124,14 @@ body.support {
 /* Other ways to help: equal-height cards, action pinned to the bottom */
 .s-more { margin-top: 56px; }
 .s-more h2 { text-align: center; font-size: 22px; margin: 0 0 18px; }
-.s-more h2 span { color: var(--muted); font-weight: 500; }
+/* "free": hand-drawn Swoopy swoosh under the word (SVG mask filled with the accent) */
+.swoosh { position: relative; display: inline-block; white-space: nowrap; z-index: 0; }
+.swoosh::after {
+  content: ""; position: absolute; z-index: -1; left: -8%; right: -10%; bottom: -0.42em; height: 0.8em;
+  background: var(--swoosh, var(--accent));
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 22' fill='none' stroke='black' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 15 C 26 8, 58 5, 92 7 S 112 10, 116 8' stroke-width='7'/%3E%3Cpath d='M30 18 C 50 14, 74 13, 98 14' stroke-width='4.5'/%3E%3C/svg%3E") center / 100% 100% no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 22' fill='none' stroke='black' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 15 C 26 8, 58 5, 92 7 S 112 10, 116 8' stroke-width='7'/%3E%3Cpath d='M30 18 C 50 14, 74 13, 98 14' stroke-width='4.5'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  transform: rotate(-1.5deg);
+}
 .s-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
 .s-card {
   display: flex; flex-direction: column; gap: 6px; padding: 20px; border-radius: var(--radius-lg); text-decoration: none; color: var(--text);
