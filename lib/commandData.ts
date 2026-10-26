@@ -1,4 +1,4 @@
-import { getAllSideProjects } from "@/lib/projectsData";
+import { getAllSideProjects, projectHref } from "@/lib/projectsData";
 import { goToShortcuts } from "@/lib/shortcutsData";
 import { CANDY_ENABLED, type Theme } from "@/lib/theme";
 
@@ -41,7 +41,7 @@ export function buildCommands(): Command[] {
     id: `proj-${p.slug}`,
     label: p.title,
     group: "Projects" as const,
-    href: `/project/${p.slug}`,
+    href: projectHref(p),
   }));
   const actions: Command[] = [
     { id: "act-theme-cycle", label: "Cycle theme", group: "Actions", action: "cycle-theme", keys: ["t"] },

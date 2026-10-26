@@ -12,6 +12,13 @@ export type TSideProject = {
    * claim about what is new.
    */
   isRecent?: boolean;
+  /**
+   * The project's own page elsewhere on the site, e.g. "/swoopy". When set,
+   * every link to the project goes there, no `/project/<slug>` page is
+   * generated for it, and `next.config.mjs` redirects that path to this one,
+   * so the project never has two pages saying the same thing.
+   */
+  route?: string;
   description: string;
   longDescription?: string;
   highlights: string[];
@@ -43,6 +50,25 @@ export type TSideProject = {
 };
 
 export const sideProjects: TSideProject[] = [
+  {
+    id: "swoopy",
+    slug: "swoopy",
+    route: "/swoopy",
+    title: "Swoopy",
+    tagline: "A Chrome extension that saves the images Chrome won't.",
+    description:
+      "Right-click any image, even an Instagram post, a Pinterest pin, a CSS background, an SVG icon or a chart on a canvas, to download it, copy it as PNG, or inspect it. It pulls a palette out as design tokens, recolors SVGs with React export, and keeps a history of the last 100 images, all inside the browser.",
+    highlights: [
+      "Finds the image under the cursor even when Chrome offers no \"Save image as\": overlays, backgrounds, inline SVG, canvas",
+      "Copy any image as PNG, ready to paste into Figma, Slack or Docs",
+      "Palette, contrast and roles exported as CSS, JSON, Tailwind or SCSS tokens",
+      "SVG color editor with React, React Native and Data URI export",
+    ],
+    thumbnail: "/swoopy/screens/right-click-menu.webp",
+    date: "Oct 2026",
+    stack: { fe: ["javascript", "html", "css"] },
+    tags: ["Chrome extension", "Design tools"],
+  },
   {
     id: "santul",
     slug: "santul",
@@ -291,3 +317,9 @@ export const getSideProject = (slug: string) =>
   sideProjects.find((p) => p.slug === slug);
 
 export const getAllSideProjects = () => sideProjects;
+
+/** Where a project lives: its own route if it has one, otherwise its `/project/<slug>` page. */
+export const projectHref = (p: TSideProject) => p.route ?? `/project/${p.slug}`;
+
+/** The projects that get a `/project/<slug>` page (those without their own route). */
+export const getProjectPageProjects = () => sideProjects.filter((p) => !p.route);

@@ -1,4 +1,4 @@
-import type { TSideProject } from "@/lib/projectsData";
+import { projectHref, type TSideProject } from "@/lib/projectsData";
 import type { TProject } from "@/lib/workData";
 
 export type ProjectCardData = {
@@ -17,7 +17,7 @@ export type ProjectCardData = {
 export function sideProjectToCard(p: TSideProject): ProjectCardData {
   return {
     id: p.id,
-    href: `/project/${p.slug}`,
+    href: projectHref(p),
     title: p.title,
     tagline: p.tagline,
     thumbnail: p.thumbnail,

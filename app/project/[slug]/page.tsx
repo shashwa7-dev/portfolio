@@ -1,8 +1,8 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import LiveLink from "@/components/common/LiveLink";
 import Link from "next/link";
 import { ArrowLeft } from "@phosphor-icons/react/ssr";
-import { getSideProject, getAllSideProjects } from "@/lib/projectsData";
+import { getSideProject, getProjectPageProjects } from "@/lib/projectsData";
 import { baseUrl } from "@/app/sitemap";
 import Container from "@/components/layout/Container";
 import Label from "@/components/layout/Label";
@@ -12,7 +12,7 @@ import ProjectMedia from "@/components/project/ProjectMedia";
 import { softwareAppLd, ogUrl, breadcrumbLd } from "@/lib/seo";
 
 export function generateStaticParams() {
-  return getAllSideProjects().map((p) => ({ slug: p.slug }));
+  return getProjectPageProjects().map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata(props: { params: Promise<{ slug: string }> }) {
@@ -51,6 +51,9 @@ export default async function ProjectPage(props: { params: Promise<{ slug: strin
   const params = await props.params;
   const project = getSideProject(params.slug);
   if (!project) return notFound();
+  // Projects with their own page (like /swoopy) never render here; next.config
+  // redirects them first, and this covers anything that slips past.
+  if (project.route) redirect(project.route);
 
   const cs = project.caseStudy || {};
   const stack = [...(project.stack.fe || []), ...(project.stack.be || [])];

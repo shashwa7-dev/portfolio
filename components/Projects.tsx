@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowUpRight } from "@phosphor-icons/react/ssr";
-import { sideProjects } from "@/lib/projectsData";
+import { sideProjects, projectHref } from "@/lib/projectsData";
 import { homeProjects } from "@/lib/home";
 import Section from "@/components/layout/Section";
 import { ViewAllLink } from "@/components/common/ViewAllLink";
@@ -26,7 +26,7 @@ export default function Projects() {
         {homeProjects(sideProjects).map((p) => (
           <li key={p.id} className="relative">
             <Link
-              href={`/project/${p.slug}`}
+              href={projectHref(p)}
               className="group relative -mx-3 flex items-center gap-1.5 rounded-lg px-3 py-3 text-lg font-medium text-foreground"
             >
               <span className="bg-[linear-gradient(currentColor,currentColor)] bg-size-[0%_1px] bg-bottom-left bg-no-repeat pb-0.5 transition-[background-size] duration-med ease-out group-hover:bg-size-[100%_1px] group-focus-visible:bg-size-[100%_1px]">
