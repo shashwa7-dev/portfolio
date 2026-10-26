@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+<g stroke="#2a2c35" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- plume tail curled over the back -->
+  <path d="M84 92 Q104 80 100 62 Q114 66 112 82 Q110 98 90 102 Z" fill="#e6ad6a"/>
+  <path d="M104 70 q3 6 0 12" fill="none" opacity=".35"/>
+  <!-- long silky body coat, wavy hem -->
+  <path d="M40 84 Q34 100 32 118 Q38 122 44 118 Q50 123 56 118 Q62 123 68 118 Q74 123 80 118 Q86 123 92 118 Q92 100 86 84 Z" fill="#fffaf1"/>
+  <path d="M58 100 q1 8 0 14 M70 100 q-1 8 0 14" fill="none" opacity=".25"/>
+  <!-- long ear hair (behind head), wavy ends -->
+  <path d="M36 30 Q18 36 18 62 Q18 84 24 92 Q28 88 30 94 Q34 88 38 92 Q42 74 42 52 Z" fill="#e6ad6a"/>
+  <path d="M92 30 Q110 36 110 62 Q110 84 104 92 Q100 88 98 94 Q94 88 90 92 Q86 74 86 52 Z" fill="#e6ad6a"/>
+  <!-- head -->
+  <path d="M64 20 Q92 20 94 48 Q96 76 64 78 Q32 76 34 48 Q36 20 64 20 Z" fill="#fffaf1"/>
+  <!-- gold cap + eye patches with white blaze down the middle -->
+  <path d="M38 40 Q40 22 58 21 Q60 32 57 46 Q50 54 40 52 Z" fill="#e6ad6a" stroke="none"/>
+  <path d="M90 40 Q88 22 70 21 Q68 32 71 46 Q78 54 88 52 Z" fill="#e6ad6a" stroke="none"/>
+  <path d="M64 20 Q92 20 94 48 Q96 76 64 78 Q32 76 34 48 Q36 20 64 20 Z" fill="none"/>
+  <!-- topknot -->
+  <path d="M56 22 Q54 8 64 6 Q74 8 72 22 Z" fill="#e6ad6a"/>
+  <path d="M60 8 q4 -4 8 0" fill="none" opacity=".35"/>
+</g>
+<g transform="translate(64 15) scale(1.0)" stroke="#2a2c35" stroke-width="3.2" stroke-linejoin="round">
+  <path d="M0 0 Q-10 -10 -15 -3 Q-16 6 0 0 Z" fill="#c6f432"/>
+  <path d="M0 0 Q10 -10 15 -3 Q16 6 0 0 Z" fill="#c6f432"/>
+  <circle cx="0" cy="0" r="3.4" fill="#93c40f"/>
+</g>
+<g stroke="#2a2c35" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- big round eyes -->
+  <circle cx="50" cy="47" r="7.2" fill="#2a2c35" stroke="none"/>
+  <circle cx="78" cy="47" r="7.2" fill="#2a2c35" stroke="none"/>
+  <circle cx="52.6" cy="44.4" r="2.6" fill="#fff" stroke="none"/>
+  <circle cx="80.6" cy="44.4" r="2.6" fill="#fff" stroke="none"/>
+  <circle cx="47.6" cy="50" r="1.2" fill="#fff" stroke="none"/>
+  <circle cx="75.6" cy="50" r="1.2" fill="#fff" stroke="none"/>
+  <ellipse cx="41" cy="60" rx="4.6" ry="2.8" fill="#ff8fa3" stroke="none" opacity=".85"/>
+  <ellipse cx="87" cy="60" rx="4.6" ry="2.8" fill="#ff8fa3" stroke="none" opacity=".85"/>
+</g>
+<g transform="rotate(-6 64.0 84.5)">
+  <rect x="42" y="68" width="44" height="33" rx="3.5" fill="#fff" stroke="#2a2c35" stroke-width="3.2"/>
+  <rect x="46" y="72" width="36" height="21" rx="1.5" fill="#6aa8ff"/>
+  <circle cx="76" cy="77.5" r="3" fill="#ffd23f"/>
+  <path d="M46 93 L57.84 81.86 L67.52 93 Z" fill="#4cc38a"/>
+  <path d="M61.8 93 L72.8 84.5 L82 93 Z" fill="#2fa36f"/>
+</g>
+
+<g stroke="#2a2c35" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round">
+  <!-- fluffy mustache draping over the photo's top edge -->
+  <path d="M47 61 Q45 52 55 52 Q64 47 73 52 Q83 52 81 61 Q84 69 77 70 Q74 76 68.5 72.5 Q64 78 59.5 72.5 Q54 76 51 70 Q44 69 47 61 Z" fill="#fffaf1"/>
+  <path d="M58.5 55 Q64 52 69.5 55 Q68.5 60.5 64 61.5 Q59.5 60.5 58.5 55 Z" fill="#2a2c35"/>
+  <path d="M64 61.5 L64 64.5" fill="none"/>
+</g>
+</svg>

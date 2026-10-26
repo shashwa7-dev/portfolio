@@ -1,0 +1,147 @@
+/* Shared styles for Swoopy's Support, Terms and Privacy pages.
+   Same tokens as the panel. */
+:root {
+  --bg: #0f1115;
+  --tile: #171a21;
+  --tile-2: #1f232b;
+  --line: #23262f;
+  --text: #eceef2;
+  --muted: #9aa1ad;
+  --accent: #c6f432;
+  --on-accent: #111318;
+  --accent-text: #c6f432;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  color-scheme: dark;
+}
+/* Light when Swoopy's Appearance is Light, or when it follows the system
+   (and on the hosted pages, which have no setting) and the system is light. */
+:root[data-theme="light"] {
+    --bg: #f3f4f6;
+    --tile: #ffffff;
+    --tile-2: #eef0f3;
+    --line: #e2e4e9;
+    --text: #15171c;
+    --muted: #5f6672;
+    --accent-text: #4a6600;
+    color-scheme: light;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]):not([data-theme="light"]) {
+    --bg: #f3f4f6;
+      --tile: #ffffff;
+      --tile-2: #eef0f3;
+      --line: #e2e4e9;
+      --text: #15171c;
+      --muted: #5f6672;
+      --accent-text: #4a6600;
+      color-scheme: light;
+  }
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--text); }
+body { font: 16px/1.65 -apple-system, "SF Pro Text", system-ui, "Segoe UI", sans-serif; -webkit-font-smoothing: antialiased; }
+a { color: var(--accent-text); }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.icon { display: inline-flex; flex: none; }
+
+.nav { position: sticky; top: 0; z-index: 2; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+.nav-in { max-width: 760px; margin: 0 auto; padding: 12px 16px; display: flex; align-items: center; gap: 10px; }
+.nav .logo { width: 32px; height: 32px; border-radius: 9px; background: #f6f8ef; padding: 2px; }
+.nav .brand { font-weight: 750; font-size: 17px; letter-spacing: -0.01em; color: var(--text); text-decoration: none; }
+.nav .links { margin-left: auto; display: flex; gap: 4px; flex-wrap: wrap; }
+.nav .links a { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); text-decoration: none; font-size: 14px; padding: 6px 10px; border-radius: var(--radius-md); }
+.nav .links a:hover { color: var(--text); background: var(--tile); }
+.nav .links a[aria-current="page"] { color: var(--on-accent); background: var(--accent); font-weight: 650; }
+
+main { max-width: 760px; margin: 0 auto; padding: 28px 16px 64px; }
+h1 { font-size: 34px; line-height: 1.15; letter-spacing: -0.025em; margin: 8px 0 6px; }
+h2 { font-size: 19px; letter-spacing: -0.01em; margin: 34px 0 8px; }
+.updated { color: var(--muted); font-size: 14px; margin: 0 0 20px; }
+.lede { font-size: 18px; color: var(--muted); margin-top: 6px; }
+.callout { background: var(--tile); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 14px 16px; margin: 18px 0; }
+ul { padding-left: 22px; }
+li { margin: 6px 0; }
+.foot { border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+.foot .nav-in { padding: 18px 16px; flex-wrap: wrap; }
+.foot a { color: var(--muted); }
+
+/* "Made by offcod8": the mark is a solid PNG used as a mask, so it takes the text color */
+.maker { display: inline-flex; align-items: center; gap: 5px; color: var(--text); font-weight: 650; text-decoration: none; }
+.maker:hover { text-decoration: underline; text-underline-offset: 3px; }
+.maker-mark {
+  width: 1em; height: 1em; flex: none; background: currentColor;
+  -webkit-mask: url(icons/offcod8-mark.png) center / contain no-repeat; mask: url(icons/offcod8-mark.png) center / contain no-repeat;
+}
+.foot .maker { color: var(--text); }
+.foot .maker-line { display: inline-flex; align-items: center; gap: 4px; }
+.s-lede .maker { vertical-align: baseline; }
+
+/* ---------- Support page ---------- */
+body.support {
+  background:
+    radial-gradient(70% 420px at 50% -60px, color-mix(in srgb, var(--accent) 16%, transparent), transparent 70%),
+    var(--bg);
+}
+.s-main { max-width: 880px; }
+.s-hero { text-align: center; padding: 18px 0 8px; }
+.s-mascot {
+  width: 148px; height: 148px; margin: 0 auto 18px; border-radius: 38px; background: #f6f8ef; padding: 12px;
+  box-shadow: 0 0 0 8px color-mix(in srgb, var(--accent) 14%, transparent), 0 24px 50px rgba(0, 0, 0, 0.35);
+}
+.s-mascot img { width: 100%; height: 100%; display: block; }
+.s-eyebrow {
+  display: inline-flex; align-items: center; gap: 6px; margin: 0 0 12px; padding: 5px 12px; border-radius: var(--radius-md);
+  background: var(--tile); border: 1px solid var(--line); color: var(--muted); font-size: 13px; font-weight: 600;
+}
+.s-eyebrow .icon { color: var(--accent-text); }
+.s-hero h1 { font-size: 44px; letter-spacing: -0.035em; margin: 0 0 10px; }
+.s-lede { max-width: 560px; margin: 0 auto; color: var(--muted); font-size: 18px; }
+
+/* Featured Buy Me a Coffee card: neutral card with a lime accent bar on top (no glow) */
+.s-feature { max-width: 560px; margin: 34px auto 0; }
+.s-feature-in { position: relative; overflow: hidden; background: var(--tile); border: 1px solid var(--line); border-radius: var(--radius-xl); padding: 26px; }
+.s-feature-in::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--accent); }
+.s-feature-head { display: flex; align-items: center; gap: 14px; }
+.s-feature-head h2 { margin: 0; font-size: 22px; }
+.s-feature-head p { margin: 2px 0 0; color: var(--muted); font-size: 15px; }
+.s-cup { width: 52px; height: 52px; border-radius: var(--radius-lg); display: grid; place-items: center; flex: none; background: var(--accent); color: var(--on-accent); }
+.s-cta {
+  display: flex; align-items: center; justify-content: center; gap: 10px; margin: 22px 0 18px; padding: 15px 20px;
+  border-radius: var(--radius-md); background: var(--accent); color: var(--on-accent); font-weight: 750; font-size: 17px; text-decoration: none;
+  transition: filter 0.15s;
+}
+.s-cta:hover { filter: brightness(0.96); }
+.s-cta .icon:last-child { opacity: 0.7; }
+.s-perks { list-style: none; padding: 0; margin: 0; display: flex; justify-content: center; gap: 8px 20px; flex-wrap: wrap; color: var(--muted); font-size: 14px; }
+.s-perks li { display: inline-flex; align-items: center; gap: 6px; margin: 0; }
+.s-perks .icon { color: var(--accent-text); }
+
+/* Other ways to help: equal-height cards, action pinned to the bottom */
+.s-more { margin-top: 56px; }
+.s-more h2 { text-align: center; font-size: 22px; margin: 0 0 18px; }
+.s-more h2 span { color: var(--muted); font-weight: 500; }
+.s-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.s-card {
+  display: flex; flex-direction: column; gap: 6px; padding: 20px; border-radius: var(--radius-lg); text-decoration: none; color: var(--text);
+  background: var(--tile); border: 1px solid var(--line); transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+.s-card[hidden] { display: none; }
+.s-card:hover { border-color: color-mix(in srgb, var(--accent) 60%, var(--line)); transform: translateY(-2px); box-shadow: 0 18px 36px -18px rgba(0, 0, 0, 0.45); }
+.s-badge { width: 42px; height: 42px; border-radius: var(--radius-md); display: grid; place-items: center; background: var(--tile-2); color: var(--accent-text); margin-bottom: 8px; }
+.s-card b { font-size: 16px; }
+.s-card small { color: var(--muted); font-size: 14px; line-height: 1.5; }
+.s-action { margin-top: auto; padding-top: 14px; display: inline-flex; align-items: center; gap: 6px; color: var(--accent-text); font-weight: 650; font-size: 14px; }
+.s-card:hover .s-action .icon { transform: translateX(3px); }
+.s-action .icon { transition: transform 0.15s; }
+.s-fine { max-width: 620px; margin: 40px auto 0; text-align: center; color: var(--muted); font-size: 13.5px; }
+
+@media (max-width: 560px) {
+  h1, .s-hero h1 { font-size: 30px; }
+  .s-feature-in { padding: 20px; }
+  .s-cta { font-size: 16px; gap: 8px; padding: 14px 12px; white-space: nowrap; }
+  .s-cta .icon:last-child { display: none; }
+  .nav .brand { display: none; }
+}
