@@ -1,6 +1,6 @@
 import { getBlogPosts } from "./blogs/utils";
 import { books } from "@/lib/books";
-import { getAllSideProjects } from "@/lib/projectsData";
+import { getProjectPageProjects } from "@/lib/projectsData";
 
 export const baseUrl = "https://www.shashwa7.in/";
 
@@ -36,9 +36,14 @@ export default async function sitemap() {
       url: `${baseUrl}card`,
       lastModified: today,
     },
+    {
+      url: `${baseUrl}swoopy`,
+      lastModified: today,
+    },
   ];
 
-  const projects = getAllSideProjects().map((p) => ({
+  // Projects with their own route (like /swoopy) are already listed above.
+  const projects = getProjectPageProjects().map((p) => ({
     url: `${baseUrl}project/${p.slug}`,
     lastModified: today,
   }));

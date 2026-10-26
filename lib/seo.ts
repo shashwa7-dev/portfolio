@@ -49,7 +49,7 @@ export function softwareAppLd(p: TSideProject) {
     name: p.title,
     description: p.tagline,
     applicationCategory: "DeveloperApplication",
-    url: `${baseUrl}project/${p.slug}`,
+    url: `${baseUrl}${(p.route ?? `/project/${p.slug}`).slice(1)}`,
     author: AUTHOR_REF,
   };
 }

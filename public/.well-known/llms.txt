@@ -38,6 +38,7 @@ Other pages return their default HTML representation regardless of Accept.
 - `/blogs` — index of writing.
 - `/blogs/<slug>` — individual post.
 - `/projects` — independent / side projects.
+- `/swoopy`: Swoopy, a free Chrome extension that saves the images Chrome won't (download, copy as PNG, palette as design tokens, SVG editor).
 - `/books` — reading list with notes.
 - `/shelf` — coffee, gear, everyday setup, scent and bookmarks.
 - `/coffee` — long-form explainer on roast, grind, ratio and portafilter sizes.

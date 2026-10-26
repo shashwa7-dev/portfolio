@@ -1,14 +1,16 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowUpRight } from "@phosphor-icons/react/ssr";
-import { sideProjects } from "@/lib/projectsData";
+import { sideProjects, projectHref } from "@/lib/projectsData";
 import { homeProjects } from "@/lib/home";
 import Section from "@/components/layout/Section";
 import { ViewAllLink } from "@/components/common/ViewAllLink";
 import MarginNote from "@/components/common/MarginNote";
+import Shimmer from "@/components/common/Shimmer";
 
 /**
- * Three side projects: the name on the left and when it shipped on the right,
+ * Three side projects: the name on the left (with a "Recent" tag on new ones)
+ * and when it shipped on the right,
  * set like the dates in Writing. On hover or focus an underline draws in under
  * the name, a small arrow appears, and the thumbnail fades in at the row's
  * right end in place of the date; touch visitors get the names, the dates and
@@ -26,12 +28,17 @@ export default function Projects() {
         {homeProjects(sideProjects).map((p) => (
           <li key={p.id} className="relative">
             <Link
-              href={`/project/${p.slug}`}
+              href={projectHref(p)}
               className="group relative -mx-3 flex items-center gap-1.5 rounded-lg px-3 py-3 text-lg font-medium text-foreground"
             >
               <span className="bg-[linear-gradient(currentColor,currentColor)] bg-size-[0%_1px] bg-bottom-left bg-no-repeat pb-0.5 transition-[background-size] duration-med ease-out group-hover:bg-size-[100%_1px] group-focus-visible:bg-size-[100%_1px]">
                 {p.title}
               </span>
+              {p.isRecent && (
+                <Shimmer tone="surface" className="ml-1.5 inline-block rounded-sm border border-border-strong bg-background">
+                  <span className="block px-1.5 py-0.5 font-mono text-2xs uppercase tracking-label text-foreground">Recent</span>
+                </Shimmer>
+              )}
               <ArrowUpRight
                 aria-hidden
                 className="h-4 w-4 -translate-x-1 translate-y-0.5 text-subtle opacity-0 transition-[opacity,transform] duration-base ease-out group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:translate-y-0 group-focus-visible:opacity-100"

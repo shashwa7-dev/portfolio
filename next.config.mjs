@@ -44,6 +44,8 @@ const nextConfig = {
     return [
       // The project was renamed from Eatri8.ai to Santul in October 2026; old links keep working.
       { source: "/project/eatri8-ai", destination: "/project/santul", permanent: true },
+      // Swoopy has its own page; keep /project/swoopy from becoming a second one.
+      { source: "/project/swoopy", destination: "/swoopy", permanent: true },
     ];
   },
   async headers() {
