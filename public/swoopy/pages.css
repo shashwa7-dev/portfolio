@@ -68,7 +68,7 @@ li { margin: 6px 0; }
 .foot .nav-in { padding: 18px 16px; flex-wrap: wrap; }
 .foot a { color: var(--muted); }
 
-/* "Made by offcod8": the mark is a solid PNG used as a mask, so it takes the text color */
+/* "Made with love by offcod8": the mark is a solid PNG used as a mask, so it takes the text color */
 .maker { display: inline-flex; align-items: center; gap: 5px; color: var(--text); font-weight: 650; text-decoration: none; }
 .maker:hover { text-decoration: underline; text-underline-offset: 3px; }
 .maker-mark {
