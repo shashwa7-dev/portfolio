@@ -40,6 +40,10 @@ export default async function sitemap() {
       url: `${baseUrl}swoopy`,
       lastModified: today,
     },
+    {
+      url: `${baseUrl}swoopy/changelog`,
+      lastModified: today,
+    },
   ];
 
   // Projects with their own route (like /swoopy) are already listed above.
