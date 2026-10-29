@@ -53,7 +53,7 @@ import { releases } from "./releases";
  * button reads "Coming soon"; set it to the Chrome Web Store listing and the
  * same button becomes "Add to Chrome".
  */
-const STORE_URL: string | null = null;
+const STORE_URL: string | null = "https://chromewebstore.google.com/detail/swoopy/fihbpikmjcanljjgaklpehocecppilea";
 
 const DESCRIPTION =
   "Swoopy is a free Chrome extension that saves the images Chrome won't: Instagram posts, Pinterest pins, CSS backgrounds, SVG icons and charts. Save them as WebP, copy them as PNG or pull their colors as design tokens.";
@@ -229,6 +229,7 @@ const swoopyLd = {
   applicationCategory: "BrowserApplication",
   operatingSystem: "Chrome",
   url: `${baseUrl}swoopy`,
+  installUrl: STORE_URL ?? undefined,
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
 };
 
