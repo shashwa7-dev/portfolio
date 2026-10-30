@@ -34,7 +34,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { siGooglechrome } from "simple-icons";
-import { faqLd, ogUrl } from "@/lib/seo";
+import { faqLd } from "@/lib/seo";
 import { releases } from "./releases";
 
 /**
@@ -58,6 +58,12 @@ const STORE_URL: string | null = "https://chromewebstore.google.com/detail/swoop
 const DESCRIPTION =
   "Swoopy is a free Chrome extension that saves the images Chrome won't: Instagram posts, Pinterest pins, CSS backgrounds, SVG icons and charts. Save them as WebP, copy them as PNG or pull their colors as design tokens.";
 
+// The Swoopy poster, cropped to 1200x630 (public/swoopy/poster.webp is the source).
+const OG_IMAGE = {
+  url: "/swoopy/og.jpg",
+  alt: "Swoopy, a shih tzu holding a photo: Swoop any image. Grab its palette.",
+};
+
 export const metadata: Metadata = {
   title: "Swoopy: save the images Chrome won't",
   description: DESCRIPTION,
@@ -66,17 +72,13 @@ export const metadata: Metadata = {
     title: "Swoopy: save the images Chrome won't",
     description: DESCRIPTION,
     url: `${baseUrl}swoopy`,
-    images: [
-      {
-        url: ogUrl({
-          title: "Swoopy",
-          subtitle: "Save the images Chrome won't. A free Chrome extension.",
-          type: "generic",
-          label: "Chrome extension",
-          meta: "Free",
-        }),
-      },
-    ],
+    images: [{ url: OG_IMAGE.url, width: 1200, height: 630, alt: OG_IMAGE.alt }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Swoopy: save the images Chrome won't",
+    description: DESCRIPTION,
+    images: [OG_IMAGE.url],
   },
 };
 
