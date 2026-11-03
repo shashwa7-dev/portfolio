@@ -52,7 +52,7 @@ export default function Currently() {
       : []),
   ];
   return (
-    <Section id="currently" label="Currently" title="What I'm building, reading and using">
+    <Section id="currently" label="Currently">
       <dl className="space-y-3">
         {rows.map((r) => (
           <div key={r.label} className={ROW}>

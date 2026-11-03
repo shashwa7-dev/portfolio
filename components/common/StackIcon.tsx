@@ -179,7 +179,7 @@ export default function StackIcon({
         )}
       >
         {glyph || (
-          <span className="font-mono text-2xs uppercase tracking-label">
+          <span className="font-label text-2xs uppercase tracking-label">
             {label}
           </span>
         )}

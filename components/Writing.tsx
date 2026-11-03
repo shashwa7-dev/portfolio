@@ -21,8 +21,7 @@ export default function Writing() {
     <Section
       id="writing"
       label="Writing"
-      title="Notes on building"
-      action={<ViewAllLink href="/blogs">View all</ViewAllLink>}
+      action={<ViewAllLink href="/blogs" label="All writing" />}
     >
       <ul className="space-y-1">
         {posts.map((post) => (
@@ -36,7 +35,7 @@ export default function Writing() {
                   {post.metadata.title}
                 </span>
               </span>
-              <span className="shrink-0 font-mono text-xs tabular-nums text-subtle">
+              <span className="shrink-0 font-label text-xs tabular-nums text-subtle">
                 {shortDate(post.metadata.publishedAt)}
               </span>
             </Link>

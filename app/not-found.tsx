@@ -52,7 +52,7 @@ export default function NotFound() {
 
           <div className="mt-8 grid gap-10 md:mt-10 md:grid-cols-[1fr_auto] md:items-end md:gap-16">
             <div>
-              <p className="font-mono text-2xs uppercase tracking-label text-subtle">
+              <p className="font-label text-2xs uppercase tracking-label text-subtle">
                 Error 404
               </p>
               <h1 className="mt-2 text-3xl font-semibold tracking-tight md:text-4xl">
@@ -83,7 +83,7 @@ export default function NotFound() {
               aria-label="Other pages"
               className="border-t border-border pt-5 candy:border-t-0 md:min-w-44 md:border-l md:border-t-0 md:pb-1 md:pl-8 md:pt-0"
             >
-              <p className="font-mono text-2xs uppercase tracking-label text-subtle">
+              <p className="font-label text-2xs uppercase tracking-label text-subtle">
                 Or try
               </p>
               <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2 md:flex-col md:gap-y-2.5">

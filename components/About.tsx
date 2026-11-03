@@ -87,11 +87,23 @@ export default function About() {
                     </svg>
                     <span
                       aria-hidden
-                      className="absolute -bottom-[0.02em] -right-[0.04em] h-[0.28em] w-[0.28em] rounded-full bg-emerald-500 ring-2 ring-background dark:bg-emerald-400"
+                      className="absolute -bottom-[0.02em] -right-[0.04em] h-[0.28em] w-[0.28em] rounded-full bg-amber-700 ring-2 ring-background dark:bg-amber-300"
                     />
                   </SpinAvatar>
                 </TooltipTrigger>
-                <TooltipContent>Open to work</TooltipContent>
+                {/* The spin hint lives here: F only exists on a keyboard, and
+                    keyboard users are the ones who see a hover tooltip. */}
+                <TooltipContent className="flex items-center gap-2">
+                  Open to work
+                  <span aria-hidden className="opacity-40">·</span>
+                  <span className="inline-flex items-center gap-1 opacity-70">
+                    Press
+                    <kbd className="grid h-4 min-w-4 place-items-center rounded border border-current/30 px-1 font-mono text-2xs">
+                      F
+                    </kbd>
+                    to spin
+                  </span>
+                </TooltipContent>
               </Tooltip>{" "}
               <span className="whitespace-nowrap font-semibold text-foreground">
                 Shashwat
@@ -110,15 +122,27 @@ export default function About() {
 
             {/* Role on its own line, then the working day in Bengaluru and
                 availability beneath it. Two fixed lines rather than one row
-                that wraps wherever the viewport decides. The green is the dot
+                that wraps wherever the viewport decides. The amber is the glyph
                 and the word only, the one live-status signal on the page. */}
             <div className="flex flex-col items-start gap-1.5">
               <Label>Frontend Engineer · AI · Web3</Label>
               <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
                 <LocalTime />
-                <span aria-hidden className="font-mono text-2xs text-subtle">·</span>
-                <span className="inline-flex items-center gap-1.5 font-mono text-2xs uppercase tracking-label text-emerald-500 dark:text-emerald-400">
-                  <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-current" />
+                <span aria-hidden className="font-label text-2xs text-subtle">·</span>
+                <span className="inline-flex items-center gap-1.5 font-label text-2xs uppercase tracking-label text-amber-700 dark:text-amber-300">
+                  {/* A 3x3 live glyph in the section-glyph dot language: the
+                      centre holds, the ring pulses outward like a signal
+                      (.live-glyph in globals.css). Amber, like the avatar's live dot. */}
+                  <span aria-hidden className="live-glyph grid grid-cols-3 gap-px">
+                    {[2, 1, 2, 1, 0, 1, 2, 1, 2].map((ring, i) => (
+                      <span
+                        key={i}
+                        data-centre={ring === 0 ? "" : undefined}
+                        style={{ "--ring": ring } as React.CSSProperties}
+                        className="h-0.75 w-0.75 rounded-full bg-current"
+                      />
+                    ))}
+                  </span>
                   Open to work
                 </span>
               </div>

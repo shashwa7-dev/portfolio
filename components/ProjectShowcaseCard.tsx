@@ -28,13 +28,13 @@ export default function ProjectShowcaseCard({ project, index = 0 }: { project: P
             tone="surface"
             className="absolute left-3 top-3 inline-block rounded-sm border border-border-strong bg-background/80 backdrop-blur-sm candy:rounded-tag candy:border-foreground candy:bg-white tilt-a"
           >
-            <span className="block px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-foreground">
+            <span className="block px-2 py-0.5 font-label text-2xs uppercase tracking-label text-foreground">
               {project.badge}
             </span>
           </Shimmer>
         )}
         {project.metric && (
-          <span className="absolute bottom-3 left-3 rounded-sm border border-border-strong bg-background/80 px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-foreground backdrop-blur-sm candy:rounded-tag candy:border-foreground candy:bg-candy-butter candy:text-foreground tilt-d">
+          <span className="absolute bottom-3 left-3 rounded-sm border border-border-strong bg-background/80 px-2 py-0.5 font-label text-2xs uppercase tracking-label text-foreground backdrop-blur-sm candy:rounded-tag candy:border-foreground candy:bg-candy-butter candy:text-foreground tilt-d">
             {project.metric}
           </span>
         )}

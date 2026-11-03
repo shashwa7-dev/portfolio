@@ -110,7 +110,7 @@ export default async function ProjectPage(props: { params: Promise<{ slug: strin
               {cs.role && <GutterItem k="Role" v={cs.role} />}
               {cs.year && <GutterItem k="Year" v={cs.year} />}
               <div>
-                <div className="mb-1.5 font-mono text-2xs uppercase tracking-label text-subtle">Stack</div>
+                <div className="mb-1.5 font-label text-2xs uppercase tracking-label text-subtle">Stack</div>
                 {/* Marks only, each named by a tooltip (and by its aria-label for screen readers). */}
                 <div className="flex flex-wrap items-center gap-3">
                   {stack.map((t) => (
@@ -120,7 +120,7 @@ export default async function ProjectPage(props: { params: Promise<{ slug: strin
               </div>
               {project.links && (
                 <div>
-                  <div className="mb-1.5 font-mono text-2xs uppercase tracking-label text-subtle">Links</div>
+                  <div className="mb-1.5 font-label text-2xs uppercase tracking-label text-subtle">Links</div>
                   <div className="flex flex-col gap-1 text-sm">
                     {project.links.web && <LiveLink href={project.links.web} />}
                     {project.links.github && <a className="hover:text-foreground" href={project.links.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a>}
@@ -135,7 +135,7 @@ export default async function ProjectPage(props: { params: Promise<{ slug: strin
           <div className="space-y-9">
             {sections.map((s) => (
               <section key={s.key} className="space-y-2">
-                <div className="font-mono text-2xs uppercase tracking-label text-foreground">{s.label}</div>
+                <div className="font-label text-2xs uppercase tracking-label text-foreground">{s.label}</div>
                 <h2 className="text-2xl">{s.heading}</h2>
                 {s.body.length > 1 ? (
                   <ul className="space-y-1.5">
@@ -154,7 +154,7 @@ export default async function ProjectPage(props: { params: Promise<{ slug: strin
 
             {cs.results && cs.results.length > 0 && (
               <section className="space-y-3">
-                <div className="font-mono text-2xs uppercase tracking-label text-foreground">Results</div>
+                <div className="font-label text-2xs uppercase tracking-label text-foreground">Results</div>
                 <h2 className="text-2xl">Impact</h2>
                 <div className="flex flex-wrap gap-3">
                   {cs.results.map((r, i) => (
@@ -184,7 +184,7 @@ export default async function ProjectPage(props: { params: Promise<{ slug: strin
 function GutterItem({ k, v }: { k: string; v: string }) {
   return (
     <div>
-      <div className="mb-1 font-mono text-2xs uppercase tracking-label text-subtle">{k}</div>
+      <div className="mb-1 font-label text-2xs uppercase tracking-label text-subtle">{k}</div>
       <div className="text-sm text-foreground">{v}</div>
     </div>
   );

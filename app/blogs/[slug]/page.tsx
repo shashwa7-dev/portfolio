@@ -198,7 +198,7 @@ export default async function Blog(props: any) {
                 href={`/blogs/${newer.slug}`}
                 className="group flex flex-col gap-1 rounded-lg border border-border bg-card p-3.5 transition-colors duration-base ease-out hover:border-border-strong sticker sticker-sm candy:rounded-tile candy:border-white hover:candy:border-white candy:bg-candy-sky tilt-md-g"
               >
-                <span className="flex items-center gap-1.5 font-mono text-2xs uppercase tracking-label text-subtle">
+                <span className="flex items-center gap-1.5 font-label text-2xs uppercase tracking-label text-subtle">
                   <ArrowLeft className="h-3 w-3" /> Newer
                 </span>
                 <span className="text-sm text-foreground">
@@ -214,7 +214,7 @@ export default async function Blog(props: any) {
                 href={`/blogs/${older.slug}`}
                 className="group flex flex-col gap-1 rounded-lg border border-border bg-card p-3.5 text-right transition-colors duration-base ease-out hover:border-border-strong sm:col-start-2 sticker sticker-sm candy:rounded-tile candy:border-white hover:candy:border-white candy:bg-candy-butter tilt-md-f"
               >
-                <span className="flex items-center justify-end gap-1.5 font-mono text-2xs uppercase tracking-label text-subtle">
+                <span className="flex items-center justify-end gap-1.5 font-label text-2xs uppercase tracking-label text-subtle">
                   Older <ArrowRight className="h-3 w-3" />
                 </span>
                 <span className="text-sm text-foreground">

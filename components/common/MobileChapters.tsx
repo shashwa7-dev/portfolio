@@ -227,7 +227,7 @@ export default function MobileChapters({
         )}
       >
         <div className="flex items-center justify-between gap-4 border-b border-border candy:border-secondary px-5 py-3.5">
-          <p className="font-mono text-2xs uppercase tracking-label text-subtle">
+          <p className="font-label text-2xs uppercase tracking-label text-subtle">
             {position > 0
               ? `Chapter ${position} of ${sections.length}`
               : `${sections.length} chapters`}
@@ -263,7 +263,7 @@ export default function MobileChapters({
                 >
                   <span
                     className={cn(
-                      "w-5 shrink-0 font-mono text-2xs tabular-nums",
+                      "w-5 shrink-0 font-label text-2xs tabular-nums",
                       isCurrent ? "text-foreground" : "text-subtle"
                     )}
                   >
@@ -324,7 +324,7 @@ function ProgressRing({ position, total }: { position: number; total: number }) 
           className="stroke-foreground candy:stroke-candy-pink transition-[stroke-dashoffset] duration-base ease-out motion-reduce:transition-none"
         />
       </svg>
-      <span className="font-mono text-2xs tabular-nums text-foreground">
+      <span className="font-label text-2xs tabular-nums text-foreground">
         {position > 0 ? position : 1}
       </span>
     </span>

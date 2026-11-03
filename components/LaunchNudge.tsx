@@ -125,7 +125,7 @@ export default function LaunchNudge() {
           />
         </span>
 
-        <p className="relative font-mono text-2xs uppercase tracking-label text-subtle candy:inline-flex candy:items-center candy:rounded-tag candy:bg-candy-pink candy:px-2 candy:py-0.5 candy:font-semibold candy:text-foreground">
+        <p className="relative font-label text-2xs uppercase tracking-label text-subtle candy:inline-flex candy:items-center candy:rounded-tag candy:bg-candy-pink candy:px-2 candy:py-0.5 candy:font-semibold candy:text-foreground">
           Just shipped
         </p>
         <p className="relative mt-1.5 flex items-center gap-1.5 text-sm font-semibold text-foreground candy:font-display candy:text-base">

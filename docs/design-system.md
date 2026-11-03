@@ -82,7 +82,8 @@ Two rules:
 | Family | CSS var | Tailwind class | Use |
 |---|---|---|---|
 | DM Sans | `--font-sans` | `font-sans` | Body: headings, body copy, UI labels, navigation in Paper and dark |
-| IBM Plex Mono | `--font-mono` | `font-mono` | Code: code blocks, eyebrow labels, monospace UI |
+| Doto | `--font-label` | `font-label` | Labels: the small uppercase lines (role, local time, tags, dates, eyebrows, section labels). A dot-matrix face pinned to weight 900 with round dots; its `text-2xs` / `text-xs` run 10% large (11px / 12.1px) because the dots read small |
+| IBM Plex Mono | `--font-mono` | `font-mono` | Code: code blocks, key caps, the visitor card, the CV's PDF; and the Swoopy pages |
 | Fredoka | `--font-display` | `font-display` | Display, Candy only: headings, section titles, page titles, card titles, stat numbers, the footer wordmark |
 
 Fonts are loaded via Next.js font optimization (`next/font/google`) in `app/layout.tsx`. `font-display: swap` is implicit. There is no serif family and no `font-serif` Tailwind key: in Paper and dark, headings use `font-sans` like everything else, distinguished by weight and size, not typeface. In Candy, the same heading elements switch to `font-display` (Fredoka 700); body, lede and prose stay on DM Sans.
@@ -213,12 +214,12 @@ Both variants use `mx-auto w-full px-6`.
 ```tsx
 import Section from "@/components/layout/Section";
 
-<Section label="Work" title="Where I've worked" action={<ViewAllLink href="/projects">View all</ViewAllLink>}>
+<Section label="Work" title="Where I've worked" action={<ViewAllLink href="/projects" label="All projects" />}>
   {/* content */}
 </Section>
 ```
 
-- A small muted `label` above an h2 `title` (`text-2xl md:text-3xl`), then the
+- A small muted `label` above an h2 `title` (`text-xl md:text-2xl`), then the
   content, in a reading `Container` at `py-14 md:py-20`.
 - No band, no rule, no numbering: whitespace is the only separator between
   homepage sections. `number` / `of` and `HOMEPAGE_SECTION_TOTAL` are gone.

@@ -131,7 +131,7 @@ function Part({
       data-part
       className={cn("border-t border-border candy:border-t-0 pt-8", first ? "mt-8" : "mt-14")}
     >
-      <p className="font-mono text-2xs uppercase tracking-label text-subtle">
+      <p className="font-label text-2xs uppercase tracking-label text-subtle">
         {label}
       </p>
       <p className="mt-2 text-lg font-semibold tracking-tight text-foreground">
@@ -568,7 +568,7 @@ export default function CoffeePage() {
             `border-foreground` put full-strength ink around a card in both
             themes, which read as a warning box rather than as emphasis. */}
         <div className="my-8 rounded-2xl border border-border-strong bg-card p-6 md:p-8">
-          <p className="font-mono text-2xs uppercase tracking-label text-subtle">
+          <p className="font-label text-2xs uppercase tracking-label text-subtle">
             If you remember one thing from this page
           </p>
           <p className="mt-3 text-lg leading-snug text-foreground md:text-xl">
@@ -644,7 +644,7 @@ export default function CoffeePage() {
               key={g.slug}
               className="flex flex-col gap-1 border-b border-border candy:border-b-0 py-4 sm:flex-row sm:items-baseline sm:gap-6"
             >
-              <span className="font-mono text-2xs uppercase tracking-label text-subtle sm:w-40 sm:shrink-0">
+              <span className="font-label text-2xs uppercase tracking-label text-subtle sm:w-40 sm:shrink-0">
                 {g.when}
               </span>
               <span className="min-w-0">
@@ -1007,9 +1007,9 @@ export default function CoffeePage() {
             </caption>
             <thead>
               <tr className="border-b border-border candy:border-b-0 bg-elevated">
-                <th scope="col" className="px-5 py-3 font-mono text-2xs uppercase tracking-label text-subtle">Roast</th>
-                <th scope="col" className="px-5 py-3 font-mono text-2xs uppercase tracking-label text-subtle">Filter</th>
-                <th scope="col" className="px-5 py-3 font-mono text-2xs uppercase tracking-label text-subtle">Espresso</th>
+                <th scope="col" className="px-5 py-3 font-label text-2xs uppercase tracking-label text-subtle">Roast</th>
+                <th scope="col" className="px-5 py-3 font-label text-2xs uppercase tracking-label text-subtle">Filter</th>
+                <th scope="col" className="px-5 py-3 font-label text-2xs uppercase tracking-label text-subtle">Espresso</th>
               </tr>
             </thead>
             <tbody>
@@ -1321,13 +1321,13 @@ export default function CoffeePage() {
               <tr className="border-b border-border candy:border-b-0 bg-elevated">
                 <th
                   scope="col"
-                  className="w-40 px-5 py-3 font-mono text-2xs uppercase tracking-label text-subtle"
+                  className="w-40 px-5 py-3 font-label text-2xs uppercase tracking-label text-subtle"
                 >
                   Term
                 </th>
                 <th
                   scope="col"
-                  className="px-5 py-3 font-mono text-2xs uppercase tracking-label text-subtle"
+                  className="px-5 py-3 font-label text-2xs uppercase tracking-label text-subtle"
                 >
                   What it means
                 </th>

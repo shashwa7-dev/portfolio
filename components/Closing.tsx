@@ -1,6 +1,6 @@
 import Container from "@/components/layout/Container";
 import CardNudge from "@/components/CardNudge";
-import GraffitiHand from "@/components/common/GraffitiHand";
+import DotMarquee from "@/components/common/DotMarquee";
 import { SOCIAL_ICONS } from "@/components/common/socialIcons";
 import { socialLinks, contactEmail } from "@/lib/siteLinks";
 
@@ -9,21 +9,19 @@ import { socialLinks, contactEmail } from "@/lib/siteLinks";
  * label: it closes the page rather than opening a section. The visitor-card
  * nudge stays beside the address, where someone who scrolled this far finds it.
  *
- * The graffiti hand rises out of this section's bottom edge on the right, at
- * every width: a little smaller on a phone, where it stands below the social links. The section is
- * `relative overflow-hidden` for it: the artwork's forearm is cut flat and has
- * to stay below the edge. The section also pulls down over the footer's
- * `mt-12` (`-mb-12`, with that much more bottom padding), so its
- * clipped edge is the footer's top border and the hand grows out of that line
- * instead of stopping in mid-air above it.
+ * A dot-matrix sign (DotMarquee) scrolls "LET'S BUILD" across the full
+ * column, in the same dot language as the section glyphs. It is the section's
+ * only headline (the written "Let's build something good." was dropped as a
+ * repeat of it), so it carries an accessible name.
+ * It replaced the graffiti hand, then a 9x9 panel.
  */
 export default function Closing() {
   return (
-    <section id="contact" className="relative -mb-12 overflow-hidden">
-      <Container width="reading" className="relative pt-12 pb-40 sm:pb-28 md:pt-[3.65rem] md:pb-32">
-        <GraffitiHand className="-bottom-10 right-6 h-48 sm:-bottom-12 sm:right-2 sm:h-60 md:-bottom-14 md:right-0 md:h-72" />
-        <p className="text-2xl font-medium tracking-tight text-foreground md:text-3xl">Let&apos;s build something good.</p>
-        <div className="mt-6 flex flex-wrap items-center gap-3">
+    <section id="contact">
+      <Container width="reading" className="pt-9 pb-4 md:pt-11">
+        <div>
+        <DotMarquee className="mb-6 h-16 text-foreground sm:h-21" />
+        <div className="flex flex-wrap items-center gap-3">
           <a
             href={`mailto:${contactEmail}`}
             className="inline-block rounded-md bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground transition-opacity duration-base ease-out hover:opacity-90"
@@ -49,6 +47,7 @@ export default function Closing() {
             );
           })}
         </ul>
+        </div>
       </Container>
     </section>
   );

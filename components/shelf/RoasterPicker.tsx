@@ -156,7 +156,7 @@ export default function RoasterPicker() {
                          stays black in both. `text-background dark:text-foreground`
                          is the pair that means "near-white either way" in
                          these tokens. */
-                      className="font-mono text-2xs text-background opacity-95 dark:text-foreground"
+                      className="font-label text-2xs text-background opacity-95 dark:text-foreground"
                     >
                       {roasterInitials(r.name)}
                     </span>
@@ -207,14 +207,14 @@ function BeanRow({ bean, first }: { bean: Bean; first: boolean }) {
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <p className="font-medium text-foreground">{bean.name}</p>
-          <p className="mt-0.5 font-mono text-2xs uppercase tracking-label text-subtle">
+          <p className="mt-0.5 font-label text-2xs uppercase tracking-label text-subtle">
             {[bean.roast, bean.origin].filter(Boolean).join("  ·  ")}
           </p>
         </div>
         {bean.rating ? (
           <Rating value={bean.rating} />
         ) : (
-          <span className="shrink-0 pt-1 font-mono text-2xs text-border-strong">
+          <span className="shrink-0 pt-1 font-label text-2xs text-border-strong">
             not yet
           </span>
         )}

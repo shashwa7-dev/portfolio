@@ -28,7 +28,7 @@ import Goggles from "@/components/common/Goggles";
  */
 export default function AvatarHover() {
   return (
-    <span className="relative block h-[1.15em] w-[1.15em] overflow-hidden rounded-full bg-white">
+    <span className="relative block h-[1.38em] w-[1.38em] overflow-hidden rounded-full bg-white">
       {/* The portrait has its own file. It used to be served from
           `/apple-touch-icon.png`, which meant the hero's face and the home
           screen icon were one asset: replacing the icon set silently replaced

@@ -106,7 +106,7 @@ export default function CommandPalette() {
                 if (items.length === 0) return null;
                 return (
                   <div key={g} className="mb-1">
-                    <div className="px-3 pb-1 pt-2 font-mono text-2xs uppercase tracking-label text-subtle">{g}</div>
+                    <div className="px-3 pb-1 pt-2 font-label text-2xs uppercase tracking-label text-subtle">{g}</div>
                     {items.map((c) => {
                       const idx = results.indexOf(c);
                       return (

@@ -33,7 +33,7 @@ const components: Components = {
     <h3 className="mt-2 mb-1 text-sm font-semibold tracking-tight">{children}</h3>
   ),
   h4: ({ children }) => (
-    <h4 className="mt-2 mb-1 font-mono text-xs uppercase tracking-label text-subtle">
+    <h4 className="mt-2 mb-1 font-label text-xs uppercase tracking-label text-subtle">
       {children}
     </h4>
   ),

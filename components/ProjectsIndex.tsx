@@ -21,7 +21,7 @@ export default function ProjectsIndex({ projects }: { projects: TSideProject[] }
             <button
               key={f.tag}
               onClick={() => setActive(f.tag)}
-              className={`rounded-md border px-3 py-1.5 font-mono text-xs uppercase tracking-label
+              className={`rounded-md border px-3 py-1.5 font-label text-xs uppercase tracking-label
                 transition-[color,background-color,border-color,transform]
                 duration-fast ease-out active:scale-[0.97] sticker sticker-sm sticker-flat candy:rounded-full candy:font-semibold ${
                 active === f.tag

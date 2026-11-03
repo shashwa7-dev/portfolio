@@ -106,7 +106,7 @@ export default function KeyboardShortcuts() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b border-border candy:border-secondary px-4 py-3">
-              <span className="font-mono text-xs uppercase tracking-label text-subtle">
+              <span className="font-label text-xs uppercase tracking-label text-subtle">
                 Keyboard shortcuts
               </span>
               <button
@@ -121,7 +121,7 @@ export default function KeyboardShortcuts() {
             <div className="space-y-4 p-4">
               {shortcutGroups.map((group) => (
                 <div key={group.title}>
-                  <div className="px-1 pb-2 font-mono text-2xs uppercase tracking-label text-subtle">
+                  <div className="px-1 pb-2 font-label text-2xs uppercase tracking-label text-subtle">
                     {group.title}
                   </div>
                   <ul className="space-y-1.5">

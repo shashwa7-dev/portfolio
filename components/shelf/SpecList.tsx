@@ -28,7 +28,7 @@ export function SpecRow({
 }) {
   return (
     <li className="grid gap-1.5 py-5 first:pt-0 last:pb-0 sm:grid-cols-[6rem_1fr] sm:gap-6">
-      <span className="font-mono text-2xs uppercase tracking-label text-subtle">
+      <span className="font-label text-2xs uppercase tracking-label text-subtle">
         {label}
       </span>
       <div className="min-w-0">{children}</div>

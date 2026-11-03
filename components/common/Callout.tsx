@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { Icon } from "@phosphor-icons/react";
+import DotGlyph from "@/components/common/DotGlyph";
 
 /**
  * A highlighted takeaway: the one statement in a block of prose that a reader
@@ -13,20 +13,24 @@ import type { Icon } from "@phosphor-icons/react";
  * monochrome ink, so the emphasis comes from the strong border and the
  * full-foreground text, not colour. In Candy it becomes a butter sticker with
  * an ink tag for a label.
+ *
+ * The label's mark is a dot-matrix glyph (DotGlyph), matching the section
+ * labels; hovering the callout ripples it (`section-head` on the fieldset).
  */
 export default function Callout({
   label,
-  icon: IconComponent,
+  glyph,
   children,
 }: {
   label: string;
-  icon?: Icon;
+  /** A DotGlyph bitmap, e.g. GLYPHS.bolt. */
+  glyph?: readonly string[];
   children: ReactNode;
 }) {
   return (
-    <fieldset className="rounded-xl border border-border-strong px-5 pb-5 pt-3 candy:rounded-sticker candy:border-2 candy:border-foreground candy:bg-candy-butter candy:shadow-sticker-1">
-      <legend className="-ml-1 flex items-center gap-1.5 px-2 font-mono text-2xs uppercase tracking-label text-foreground candy:ml-0 candy:rounded-tag candy:bg-foreground candy:py-0.5 candy:text-background">
-        {IconComponent && <IconComponent aria-hidden weight="fill" className="h-3 w-3" />}
+    <fieldset className="section-head rounded-xl border border-border-strong px-5 pb-5 pt-3 candy:rounded-sticker candy:border-2 candy:border-foreground candy:bg-candy-butter candy:shadow-sticker-1">
+      <legend className="-ml-1 flex items-center gap-1.5 px-2 font-label text-2xs uppercase tracking-label text-foreground candy:ml-0 candy:rounded-tag candy:bg-foreground candy:py-0.5 candy:text-background">
+        {glyph && <DotGlyph rows={glyph} />}
         {label}
       </legend>
       <div className="text-base font-medium leading-relaxed text-foreground">{children}</div>

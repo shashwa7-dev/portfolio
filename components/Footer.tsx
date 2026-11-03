@@ -190,7 +190,7 @@ const Footer = () => {
       </Container>
 
       <div className="border-t border-border candy:border-0">
-        <Container className="flex flex-wrap items-center gap-x-6 gap-y-2 py-4 font-mono text-2xs uppercase tracking-label text-subtle">
+        <Container className="flex flex-wrap items-center gap-x-6 gap-y-2 py-4 font-label text-2xs uppercase tracking-label text-subtle">
           <span className="mr-auto">
             &copy; {new Date().getFullYear()} Shashwat Tripathi
           </span>

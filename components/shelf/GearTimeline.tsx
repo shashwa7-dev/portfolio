@@ -72,7 +72,7 @@ export default function GearTimeline() {
                   href={step.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex shrink-0 items-center gap-1 font-mono text-2xs uppercase tracking-label text-subtle transition-colors duration-fast ease-out hover:text-foreground"
+                  className="inline-flex shrink-0 items-center gap-1 font-label text-2xs uppercase tracking-label text-subtle transition-colors duration-fast ease-out hover:text-foreground"
                 >
                   {step.vendor}
                   <ArrowUpRight className="h-3 w-3" />
@@ -82,7 +82,7 @@ export default function GearTimeline() {
               {/* What it is and where in the chain it sits, on one line. The
                   dot marking whatever is in use replaces the filled marker the
                   rail used to carry. */}
-              <p className="mt-0.5 flex items-center gap-1.5 font-mono text-2xs uppercase tracking-label text-subtle">
+              <p className="mt-0.5 flex items-center gap-1.5 font-label text-2xs uppercase tracking-label text-subtle">
                 {step.current && (
                   <span
                     aria-label="What I use most"
