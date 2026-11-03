@@ -1,268 +1,252 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { List, X } from "@phosphor-icons/react/ssr";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
+import {
+  EnvelopeSimple,
+  FileText,
+  GithubLogo,
+  House,
+  Books,
+  PenNib,
+  CaretUp,
+  XLogo,
+} from "@phosphor-icons/react/ssr";
+import type { Icon } from "@phosphor-icons/react";
 import CandyMusic from "@/components/CandyMusic";
 import { useTheme } from "@/app/hooks/useTheme";
-import { nextTheme, themeLabel, toggleCowl, toggleIcon } from "@/lib/theme";
+import { nextTheme, themeLabel, toggleCowl } from "@/lib/theme";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
-import { navLinks } from "@/lib/siteLinks";
-import Container from "@/components/layout/Container";
-
+import { contactEmail, socialLinks } from "@/lib/siteLinks";
 
 /**
- * The header controls: a filled surface, no border.
+ * The site's navigation: a dock fixed to the bottom middle of the screen.
  *
- * The hover fill is `border-strong/30` rather than another surface token, because
- * in light mode `--elevated`, `--secondary` and `--muted` are all the same value
- * (38 20% 95.5%), so a token-to-token hover would be invisible there. An opacity
- * wash off `--border-strong` lands about four points darker in light and three
- * lighter in dark, so one value reads in both themes.
+ * Its shape is a tab rising out of the bottom edge with slanted sides, in two
+ * layers: a darker rim and a lighter body with a hairline edge (`Shape`).
+ * Both are placed from the bar's edges, so the shape follows the bar as it
+ * widens. Styles are in `app/globals.css` under "Dock".
  *
- * `backdrop-blur-xs` went with the border: it existed to let the header's blur
- * show through a translucent control, and an opaque fill has nothing to show.
+ * Closed, it shows the pages and the theme cowl. On desktop, hovering it or
+ * tabbing into it widens it in place to reveal the ways to reach Shashwat. On
+ * a phone, where there is no hover, a chevron button raises a card just above the
+ * dock that lists them by name.
+ *
+ * Work and Projects are homepage sections, reached by scrolling the homepage
+ * and from the footer, so they have no button here. Home replaces the old
+ * header's logo.
  */
-const control =
-  "flex h-8 items-center rounded-md bg-elevated text-muted-foreground transition-[color,background-color,transform] duration-fast ease-out hover:bg-border-strong/30 hover:text-foreground active:scale-[0.94] sticker sticker-sm candy:rounded-full candy:bg-white candy:text-foreground hover:candy:bg-white";
+
+type Page = { label: string; href: string; icon: Icon; match: (path: string) => boolean };
+
+const PAGES: Page[] = [
+  { label: "Home", href: "/", icon: House, match: (p) => p === "/" },
+  { label: "Writing", href: "/blogs", icon: PenNib, match: (p) => p.startsWith("/blogs") },
+  { label: "Shelf", href: "/shelf", icon: Books, match: (p) => p.startsWith("/shelf") },
+  { label: "CV", href: "/cv", icon: FileText, match: (p) => p.startsWith("/cv") },
+];
+
+const twitter = socialLinks.find((s) => s.name === "Twitter")!;
+const github = socialLinks.find((s) => s.name === "GitHub")!;
+
+type Reach = { label: string; href: string; icon: Icon; detail: string; external: boolean };
+
+const REACH: Reach[] = [
+  { label: "Twitter", href: twitter.href, icon: XLogo, detail: "@offcod8", external: true },
+  { label: "GitHub", href: github.href, icon: GithubLogo, detail: "shashwa7-dev", external: true },
+  { label: "Email", href: `mailto:${contactEmail}`, icon: EnvelopeSimple, detail: contactEmail, external: false },
+];
+
+const OUTER_SIDE = "M 0 54 A 14 14 0 0 0 12.98 45.24 L 25.2 15.01 A 24 24 0 0 1 47.45 0 H 48.45 V 54 H 0 Z";
+const INNER_SIDE = "M 0 48 L 14.85 11.26 A 18 18 0 0 1 31.53 0 H 32.53 V 48 H 0 Z";
+const INNER_EDGE = "M 0 48.5 A 0.5 0.5 0 0 0 0.46 48.19 L 15.31 11.44 A 17.5 17.5 0 0 1 31.53 0.5 H 32.53";
+
+/** The dock's shape: a darker outer rim and, inside it, the body with its hairline edge. */
+function Shape() {
+  return (
+    <>
+      <div aria-hidden className="dock-layer dock-layer-outer">
+        {(["is-left", "is-right"] as const).map((side) => (
+          <svg key={side} className={side} width="48.45" height="54" viewBox="0 0 48.45 54">
+            <path d={OUTER_SIDE} fill="currentColor" />
+          </svg>
+        ))}
+        <div className="dock-strip" />
+      </div>
+      <div aria-hidden className="dock-layer dock-layer-inner">
+        {(["is-left", "is-right"] as const).map((side) => (
+          <svg key={side} className={side} width="32.53" height="48" viewBox="0 0 32.53 48">
+            <path d={INNER_SIDE} fill="currentColor" />
+            <path d={INNER_EDGE} className="dock-side-line" />
+          </svg>
+        ))}
+        <div className="dock-strip" />
+      </div>
+    </>
+  );
+}
+
+/** True from 1280px, where the dock stands on the left edge (see globals.css). */
+const SIDE_DOCK_QUERY = "(min-width: 1280px)";
+
+function useSideDock() {
+  const [side, setSide] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia(SIDE_DOCK_QUERY);
+    const sync = () => setSide(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+  return side;
+}
+
+/** An icon button with a tooltip on the side facing away from the screen edge. */
+function Tip({ label, side, children }: { label: string; side: "top" | "right"; children: ReactNode }) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{children}</TooltipTrigger>
+      <TooltipContent side={side} sideOffset={side === "right" ? 12 : 8}>
+        {label}
+      </TooltipContent>
+    </Tooltip>
+  );
+}
 
 export default function Navbar() {
   const { theme, cycleTheme } = useTheme();
   const upcoming = nextTheme(theme);
-  const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const dockRef = useRef<HTMLDivElement>(null);
 
-  // Escape closes the mobile menu, and so does any navigation: a hash link to
-  // a homepage section changes no route, so each link also closes it on click.
+  // The drawer closes on Escape, on a tap outside the dock, and on navigation.
   useEffect(() => {
-    if (!mobileOpen) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMobileOpen(false);
+    if (!drawerOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setDrawerOpen(false);
+    const onDown = (e: PointerEvent) => {
+      if (!dockRef.current?.contains(e.target as Node)) setDrawerOpen(false);
+    };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [mobileOpen]);
-  useEffect(() => setMobileOpen(false), [pathname]);
+    window.addEventListener("pointerdown", onDown);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("pointerdown", onDown);
+    };
+  }, [drawerOpen]);
+  useEffect(() => setDrawerOpen(false), [pathname]);
+
+  const themeName = `Switch to ${themeLabel(upcoming)}`;
+  const tipSide = useSideDock() ? "right" : "top";
 
   return (
-    <header className="site-navbar sticky top-0 z-40 bg-background/70 backdrop-blur-xl">
-      {/* The same measure as the page below it. The bar used to run to
-          1080px while every route's content stopped at 760, so the mark and
-          the nav sat outside the column they belong to and the site read as
-          two different widths stacked on each other. Through `Container`
-          rather than a second hardcoded max-width, so there is one place the
-          measure is decided. */}
-      <Container as="nav" className="flex items-center justify-between py-3.5 candy:font-display">
-        {/* The mark alone, with no wordmark beside it.
+    <>
+      <div aria-hidden className={`dock-scrim ${drawerOpen ? "is-open" : ""}`} />
+      <div className={`site-navbar dock-wrap ${drawerOpen ? "is-open" : ""}`}>
+        <div ref={dockRef} className="dock">
+          <Shape />
 
-            It is painted as a mask rather than drawn as an <img>: the asset is
-            a single flat colour on transparency, so as an image it would stay
-            #0E0D0C and disappear into the dark theme. Masking `bg-foreground`
-            through its alpha lets the mark take the theme's ink the same way
-            the text beside it does, from one file and with no second asset to
-            keep in sync.
+          {/* Phone only: a card raised just above the dock. */}
+          <div id="dock-drawer" className="dock-drawer" inert={!drawerOpen}>
+            <ul>
+              {REACH.map(({ label, href, icon: I, detail, external }) => (
+                <li key={label}>
+                  <a
+                    href={href}
+                    {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                    onClick={() => setDrawerOpen(false)}
+                    className="dock-row"
+                  >
+                    <I aria-hidden className="dock-row-icon h-[18px] w-[18px]" />
+                    <span className="dock-row-label text-sm">{label}</span>
+                    <span className="dock-row-detail ml-auto truncate text-xs">{detail}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-            Dropping the word takes the link's accessible name with it, so the
-            name moves to `aria-label`. Without it the only thing a screen
-            reader could announce for the home link is its href. */}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Link href="/" aria-label="offcod8, home" className="flex shrink-0 sticker sticker-sm candy:rounded-tag candy:p-0.5 tilt-a">
-              <span
-                aria-hidden
-                className="block h-7 w-7 bg-foreground candy:h-6 candy:w-6"
-                style={{
-                  WebkitMaskImage: "url(/brand-mark.png)",
-                  maskImage: "url(/brand-mark.png)",
-                  WebkitMaskSize: "contain",
-                  maskSize: "contain",
-                  WebkitMaskRepeat: "no-repeat",
-                  maskRepeat: "no-repeat",
-                  WebkitMaskPosition: "center",
-                  maskPosition: "center",
-                }}
-              />
-            </Link>
-          </TooltipTrigger>
-          {/* The tooltip names the mark for anyone who does not already read it
-              as a wordmark. It is not the accessible name: Radix would wire it
-              up as one, but a tooltip only reaches pointers, so the `aria-label`
-              on the link carries the name for everyone else and the tooltip
-              repeats it rather than supplying it. */}
-          <TooltipContent>offcod8</TooltipContent>
-        </Tooltip>
+          <nav aria-label="Site" className="dock-bar">
+            {PAGES.map(({ label, href, icon: I, match }, i) => {
+              const current = match(pathname);
+              return (
+                <Tip key={label} label={label} side={tipSide}>
+                  <Link
+                    href={href}
+                    aria-label={label}
+                    aria-current={current ? "page" : undefined}
+                    className={`dock-btn ${i === 0 ? "dock-edge dock-edge-l" : ""} ${current ? "is-on" : ""}`}
+                  >
+                    <I aria-hidden weight={current ? "fill" : "regular"} className="h-4 w-4" />
+                  </Link>
+                </Tip>
+              );
+            })}
 
-        <ul className="hidden items-center gap-6 md:flex">
-          {navLinks.map((l) => {
-            const current = l.match ? pathname.startsWith(l.match) : false;
-            return (
-              <li key={l.label}>
-                <Link
-                  href={l.href}
-                  aria-current={current ? "page" : undefined}
-                  /* The active mark is an absolutely positioned `after`, so it
-                     adds no height and cannot shift the row. Colour alone would
-                     not do: hover already goes to `text-foreground`, so an active
-                     link would be indistinguishable from a hovered one. */
-                  className={`relative text-sm transition-colors duration-fast ease-out candy:font-semibold candy:px-1 ${
-                    current
-                      ? "text-foreground after:absolute after:-bottom-1 after:left-0 after:h-px after:w-full after:bg-foreground candy:after:hidden candy:bg-[linear-gradient(transparent_60%,hsl(var(--candy-pink))_60%)]"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {l.label}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+            {/* Desktop only: revealed in place on hover or keyboard focus. */}
+            <div className="dock-more">
+              <div>
+                <span aria-hidden className="dock-sep" />
+                {REACH.map(({ label, href, icon: I, external }) => (
+                  <Tip key={label} label={label} side={tipSide}>
+                    <a
+                      href={href}
+                      aria-label={label}
+                      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                      className="dock-btn"
+                    >
+                      <I aria-hidden className="h-4 w-4" />
+                    </a>
+                  </Tip>
+                ))}
+              </div>
+            </div>
 
-        {/* Every control here is a 32px box (CV pill, cowl, menu), 12px apart
-            on a phone and 8px from `md`, where the CV pill and the menu are
-            hidden and only the cowl remains. The cowl used to sit unboxed at
-            its own width, which crowded the pill and the menu around it. */}
-        <div className="flex items-center gap-3 md:gap-2">
-          {/* CV, promoted out of the menu on mobile.
+            <span aria-hidden className="dock-sep" />
 
-              On desktop it sits in the nav row above, one of six links and
-              always on screen. On mobile that row collapses, so the one link
-              most likely to be the reason someone is here was two taps deep
-              behind a button labelled "Menu". Here it is one tap and it is
-              never hidden.
+            <button
+              type="button"
+              onClick={() => setDrawerOpen((o) => !o)}
+              aria-label={drawerOpen ? "Close links" : "More links"}
+              aria-expanded={drawerOpen}
+              aria-controls="dock-drawer"
+              className="dock-btn dock-toggle"
+            >
+              <CaretUp aria-hidden weight="bold" className="h-4 w-4" />
+            </button>
 
-              Filled accent rather than the `control` fill the two buttons
-              beside it share, because it is the only thing in this row that
-              goes anywhere: the other two open a menu and change a colour.
-              Sized to `control`'s 8-unit height and same radius so it still
-              reads as part of the row rather than as something dropped into
-              it. */}
-          <Link
-            href="/cv"
-            aria-current={pathname.startsWith("/cv") ? "page" : undefined}
-            className="flex h-8 items-center rounded-md bg-accent px-3 text-sm font-semibold leading-none text-accent-foreground transition-[background-color,transform] duration-fast ease-out hover:bg-accent-hover active:scale-[0.94] md:hidden sticker sticker-sm candy:rounded-full candy:bg-candy-butter candy:text-foreground hover:candy:bg-candy-butter tilt-d"
-          >
-            CV
-          </Link>
+            <CandyMusic />
 
-          <CandyMusic />
-
-          <Tooltip>
-            <TooltipTrigger asChild>
+            <Tip label={themeName} side={tipSide}>
               <button
                 type="button"
                 onClick={cycleTheme}
-                aria-label={`Theme: ${themeLabel(theme)}. Switch to ${themeLabel(upcoming).toLowerCase()}`}
-                className={`${control} w-8 justify-center bg-transparent hover:bg-transparent`}
+                aria-label={`Theme: ${themeLabel(theme)}. ${themeName}`}
+                className="dock-btn is-on dock-cowl dock-edge dock-edge-r"
               >
-                {toggleIcon(upcoming) === "treat" ? (
-                  <Image
-                    src="/candy-treat.avif"
-                    alt=""
-                    width={128}
-                    height={128}
-                    unoptimized
-                    className="h-8 w-auto"
-                  />
-                ) : (
-                  /* The cowl of the theme the click leads to: white in dark,
-                     black in light. Both are rendered and crossfade on a switch, so the
-                     click reads as the mask changing rather than an icon
-                     popping in. */
-                  <span aria-hidden className="relative block h-7 w-[1.2rem] transition-transform duration-fast ease-out hover:-rotate-6">
-                    {(["black", "white"] as const).map((cowl) => (
-                      <Image
-                        key={cowl}
-                        src={`/theme/cowl-${cowl}.webp`}
-                        alt=""
-                        width={88}
-                        height={128}
-                        className={`absolute inset-0 h-7 w-auto drop-shadow-[0_1px_2px_rgba(0,0,0,0.25)] transition-[opacity,transform] duration-base ease-out ${
-                          toggleCowl(theme) === cowl ? "scale-100 opacity-100" : "scale-90 opacity-0"
-                        }`}
-                      />
-                    ))}
-                  </span>
-                )}
-              </button>
-            </TooltipTrigger>
-            <TooltipContent>Switch to {themeLabel(upcoming)}</TooltipContent>
-          </Tooltip>
-
-          <button
-            type="button"
-            onClick={() => setMobileOpen((o) => !o)}
-            aria-label={mobileOpen ? "Close menu" : "Open menu"}
-            aria-expanded={mobileOpen}
-            aria-controls="mobile-nav"
-            className={`${control} relative w-8 justify-center md:hidden`}
-          >
-            {/* A hamburger that turns into a close mark. Both glyphs are always
-                rendered and crossfade with a quarter turn, so the swap reads as
-                one control changing state rather than one icon replacing
-                another. */}
-            <List
-              aria-hidden
-              weight="bold"
-              className={`absolute h-4 w-4 transition-[opacity,transform] duration-base ease-out ${
-                mobileOpen ? "rotate-90 opacity-0" : "rotate-0 opacity-100"
-              }`}
-            />
-            <X
-              aria-hidden
-              weight="bold"
-              className={`absolute h-4 w-4 transition-[opacity,transform] duration-base ease-out ${
-                mobileOpen ? "rotate-0 opacity-100" : "-rotate-90 opacity-0"
-              }`}
-            />
-          </button>
-        </div>
-      </Container>
-
-      <div
-        id="mobile-nav"
-        className="grid transition-[grid-template-rows,visibility] duration-base ease-out md:hidden"
-        style={{
-          gridTemplateRows: mobileOpen ? "1fr" : "0fr",
-          visibility: mobileOpen ? "visible" : "hidden",
-        }}
-      >
-        <div className="overflow-hidden">
-          {/* The rule sits inside the clip, not on it. `overflow-hidden` does
-              not clip its own border, so on the collapsing element it would
-              stay drawn as a 1px line under the bar for the length of the
-              close transition, until `visibility` flipped. Full bleed, while
-              the links inside it take the same measure as the bar above. */}
-          <div className="border-t border-border candy:border-0">
-            <Container>
-              {/* CV is filtered out here, not missing. It is the accent pill
-                  in the row above, which is on screen whether this panel is
-                  open or not, so listing it again would be the same
-                  destination twice on one screen with the quieter of the two
-                  below the fold. */}
-              <ul className="candy:flex candy:flex-col candy:gap-2 candy:py-3">
-                {navLinks
-                  .filter((l) => l.href !== "/cv")
-                  .map((l) => (
-                    <li key={l.label}>
-                      <Link
-                        href={l.href}
-                        aria-current={
-                          l.match && pathname.startsWith(l.match)
-                            ? "page"
-                            : undefined
-                        }
-                        onClick={() => setMobileOpen(false)}
-                        className="block py-3 text-base text-muted-foreground transition-colors duration-fast ease-out hover:text-foreground aria-[current=page]:text-foreground sticker sticker-sm candy:rounded-full candy:px-4 candy:py-2.5 candy:font-semibold candy:text-foreground aria-[current=page]:candy:bg-candy-pink"
-                      >
-                        {l.label}
-                      </Link>
-                    </li>
+                {/* The cowl of the theme the click leads to: white in dark,
+                    black in light. Both are rendered and crossfade. */}
+                <span aria-hidden className="relative block h-5 w-3.5">
+                  {(["black", "white"] as const).map((cowl) => (
+                    <Image
+                      key={cowl}
+                      src={`/theme/cowl-${cowl}.webp`}
+                      alt=""
+                      width={88}
+                      height={128}
+                      className={`absolute inset-0 h-5 w-auto drop-shadow-[0_1px_2px_rgba(0,0,0,0.25)] transition-[opacity,transform] duration-base ease-out ${
+                        toggleCowl(theme) === cowl ? "scale-100 opacity-100" : "scale-90 opacity-0"
+                      }`}
+                    />
                   ))}
-              </ul>
-            </Container>
-          </div>
+                </span>
+              </button>
+            </Tip>
+          </nav>
         </div>
       </div>
-    </header>
+    </>
   );
 }

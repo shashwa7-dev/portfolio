@@ -1,7 +1,6 @@
 "use client";
 
 import Goggles from "@/components/common/Goggles";
-import Postmark from "@/components/common/Postmark";
 
 /**
  * The hero avatar. On hover a pair of goggles (a matte black visor) slides
@@ -20,29 +19,16 @@ import Postmark from "@/components/common/Postmark";
  * This replaced an animated GIF on hover, about 1MB, which only played for
  * mouse users anyway.
  *
- * The size is fixed at 64px and deliberately not driven by the copy beside it.
- * Stretching it to the identity block's height was tried and abandoned twice
- * over: it drew far more attention than a supporting portrait should, and
- * `aspect-square` with `self-stretch` does not even do what it looks like, since
- * flex resolves an item's main size before its stretched cross size, so the
- * width came from content rather than from the height. The identity block is
- * tuned to the stamp around it instead.
- *
- * Between the photo and the goggles sits the "OPEN" postmark. It reaches past
- * the photo into the stamp's margin (the stamp in About.tsx clips it to the
- * perforated edge), so this box itself does not clip. It shimmers on a loop,
- * the same sweep as the Live links.
+ * It sits inside the hero's intro line ("Hi, I am (photo) Shashwat"),
+ * so it is sized in `em`: about the height of the letters around it, whatever
+ * size the line is set at. Round, and clipped to the circle.
  *
  * The photo is greyscale at rest and returns to colour on hover, so this
  * matches every other image surface in the app. The goggles stay in colour.
  */
 export default function AvatarHover() {
   return (
-    <div
-      /* No edge here. The stamp's perforated paper in About.tsx is the edge,
-         and it clips everything in this box to its shape. */
-      className="group relative h-16 w-16"
-    >
+    <span className="relative block h-[1.15em] w-[1.15em] overflow-hidden rounded-full bg-white">
       {/* The portrait has its own file. It used to be served from
           `/apple-touch-icon.png`, which meant the hero's face and the home
           screen icon were one asset: replacing the icon set silently replaced
@@ -53,14 +39,11 @@ export default function AvatarHover() {
       <img
         src="/images/avatar.png"
         alt="Shashwat Tripathi"
-        className="h-full w-full object-cover grayscale candy:grayscale-0 transition-[filter] duration-base ease-out group-hover:grayscale-0"
+        className="block h-full w-full object-cover grayscale candy:grayscale-0 transition-[filter] duration-base ease-out group-hover:grayscale-0"
       />
-      {/* Top-right corner of the stamp: 5px of margin plus 6px past the edge,
-          trimmed away by the stamp's perforated mask. */}
-      <Postmark className="postmark live-shimmer absolute -right-2.75 -top-2.75 h-8.5 w-8.5" />
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      <span className="pointer-events-none absolute inset-0 overflow-hidden">
         <Goggles className="goggles" />
-      </div>
-    </div>
+      </span>
+    </span>
   );
 }

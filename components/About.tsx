@@ -44,107 +44,84 @@ import { socialLinks } from "@/lib/siteLinks";
  * declares this person the page's main entity, and the slogan outranking them
  * contradicted it), the verified mark, the live local time, and every number.
  *
- * The identity row is the original, restored. An earlier pass here flattened it
- * onto one line and moved availability off the portrait into a text chip; it
- * was reverted on sight. The portrait keeps its band, its shadow and its
- * `min-h-16` column, and the reasoning for each is in the comments below.
+ * The identity row is now one intro line, "Hi, I am (photo) Shashwat",
+ * with the portrait inline in the sentence, chosen over an ID card, a status
+ * ring and a polaroid. It replaced the postage-stamp row. Availability moved
+ * from the stamp's postmark to the mono row under the line.
  */
 export default function About() {
   return (
     <header className="pt-10 md:pt-14 candy:pb-6">
       <Container width="reading">
         <div className="relative space-y-6 sm:space-y-7">
-          <div className="flex items-start gap-3.5">
-            {/* The portrait is a postage stamp: a white perforated edge
-                (`.stamp-edge` in globals.css) around a square photo, postmarked
-                "OPEN" in the top-right corner (Postmark, inside AvatarHover).
-                The postmark replaced a dark "Open" band along the bottom; the
-                tooltip and the `sr-only` text still carry "Open to work".
+          {/* The intro line, and the page's h1: "Hi, I am (photo)
+              Shashwat". The portrait sits inside the sentence at about the
+              letters' height, which replaced the postage stamp row.
 
-                The shadow is a `drop-shadow` on this link rather than a
-                box-shadow, because the stamp is masked and a box-shadow would
-                be cut away with the perforations. It is deeper in dark mode,
-                where a soft black shadow does very little against a near-black
-                page.
+              The photo is still the one quiet link on the page, to /offcod8,
+              with the goggles sliding on when it is hovered. Its accessible
+              name comes from the image's alt text.
 
-                The whole stamp is the hover target for the goggles. It is also
-                a link, to /offcod8. Nothing else on the site points there and
-                nothing says it is there, which is the idea: the page is a letter
-                left for whoever pokes at the one thing on the homepage that
-                looks like a person rather than a control. The accessible name
-                is left to come from the contents, "Shashwat Tripathi" and "Open
-                to work", rather than being overridden with an `aria-label`
-                naming the destination, which keeps the surprise intact for
-                everyone equally.
-
-                `block` because an `<a>` is inline by default. */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="/offcod8"
-                  className="group relative block shrink-0 drop-shadow-[0_1px_1.5px_rgb(0_0_0/0.25)] dark:drop-shadow-[0_2px_4px_rgb(0_0_0/0.6)] tilt-i"
-                >
-                  <span className="stamp-edge block bg-white p-1.25">
+              The size is a clamp so the whole line fits one line on a 390px
+              phone and tops out at the old stamp row's weight on desktop. */}
+          <div className="space-y-3.5">
+            <h1 className="text-[clamp(1.4rem,5.6vw,2.15rem)] font-medium leading-[1.15] tracking-tighter text-muted-foreground">
+              Hi, I am{" "}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href="/offcod8"
+                    className="group relative mx-1.5 inline-block align-[-0.2em] -rotate-4 rounded-full transition-transform duration-fast ease-out hover:rotate-0"
+                  >
                     <AvatarHover />
-                  </span>
-                  <span className="sr-only">Open to work</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent>Open to work</TooltipContent>
-            </Tooltip>
-            {/* `min-h-18.5`, not `h-18.5`. It is the stamp's exact height (the
-                64px photo plus its 5px paper edge) so the edges still line up,
-                but a fixed height would overflow instead of growing if the
-                availability row ever wrapped on a narrow screen. */}
-            <div className="flex min-h-18.5 flex-col justify-between">
-              {/* The name is the page's h1.
-
-                  It used to be a 17px div while the tagline below was the h1 at
-                  up to 54px, so the person was the smallest text in their own
-                  hero and the slogan outranked them. That also contradicted the
-                  ProfilePage JSON-LD, which declares this person the page's main
-                  entity. The tagline is still the visually dominant line, and
-                  still does the selling; it is just no longer the heading.
-
-                  The verified mark sits beside the name rather than pinned to the
-                  avatar's corner. As an overhang at `-bottom-1 -right-1` it broke
-                  the alignment above, and it belongs with the name it
-                  qualifies. */}
-              <div className="flex items-center gap-1.5">
-                <h1 className="text-2xl font-semibold leading-none tracking-tight text-foreground">
-                  Shashwat Tripathi
-                </h1>
+                    {/* The status ring: a green dotted circle turning slowly
+                        around the photo (`.status-ring`), plus a live dot.
+                        Both say "open to work" at a glance; under reduced
+                        motion the ring holds still. */}
+                    <svg
+                      aria-hidden
+                      viewBox="0 0 40 40"
+                      className="status-ring pointer-events-none absolute -inset-[0.14em] text-emerald-500 dark:text-emerald-400"
+                    >
+                      <circle cx={20} cy={20} r={19.25} fill="none" stroke="currentColor" strokeWidth={1.2} strokeDasharray="1.6 3.2" strokeLinecap="round" />
+                    </svg>
+                    <span
+                      aria-hidden
+                      className="absolute -bottom-[0.02em] -right-[0.04em] h-[0.28em] w-[0.28em] rounded-full bg-emerald-500 ring-2 ring-background dark:bg-emerald-400"
+                    />
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>Open to work</TooltipContent>
+              </Tooltip>{" "}
+              <span className="whitespace-nowrap font-semibold text-foreground">
+                Shashwat
                 <span
-                  className="grid h-4 w-4 shrink-0 place-items-center rounded-full bg-foreground text-background candy:h-[18px] candy:w-[18px] candy:bg-candy-mint candy:text-foreground candy:outline-solid candy:outline-[1.5px] candy:outline-foreground"
+                  className="ml-1.5 inline-grid h-4 w-4 place-items-center rounded-full bg-foreground align-[0.2em] text-background candy:h-[18px] candy:w-[18px] candy:bg-candy-mint candy:text-foreground candy:outline-solid candy:outline-[1.5px] candy:outline-foreground"
                   title="Verified engineer"
-                  /* `role="img"` is load-bearing, not decoration: `aria-label`
-                     on a bare span is a prohibited attribute, so without a role
-                     the label is dropped and the mark reads as nothing. */
+                  /* An aria-label on a bare span is a prohibited attribute, so
+                     without a role the label is dropped. */
                   role="img"
                   aria-label="Verified"
                 >
                   <Check className="h-2.5 w-2.5" weight="bold" />
                 </span>
-              </div>
-              {/* No margins on these two: `justify-between` on the column owns
-                  the vertical distribution, and a margin here would fight it. */}
-              <div>
-                <Label>Frontend Engineer · AI · Web3</Label>
-              </div>
-              {/* Availability. Same treatment as the "Currently building" badge on
-                  the active Experience role, so one signal reads one way
-                  everywhere.
+              </span>
+            </h1>
 
-                  The green is now the dot only. A full emerald pill (green
-                  border, green text, green dot) put a lot of hue on a page whose
-                  premise is a restrained neutral palette, and it read as an
-                  intrusion. The dot alone still carries the live-status meaning,
-                  which is the part the colour actually earns; the label sits on
-                  neutral tokens like every other pill in the app. */}
-              {/* The availability pill that used to sit here has moved onto the
-                  avatar. What remains is the working day, which answers the other
-                  half of the same question for a client in another timezone. */}
+            {/* Role, the working day in Bengaluru, and availability, which
+                the stamp's OPEN postmark used to carry. The green is the dot
+                and the word only, the one live-status signal on the page. */}
+            <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+              <Label>Frontend Engineer · AI · Web3</Label>
+              {/* Hidden on phones, where the row wraps here and the dot would
+                  dangle at the end of the first line. */}
+              <span aria-hidden className="font-mono text-2xs text-subtle max-sm:hidden">·</span>
               <LocalTime />
+              <span aria-hidden className="font-mono text-2xs text-subtle">·</span>
+              <span className="inline-flex items-center gap-1.5 font-mono text-2xs uppercase tracking-label text-emerald-500 dark:text-emerald-400">
+                <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-current" />
+                Open to work
+              </span>
             </div>
           </div>
 
