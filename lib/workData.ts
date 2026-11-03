@@ -78,15 +78,15 @@ export const organizations: TOrganization[] = [
     logo: "/images/shopos.jpeg",
     role: "Frontend Engineer",
     employment: "full-time",
-    period: { start: "01.2026" },
+    period: { start: "01.2026", end: "10.2026" },
     // Each of these is documented in data/agent-memory.md's ShopOS section and
     // Tech stack list (the Next.js apps, the Spacelab node canvas on React
     // Flow, the streaming agent chat on the Vercel AI SDK).
     skills: ["React", "TypeScript", "Next.js", "React Flow", "Vercel AI SDK", "React Query"],
     workMode: "onsite",
-    summary: "Building Sloosh, Spacelab and the ShopOS app.",
+    summary: "Built Sloosh, Spacelab and the ShopOS app.",
     description:
-      "Frontend engineer at ShopOS, building its AI products end to end: Sloosh for creators, the ShopOS app for brands, and Spacelab, the node canvas both of them run on.",
+      "Frontend engineer at ShopOS, where he built its AI products end to end: Sloosh for creators, the ShopOS app for brands, and Spacelab, the node canvas both of them run on.",
     links: {
       web: "https://shopos.ai/",
       app: "https://app.shopos.ai/",
