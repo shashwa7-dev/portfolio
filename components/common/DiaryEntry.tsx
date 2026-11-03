@@ -1,8 +1,8 @@
 import Image from "next/image";
-import { Lightning } from "@phosphor-icons/react/ssr";
 import LiveLink from "@/components/common/LiveLink";
 import Label from "@/components/layout/Label";
 import Callout from "@/components/common/Callout";
+import { GLYPHS } from "@/components/common/DotGlyph";
 import StackIcon from "@/components/common/StackIcon";
 import ProductMark from "@/components/common/ProductMark";
 import type { TDiaryEntry, TDiaryMedia } from "@/lib/diaryData";
@@ -45,7 +45,7 @@ export default function DiaryEntry({
           </div>
         </div>
         <div className="space-y-2.5">
-          <div className="flex items-center gap-x-3 font-mono text-2xs uppercase tracking-label text-subtle">
+          <div className="flex items-center gap-x-3 font-label text-2xs uppercase tracking-label text-subtle">
             {total > 1 && (
               <>
                 <span className="text-foreground">
@@ -100,7 +100,7 @@ export default function DiaryEntry({
       </div>
 
       {entry.impact && (
-        <Callout label="Impact" icon={Lightning}>
+        <Callout label="Impact" glyph={GLYPHS.bolt}>
           {entry.impact}
         </Callout>
       )}
@@ -136,7 +136,7 @@ function DiaryMediaGrid({ media }: { media?: TDiaryMedia[] }) {
         <figure key={i} className={slots.length % 2 === 1 && i === 0 ? "space-y-1.5 sm:col-span-2" : "space-y-1.5"}>
           <div className="relative aspect-16/10 overflow-hidden rounded-lg bg-muted ring-1 ring-border">
             {!m.src ? (
-              <div className="flex h-full items-center justify-center border border-dashed border-border-strong p-4 text-center font-mono text-2xs uppercase tracking-label text-subtle">
+              <div className="flex h-full items-center justify-center border border-dashed border-border-strong p-4 text-center font-label text-2xs uppercase tracking-label text-subtle">
                 {m.kind} slot
               </div>
             ) : m.kind === "video" ? (

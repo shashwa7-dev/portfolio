@@ -13,7 +13,7 @@ import MarginNote from "@/components/common/MarginNote";
  */
 export default function ExperienceWork() {
   return (
-    <Section id="experience" label="Work" title="Where I've worked, and what I shipped">
+    <Section id="experience" label="Work">
       <ul className="space-y-1">
         {organizations.map((org) => {
           return (
@@ -31,7 +31,7 @@ export default function ExperienceWork() {
                       which on a phone squeezed the summary to a few words a line. */}
                   <span className="flex items-baseline justify-between gap-3">
                     <span className="font-medium text-foreground">{org.name}</span>
-                    <span className="shrink-0 font-mono text-xs tabular-nums text-subtle">{formatPeriod(org.period)}</span>
+                    <span className="shrink-0 font-label text-xs tabular-nums text-subtle">{formatPeriod(org.period)}</span>
                   </span>
                   <span className="mt-1 flex flex-wrap items-center gap-1.5 text-sm text-foreground/80">
                     <span className="mr-0.5">{org.role}</span>

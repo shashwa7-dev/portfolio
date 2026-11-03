@@ -29,7 +29,7 @@ export function ActiveBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-sm border border-border-strong px-2 py-0.5 font-mono text-2xs font-medium uppercase tracking-label text-muted-foreground",
+        "inline-flex items-center gap-1.5 rounded-sm border border-border-strong px-2 py-0.5 font-label text-2xs font-medium uppercase tracking-label text-muted-foreground",
         className
       )}
     >

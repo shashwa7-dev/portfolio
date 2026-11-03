@@ -21,8 +21,7 @@ export default function Projects() {
     <Section
       id="projects"
       label="Projects"
-      title="Things I build for fun"
-      action={<ViewAllLink href="/projects">View all</ViewAllLink>}
+      action={<ViewAllLink href="/projects" label="All projects" />}
     >
       <ul className="space-y-1">
         {homeProjects(sideProjects).map((p) => (
@@ -36,7 +35,7 @@ export default function Projects() {
               </span>
               {p.isRecent && (
                 <Shimmer tone="surface" className="ml-1.5 inline-block rounded-sm border border-border-strong bg-background">
-                  <span className="block px-1.5 py-0.5 font-mono text-2xs uppercase tracking-label text-foreground">Recent</span>
+                  <span className="block px-1.5 py-0.5 font-label text-2xs uppercase tracking-label text-foreground">Recent</span>
                 </Shimmer>
               )}
               <ArrowUpRight
@@ -44,7 +43,7 @@ export default function Projects() {
                 className="h-4 w-4 -translate-x-1 translate-y-0.5 text-subtle opacity-0 transition-[opacity,transform] duration-base ease-out group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:translate-y-0 group-focus-visible:opacity-100"
               />
               {p.date && (
-                <span className="ml-auto shrink-0 font-mono text-xs tabular-nums text-subtle transition-opacity duration-base ease-out group-hover:opacity-0 group-focus-visible:opacity-0">
+                <span className="ml-auto shrink-0 font-label text-xs tabular-nums text-subtle transition-opacity duration-base ease-out group-hover:opacity-0 group-focus-visible:opacity-0">
                   {p.date}
                 </span>
               )}

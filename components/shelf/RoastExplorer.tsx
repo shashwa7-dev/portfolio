@@ -53,7 +53,7 @@ export default function RoastExplorer() {
       <div className="border-b border-border candy:border-b-0 p-5 md:p-6">
         <p
           id={id}
-          className="font-mono text-2xs uppercase tracking-label text-subtle"
+          className="font-label text-2xs uppercase tracking-label text-subtle"
         >
           Drag to change the roast
         </p>
@@ -204,14 +204,14 @@ function RoastPanel({ stop }: { stop: RoastStop }) {
         <Meter label="Body" value={stop.body} hint={stop.bodyHint} />
       </div>
 
-      <p className="mt-5 font-mono text-2xs uppercase tracking-label text-subtle">
+      <p className="mt-5 font-label text-2xs uppercase tracking-label text-subtle">
         Tastes like
       </p>
       <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
         {stop.taste}
       </p>
 
-      <p className="mt-5 font-mono text-2xs uppercase tracking-label text-subtle">
+      <p className="mt-5 font-label text-2xs uppercase tracking-label text-subtle">
         Make it as
       </p>
       <ul className="mt-2 border-t border-border candy:border-t-0">
@@ -242,7 +242,7 @@ function Verdict({ fit }: { fit: Fit }) {
   return (
     <span
       className={cn(
-        "flex shrink-0 items-center gap-1.5 font-mono text-2xs uppercase tracking-label",
+        "flex shrink-0 items-center gap-1.5 font-label text-2xs uppercase tracking-label",
         className
       )}
     >
@@ -268,7 +268,7 @@ function Meter({
   return (
     <div>
       <div className="flex items-center justify-between gap-3">
-        <span className="font-mono text-2xs uppercase tracking-label text-subtle">
+        <span className="font-label text-2xs uppercase tracking-label text-subtle">
           {label}
         </span>
         <span

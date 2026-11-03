@@ -1,3 +1,4 @@
+import SectionLabel from "@/components/layout/SectionLabel";
 import fs from "fs";
 import path from "path";
 import Image from "next/image";
@@ -78,7 +79,7 @@ export default function CvPage() {
               Five years of frontend for AI and Web3 products, from ShopOS back to
               Dehidden. Read it here, or take the one-page PDF.
             </p>
-            <p className="font-mono text-xs text-subtle">One page · PDF · {pdfKb} KB</p>
+            <p className="font-label text-xs text-subtle">One page · PDF · {pdfKb} KB</p>
           </div>
           <a
             href={PDF}
@@ -112,7 +113,7 @@ export default function CvPage() {
                 {displayName(cv.name)}
               </h2>
               <Facts line={cv.title} className="mt-1 text-sm text-muted-foreground md:text-base" />
-              <div className="mt-3 space-y-1 font-mono text-xs leading-relaxed text-subtle [&_a]:transition-colors [&_a]:duration-fast [&_a]:ease-out [&_a]:hover:text-foreground">
+              <div className="mt-3 space-y-1 font-label text-xs leading-relaxed text-subtle [&_a]:transition-colors [&_a]:duration-fast [&_a]:ease-out [&_a]:hover:text-foreground">
                 {cv.contact.map((line) => (
                   <Facts key={line} line={line} />
                 ))}
@@ -128,7 +129,7 @@ export default function CvPage() {
             />
           </header>
 
-          <div className="[&>h2:first-of-type]:mt-9">
+          <div className="[&>.cv-section:first-of-type]:mt-9">
             {cv.blocks.map((block, i) => (
               <Block key={i} block={block} />
             ))}
@@ -181,11 +182,9 @@ function Block({ block }: { block: CvBlock }) {
   switch (block.kind) {
     case "section":
       return (
-        // Small caps with a rule running out to the right edge, the classic
-        // résumé section head.
-        <h2 className="mt-10 flex items-center gap-3 text-xs font-semibold uppercase tracking-label text-subtle after:h-px after:flex-1 after:bg-border">
-          {block.text}
-        </h2>
+        // The site's section label row (glyph, dot label, dotted leader,
+        // number), so the CV's heads match the homepage's.
+        <SectionLabel label={block.text} className="cv-section mt-10" />
       );
     case "role":
       return (
@@ -196,7 +195,7 @@ function Block({ block }: { block: CvBlock }) {
             {block.title}
           </h3>
           <p
-            className="mt-1 shrink-0 font-mono text-xs text-subtle sm:mt-0 [&_a]:underline [&_a]:decoration-border-strong [&_a]:underline-offset-4"
+            className="mt-1 shrink-0 font-label text-xs text-subtle sm:mt-0 [&_a]:underline [&_a]:decoration-border-strong [&_a]:underline-offset-4"
             dangerouslySetInnerHTML={{ __html: inlineHtml(dotSeparated(block.meta)) }}
           />
         </div>
@@ -230,12 +229,12 @@ function Block({ block }: { block: CvBlock }) {
         </ul>
       );
     case "labelled":
-      // No top border on the list. The section heading above already draws
-      // one, and the two sat together as a doubled rule under the label.
+      // No rules between rows: the label column and whitespace already
+      // separate them, and the lines only added noise under the dotted head.
       return (
-        <dl className="mt-3 divide-y divide-border candy:divide-y-0">
+        <dl className="mt-3 space-y-2.5">
           {block.rows.map((row) => (
-            <div key={row.label} className="py-2.5 sm:flex sm:gap-5">
+            <div key={row.label} className="sm:flex sm:gap-5">
               <dt className="shrink-0 text-sm font-semibold text-foreground sm:w-40">
                 {row.label}
               </dt>
@@ -248,7 +247,7 @@ function Block({ block }: { block: CvBlock }) {
       );
     case "stack":
       return (
-        <p className="mt-3 font-mono text-xs text-subtle">{block.text}</p>
+        <p className="mt-3 font-label text-xs text-subtle">{block.text}</p>
       );
   }
 }

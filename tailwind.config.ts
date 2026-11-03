@@ -101,6 +101,8 @@ const config: Config = {
       fontFamily: {
         sans: ["var(--font-sans)", ...SANS],
         mono: ["var(--font-mono)", ...MONO],
+        // Labels: dot-matrix Doto, pinned heavy so the dots read at 10px. Code stays mono.
+        label: [["var(--font-label)", ...MONO].join(", "), { fontVariationSettings: '"wght" 900, "ROND" 100' }],
         display: ["var(--font-display)", "var(--font-sans)", ...SANS],
       },
       fontSize: {

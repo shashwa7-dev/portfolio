@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Sans, Fredoka } from "next/font/google";
+import { DM_Sans, Doto, Fredoka } from "next/font/google";
 import { MotionConfig } from "motion/react";
 import "./globals.css";
 import { baseUrl } from "./sitemap";
@@ -22,6 +22,18 @@ const dmSans = DM_Sans({
   style: ["normal", "italic"],
   display: "swap",
   variable: "--font-sans",
+});
+
+/**
+ * The label face: the small uppercase lines (role, local time, tags, dates,
+ * eyebrows). A dot-matrix face, variable so `font-label` can pin a weight
+ * heavy enough for the dots to read at 10px. Code and key caps stay on the
+ * mono face.
+ */
+const doto = Doto({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-label",
 });
 
 const fredoka = Fredoka({
@@ -124,7 +136,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`bg-background text-foreground border-border ${dmSans.variable} ${fredoka.variable} ${plexMono.variable} ${cardHand.variable} ${cardSticker.variable} font-sans`}
+        className={`bg-background text-foreground border-border ${dmSans.variable} ${fredoka.variable} ${doto.variable} ${plexMono.variable} ${cardHand.variable} ${cardSticker.variable} font-sans`}
       >
         <NoScript />
         <MotionConfig reducedMotion="user">

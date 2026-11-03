@@ -299,6 +299,71 @@
 }
 
 @layer utilities {
+  /* The label face (Doto, a dot-matrix face) reads small, so its sizes run
+     up from the scale: text-2xs 10px to 11px, text-xs 11px to 12.1px.
+     Compound selectors, so they beat the plain size utilities. */
+  .font-label.text-2xs { font-size: 0.6875rem; }
+  .font-label.text-xs { font-size: 0.75625rem; }
+  /* The section eyebrow above each homepage title (Section.tsx). */
+  /* The dotted leader from a section label to its count (Section.tsx): a
+     row of round dots, echoing the dot-matrix label face. */
+  .section-leader {
+    height: 4px;
+    background-image: radial-gradient(circle, hsl(var(--border-strong)) 1.2px, transparent 1.5px);
+    background-size: 7px 4px;
+    background-repeat: repeat-x;
+    background-position: left center;
+  }
+  /* The section glyph: lit dots full, unlit faint. Hovering the section head
+     sends a ripple across all nine, corner to corner (--dot is the diagonal
+     index), lighting the unlit ones in passing and dipping the lit ones, then
+     settles back on the pattern when the pointer leaves. */
+  .section-glyph > span { opacity: 0.2; transition: opacity var(--duration-glyph-step) ease-out; }
+  .section-glyph > span[data-on] { opacity: 1; }
+  /* A drawn icon (DotGlyph) needs its shape to read, so its unlit dots sit
+     fainter than a section glyph's. */
+  .dot-glyph > span:not([data-on]) { opacity: 0.08; }
+  @media (hover: hover) {
+    .section-head:hover .section-glyph > span {
+      animation: glyph-wave var(--duration-glyph-wave) ease-in-out infinite;
+      animation-delay: calc(var(--dot) * var(--duration-glyph-step));
+    }
+    .section-head:hover .section-glyph > span[data-on] { animation-name: glyph-wave-on; }
+  }
+  /* Section numbers: each Section label counts itself, so the homepage reads
+     01 Work, 02 Writing, 03 Currently… in page order. */
+  body { counter-reset: section; }
+  .section-no { counter-increment: section; }
+  .section-no::before { content: counter(section, decimal-leading-zero); }
+  /* The closing section's dot-matrix sign (DotMarquee.tsx). Each cell holds
+     one round dot at 60% of the cell; unlit dots stay faintly visible so the
+     strip reads as a display panel. No transition: an LED steps, it does
+     not fade. */
+  /* Both ends fade out, so letters slide in from and out into nothing
+     rather than being cut at the strip's edge. */
+  .dot-marquee {
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+  }
+  .dot-marquee > span { display: grid; place-items: center; }
+  .dot-marquee > span::before {
+    content: "";
+    width: 60%;
+    aspect-ratio: 1;
+    border-radius: 9999px;
+    background: currentColor;
+    opacity: 0.1;
+  }
+  .dot-marquee > span[data-on]::before { opacity: 0.8; }
+  /* "Open to work" (About.tsx): the centre dot holds, the edges then the
+     corners pulse after it, so the glyph reads as a live signal. */
+  .live-glyph > span { opacity: 0.25; animation: live-pulse var(--duration-live-pulse) ease-in-out infinite; animation-delay: calc(var(--ring) * var(--duration-live-ring)); }
+  .live-glyph > span[data-centre] { opacity: 1; animation: none; }
+  .label-section {
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
   .content-bg {
     background: hsl(var(--card));
   }
@@ -376,6 +441,10 @@
      and symmetric so it reads as a dissolve, not a cut; the clip's sound fades
      over the same time (read from the computed transition). */
   --duration-spin-clip: 700ms;
+  --duration-glyph-wave: 1100ms;
+  --duration-live-pulse: 1800ms;
+  --duration-live-ring: 280ms;
+  --duration-glyph-step: 90ms;
   --ease-spin-clip: cubic-bezier(0.45, 0, 0.55, 1);
   --duration-goggles-on: 420ms;
   --duration-goggles-off: 240ms;
@@ -738,6 +807,9 @@ table {
   .spin-clip[data-on] { opacity: 1; }
 }
 @keyframes status-ring-turn { to { transform: rotate(1turn); } }
+@keyframes glyph-wave { 0%, 100% { opacity: 0.2; } 40% { opacity: 1; } }
+@keyframes live-pulse { 0%, 100% { opacity: 0.25; } 35% { opacity: 1; } }
+@keyframes glyph-wave-on { 0%, 100% { opacity: 1; } 40% { opacity: 0.3; } }
 
 /* ── Dock ───────────────────────────────────────────────────────────────────
    Outside `@layer components` on purpose. The global `a { transition }` and

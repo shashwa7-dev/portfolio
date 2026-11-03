@@ -9,10 +9,10 @@ shashwa7.in | linkedin.com/in/shashwa7 | github.com/shashwa7-dev
 ## EXPERIENCE
 
 ### Frontend Engineer · ShopOS (Full-time)
-Jan 2026 – Present | shopos.ai
+Jan 2026 – Oct 2026 | shopos.ai
 
 AI-native commerce platform, [**$20M raised**](https://www.linkedin.com/posts/binnybansal_ai-commerce-entrepreneurship-share-7343988683810795522-jI9K/) from
-Binny Bansal's 3STATE Ventures. Own the frontend for three AI products, built end
+Binny Bansal's 3STATE Ventures. Owned the frontend for three AI products, built end
 to end: **Sloosh**, **Spacelab** and the **ShopOS app**.
 
 - **Spacelab:** built a node-based AI pipeline builder on **React Flow** that

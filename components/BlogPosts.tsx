@@ -59,7 +59,7 @@ export function BlogPosts() {
                 <ArrowUpRight className="mt-1 h-4 w-4 shrink-0 text-subtle transition-colors duration-base ease-out group-hover:text-foreground" />
               </div>
 
-              <div className="mt-1 flex items-center gap-2 font-mono text-2xs uppercase tracking-label text-subtle">
+              <div className="mt-1 flex items-center gap-2 font-label text-2xs uppercase tracking-label text-subtle">
                 {formatDate(post.metadata.publishedAt, false)}
                 <span aria-hidden className="text-border-strong">
                   ·
@@ -75,7 +75,7 @@ export function BlogPosts() {
                 {JSON.parse(post.metadata.tags).map((tag: string, j: number) => (
                   <span
                     key={j}
-                    className={`rounded-sm border border-border px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-muted-foreground sticker sticker-sm sticker-flat candy:rounded-tag candy:font-semibold candy:text-foreground ${tint(j)}`}
+                    className={`rounded-sm border border-border px-2 py-0.5 font-label text-2xs uppercase tracking-label text-muted-foreground sticker sticker-sm sticker-flat candy:rounded-tag candy:font-semibold candy:text-foreground ${tint(j)}`}
                   >
                     {tag}
                   </span>

@@ -43,7 +43,7 @@ export default function CollapsibleGrid({
           type="button"
           aria-expanded={open}
           onClick={() => setOpen((o) => !o)}
-          className="flex items-center gap-1.5 rounded-full border border-border-strong px-4 py-1.5 font-mono text-2xs uppercase tracking-label text-muted-foreground transition-colors duration-base ease-out hover:bg-muted hover:text-foreground candy:border-2 candy:border-foreground candy:bg-white candy:text-foreground"
+          className="flex items-center gap-1.5 rounded-full border border-border-strong px-4 py-1.5 font-label text-2xs uppercase tracking-label text-muted-foreground transition-colors duration-base ease-out hover:bg-muted hover:text-foreground candy:border-2 candy:border-foreground candy:bg-white candy:text-foreground"
         >
           {open ? "Show less" : `Show all ${items.length}`}
           <CaretDown

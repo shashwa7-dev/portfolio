@@ -17,7 +17,7 @@ const faqs = [
 
 export default function Faq() {
   return (
-    <Section id="faq" label="FAQ" title="Questions, answered" width="reading">
+    <Section id="faq" label="FAQ" width="reading">
       <script
         type="application/ld+json"
         suppressHydrationWarning

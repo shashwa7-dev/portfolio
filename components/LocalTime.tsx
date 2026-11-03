@@ -56,7 +56,7 @@ export default function LocalTime() {
   // Server and first client render agree, so there is no hydration mismatch to
   // suppress.
   return (
-    <span className="inline-flex items-center gap-1.5 font-mono text-2xs uppercase tracking-label text-subtle">
+    <span className="inline-flex items-center gap-1.5 font-label text-2xs uppercase tracking-label text-subtle">
       {/* Decorative: the city beside it already carries the meaning, and a
           screen reader announcing "flag" before it would only be noise. */}
       <IndiaFlag aria-hidden className="h-2.5 w-3.75 shrink-0" />

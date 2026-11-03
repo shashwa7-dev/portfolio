@@ -168,7 +168,7 @@ export default async function ShelfPage() {
               description was running the full width of the card and straight
               under the beans. */}
           <span className="relative block max-w-[46ch]">
-            <span className="font-mono text-2xs uppercase tracking-label text-subtle">
+            <span className="font-label text-2xs uppercase tracking-label text-subtle">
               Not sure what to buy
             </span>
             <span className="mt-2 flex items-center gap-2 font-medium text-foreground">
@@ -188,7 +188,7 @@ export default async function ShelfPage() {
         {/* A subheading rather than a section of its own. The roasters, the
             gear and the long read are one subject, and giving each its own
             numbered section spent three lots of section padding saying so. */}
-        <h3 className="mt-10 font-mono text-2xs uppercase tracking-label text-subtle">
+        <h3 className="mt-10 font-label text-2xs uppercase tracking-label text-subtle">
           Gear, in the order I bought it
         </h3>
         <p className="mb-4 mt-1.5 max-w-[62ch] text-sm text-muted-foreground">
@@ -222,7 +222,7 @@ export default async function ShelfPage() {
                 instead of jumping at one breakpoint. */}
             <div className="relative flex items-end justify-between gap-4 p-5 pt-10 sm:gap-6 sm:p-6 sm:pt-16 md:p-8 md:pt-24">
               <div>
-                <p className="font-mono text-2xs uppercase tracking-label text-subtle">
+                <p className="font-label text-2xs uppercase tracking-label text-subtle">
                   Longer version
                 </p>
                 {/* Steps down on a phone rather than holding `text-xl`. At 20px
@@ -284,7 +284,7 @@ export default async function ShelfPage() {
             <SpecRow key={s.name} label="Scent">
               <span className="block font-medium text-foreground">
                 {s.name}
-                <span className="ml-2 font-mono text-2xs uppercase tracking-label text-subtle">
+                <span className="ml-2 font-label text-2xs uppercase tracking-label text-subtle">
                   {s.house}
                 </span>
               </span>
@@ -310,7 +310,7 @@ export default async function ShelfPage() {
                 href={PLAYLIST_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-4 inline-flex items-center gap-1.5 font-mono text-2xs uppercase tracking-label text-subtle transition-colors duration-fast ease-out hover:text-foreground"
+                className="mt-4 inline-flex items-center gap-1.5 font-label text-2xs uppercase tracking-label text-subtle transition-colors duration-fast ease-out hover:text-foreground"
               >
                 The whole playlist
                 <ArrowUpRight className="h-3 w-3" />
@@ -363,7 +363,7 @@ export default async function ShelfPage() {
           className="group flex items-center justify-between gap-4 rounded-2xl border border-border bg-card p-5 sticker candy:rounded-sticker candy:border-white hover:candy:border-white"
         >
           <span>
-            <span className="block font-mono text-2xs uppercase tracking-label text-subtle">
+            <span className="block font-label text-2xs uppercase tracking-label text-subtle">
               Also on the shelf
             </span>
             <span className="mt-1.5 block font-medium text-foreground">

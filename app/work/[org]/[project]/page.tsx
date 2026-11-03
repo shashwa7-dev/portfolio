@@ -56,7 +56,7 @@ export default async function WorkProjectPage(props: { params: Promise<{ org: st
           gutter={
             <div className="space-y-5">
               <div>
-                <div className="mb-1.5 font-mono text-2xs uppercase tracking-label text-subtle">Built at</div>
+                <div className="mb-1.5 font-label text-2xs uppercase tracking-label text-subtle">Built at</div>
                 <Link href={`/work/${org.slug}`} className="inline-flex items-center gap-2 text-sm text-foreground hover:underline hover:decoration-border-strong hover:underline-offset-4">
                   {/* Logos stay in colour; only thumbnails are greyscale. */}
                   <span className="relative h-5 w-5 shrink-0 overflow-hidden rounded-md bg-elevated">
@@ -68,12 +68,12 @@ export default async function WorkProjectPage(props: { params: Promise<{ org: st
               {project.date && <GutterItem k="When" v={project.date} />}
               {project.isActive && (
                 <div>
-                  <div className="mb-1.5 font-mono text-2xs uppercase tracking-label text-subtle">Status</div>
+                  <div className="mb-1.5 font-label text-2xs uppercase tracking-label text-subtle">Status</div>
                   <ActiveBadge label="Active project" />
                 </div>
               )}
               <div>
-                <div className="mb-1.5 font-mono text-2xs uppercase tracking-label text-subtle">Stack</div>
+                <div className="mb-1.5 font-label text-2xs uppercase tracking-label text-subtle">Stack</div>
                 {/* Marks only, each named by a tooltip (and by its aria-label for screen readers). */}
                 <div className="flex flex-wrap items-center gap-3">
                   {stack.map((t) => (
@@ -83,7 +83,7 @@ export default async function WorkProjectPage(props: { params: Promise<{ org: st
               </div>
               {links.length > 0 && (
                 <div>
-                  <div className="mb-1.5 font-mono text-2xs uppercase tracking-label text-subtle">Links</div>
+                  <div className="mb-1.5 font-label text-2xs uppercase tracking-label text-subtle">Links</div>
                   <div className="flex flex-col gap-1 text-sm">
                     {links.map((l) =>
                       l.key === "web" ? (
@@ -102,14 +102,14 @@ export default async function WorkProjectPage(props: { params: Promise<{ org: st
         >
           <div className="space-y-9">
             <section className="space-y-2">
-              <div className="font-mono text-2xs uppercase tracking-label text-foreground">Overview</div>
+              <div className="font-label text-2xs uppercase tracking-label text-foreground">Overview</div>
               <h2 className="text-2xl">What it is</h2>
               <p className="max-w-[62ch] text-base text-muted-foreground">{project.description}</p>
             </section>
 
             {project.highlights && project.highlights.length > 0 && (
               <section className="space-y-2">
-                <div className="font-mono text-2xs uppercase tracking-label text-foreground">Highlights</div>
+                <div className="font-label text-2xs uppercase tracking-label text-foreground">Highlights</div>
                 <h2 className="text-2xl">Key features</h2>
                 <ul className="space-y-1.5">
                   {project.highlights.map((line, i) => (
@@ -131,7 +131,7 @@ export default async function WorkProjectPage(props: { params: Promise<{ org: st
 function GutterItem({ k, v }: { k: string; v: string }) {
   return (
     <div>
-      <div className="mb-1 font-mono text-2xs uppercase tracking-label text-subtle">{k}</div>
+      <div className="mb-1 font-label text-2xs uppercase tracking-label text-subtle">{k}</div>
       <div className="text-sm text-foreground">{v}</div>
     </div>
   );

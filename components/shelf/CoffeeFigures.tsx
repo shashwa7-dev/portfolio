@@ -44,7 +44,7 @@ function Figure({
 }
 
 const LABEL =
-  "font-mono text-2xs uppercase tracking-label fill-subtle";
+  "font-label text-2xs uppercase tracking-label fill-subtle";
 const TEXT = "text-xs fill-muted-foreground";
 const STRONG = "text-sm font-semibold fill-foreground";
 

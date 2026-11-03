@@ -27,7 +27,7 @@ const GROUPS: { group: StackGroup; label: string; swatch: string }[] = [
 export default function Currently() {
   const reading = readingNow(books);
   const rows: { label: string; value: React.ReactNode }[] = [
-    { label: "Building", value: currently.building },
+    ...(currently.building ? [{ label: "Building", value: currently.building }] : []),
     ...(reading.length
       ? [
           {
@@ -52,7 +52,7 @@ export default function Currently() {
       : []),
   ];
   return (
-    <Section id="currently" label="Currently" title="What I'm building, reading and using">
+    <Section id="currently" label="Currently">
       <dl className="space-y-3">
         {rows.map((r) => (
           <div key={r.label} className={ROW}>

@@ -26,7 +26,7 @@ export default function LiveLink({
       target="_blank"
       rel="noopener noreferrer"
       className={cn(
-        "group inline-flex w-fit items-center whitespace-nowrap py-0.5 font-mono text-2xs font-medium uppercase tracking-label text-foreground",
+        "group inline-flex w-fit items-center whitespace-nowrap py-0.5 font-label text-2xs font-medium uppercase tracking-label text-foreground",
         className
       )}
     >

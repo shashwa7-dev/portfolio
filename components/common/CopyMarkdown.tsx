@@ -52,7 +52,7 @@ export default function CopyMarkdown({ slug }: { slug: string }) {
   return (
     <aside className="mt-12 rounded-lg border border-border bg-card p-4 sm:flex sm:items-center sm:justify-between sm:gap-6 sm:p-5 sticker candy:rounded-sticker tilt-md-f">
       <div className="min-w-0">
-        <p className="font-mono text-2xs uppercase tracking-label text-subtle">
+        <p className="font-label text-2xs uppercase tracking-label text-subtle">
           Take it with you
         </p>
         <p className="mt-1.5 text-sm text-muted-foreground">

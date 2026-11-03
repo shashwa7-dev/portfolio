@@ -17,7 +17,7 @@ export function EmploymentTag({
   if (!employment) return null;
   const label = { "full-time": "Full-time", contract: "Contract", internship: "Internship" }[employment];
   return (
-    <span className="inline-flex items-center rounded-sm border border-border-strong px-1.5 py-0.5 font-mono text-2xs uppercase tracking-label text-muted-foreground sticker sticker-sm sticker-flat candy:rounded-tag candy:font-semibold candy:text-foreground">
+    <span className="inline-flex items-center rounded-sm border border-border-strong px-1.5 py-0.5 font-label text-2xs uppercase tracking-label text-muted-foreground sticker sticker-sm sticker-flat candy:rounded-tag candy:font-semibold candy:text-foreground">
       {label}
     </span>
   );
@@ -28,7 +28,7 @@ export function WorkModeTag({ mode }: { mode?: "onsite" | "remote" | "hybrid" })
   if (!mode) return null;
   const label = { onsite: "Onsite", remote: "Remote", hybrid: "Hybrid" }[mode];
   return (
-    <span className="inline-flex items-center rounded-sm border border-border-strong px-1.5 py-0.5 font-mono text-2xs uppercase tracking-label text-muted-foreground">
+    <span className="inline-flex items-center rounded-sm border border-border-strong px-1.5 py-0.5 font-label text-2xs uppercase tracking-label text-muted-foreground">
       {label}
     </span>
   );
@@ -46,7 +46,7 @@ export function WorkModeTag({ mode }: { mode?: "onsite" | "remote" | "hybrid" })
  */
 export function Tag({ children, index = 0 }: { children: React.ReactNode; index?: number }) {
   return (
-    <span className={`inline-flex items-center rounded-sm border border-border bg-elevated px-2 py-0.5 font-mono text-2xs text-muted-foreground sticker sticker-sm sticker-flat candy:rounded-full candy:text-foreground ${tint(index)}`}>
+    <span className={`inline-flex items-center rounded-sm border border-border bg-elevated px-2 py-0.5 font-label text-2xs text-muted-foreground sticker sticker-sm sticker-flat candy:rounded-full candy:text-foreground ${tint(index)}`}>
       {children}
     </span>
   );
@@ -74,7 +74,7 @@ export function OrgLinkChip({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className={`inline-flex items-center gap-1 rounded-sm border border-border bg-card px-2 py-0.5 font-mono text-2xs uppercase tracking-label text-muted-foreground transition-colors duration-base ease-out hover:border-border-strong hover:text-foreground sticker sticker-sm candy:rounded-tag candy:font-semibold candy:text-foreground ${tilt(index)}`}
+      className={`inline-flex items-center gap-1 rounded-sm border border-border bg-card px-2 py-0.5 font-label text-2xs uppercase tracking-label text-muted-foreground transition-colors duration-base ease-out hover:border-border-strong hover:text-foreground sticker sticker-sm candy:rounded-tag candy:font-semibold candy:text-foreground ${tilt(index)}`}
     >
       {label}
       <Icon className="h-2.5 w-2.5" />

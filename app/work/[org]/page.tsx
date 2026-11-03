@@ -89,11 +89,11 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
                 <EmploymentTag employment={org.employment} />
                 <WorkModeTag mode={org.workMode} />
                 <span className="text-border-strong">·</span>
-                <span className="font-mono text-xs tabular-nums text-subtle">{formatPeriod(org.period)}</span>
+                <span className="font-label text-xs tabular-nums text-subtle">{formatPeriod(org.period)}</span>
                 {formatTenure(org.period) && (
                   <>
                     <span aria-hidden className="text-border-strong">·</span>
-                    <span className="font-mono text-xs tabular-nums text-subtle">{formatTenure(org.period)}</span>
+                    <span className="font-label text-xs tabular-nums text-subtle">{formatTenure(org.period)}</span>
                   </>
                 )}
               </p>
@@ -128,7 +128,7 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
                       href={`#${entry.id}`}
                       className="group flex items-center gap-4 rounded-lg px-3 py-3 transition-colors duration-base ease-out hover:bg-muted"
                     >
-                      <span className="w-6 shrink-0 font-mono text-xs tabular-nums text-subtle">
+                      <span className="w-6 shrink-0 font-label text-xs tabular-nums text-subtle">
                         {String(i + 1).padStart(2, "0")}
                       </span>
                       {entry.logo && <ProductMark src={entry.logo} size={28} />}
@@ -166,7 +166,7 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
             <section className="space-y-4">
               <div className="flex items-baseline justify-between">
                 <h2 className="text-xl font-medium tracking-tight">Projects</h2>
-                <span className="font-mono text-xs uppercase tracking-label text-subtle">
+                <span className="font-label text-xs uppercase tracking-label text-subtle">
                   {org.projects.length} shipped
                 </span>
               </div>
@@ -185,7 +185,7 @@ export default async function OrgPage({ params }: { params: Promise<{ org: strin
             <section id="diary" className="scroll-mt-16 space-y-6">
               <div className="flex items-baseline justify-between">
                 <h2 className="text-xl font-medium tracking-tight">What I built</h2>
-                <span className="font-mono text-xs uppercase tracking-label text-subtle">
+                <span className="font-label text-xs uppercase tracking-label text-subtle">
                   {diary.featured.length} featured
                 </span>
               </div>
