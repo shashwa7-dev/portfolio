@@ -261,7 +261,7 @@ export default function About() {
               Icon only, because this is a corner and the footer already lists
               them by name. Each still carries an `sr-only` name and a `title`,
               so nothing is reachable only by a pointer. */}
-          <ul className="hidden items-center gap-0.5 sm:absolute sm:right-0 sm:top-0 sm:flex sm:mt-0!">
+          <ul className="hidden items-center gap-1 sm:absolute sm:-right-2 sm:top-0 sm:flex sm:mt-0!">
             {socialLinks.map(({ name, href }) => {
               const Icon = SOCIAL_ICONS[name];
               return (
@@ -271,9 +271,9 @@ export default function About() {
                     target="_blank"
                     rel="noopener noreferrer"
                     title={name}
-                    className="grid h-8 w-8 place-items-center rounded-md text-subtle transition-colors duration-fast ease-out hover:bg-elevated hover:text-foreground sticker sticker-sm candy:rounded-full candy:text-foreground hover:candy:bg-white"
+                    className="grid h-10 w-10 place-items-center rounded-lg text-subtle transition-colors duration-fast ease-out hover:bg-elevated hover:text-foreground sticker sticker-sm candy:rounded-full candy:text-foreground hover:candy:bg-white"
                   >
-                    <Icon aria-hidden="true" className="h-4 w-4" />
+                    <Icon aria-hidden="true" className="h-5.5 w-5.5" />
                     <span className="sr-only">{name}</span>
                   </a>
                 </li>
