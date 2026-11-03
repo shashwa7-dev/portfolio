@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Check, ArrowRight, Coffee } from "@phosphor-icons/react/ssr";
 import Container from "@/components/layout/Container";
 import AvatarHover from "@/components/AvatarHover";
+import SpinAvatar from "@/components/common/SpinAvatar";
 import LocalTime from "@/components/LocalTime";
 import Label from "@/components/layout/Label";
 import {
@@ -58,9 +59,8 @@ export default function About() {
               Shashwat". The portrait sits inside the sentence at about the
               letters' height, which replaced the postage stamp row.
 
-              The photo is still the one quiet link on the page, to /offcod8,
-              with the goggles sliding on when it is hovered. Its accessible
-              name comes from the image's alt text.
+              The photo is a button, not a link: a click spins it like a
+              fidget spinner (SpinAvatar), and hovering slides the goggles on.
 
               The size is a clamp so the whole line fits one line on a 390px
               phone and tops out at the old stamp row's weight on desktop. */}
@@ -69,19 +69,19 @@ export default function About() {
               Hi, I am{" "}
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Link
-                    href="/offcod8"
-                    className="group relative mx-1.5 inline-block align-[-0.2em] -rotate-4 rounded-full transition-transform duration-fast ease-out hover:rotate-0"
+                  {/* Click spins the photo like a fidget spinner. See SpinAvatar. */}
+                  <SpinAvatar
+                    photo={<AvatarHover />}
+                    className="group relative mx-1.5 inline-block cursor-pointer touch-manipulation select-none align-[-0.2em] -rotate-4 rounded-full transition-transform duration-fast ease-out hover:rotate-0"
                   >
-                    <AvatarHover />
-                    {/* The status ring: a green dotted circle turning slowly
+                    {/* The status ring: an accent (ink) dotted circle turning slowly
                         around the photo (`.status-ring`), plus a live dot.
                         Both say "open to work" at a glance; under reduced
                         motion the ring holds still. */}
                     <svg
                       aria-hidden
                       viewBox="0 0 40 40"
-                      className="status-ring pointer-events-none absolute -inset-[0.14em] text-emerald-500 dark:text-emerald-400"
+                      className="status-ring pointer-events-none absolute -inset-[0.14em] text-accent"
                     >
                       <circle cx={20} cy={20} r={19.25} fill="none" stroke="currentColor" strokeWidth={1.2} strokeDasharray="1.6 3.2" strokeLinecap="round" />
                     </svg>
@@ -89,7 +89,7 @@ export default function About() {
                       aria-hidden
                       className="absolute -bottom-[0.02em] -right-[0.04em] h-[0.28em] w-[0.28em] rounded-full bg-emerald-500 ring-2 ring-background dark:bg-emerald-400"
                     />
-                  </Link>
+                  </SpinAvatar>
                 </TooltipTrigger>
                 <TooltipContent>Open to work</TooltipContent>
               </Tooltip>{" "}
@@ -108,20 +108,20 @@ export default function About() {
               </span>
             </h1>
 
-            {/* Role, the working day in Bengaluru, and availability, which
-                the stamp's OPEN postmark used to carry. The green is the dot
+            {/* Role on its own line, then the working day in Bengaluru and
+                availability beneath it. Two fixed lines rather than one row
+                that wraps wherever the viewport decides. The green is the dot
                 and the word only, the one live-status signal on the page. */}
-            <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+            <div className="flex flex-col items-start gap-1.5">
               <Label>Frontend Engineer · AI · Web3</Label>
-              {/* Hidden on phones, where the row wraps here and the dot would
-                  dangle at the end of the first line. */}
-              <span aria-hidden className="font-mono text-2xs text-subtle max-sm:hidden">·</span>
-              <LocalTime />
-              <span aria-hidden className="font-mono text-2xs text-subtle">·</span>
-              <span className="inline-flex items-center gap-1.5 font-mono text-2xs uppercase tracking-label text-emerald-500 dark:text-emerald-400">
-                <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-current" />
-                Open to work
-              </span>
+              <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+                <LocalTime />
+                <span aria-hidden className="font-mono text-2xs text-subtle">·</span>
+                <span className="inline-flex items-center gap-1.5 font-mono text-2xs uppercase tracking-label text-emerald-500 dark:text-emerald-400">
+                  <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-current" />
+                  Open to work
+                </span>
+              </div>
             </div>
           </div>
 
@@ -138,7 +138,7 @@ export default function About() {
               a line under eight words, and a one-word last line reads as a
               mistake at this size. Balance evens the two lines instead of
               filling the first and dropping the remainder. */}
-          <p className="mt-10! text-balance text-[clamp(1.625rem,3.4vw,2.3rem)] font-medium sm:mt-14! leading-[1.08] tracking-tighter text-foreground">
+          <p className="mt-7! text-balance text-[clamp(1.625rem,3.4vw,2.3rem)] font-medium sm:mt-9! leading-[1.08] tracking-tighter text-foreground">
             {/* Emphasis by contrast: the frame of the sentence drops to muted
                 and the claim stays in full foreground, set in DM Sans's real
                 italic (loaded in app/layout.tsx). Candy keeps its butter chip. */}

@@ -34,6 +34,7 @@ export const shortcutGroups: { title: string; items: Shortcut[] }[] = [
     items: [
       { keys: [MOD_KEY, "K"], label: "Open command menu" },
       { keys: ["t"], label: "Cycle theme" },
+      { keys: ["f"], label: "Spin the photo (home)" },
       { keys: ["?"], label: "Show this help" },
     ],
   },
