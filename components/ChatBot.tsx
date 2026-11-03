@@ -336,7 +336,7 @@ const S7Bot = () => {
   }, [currentMessageIndex, isOpen]);
 
   return (
-    <div className="fixed bottom-4 right-4 -md:right-2.5 z-50">
+    <div className="fixed bottom-4 right-4 max-md:bottom-[4.5rem] -md:right-2.5 z-50">
       {/* Notification bubble */}
       <AnimatePresence>
         {!isOpen && showNotification && (
@@ -345,7 +345,7 @@ const S7Bot = () => {
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="fixed bottom-[68px] right-4 -md:right-2.5 -md:hidden"
+            className="fixed bottom-[68px] right-4 max-md:bottom-[124px] -md:right-2.5 -md:hidden"
           >
             <div className="rounded-lg border border-border-strong bg-card shadow-md px-3 py-2 max-w-[200px] sticker sticker-sm candy:rounded-tile candy:border-white candy:bg-candy-butter candy:shadow-sticker-2 tilt-b">
               <p className="text-xs text-card-foreground candy:font-semibold candy:text-foreground">
@@ -369,7 +369,7 @@ const S7Bot = () => {
             whileTap={tapPress}
             onClick={() => setIsOpen(true)}
             aria-label="Chat with Truffy"
-            className="group fixed bottom-4 right-4 -md:right-2.5 h-14 w-14 rounded-full bg-white p-1 shadow-lg ring-2 ring-foreground/30 ring-offset-2 ring-offset-background transition-shadow duration-base ease-out hover:ring-foreground/60 sticker sticker-sm tilt-i candy:rounded-full candy:ring-0 candy:ring-offset-0"
+            className="group fixed bottom-4 right-4 max-md:bottom-[4.5rem] -md:right-2.5 h-14 w-14 rounded-full bg-white p-1 shadow-lg ring-2 ring-foreground/30 ring-offset-2 ring-offset-background transition-shadow duration-base ease-out hover:ring-foreground/60 sticker sticker-sm tilt-i candy:rounded-full candy:ring-0 candy:ring-offset-0"
           >
             {/* Truffy's face, alive: it watches the cursor, blinks, squints
                 when you come close and dozes off if you leave it alone. The

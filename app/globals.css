@@ -369,6 +369,9 @@
   --duration-live-sheen: 2800ms;
   /* Mirror duration.gogglesOn / gogglesOff / gogglesGlint (the hero goggles).
      On overshoots so they settle onto the face; off accelerates out of frame. */
+  /* One turn of the hero portrait's status ring (About.tsx). Ambient, so far
+     outside the UI budget on purpose: slow enough to read as alive, not busy. */
+  --duration-status-ring: 14s;
   --duration-goggles-on: 420ms;
   --duration-goggles-off: 240ms;
   --duration-goggles-glint: 650ms;
@@ -720,6 +723,275 @@ table {
     display: none;
   }
 
+}
+
+/* The hero portrait's status ring turns slowly. Reduced motion stops it via
+   the global rule above. */
+@layer components {
+  .status-ring { animation: status-ring-turn var(--duration-status-ring) linear infinite; }
+}
+@keyframes status-ring-turn { to { transform: rotate(1turn); } }
+
+/* ── Dock ───────────────────────────────────────────────────────────────────
+   Outside `@layer components` on purpose. The global `a { transition }` and
+   `a:hover { opacity }` rules above are unlayered, and an unlayered rule beats
+   every layered one whatever its specificity, so inside the layer they
+   flattened the dock's link transitions (no stagger, no blur-in). Unlayered,
+   the dock's class selectors win on specificity as usual. */
+  .dock-btn:hover, .dock-row:hover { opacity: 1; }
+  /* The bare /offcod8 letter hides the nav from inside the layer, which this
+     unlayered block would beat, so the dock repeats that rule here. */
+  body:has([data-bare]) .dock-wrap { display: none; }
+
+  /* The site nav (components/Navbar.tsx): a tab rising out of the bottom
+     edge with slanted sides. Two layers: a darker outer rim and, 6px inside
+     it, the lighter body with a hairline edge. Each layer is a middle strip
+     plus two SVG sides (concave flare at the floor, straight slant, rounded
+     top), absolutely placed from the bar's edges, so the shape follows the
+     bar as it widens. Only the inner layer draws an outline: its sides'
+     stroke and the strip's top border. */
+  /* One look in every theme: the dock is always dark, like a notch. Its
+     colours are fixed here rather than read from the theme tokens, text
+     included, so light mode does not turn it pale. */
+  .dock-wrap {
+    --dock-outer: hsl(30 6% 7.5%);
+    --dock-inner: hsl(30 5% 12.5%);
+    --dock-edge: hsl(30 5% 17%);
+    --dock-on: hsl(30 5% 19%);
+    --dock-hover: hsl(30 5% 16.5%);
+    --dock-text: hsl(35 6% 63%);
+    --dock-text-strong: hsl(35 6% 94%);
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 40;
+    display: flex;
+    justify-content: center;
+    height: 54px;
+    pointer-events: none;
+    filter: drop-shadow(0 -2px 12px rgb(0 0 0 / 0.22));
+  }
+  .dock {
+    position: relative;
+    padding-top: 6px;
+    pointer-events: auto;
+  }
+  .dock-layer { position: absolute; inset-inline: 0; pointer-events: none; }
+  .dock-layer > * { position: absolute; top: 0; pointer-events: auto; }
+  .dock-layer-outer { top: 0; height: 54px; color: var(--dock-outer); }
+  .dock-layer-inner { top: 6px; height: 48px; color: var(--dock-inner); }
+  .dock-layer svg { display: block; }
+  .dock-layer svg.is-right { transform: scaleX(-1); }
+  .dock-layer-outer svg.is-left { left: -35.31px; }
+  .dock-layer-outer svg.is-right { right: -35.31px; }
+  .dock-layer-inner svg.is-left { left: -19.39px; }
+  .dock-layer-inner svg.is-right { right: -19.39px; }
+  .dock-strip { inset-block: 0; left: 12.14px; right: 12.14px; background: currentColor; }
+  .dock-layer-inner .dock-strip { border-top: 1px solid var(--dock-edge); }
+  .dock-side-line { fill: none; stroke: var(--dock-edge); stroke-width: 1; }
+
+  .dock-bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px;
+  }
+  .dock-btn {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    color: var(--dock-text);
+    background: var(--item-bg, transparent);
+    outline: none;
+    transition: color var(--duration-fast) var(--ease-out), background-color var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out);
+  }
+  .dock-btn:hover { --item-bg: var(--dock-hover); color: var(--dock-text-strong); }
+  .dock-btn.is-on { --item-bg: var(--dock-on); color: var(--dock-text-strong); }
+  .dock-btn:active { transform: scale(0.97); }
+  .dock-btn:focus-visible { box-shadow: 0 0 0 2px hsl(0 0% 100% / 0.45); }
+
+  /* The first and last buttons tuck 8px into the slanted sides, and their
+     fill reaches 7px further with an angled outer edge that follows the
+     slant. The fill moves to ::before so it can take that shape. */
+  .dock-edge {
+    --edge-reach: 7px;
+    background: transparent;
+  }
+  .dock-edge::before {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    z-index: -1;
+    width: calc(100% + var(--edge-reach));
+    background: var(--item-bg, transparent);
+    clip-path: path("M 22.14 0 H 33 A 6 6 0 0 1 39 6 V 26 A 6 6 0 0 1 33 32 H 9.34 A 6 6 0 0 1 3.78 23.75 L 10.09 8.13 A 13 13 0 0 1 22.14 0 Z");
+    transition: background-color var(--duration-fast) var(--ease-out);
+  }
+  .dock-edge-l { margin-left: -8px; }
+  .dock-edge-l::before { left: calc(var(--edge-reach) * -1); }
+  .dock-edge-r { margin-right: -8px; }
+  .dock-edge-r::before { right: calc(var(--edge-reach) * -1); transform: scaleX(-1); }
+
+  .dock-cowl > span { transition: transform var(--duration-fast) var(--ease-out); }
+  .dock-cowl:hover > span { transform: rotate(-6deg); }
+  .dock-sep {
+    flex: none;
+    width: 1px;
+    height: 16px;
+    margin: 0 4px;
+    background: var(--dock-edge);
+  }
+
+  /* Desktop: hovering the dock, or tabbing into it, widens it in place. A
+     0fr to 1fr column animates to the hidden group's real width, and the
+     sides ride outward with it. The icons blur in one after another. */
+  .dock-more {
+    display: grid;
+    grid-template-columns: 0fr;
+    margin-right: -4px;
+    transition: grid-template-columns var(--duration-base) var(--ease-out);
+  }
+  .dock-more > div {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .dock-more > div > * {
+    opacity: 0;
+    filter: blur(4px);
+    transform: scale(0.8);
+    transition: opacity var(--duration-fast) var(--ease-out), filter var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out);
+  }
+  .dock:hover .dock-more,
+  .dock:focus-within .dock-more {
+    grid-template-columns: 1fr;
+    margin-right: 0;
+    transition-duration: var(--duration-med);
+    transition-delay: 60ms;
+  }
+  .dock:hover .dock-more > div > *,
+  .dock:focus-within .dock-more > div > * {
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+    transition-duration: var(--duration-slow);
+  }
+  .dock:hover .dock-more > div > :nth-child(2),
+  .dock:focus-within .dock-more > div > :nth-child(2) { transition-delay: 90ms; }
+  .dock:hover .dock-more > div > :nth-child(3),
+  .dock:focus-within .dock-more > div > :nth-child(3) { transition-delay: 130ms; }
+  .dock:hover .dock-more > div > :nth-child(4),
+  .dock:focus-within .dock-more > div > :nth-child(4) { transition-delay: 170ms; }
+
+  /* Which parts exist at which size. Here rather than as Tailwind's
+     `md:hidden`, because utilities live in a layer and lose to this
+     unlayered block. Phones get the chevron and its drawer; the dock itself
+     never widens there. From 768px the dock widens on hover instead. */
+  @media (max-width: 767px) {
+    .dock-more { display: none; }
+  }
+  @media (min-width: 768px) {
+    .dock-toggle, .dock-drawer, .dock-scrim { display: none; }
+  }
+
+  /* Wide screens: the same dock stands on the left edge instead. The whole
+     thing is turned a quarter clockwise, so its floor meets the left side of
+     the screen and the buttons run top to bottom; the icons turn back upright.
+     From 1280px only: below that, wide pages (1080px) would run under it. */
+  @media (min-width: 1280px) {
+    .dock-wrap {
+      inset: auto;
+      top: 50%;
+      left: 0;
+      width: max-content;
+      transform-origin: 0 0;
+      transform: rotate(90deg) translate(-50%, -100%);
+    }
+    .dock-btn > svg { transform: rotate(-90deg); }
+    .dock-cowl > span { transform: rotate(-90deg); }
+    .dock-cowl:hover > span { transform: rotate(-96deg); }
+  }
+
+  /* Phone: the chevron raises a card just above the dock, in the dock's
+     colours, listing the ways to reach Shashwat by name. The rows stagger in
+     from the bottom up, the one nearest the dock first, so they read as
+     rising out of it. Closing drops them together, with no stagger. */
+  .dock-drawer {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    width: min(320px, calc(100vw - 32px));
+    padding: 4px;
+    border: 1px solid var(--dock-edge);
+    border-radius: 16px;
+    background: var(--dock-inner);
+    box-shadow: 0 0 0 5px var(--dock-outer), 0 12px 32px rgb(0 0 0 / 0.18);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-50%) translateY(8px) scale(0.96);
+    transform-origin: bottom center;
+    transition: opacity var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out), visibility 0s linear var(--duration-fast);
+  }
+  .dock-wrap.is-open .dock-drawer {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%);
+    transition-duration: var(--duration-med), var(--duration-med), 0s;
+    transition-delay: 0s;
+  }
+  .dock-drawer ul { display: flex; flex-direction: column; gap: 2px; }
+  .dock-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 11px;
+    opacity: 0;
+    filter: blur(6px);
+    transform: translateY(14px) scale(0.96);
+    transition: opacity var(--duration-fast) var(--ease-out), filter var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out), background-color var(--duration-fast) var(--ease-out);
+  }
+  .dock-row:active { background: var(--dock-on); }
+  .dock-row-icon, .dock-row-detail { color: var(--dock-text); }
+  .dock-row-label { color: var(--dock-text-strong); }
+  .dock-wrap.is-open .dock-row {
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+    transition-duration: var(--duration-med), var(--duration-med), var(--duration-med), var(--duration-fast);
+  }
+  .dock-wrap.is-open li:nth-child(3) .dock-row { transition-delay: 70ms, 70ms, 70ms, 0s; }
+  .dock-wrap.is-open li:nth-child(2) .dock-row { transition-delay: 130ms, 130ms, 130ms, 0s; }
+  .dock-wrap.is-open li:nth-child(1) .dock-row { transition-delay: 190ms, 190ms, 190ms, 0s; }
+  .dock-toggle svg { transition: transform var(--duration-med) var(--ease-out); }
+  .dock-wrap.is-open .dock-toggle svg { transform: rotate(180deg); }
+  .dock-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 39;
+    background: rgb(0 0 0 / 0.25);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration-med) var(--ease-out);
+  }
+  .dock-scrim.is-open { opacity: 1; pointer-events: auto; }
+  body:has([data-bare]) .dock-scrim { display: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dock-more > div > *,
+    .dock-row, .dock-wrap.is-open .dock-row { filter: none; transform: none; }
+    .dock-drawer, .dock-wrap.is-open .dock-drawer { transform: translateX(-50%); }
+  }
+
+@layer components {
   /* The video behind the letter at /offcod8.
 
      `object-fit: cover` cannot reach inside an iframe, so the frame is sized
@@ -965,31 +1237,3 @@ table {
   }
 }
 
-/* ── Hero stamp ─────────────────────────────────────────────────────────
-   The portrait as a postage stamp (About.tsx). The perforations are a mask:
-   a grid of holes tiled from half a pitch outside the box, so each hole is
-   centred on the edge and bites a half circle out of it, plus a solid fill
-   for everything inside that border strip. `round` resizes the tile so the
-   holes land evenly on both ends of each side. */
-@layer components {
-  .stamp-edge {
-    --stamp-hole: 1.5px;
-    --stamp-pitch: 5px;
-    --stamp-mask:
-      radial-gradient(circle var(--stamp-hole) at center, #0000 96%, #000)
-        calc(var(--stamp-pitch) / -2) calc(var(--stamp-pitch) / -2) / var(--stamp-pitch) var(--stamp-pitch) round,
-      linear-gradient(#000 0 0) center / calc(100% - var(--stamp-pitch)) calc(100% - var(--stamp-pitch)) no-repeat;
-    -webkit-mask: var(--stamp-mask);
-    mask: var(--stamp-mask);
-  }
-  /* The OPEN postmark: dark ink, multiplied so it reads like a print on the
-     paper and the photo's white, and vanishes into dark pixels. It is always
-     on white paper, so one ink works in both themes. Rests brighter between
-     shimmer sweeps than a Live link does, so the mark never fades out. */
-  .postmark {
-    color: hsl(30 7% 11%);
-    opacity: 0.62;
-    mix-blend-mode: multiply;
-    --sheen-rest: 0.55;
-  }
-}

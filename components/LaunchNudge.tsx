@@ -92,7 +92,7 @@ export default function LaunchNudge() {
 
   return (
     <div
-      className={`fixed bottom-4 left-4 z-40 max-w-48 transition-[opacity,transform] ease-out motion-reduce:translate-y-0 sm:max-w-66 ${
+      className={`fixed bottom-4 left-4 max-md:bottom-[4.5rem] z-40 max-w-48 transition-[opacity,transform] ease-out motion-reduce:translate-y-0 sm:max-w-66 ${
         shown
           ? "translate-y-0 opacity-100 duration-med"
           : "translate-y-2 opacity-0 duration-fast"
