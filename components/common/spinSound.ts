@@ -79,6 +79,51 @@ export function routeThroughGain(el: HTMLMediaElement): GainNode | null {
   }
 }
 
+const samples = new Map<string, Promise<AudioBuffer | null>>();
+
+/**
+ * Fetches and decodes an audio file once, into the shared context. Repeat
+ * calls share the first request; a failed load is forgotten so a later call
+ * can retry. Resolves to null when there is no context or the load fails.
+ */
+export function loadSample(url: string): Promise<AudioBuffer | null> {
+  const audio = getContext();
+  if (!audio) return Promise.resolve(null);
+  let pending = samples.get(url);
+  if (!pending) {
+    pending = fetch(url)
+      .then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(String(r.status)))))
+      .then((bytes) => audio.decodeAudioData(bytes))
+      .catch(() => {
+        samples.delete(url);
+        return null;
+      });
+    samples.set(url, pending);
+  }
+  return pending;
+}
+
+/**
+ * Plays a decoded sample once at `gain`. Returns the source, so the caller can
+ * stop it and hear `onended`, or null when nothing could play. Each call is a
+ * new voice: guarding against overlaps is the caller's job.
+ */
+export function playSample(buffer: AudioBuffer, gain: number): AudioBufferSourceNode | null {
+  try {
+    const audio = getContext();
+    if (!audio) return null;
+    const source = audio.createBufferSource();
+    source.buffer = buffer;
+    const amp = audio.createGain();
+    amp.gain.value = gain;
+    source.connect(amp).connect(audio.destination);
+    source.start();
+    return source;
+  } catch {
+    return null;
+  }
+}
+
 /** The context's clock, for scheduling gain ramps. */
 export function audioNow(): number {
   return ctx?.currentTime ?? 0;

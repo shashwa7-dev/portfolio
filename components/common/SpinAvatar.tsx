@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useRef, type ComponentProps, type ReactNode } from "react";
-import { audioNow, playSpinSound, routeThroughGain } from "@/components/common/spinSound";
+import {
+  audioNow,
+  loadSample,
+  playSample,
+  playSpinSound,
+  routeThroughGain,
+} from "@/components/common/spinSound";
 
 /**
  * The hero photo as a fidget spinner.
@@ -31,6 +37,14 @@ import { audioNow, playSpinSound, routeThroughGain } from "@/components/common/s
  * fade out together and the photo comes back. It never restarts while it is
  * on screen or fading. Under reduced motion there is no spin, so no clip.
  *
+ * Spam never restarts or cuts the clip, and nothing ever plays over it. A
+ * burst while the clip is up (five flicks inside 1.5 seconds) queues a voice,
+ * "Mat kar lala mat kar" (public/audio/mat-kar-lala.mp3), which plays once the
+ * clip has finished and faded, so it is heard clearly. It plays at most once
+ * per clip and never stacks, and no clip starts while it is talking.
+ * The voice is fetched and decoded on the first flick, so it is ready by the
+ * time it is needed.
+ *
  * The video costs nothing until the first flick: `preload="none"`, then that
  * first flick (a real user gesture) starts loading it, routes its sound
  * through a gain node (so the fade works on iOS), and plays and pauses it
@@ -53,6 +67,10 @@ const TICK_EVERY = Math.PI; // a bearing tick every half turn
 const SONG_SPEED = 1080 * RAD; // rad/s, three turns a second
 const SONG_AFTER = 2.5; // seconds held above SONG_SPEED before the clip plays
 const CLIP_GAIN = 0.35; // the clip's volume
+const SCOLD_SRC = "/audio/mat-kar-lala.mp3";
+const SCOLD_GAIN = 0.8; // the voice's volume
+const SPAM_FLICKS = 5; // flicks inside SPAM_WINDOW, while the clip is up, that queue the voice
+const SPAM_WINDOW = 1500; // ms
 
 /** The clip's fade time, read from its CSS transition so sound and picture
  *  share one number (--duration-spin-clip). */
@@ -96,7 +114,51 @@ export default function SpinAvatar({ photo, children, onClick, ref, ...rest }: P
     gain: null as GainNode | null,
     state: "idle" as "idle" | "on" | "fading",
     timer: 0,
+    // The voice: "ready", "queued" behind the clip, "talking", or "spent" for this clip.
+    scold: "ready" as "ready" | "queued" | "talking" | "spent",
+    voice: null as AudioBufferSourceNode | null,
+    flicks: [] as number[],
   });
+
+  /** Ramps the clip's gain to `to` over `seconds`, from wherever it is now. */
+  function rampClip(to: number, seconds: number) {
+    const g = clip.current.gain;
+    if (!g) return;
+    const now = audioNow();
+    g.gain.cancelScheduledValues(now);
+    g.gain.setValueAtTime(g.gain.value, now);
+    g.gain.linearRampToValueAtTime(to, now + seconds);
+  }
+
+  /** Plays the voice, unless it is already talking. Only called with no clip up. */
+  function speak() {
+    const c = clip.current;
+    if (c.scold === "talking") return;
+    // Claimed before the load resolves, so nothing can start a second voice.
+    c.scold = "talking";
+    const done = () => {
+      c.voice = null;
+      c.scold = c.state === "idle" ? "ready" : "spent";
+    };
+    void loadSample(SCOLD_SRC).then((buffer) => {
+      const voice = buffer ? playSample(buffer, SCOLD_GAIN) : null;
+      if (!voice) return done();
+      c.voice = voice;
+      voice.onended = done;
+    });
+  }
+
+  /** Every flick while the clip is up: a burst queues the voice for after it. */
+  function noteSpam() {
+    const c = clip.current;
+    const now = performance.now();
+    if (c.state === "idle" || c.scold !== "ready") return;
+    c.flicks = c.flicks.filter((t) => now - t < SPAM_WINDOW);
+    c.flicks.push(now);
+    if (c.flicks.length < SPAM_FLICKS) return;
+    c.flicks = [];
+    c.scold = "queued";
+  }
 
   /** On the first flick, inside the gesture: load, route and unlock. */
   function primeClip() {
@@ -108,6 +170,7 @@ export default function SpinAvatar({ photo, children, onClick, ref, ...rest }: P
     if (c.gain) c.gain.gain.value = 0;
     else v.muted = true;
     v.preload = "auto";
+    void loadSample(SCOLD_SRC);
     v.play()
       .then(() => {
         if (c.state === "idle") {
@@ -121,8 +184,9 @@ export default function SpinAvatar({ photo, children, onClick, ref, ...rest }: P
   function playClip() {
     const v = video.current;
     const c = clip.current;
-    if (!v || c.state !== "idle") return;
+    if (!v || c.state !== "idle" || c.scold === "talking") return;
     c.state = "on";
+    c.flicks = [];
     v.currentTime = 0;
     const fade = fadeSeconds(v);
     if (c.gain) {
@@ -145,16 +209,14 @@ export default function SpinAvatar({ photo, children, onClick, ref, ...rest }: P
     c.state = "fading";
     delete v.dataset.on;
     const fade = fadeSeconds(v);
-    if (c.gain) {
-      const now = audioNow();
-      c.gain.gain.cancelScheduledValues(now);
-      c.gain.gain.setValueAtTime(c.gain.gain.value, now);
-      c.gain.gain.linearRampToValueAtTime(0, now + fade);
-    }
+    rampClip(0, fade);
     c.timer = window.setTimeout(() => {
       v.pause();
       v.currentTime = 0;
       c.state = "idle";
+      c.flicks = [];
+      if (c.scold === "queued") speak();
+      else if (c.scold === "spent") c.scold = "ready";
     }, fade * 1000);
   }
   const state = useRef({ angle: 0, speed: 0, frame: 0, last: 0, captured: false, clicked: false, fastFor: 0 });
@@ -210,6 +272,7 @@ export default function SpinAvatar({ photo, children, onClick, ref, ...rest }: P
     s.clicked = false;
     playSpinSound("flick");
     primeClip();
+    noteSpam();
     if (!s.frame) {
       s.last = performance.now();
       s.frame = requestAnimationFrame(tick);
@@ -235,6 +298,11 @@ export default function SpinAvatar({ photo, children, onClick, ref, ...rest }: P
       cancelAnimationFrame(s.frame);
       window.clearTimeout(c.timer);
       v?.pause();
+      try {
+        c.voice?.stop();
+      } catch {
+        /* already stopped */
+      }
     };
     // flick only reads refs, so the listener never needs rebinding.
     // eslint-disable-next-line react-hooks/exhaustive-deps
