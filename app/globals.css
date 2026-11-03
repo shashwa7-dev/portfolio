@@ -372,6 +372,11 @@
   /* One turn of the hero portrait's status ring (About.tsx). Ambient, so far
      outside the UI budget on purpose: slow enough to read as alive, not busy. */
   --duration-status-ring: 14s;
+  /* The spin reward clip (SpinAvatar) crossfading over the hero photo. Long
+     and symmetric so it reads as a dissolve, not a cut; the clip's sound fades
+     over the same time (read from the computed transition). */
+  --duration-spin-clip: 700ms;
+  --ease-spin-clip: cubic-bezier(0.45, 0, 0.55, 1);
   --duration-goggles-on: 420ms;
   --duration-goggles-off: 240ms;
   --duration-goggles-glint: 650ms;
@@ -729,6 +734,8 @@ table {
    the global rule above. */
 @layer components {
   .status-ring { animation: status-ring-turn var(--duration-status-ring) linear infinite; }
+  .spin-clip { opacity: 0; transition: opacity var(--duration-spin-clip) var(--ease-spin-clip); }
+  .spin-clip[data-on] { opacity: 1; }
 }
 @keyframes status-ring-turn { to { transform: rotate(1turn); } }
 
@@ -983,6 +990,11 @@ table {
     transition: opacity var(--duration-med) var(--ease-out);
   }
   .dock-scrim.is-open { opacity: 1; pointer-events: auto; }
+  /* While the drawer is open it outranks the chat bubble, launch nudge and
+     chapters bar (z-50), so nothing floats over the card or its scrim. The
+     command palette (60) and shortcuts sheet (70) still open above it. */
+  .dock-wrap.is-open { z-index: 56; }
+  .dock-scrim.is-open { z-index: 55; }
   body:has([data-bare]) .dock-scrim { display: none; }
 
   @media (prefers-reduced-motion: reduce) {
