@@ -1,4 +1,5 @@
 import About from "@/components/About";
+import BrandBackdrop from "@/components/common/BrandBackdrop";
 import ExperienceWork from "@/components/ExperienceWork";
 import Projects from "@/components/Projects";
 import Writing from "@/components/Writing";
@@ -21,6 +22,7 @@ export default function Home() {
         suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(profilePageLd()) }}
       />
+      <BrandBackdrop />
       <About />
       <ExperienceWork />
       <Writing />
