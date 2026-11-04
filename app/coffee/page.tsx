@@ -295,10 +295,7 @@ const SIZES = [
 
 export default function CoffeePage() {
   return (
-    /* `pb-28` on small screens leaves room for the chapter pill, which is
-       fixed to the bottom of the viewport and would otherwise sit on top of
-       the last thing on the page. The rail replaces it at `xl`. */
-    <main className="pt-8 md:pt-12 pb-28 md:pb-28 xl:pb-12">
+    <main className="pt-8 md:pt-12 pb-8 md:pb-12">
       <StickyScrollSpyTOC sections={TOC} />
       <script
         type="application/ld+json"

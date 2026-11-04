@@ -305,7 +305,7 @@ export const tapPress = { scale: 0.97 } as const;
  *  can't accept the array form Framer Motion wants. Used for the toss
  *  button's press squash, which is ordinary UI feedback and gets the
  *  app's one UI curve rather than a bespoke one. */
-function cssEase(curve: readonly [number, number, number, number]): string {
+export function cssEase(curve: readonly [number, number, number, number]): string {
   return `cubic-bezier(${curve.join(", ")})`;
 }
 

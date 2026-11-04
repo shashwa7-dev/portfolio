@@ -21,8 +21,8 @@ export type { TocSection };
  *
  * The rail is desktop only: below `xl` there is no gutter to put it in without
  * either overlapping the text or squeezing the measure. Smaller screens get
- * `MobileChapters` instead, a pill at the bottom that opens a sheet. Both read
- * the same `useActiveSection`, so they cannot disagree about where you are.
+ * `MobileChapters` instead, a dock button that opens a sheet. Both read the
+ * same `useActiveSection`, so they cannot disagree about where you are.
  */
 export default function StickyScrollSpyTOC({
   sections,

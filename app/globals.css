@@ -426,6 +426,8 @@
   --duration-fast: 150ms;
   --duration-base: 200ms;
   --duration-med: 300ms;
+  --duration-dock-morph: 280ms;
+  --ease-dock-morph: cubic-bezier(0.77, 0, 0.175, 1);
   --duration-slow: 240ms;
   --duration-hero: 500ms;
 
@@ -858,7 +860,7 @@ table {
   /* One look in every theme: the dock is always dark, like a notch. Its
      colours are fixed here rather than read from the theme tokens, text
      included, so light mode does not turn it pale. */
-  .dock-wrap {
+  .dock-wrap, .chapter-dock, .chapter-dock-ghost {
     --dock-outer: hsl(30 6% 7.5%);
     --dock-inner: hsl(30 5% 12.5%);
     --dock-edge: hsl(30 5% 17%);
@@ -866,6 +868,12 @@ table {
     --dock-hover: hsl(30 5% 16.5%);
     --dock-text: hsl(35 6% 63%);
     --dock-text-strong: hsl(35 6% 94%);
+    --dock-ring: hsl(30 5% 28%);
+    /* Wide enough for most chapter names, narrow enough that the dock and its
+       slanted sides still fit a 320px phone. */
+    --dock-chapter-width: clamp(150px, calc(100vw - 130px), 240px);
+  }
+  .dock-wrap {
     position: fixed;
     inset-inline: 0;
     bottom: 0;
@@ -952,6 +960,110 @@ table {
     margin: 0 4px;
     background: var(--dock-edge);
   }
+
+  /* A page with chapters, below 1280px where the chapters have no rail: the
+     site dock narrows to Home and an open space on its left, and
+     components/common/MobileChapters.tsx lays its button over that space. The
+     dock is one element throughout, so its width really transitions and the
+     sides ride along with it. Strong ease-in-out because the bar is moving on
+     screen rather than entering. */
+  .dock-chapter-space {
+    display: flex;
+    flex: none;
+    justify-content: flex-end;
+    width: 0;
+    margin-right: -4px;
+    overflow: hidden;
+    opacity: 0;
+    transition: width var(--duration-dock-morph) var(--ease-dock-morph), margin var(--duration-dock-morph) var(--ease-dock-morph), opacity var(--duration-dock-morph) var(--ease-dock-morph);
+  }
+  .dock-btn.dock-home {
+    transition: color var(--duration-fast) var(--ease-out), background-color var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out), margin var(--duration-dock-morph) var(--ease-dock-morph);
+  }
+  .dock-rest {
+    display: grid;
+    grid-template-columns: 1fr;
+    /* Past the bar on every side at rest, so the last button's slanted fill and
+       the focus rings show. Closes on the right as the group collapses, so the
+       icons never spill over the dock's side. */
+    clip-path: inset(-20px -24px -20px -4px);
+    transition: grid-template-columns var(--duration-dock-morph) var(--ease-dock-morph), margin var(--duration-dock-morph) var(--ease-dock-morph), clip-path var(--duration-dock-morph) var(--ease-dock-morph), opacity var(--duration-fast) var(--ease-out) var(--duration-fast), visibility 0s;
+  }
+  .dock-rest > div {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+  }
+  @media (max-width: 1279px) {
+    body:has(.chapter-dock):not(:has(.no-script)) .dock-chapter-space {
+      /* The button, the bar's 4px gap, and the separator with its margins. */
+      width: calc(var(--dock-chapter-width) + 13px);
+      margin-right: 0;
+      opacity: 1;
+    }
+    body:has(.chapter-dock):not(:has(.no-script)) .dock-btn.dock-home { margin-left: 0; margin-right: -8px; }
+    body:has(.chapter-dock):not(:has(.no-script)) .dock-home::before {
+      left: auto;
+      right: calc(var(--edge-reach) * -1);
+      transform: scaleX(-1);
+    }
+    body:has(.chapter-dock):not(:has(.no-script)) .dock-rest {
+      grid-template-columns: 0fr;
+      margin-left: -4px;
+      clip-path: inset(-20px 0 -20px 0);
+      opacity: 0;
+      visibility: hidden;
+      transition: grid-template-columns var(--duration-dock-morph) var(--ease-dock-morph), margin var(--duration-dock-morph) var(--ease-dock-morph), clip-path var(--duration-dock-morph) var(--ease-dock-morph), opacity var(--duration-fast) var(--ease-out), visibility 0s linear var(--duration-dock-morph);
+    }
+  }
+
+  /* The same 1280px as the rule above, in pixels on both sides, rather than
+     Tailwind's `xl`: that is in rem, so with a non-default browser font size the
+     button and the dock would disagree about which mode they are in. */
+  @media (min-width: 1280px) {
+    .chapters-mobile { display: none; }
+  }
+  body:has(.no-script) .chapters-mobile { display: none; }
+
+  /* Same place and stacking level as the dock, later in the page so it sits on
+     top, and before the chapter sheet's scrim so the scrim still covers it. The
+     row's width matches the open dock: the button, then room for the separator
+     and Home. Its top padding is the dock's 6px plus the bar's 5px. */
+  .chapter-dock, .chapter-dock-ghost {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 40;
+    display: flex;
+    justify-content: center;
+    height: 54px;
+    pointer-events: none;
+  }
+  .chapter-dock-row { display: flex; padding: 11px 41px 0 0; }
+  .dock-chapters {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 10px;
+    width: var(--dock-chapter-width);
+    height: 32px;
+    padding: 0 6px 0 2px;
+    border-radius: 6px;
+    color: var(--dock-text-strong);
+    background: var(--item-bg, transparent);
+    outline: none;
+    pointer-events: auto;
+    transition: background-color var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .dock-chapters:hover { --item-bg: var(--dock-hover); }
+  }
+  .dock-chapters:active { transform: scale(0.97); }
+  .dock-chapters:focus-visible { box-shadow: 0 0 0 2px hsl(0 0% 100% / 0.45); }
+  .dock-chapters-caret { color: var(--dock-text); }
+  .dock-ring-track { stroke: var(--dock-ring); }
+  .dock-ring-fill { stroke: var(--dock-text-strong); }
 
   /* Desktop: hovering the dock, or tabbing into it, widens it in place. A
      0fr to 1fr column animates to the hidden group's real width, and the
@@ -1088,14 +1200,17 @@ table {
     transition: opacity var(--duration-med) var(--ease-out);
   }
   .dock-scrim.is-open { opacity: 1; pointer-events: auto; }
-  /* While the drawer is open it outranks the chat bubble, launch nudge and
-     chapters bar (z-50), so nothing floats over the card or its scrim. The
+  /* While the drawer is open it outranks the chat bubble and launch nudge
+     (z-50), so nothing floats over the card or its scrim. The
      command palette (60) and shortcuts sheet (70) still open above it. */
   .dock-wrap.is-open { z-index: 56; }
   .dock-scrim.is-open { z-index: 55; }
   body:has([data-bare]) .dock-scrim { display: none; }
 
   @media (prefers-reduced-motion: reduce) {
+    /* No sliding: the dock changes width at once, and the icons still fade. */
+    .dock-chapter-space, .dock-btn.dock-home { transition: none; }
+    .dock-rest, body:has(.chapter-dock):not(:has(.no-script)) .dock-rest { transition: opacity var(--duration-fast) var(--ease-out); }
     .dock-more > div > *,
     .dock-row, .dock-wrap.is-open .dock-row { filter: none; transform: none; }
     .dock-drawer, .dock-wrap.is-open .dock-drawer { transform: translateX(-50%); }

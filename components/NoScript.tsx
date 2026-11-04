@@ -22,6 +22,9 @@ import { Info } from "@phosphor-icons/react/ssr";
  *    with `ssr: false`, so it never renders when scripts are off and cannot
  *    collide with this.
  *
+ * The `no-script` class also tells `app/globals.css` to keep the full dock: the
+ * chapter button that replaces most of it opens a sheet, which needs scripts.
+ *
  * The previous version also carried roughly forty lines of SMIL animation on its
  * icon. That is a lot of markup for a notice almost nobody sees, and an animated
  * icon draws attention that a passive note does not need, so it is now a static
@@ -30,7 +33,7 @@ import { Info } from "@phosphor-icons/react/ssr";
 export default function NoScript() {
   return (
     <noscript>
-      <div className="fixed bottom-4 right-4 z-50 max-w-[16rem] rounded-lg border border-border-strong bg-card/95 px-3 py-2.5 shadow-lg backdrop-blur-sm">
+      <div className="no-script fixed bottom-4 right-4 z-50 max-w-[16rem] rounded-lg border border-border-strong bg-card/95 px-3 py-2.5 shadow-lg backdrop-blur-sm">
         <p className="flex items-center gap-1.5 text-xs font-medium text-foreground">
           <Info className="h-3.5 w-3.5 shrink-0 text-subtle" />
           JavaScript is off
