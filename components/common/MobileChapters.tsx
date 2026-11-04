@@ -1,19 +1,26 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { CaretUp, X } from "@phosphor-icons/react/ssr";
 import { cn } from "@/lib/utils";
-import { blurSwapVariants } from "@/lib/motionVariants";
+import { blurSwapVariants, cssEase, duration, ease } from "@/lib/motionVariants";
 import { goToSection, type TocSection } from "@/app/hooks/useActiveSection";
 
 /**
- * The small-screen half of the table of contents: a pill at the bottom that
- * opens a sheet of chapters.
+ * The small-screen half of the table of contents: a chapter button in the dock
+ * that opens a sheet of chapters.
  *
  * The rail the desktop uses needs a gutter to live in, and a phone has none. A
- * pill costs one line at the bottom of the screen, which is the one place on a
- * phone that is always reachable with a thumb.
+ * floating pill could not share the bottom of the screen with the dock: it sat
+ * on top of it and took its taps. So while this is on the page, the site dock in
+ * `Navbar` narrows to Home and an open space, and this button is laid over that
+ * space (`.chapter-dock` in `app/globals.css`).
+ *
+ * The button lives here rather than being portalled into the dock so that it is
+ * in the server HTML: the reader never sees an empty dock, or the full one, on
+ * load. The dock stays mounted across navigation, so going to or from a page
+ * with chapters is a real width transition.
  */
 export default function MobileChapters({
   sections,
@@ -26,13 +33,60 @@ export default function MobileChapters({
   /** Whether the sheet has been opened at least once, so closing it on first
    *  render does not steal focus from wherever the reader actually is. */
   const opened = useRef(false);
-  const pillRef = useRef<HTMLButtonElement>(null);
+  const dockRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const sheetRef = useRef<HTMLDivElement>(null);
+
+  /* The button arrives after the dock has started opening for it. A running
+     transition on the space means client navigation brought the reader here;
+     on a hard load the dock is already open and the button must not fade in.
+
+     It also has to leave as the dock closes, and React removes it at once, which
+     would leave an empty bar for the slow start of the curve. So a copy stays
+     behind and fades out, beside the dock so it stacks with it rather than over
+     the loading screen. The copy drops `.chapter-dock`, or it would hold the
+     dock open.
+
+     The same running transition decides this. The check waits for a microtask,
+     once React has finished the commit, and then it is false whenever the dock
+     is not closing: the next page also has chapters, reduced motion, or 1280px
+     and up, where there is no button. */
+  useLayoutEffect(() => {
+    const space = document.querySelector(".dock-chapter-space");
+    if (space && space.getAnimations().length > 0) {
+      triggerRef.current?.animate(
+        [{ opacity: 0, filter: "blur(4px)" }, { opacity: 1, filter: "blur(0)" }],
+        {
+          duration: duration.base * 1000,
+          delay: duration.fast * 1000,
+          easing: cssEase(ease.out),
+          fill: "backwards",
+        }
+      );
+    }
+    const dock = dockRef.current;
+    return () => {
+      const ghost = dock?.cloneNode(true) as HTMLElement | undefined;
+      queueMicrotask(() => {
+        const parent = document.querySelector(".site-navbar")?.parentElement;
+        if (!ghost || !parent || !space || space.getAnimations().length === 0) return;
+        ghost.className = "chapter-dock-ghost";
+        ghost.inert = true;
+        parent.appendChild(ghost);
+        const fade = ghost.animate([{ opacity: 1 }, { opacity: 0 }], {
+          duration: duration.fast * 1000,
+          easing: cssEase(ease.out),
+          fill: "forwards",
+        });
+        fade.onfinish = fade.oncancel = () => ghost.remove();
+      });
+    };
+  }, []);
 
   const index = sections.findIndex((s) => s.id === active);
   // Before the first heading scrolls in there is no current chapter, and
-  // showing "0" would be wrong while showing the first would be a lie. The pill
-  // reads as chapter one, unfilled.
+  // showing "0" would be wrong while showing the first would be a lie. The
+  // button reads as chapter one, unfilled.
   const position = index < 0 ? 0 : index + 1;
   const current = index < 0 ? sections[0] : sections[index];
 
@@ -93,7 +147,7 @@ export default function MobileChapters({
     };
   }, [open]);
 
-  /* Focus goes back to the pill when the sheet closes, so dismissing it with
+  /* Focus goes back to the button when the sheet closes, so dismissing it with
      Escape does not drop the caret at the top of the document. Skipped when a
      chapter was picked: that hands focus to the section instead. */
   const returnFocus = useRef(true);
@@ -103,7 +157,7 @@ export default function MobileChapters({
       returnFocus.current = true;
       return;
     }
-    if (opened.current && returnFocus.current) pillRef.current?.focus();
+    if (opened.current && returnFocus.current) triggerRef.current?.focus();
   }, [open]);
 
   /**
@@ -134,70 +188,58 @@ export default function MobileChapters({
   }, [open]);
 
   return (
-    <div className="xl:hidden">
-      {/* The pill is a fixed width, so there is no width to animate.
+    <div className="chapters-mobile">
+      {/* The chapter button is a fixed width, so there is no width to animate.
 
-          It used to be sized by its label, which meant it grew and shrank as
-          the reader scrolled, and smoothing that needed a layout animation.
-          That animation is what flew the pill in from the top of the document
-          whenever the sheet closed: layout measures in page coordinates, and
-          the scroll lock pins the body, so the pill's page position moved by a
-          whole scroll offset while its position on screen did not move at all.
+          Sized by its label, it would grow and shrink as the reader scrolled,
+          and smoothing that needs a layout animation. That animation is what
+          once flew this control in from the top of the document whenever the
+          sheet closed: layout measures in page coordinates, and the scroll lock
+          pins the body, so its page position moved by a whole scroll offset
+          while its position on screen did not move at all.
 
-          Holding the width still removes the jitter, the animation and that
-          whole class of bug together. The label truncates instead, which costs
-          nothing, since the full list is one tap away. The text still blurs
-          and lifts between chapters: that is `AnimatePresence` on the label
-          below, and it never touched the pill's size.
+          The label truncates instead, which costs nothing, since the full list
+          is one tap away. The text still blurs and lifts between chapters: that
+          is `AnimatePresence` on the label below, and it never touched the
+          button's size. */}
+      <div ref={dockRef} className="chapter-dock">
+        <div className="chapter-dock-row">
+          <button
+            ref={triggerRef}
+            type="button"
+            onClick={() => setOpen(true)}
+            aria-label={`Chapters. Current: ${current?.label ?? ""}`}
+            aria-expanded={open}
+            aria-controls="chapter-sheet"
+            /* The scrim covers it while the sheet is open, which hides it
+               from the eye and not from the keyboard. */
+            tabIndex={open ? -1 : 0}
+            aria-hidden={open}
+            className="dock-chapters"
+          >
+            <ProgressRing position={position} total={sections.length} />
+            {/* `popLayout` takes the outgoing label out of flow as it leaves,
+                so the incoming one is not pushed sideways by a word that is
+                already on its way out. `initial={false}` keeps the first
+                paint still rather than blurring in on load. */}
+            <span className="min-w-0 flex-1 overflow-hidden text-left">
+              <AnimatePresence mode="popLayout" initial={false}>
+                <motion.span
+                  key={current?.id ?? "none"}
+                  variants={blurSwapVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="block truncate whitespace-nowrap text-xs font-medium"
+                >
+                  {current?.label}
+                </motion.span>
+              </AnimatePresence>
+            </span>
+            <CaretUp aria-hidden className="dock-chapters-caret h-3.5 w-3.5 shrink-0" />
+          </button>
 
-          Centred by a flex parent rather than by `-translate-x-1/2`, and the
-          wrapper takes no pointer events or it would cover the width of the
-          page. `bottom` clears the home indicator on a notched phone, where a
-          flat `bottom-4` lands inside it. */}
-      <div className="pointer-events-none fixed inset-x-0 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 flex justify-center px-6">
-      <button
-        ref={pillRef}
-        type="button"
-        onClick={() => setOpen(true)}
-        aria-expanded={open}
-        aria-controls="chapter-sheet"
-        /* `opacity-0` hides it from the eye and not from the keyboard, so
-           while the sheet is open Tab would otherwise land on an invisible
-           button sitting behind the scrim. */
-        tabIndex={open ? -1 : 0}
-        aria-hidden={open}
-        /* `max-w-full` is a guard for a very narrow phone, where 14rem plus
-           the wrapper's padding would not fit. */
-        className={cn(
-          "pointer-events-auto flex w-56 max-w-full items-center gap-2.5",
-          "rounded-full border border-border bg-elevated/90 py-2 pl-2 pr-3.5 shadow-lg backdrop-blur-md",
-          "transition-opacity duration-base ease-out motion-reduce:transition-none",
-          "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
-          "sticker candy:border-white candy:bg-white candy:shadow-sticker-3 candy:backdrop-blur-none",
-          open && "pointer-events-none opacity-0"
-        )}
-      >
-        <ProgressRing position={position} total={sections.length} />
-        {/* `popLayout` takes the outgoing label out of flow as it leaves, so
-            the incoming one is not pushed sideways by a word that is already
-            on its way out. `initial={false}` keeps the first paint still
-            rather than blurring in on load. */}
-        <span className="min-w-0 flex-1 overflow-hidden text-left">
-          <AnimatePresence mode="popLayout" initial={false}>
-            <motion.span
-              key={current?.id ?? "none"}
-              variants={blurSwapVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              className="block truncate whitespace-nowrap text-xs font-medium text-foreground"
-            >
-              {current?.label}
-            </motion.span>
-          </AnimatePresence>
-        </span>
-        <CaretUp aria-hidden className="h-3.5 w-3.5 shrink-0 text-subtle" />
-      </button>
+        </div>
       </div>
 
       {/* Kept mounted so it can animate both ways. `invisible` rather than
@@ -310,7 +352,7 @@ function ProgressRing({ position, total }: { position: number; total: number }) 
           r={r}
           fill="none"
           strokeWidth="2"
-          className="stroke-border-strong"
+          className="dock-ring-track"
         />
         <circle
           cx="14"
@@ -321,10 +363,10 @@ function ProgressRing({ position, total }: { position: number; total: number }) 
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={circumference * (1 - fraction)}
-          className="stroke-foreground candy:stroke-candy-pink transition-[stroke-dashoffset] duration-base ease-out motion-reduce:transition-none"
+          className="dock-ring-fill transition-[stroke-dashoffset] duration-base ease-out motion-reduce:transition-none"
         />
       </svg>
-      <span className="font-label text-2xs tabular-nums text-foreground">
+      <span className="font-label text-2xs tabular-nums">
         {position > 0 ? position : 1}
       </span>
     </span>

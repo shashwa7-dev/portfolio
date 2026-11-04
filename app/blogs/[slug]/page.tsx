@@ -5,7 +5,6 @@ import { ArrowLeft, ArrowRight } from "@phosphor-icons/react/ssr";
 import { CustomMDX } from "@/components/common/mdx";
 import StickyScrollSpyTOC from "@/components/common/StickyScrollSpyTOC";
 import { tocFromMdx } from "@/lib/toc";
-import { cn } from "@/lib/utils";
 import { readingTime } from "@/lib/readingTime";
 import { formatDate, getBlogPosts } from "../utils";
 import { baseUrl } from "@/app/sitemap";
@@ -101,13 +100,7 @@ export default async function Blog(props: any) {
       <Container
         as="section"
         width="reading"
-        className={cn(
-          "relative pt-8 pb-8 md:pt-12 md:pb-12",
-          /* Only reserved when there is something to reserve it for. The table
-             of contents renders nothing without headings, so a post that has
-             none would otherwise end on 112px of empty page. */
-          toc.length > 0 && "pb-28 md:pb-28 xl:pb-12"
-        )}
+        className="relative pt-8 pb-8 md:pt-12 md:pb-12"
       >
         <script
           type="application/ld+json"

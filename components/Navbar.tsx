@@ -34,6 +34,11 @@ import { contactEmail, socialLinks } from "@/lib/siteLinks";
  * a phone, where there is no hover, a chevron button raises a card just above the
  * dock that lists them by name.
  *
+ * Below 1280px, a page with chapters narrows this same dock to Home and an open
+ * space on its left, where `MobileChapters` lays the chapter button. It stays
+ * mounted across navigation, so the change is a real width transition rather
+ * than a swap. The rules key off `.chapter-dock` in `app/globals.css`.
+ *
  * Work and Projects are homepage sections, reached by scrolling the homepage
  * and from the footer, so they have no button here. Home replaces the old
  * header's logo.
@@ -47,6 +52,8 @@ const PAGES: Page[] = [
   { label: "Shelf", href: "/shelf", icon: Books, match: (p) => p.startsWith("/shelf") },
   { label: "CV", href: "/cv", icon: FileText, match: (p) => p.startsWith("/cv") },
 ];
+
+const HOME = PAGES[0];
 
 const twitter = socialLinks.find((s) => s.name === "Twitter")!;
 const github = socialLinks.find((s) => s.name === "GitHub")!;
@@ -141,6 +148,23 @@ export default function Navbar() {
   const themeName = `Switch to ${themeLabel(upcoming)}`;
   const tipSide = useSideDock() ? "right" : "top";
 
+  const pageLink = (page: Page) => {
+    const { label, href, icon: I, match } = page;
+    const current = match(pathname);
+    return (
+      <Tip key={label} label={label} side={tipSide}>
+        <Link
+          href={href}
+          aria-label={label}
+          aria-current={current ? "page" : undefined}
+          className={`dock-btn ${page === HOME ? "dock-home dock-edge dock-edge-l" : ""} ${current ? "is-on" : ""}`}
+        >
+          <I aria-hidden weight={current ? "fill" : "regular"} className="h-4 w-4" />
+        </Link>
+      </Tip>
+    );
+  };
+
   return (
     <>
       <div aria-hidden className={`dock-scrim ${drawerOpen ? "is-open" : ""}`} />
@@ -169,38 +193,34 @@ export default function Navbar() {
           </div>
 
           <nav aria-label="Site" className="dock-bar">
-            {PAGES.map(({ label, href, icon: I, match }, i) => {
-              const current = match(pathname);
-              return (
-                <Tip key={label} label={label} side={tipSide}>
-                  <Link
-                    href={href}
-                    aria-label={label}
-                    aria-current={current ? "page" : undefined}
-                    className={`dock-btn ${i === 0 ? "dock-edge dock-edge-l" : ""} ${current ? "is-on" : ""}`}
-                  >
-                    <I aria-hidden weight={current ? "fill" : "regular"} className="h-4 w-4" />
-                  </Link>
-                </Tip>
-              );
-            })}
+            {/* Opens on a page with chapters. The button itself is laid over
+                this space by MobileChapters. */}
+            <span aria-hidden className="dock-chapter-space">
+              <span className="dock-sep" />
+            </span>
 
-            {/* Desktop only: revealed in place on hover or keyboard focus. */}
-            <div className="dock-more">
+            {pageLink(HOME)}
+
+            <div className="dock-rest">
               <div>
-                <span aria-hidden className="dock-sep" />
-                {REACH.map(({ label, href, icon: I, external }) => (
-                  <Tip key={label} label={label} side={tipSide}>
-                    <a
-                      href={href}
-                      aria-label={label}
-                      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                      className="dock-btn"
-                    >
-                      <I aria-hidden className="h-4 w-4" />
-                    </a>
-                  </Tip>
-                ))}
+                {PAGES.slice(1).map(pageLink)}
+
+                {/* Desktop only: revealed in place on hover or keyboard focus. */}
+                <div className="dock-more">
+                  <div>
+                    <span aria-hidden className="dock-sep" />
+                    {REACH.map(({ label, href, icon: I, external }) => (
+                      <Tip key={label} label={label} side={tipSide}>
+                        <a
+                          href={href}
+                          aria-label={label}
+                          {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                          className="dock-btn"
+                        >
+                          <I aria-hidden className="h-4 w-4" />
+                        </a>
+                      </Tip>
+                    ))}
               </div>
             </div>
 
@@ -244,6 +264,8 @@ export default function Navbar() {
                 </span>
               </button>
             </Tip>
+              </div>
+            </div>
           </nav>
         </div>
       </div>
