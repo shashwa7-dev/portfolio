@@ -330,6 +330,28 @@
     }
     .section-head:hover .section-glyph > span[data-on] { animation-name: glyph-wave-on; }
   }
+  /* The homepage's background brand mark (BrandBackdrop.tsx) draws itself once
+     on load, one diagonal of dots at a time. Behind no-preference, not the
+     global reduced-motion rule: that rule keeps delays, which would leave the
+     last dots hidden for over a second. */
+  @media (prefers-reduced-motion: no-preference) {
+    .brand-backdrop > g {
+      animation: brand-backdrop-in var(--duration-backdrop-dot) ease-out backwards;
+      animation-delay: calc(var(--dot) * var(--duration-backdrop-step));
+    }
+    /* Set on a return to the homepage, so the draw plays once per page load. */
+    .brand-backdrop[data-drawn] > g { animation: none; }
+  }
+  /* Its hover layer (BrandBackdropFill.tsx): brighter dots, seen only through a
+     soft circle at the pointer. --fill-x and --fill-y are written from JS, and
+     REACH_REM there must match this 9rem radius. */
+  .brand-backdrop-fill {
+    opacity: 0;
+    transition: opacity var(--duration-backdrop-fill) ease-out;
+    -webkit-mask-image: radial-gradient(circle 9rem at var(--fill-x, 0) var(--fill-y, 0), #000 25%, transparent);
+    mask-image: radial-gradient(circle 9rem at var(--fill-x, 0) var(--fill-y, 0), #000 25%, transparent);
+  }
+  .brand-backdrop-fill[data-active] { opacity: 0.45; }
   /* Section numbers: each Section label counts itself, so the homepage reads
      01 Work, 02 Writing, 03 Currently… in page order. */
   body { counter-reset: section; }
@@ -445,6 +467,9 @@
   --duration-live-pulse: 1800ms;
   --duration-live-ring: 280ms;
   --duration-glyph-step: 90ms;
+  --duration-backdrop-dot: 320ms;
+  --duration-backdrop-step: 20ms;
+  --duration-backdrop-fill: 240ms;
   --ease-spin-clip: cubic-bezier(0.45, 0, 0.55, 1);
   --duration-goggles-on: 420ms;
   --duration-goggles-off: 240ms;
@@ -810,6 +835,7 @@ table {
 @keyframes glyph-wave { 0%, 100% { opacity: 0.2; } 40% { opacity: 1; } }
 @keyframes live-pulse { 0%, 100% { opacity: 0.25; } 35% { opacity: 1; } }
 @keyframes glyph-wave-on { 0%, 100% { opacity: 1; } 40% { opacity: 0.3; } }
+@keyframes brand-backdrop-in { from { opacity: 0; } }
 
 /* ── Dock ───────────────────────────────────────────────────────────────────
    Outside `@layer components` on purpose. The global `a { transition }` and
