@@ -16,7 +16,11 @@ export type DiwaliSound = {
 
 type AudioCtor = typeof AudioContext;
 
-/** All sounds are synthesised with Web Audio: no files. Every method is a no-op before unlock() or after close(). */
+/**
+ * All sounds are synthesised with Web Audio: no files. Every method is a
+ * no-op before unlock() or after close(), and a no-op if the browser's audio
+ * throws: a sound can never stop the show.
+ */
 export function createDiwaliSound(): DiwaliSound {
   let ac: AudioContext | null = null;
   let master: GainNode | null = null;
@@ -28,7 +32,7 @@ export function createDiwaliSound(): DiwaliSound {
   function unlock() {
     if (closed) return;
     if (ac) {
-      void ac.resume();
+      ac.resume().catch(() => {});
       return;
     }
     const Ctor: AudioCtor | undefined =
@@ -68,31 +72,50 @@ export function createDiwaliSound(): DiwaliSound {
     g.gain.setValueAtTime(0.0001, t);
     g.gain.exponentialRampToValueAtTime(peak, t + attack);
     g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    const p = c.createStereoPanner();
-    p.pan.value = pan || 0;
     src.connect(f);
     f.connect(g);
-    g.connect(p);
-    p.connect(master!);
+    toMaster(g, pan);
     src.start(t, Math.random() * Math.max(0, 2.9 - dur));
     src.stop(t + dur + 0.05);
     return { f, g };
   }
 
+  /** Connects `node` to the master through a stereo panner, or straight if the browser has none. */
+  function toMaster(node: AudioNode, pan: number) {
+    const c = ac!;
+    if (typeof c.createStereoPanner !== "function") {
+      node.connect(master!);
+      return;
+    }
+    const p = c.createStereoPanner();
+    p.pan.value = pan || 0;
+    node.connect(p);
+    p.connect(master!);
+  }
 
+  /** Runs a sound, swallowing anything the audio stack throws. */
+  const safe =
+    <A extends unknown[]>(play: (...args: A) => void) =>
+    (...args: A) => {
+      try {
+        play(...args);
+      } catch {
+        // No sound this time; the show carries on.
+      }
+    };
 
   return {
-    unlock,
-    strike() {
+    unlock: safe(unlock),
+    strike: safe(() => {
       if (!ok()) return;
       const t = ac!.currentTime;
       noise(t, 0.12, "highpass", 2600, 1, 0.5, 0.004, 0.3, 1);
       noise(t + 0.04, 0.45, "bandpass", 1300, 0.8, 0.25, 0.02, 0.3, 1);
-    },
-    // The fuse-real prototype's `sizzle`: a bright hiss whose level breathes
-    // (a small random wobble eight times a second) as its pitch sinks, a low
-    // rumble under it, and about 28 random crackles a second.
-    fuse(dur) {
+    }),
+    // The sizzle: a bright hiss whose level breathes (a small random wobble
+    // eight times a second) as its pitch sinks, a low rumble under it, and
+    // about 28 random crackles a second.
+    fuse: safe((dur: number) => {
       if (!ok()) return;
       const t = ac!.currentTime + 0.05;
       const h = noise(t, dur + 0.15, "bandpass", 4800, 1.2, 0.16, 0.08, 0.3, 1.1);
@@ -117,8 +140,8 @@ export function createDiwaliSound(): DiwaliSound {
           0.3,
         );
       }
-    },
-    whoomp() {
+    }),
+    whoomp: safe(() => {
       if (!ok()) return;
       const c = ac!;
       const t = c.currentTime;
@@ -134,8 +157,8 @@ export function createDiwaliSound(): DiwaliSound {
       g.connect(master!);
       o.start(t);
       o.stop(t + 0.6);
-    },
-    chime() {
+    }),
+    chime: safe(() => {
       if (!ok()) return;
       const c = ac!;
       const t = c.currentTime;
@@ -159,8 +182,8 @@ export function createDiwaliSound(): DiwaliSound {
         });
       });
       noise(t, 0.35, "highpass", 6000, 0.7, 0.08, 0.01, 0);
-    },
-    whistle(pan) {
+    }),
+    whistle: safe((pan: number) => {
       if (!ok()) return;
       const c = ac!;
       const t = c.currentTime;
@@ -173,16 +196,13 @@ export function createDiwaliSound(): DiwaliSound {
       g.gain.setValueAtTime(0.0001, t);
       g.gain.exponentialRampToValueAtTime(0.05, t + 0.1);
       g.gain.exponentialRampToValueAtTime(0.0001, t + d);
-      const p = c.createStereoPanner();
-      p.pan.value = pan;
       o.connect(g);
-      g.connect(p);
-      p.connect(master!);
+      toMaster(g, pan);
       o.start(t);
       o.stop(t + d + 0.05);
       noise(t, d, "highpass", 3000, 0.7, 0.04, 0.1, pan);
-    },
-    pop() {
+    }),
+    pop: safe(() => {
       if (!ok()) return;
       const c = ac!;
       const t = c.currentTime;
@@ -198,8 +218,8 @@ export function createDiwaliSound(): DiwaliSound {
       g.connect(master!);
       o.start(t);
       o.stop(t + 0.3);
-    },
-    crunch() {
+    }),
+    crunch: safe(() => {
       if (!ok()) return;
       const t = ac!.currentTime;
       for (let i = 0; i < 7; i++) {
@@ -207,8 +227,8 @@ export function createDiwaliSound(): DiwaliSound {
         noise(ct, 0.04 + Math.random() * 0.04, "bandpass", 1800 + Math.random() * 2500, 1.2, 0.35, 0.003, 0);
       }
       noise(t, 0.12, "lowpass", 500, 0.7, 0.3, 0.004, 0);
-    },
-    boom(size, pan, crackle) {
+    }),
+    boom: safe((size: number, pan: number, crackle: boolean) => {
       if (!ok()) return;
       const c = ac!;
       // smaller bursts read as further away: quieter, duller, a touch late
@@ -242,15 +262,15 @@ export function createDiwaliSound(): DiwaliSound {
           );
         }
       }
-    },
-    close() {
+    }),
+    close: safe(() => {
       if (closed) return;
       closed = true;
       const c = ac;
       ac = null;
       master = null;
       noiseBuf = null;
-      if (c && c.state !== "closed") void c.close();
-    },
+      if (c && c.state !== "closed") c.close().catch(() => {});
+    }),
   };
 }

@@ -39,6 +39,19 @@ const loadShow = (): Promise<ShowComponent> =>
 
 type Props = Omit<ComponentProps<"button">, "children">;
 
+/** Keys that scroll the page; held off while the fuse burns (`lit`). */
+const SCROLL_KEYS = new Set([
+  " ",
+  "PageUp",
+  "PageDown",
+  "Home",
+  "End",
+  "ArrowUp",
+  "ArrowDown",
+  "ArrowLeft",
+  "ArrowRight",
+]);
+
 /**
  * The hero photo while `DIWALI_ENABLED` is on: in place of the fidget
  * spinner, goggles and status ring, the photo wears a chakri's fuse. On hover
@@ -47,8 +60,10 @@ type Props = Omit<ComponentProps<"button">, "children">;
  * `fuse.ts`), and when it has burnt the show takes over (`DiwaliShow`, loaded
  * on demand).
  *
- * It owns the show's state and its one `DiwaliSound`. When the show returns,
- * the fuse is restored and focus comes back here.
+ * It owns the show's state and its one `DiwaliSound`, and locks the page's
+ * scroll from the light until the show has returned. When the show returns,
+ * the fuse is restored and focus comes back here, without opening the
+ * tooltip (it opens again on the next hover).
  *
  * Sized in `em` like `AvatarHover`, because the photo sits inside the h1.
  * Under reduced motion there is no matchstick, flame, sparks or smoke: the
@@ -76,6 +91,8 @@ export default function DiwaliAvatar({
   const soundRef = useRef<DiwaliSound | null>(null);
   const phaseRef = useRef<ShowState["phase"]>(state.phase);
   const timer = useRef(0);
+  /** Set while focus is put back here after the show, so the tooltip stays shut. */
+  const quietFocus = useRef(false);
 
   // The tooltip trigger (Radix Slot) hands its own ref in, so both get the
   // element, as in SpinAvatar.
@@ -165,9 +182,45 @@ export default function DiwaliAvatar({
       fuse.current?.rest();
       soundRef.current?.close();
       soundRef.current = null;
+      quietFocus.current = true;
       button.current?.focus({ preventScroll: true });
+      quietFocus.current = false;
     }
   }, [state.phase]);
+
+  // ---- Scroll lock, from the light (the fuse's burn) until back at rest. ----
+  const locked = state.phase !== "idle";
+  useEffect(() => {
+    if (!locked) return;
+    const html = document.documentElement;
+    const previous = html.style.overflow;
+    const previousGutter = html.style.scrollbarGutter;
+    // Keep the scrollbar's space while it is hidden, so the page never shifts.
+    html.style.scrollbarGutter = "stable";
+    html.style.overflow = "hidden";
+    return () => {
+      html.style.overflow = previous;
+      html.style.scrollbarGutter = previousGutter;
+    };
+  }, [locked]);
+
+  // While the fuse burns, the scroll keys do nothing; from `centre` on, the
+  // show captures every key itself.
+  const burning = state.phase === "lit";
+  useEffect(() => {
+    if (!burning) return;
+    const onKey = (e: KeyboardEvent) => {
+      const t = e.target;
+      const typing =
+        t instanceof HTMLElement &&
+        (t.isContentEditable ||
+          t instanceof HTMLInputElement ||
+          t instanceof HTMLTextAreaElement);
+      if (!typing && SCROLL_KEYS.has(e.key)) e.preventDefault();
+    };
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
+  }, [burning]);
 
   useEffect(
     () => () => {
@@ -256,6 +309,7 @@ export default function DiwaliAvatar({
         onPointerEnter={(e) => {
           onPointerEnter?.(e);
           void warmShow();
+          fuse.current?.warm();
           follow(e);
         }}
         onPointerMove={(e) => {
@@ -263,8 +317,10 @@ export default function DiwaliAvatar({
           follow(e);
         }}
         onFocus={(e) => {
-          onFocus?.(e);
+          // Focus put back after the show: the tooltip's handler is skipped.
+          if (!quietFocus.current) onFocus?.(e);
           void warmShow();
+          fuse.current?.warm();
         }}
         onClick={(e) => {
           onClick?.(e);

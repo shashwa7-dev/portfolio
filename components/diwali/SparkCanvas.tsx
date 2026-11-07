@@ -12,8 +12,12 @@ import styles from "@/components/diwali/diwali.module.css";
 const SPIN_UP_S = 1.4;
 /** Spin speed at full power, in radians per second (backwards, like the prototype). */
 const SPIN_RAD_S = 26;
-/** Sparks thrown per frame at full power and centre size. */
+/** Sparks thrown per frame at full power, by the centre chakri on a 1280x800 screen. */
 const JET_PER_FRAME = 70;
+/** That reference chakri's side, in px: the jet's count scales from it. */
+const JET_REF_SIZE = chakriBox("centre", 1280, 800).size;
+/** The jet's count never drops below this share of the reference, nor exceeds it. */
+const JET_MIN_SHARE = 0.35;
 const MAX_DPR = 2;
 
 type Spark = {
@@ -46,7 +50,9 @@ type Props = {
  * sprayed backwards along the tangent and whipping round with the spin, plus
  * the ring of light a fast chakri leaves. It also turns `spin`, so the jet and
  * the drawing never drift apart. The spark count scales with the chakri's
- * size, so the corner chakri throws fewer, shorter sparks.
+ * size on screen against the 1280x800 centre chakri, so the corner chakri
+ * and small phones draw fewer strokes; their speed scales with its size
+ * against this screen's centre chakri, so they are also shorter in the corner.
  *
  * Only mounted when motion is allowed: under reduced motion the chakri sits
  * still and there is no jet.
@@ -115,7 +121,8 @@ export default function SparkCanvas({ target, rest, spin, emitting }: Props) {
 
         // Like a real chakri: the jet fires from one point on the rim (the
         // fuse end), which whips round with the spin.
-        const n = Math.round(JET_PER_FRAME * power * Math.max(0.4, scale) * f);
+        const share = Math.min(1, Math.max(JET_MIN_SHARE, box.size / JET_REF_SIZE));
+        const n = Math.round(JET_PER_FRAME * power * share * f);
         for (let i = 0; i < n; i++) {
           const a = rot + (Math.random() - 0.5) * 0.25;
           const x = cx + R * Math.cos(a);

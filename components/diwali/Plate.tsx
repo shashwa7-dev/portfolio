@@ -163,7 +163,7 @@ export default function Plate({ phase, picked, sound, onPick, onDone }: Props) {
     >
       <div className={styles.plateCol}>
         <p className={styles.ask}>
-          प्रसाद ग्रहण कीजिए
+          <span lang="hi">प्रसाद ग्रहण कीजिए</span>
           <small>Take a laddoo before you go</small>
         </p>
         <div
@@ -226,7 +226,7 @@ export default function Plate({ phase, picked, sound, onPick, onDone }: Props) {
       >
         {bitten && (
           <>
-            वाह!
+            <span lang="hi">वाह!</span>
             <small>Happy Diwali. Enjoy the rest of it.</small>
           </>
         )}

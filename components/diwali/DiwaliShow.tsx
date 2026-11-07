@@ -46,7 +46,7 @@ const SONG_FADE_STEPS = 20;
 
 const IDOLS = "/images/diwali/lakshmi-ganesh.webp";
 const LADDOO_ICON = "/images/diwali/laddoo-icon.webp";
-/** Samples that make the browser fetch each face's Devanagari and Latin files. */
+/** Samples that make the browser fetch a face's Devanagari or Latin file. */
 const HI_SAMPLE = "शुभ दीपावली प्रसाद";
 const EN_SAMPLE = "Wishing you";
 
@@ -103,6 +103,8 @@ export default function DiwaliShow({
   const vid = useRef<HTMLDivElement>(null);
   const skip = useRef<HTMLButtonElement>(null);
   const player = useRef<DiwaliPlayer | null>(null);
+  /** The player fading out after the song, destroyed once its fade is over. */
+  const leaving = useRef<{ player: DiwaliPlayer; timer: number } | null>(null);
   const phaseRef = useRef<Phase>(phase);
   const ended = useRef(false);
   /** The song has started playing (its fade-in has begun). */
@@ -279,8 +281,18 @@ export default function DiwaliShow({
       cancelled = true;
       window.clearInterval(poll);
       window.clearInterval(songFade.current);
-      player.current?.pause();
       setPlaying(false);
+      // The show has left centre and corner for good: pause, let the video
+      // fade (`.vid`), then destroy the player and its iframe.
+      const p = player.current;
+      player.current = null;
+      if (!p) return;
+      p.pause();
+      const timer = window.setTimeout(() => {
+        p.destroy();
+        if (leaving.current?.player === p) leaving.current = null;
+      }, duration.diwaliBlackout * 1000);
+      leaving.current = { player: p, timer };
     };
   }, [wantVideo]);
 
@@ -331,18 +343,19 @@ export default function DiwaliShow({
     return () => window.removeEventListener("keydown", onKey, true);
   }, [open]);
 
-  // ---- Scroll lock while the overlay is up. ----
+  // ---- The page behind is inert while the dialog is up. ----
+  // (The scroll lock is DiwaliAvatar's: it starts at the light.)
   useEffect(() => {
-    if (!open) return;
-    const html = document.documentElement;
-    const previous = html.style.overflow;
-    const previousGutter = html.style.scrollbarGutter;
-    // Keep the scrollbar's space while it is hidden, so the page never shifts.
-    html.style.scrollbarGutter = "stable";
-    html.style.overflow = "hidden";
+    const host = root.current;
+    if (!open || !host) return;
+    const changed: HTMLElement[] = [];
+    for (const el of Array.from(document.body.children)) {
+      if (el === host || !(el instanceof HTMLElement) || el.inert) continue;
+      el.inert = true;
+      changed.push(el);
+    }
     return () => {
-      html.style.overflow = previous;
-      html.style.scrollbarGutter = previousGutter;
+      for (const el of changed) el.inert = false;
     };
   }, [open]);
 
@@ -381,25 +394,33 @@ export default function DiwaliShow({
   useEffect(() => {
     for (const src of [IDOLS, LADDOO_ICON, ...PLATE_IMAGES]) new Image().src = src;
     if (!("fonts" in document)) return;
-    const faces = [
-      `16px ${rozha.style.fontFamily}`,
-      `16px ${tiro.style.fontFamily}`,
-      `italic 16px ${tiro.style.fontFamily}`,
+    // Only the files that are drawn: both faces set Devanagari and a little
+    // Latin (the comma, the "!"), but the italic only ever sets English.
+    const loads: [font: string, text: string][] = [
+      [`16px ${rozha.style.fontFamily}`, HI_SAMPLE],
+      [`16px ${rozha.style.fontFamily}`, EN_SAMPLE],
+      [`16px ${tiro.style.fontFamily}`, HI_SAMPLE],
+      [`16px ${tiro.style.fontFamily}`, EN_SAMPLE],
+      [`italic 16px ${tiro.style.fontFamily}`, EN_SAMPLE],
     ];
-    for (const font of faces) {
-      for (const text of [HI_SAMPLE, EN_SAMPLE]) {
-        document.fonts.load(font, text).catch(() => {});
-      }
+    for (const [font, text] of loads) {
+      document.fonts.load(font, text).catch(() => {});
     }
   }, []);
 
   // ---- Unmount: nothing may outlive the show. ----
-  // (Timers, the poll, listeners and the scroll lock are each undone by their
-  // own effect's cleanup above; the spark loop by SparkCanvas's.)
-  // The sound is DiwaliAvatar's: it closes it on return to idle and on its
-  // own unmount, so it is not closed here.
+  // (Timers, the poll, listeners and the inert page are each undone by their
+  // own effect's cleanup above; the spark loop by SparkCanvas's. The player is
+  // destroyed as the song ends; this only catches an unmount mid-song or
+  // mid-fade.) The sound is DiwaliAvatar's: it closes it on return to idle and
+  // on its own unmount, so it is not closed here.
   useEffect(
     () => () => {
+      if (leaving.current) {
+        window.clearTimeout(leaving.current.timer);
+        leaving.current.player.destroy();
+        leaving.current = null;
+      }
       player.current?.destroy();
       player.current = null;
     },

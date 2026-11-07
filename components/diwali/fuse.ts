@@ -4,15 +4,19 @@
  * short straight tail at the bottom right, and on light a flame photo
  * (`fuse-flame.webp`) running from the tail tip up the tail and once round the
  * ring, leaving ember and ash behind it, throwing sparks and a little smoke.
- * Ported from the fuse-real prototype's `makeFuse`.
+ * The ring sits just outside the photo (radius D/2 plus about half the
+ * rope's thickness), and the tail leaves it at 45 degrees, bottom right, for
+ * about a third of D; the flame burns the tail first, then the ring clockwise.
+ *
+ * The rope image loads with the fuse; the flame image only on `warm()` (the
+ * first hover or focus) or at the light.
  *
  * At rest it is one draw (no animation frame loop); the loop runs only while
  * the fuse burns and its last sparks fade.
  *
  * Geometry is sized from the photo's rendered diameter D, re-measured on every
- * resize. Particle physics is tuned per 60fps frame, as in the prototype, and
- * scaled by the frame's length so faster screens match; it is physics, not UI
- * durations.
+ * resize. Particle physics is tuned per 60fps frame and scaled by the
+ * frame's length so faster screens match; it is physics, not UI durations.
  */
 
 const ROPE_SRC = "/images/diwali/fuse-rope.webp";
@@ -25,7 +29,7 @@ const FLAME_ANCHOR_X = 305 / 330;
 const FLAME_ANCHOR_Y = 70 / 140;
 /** Arc length of one rope slice, in CSS px. */
 const SLICE = 1.4;
-/** The prototype was tuned at a 170px photo; speeds scale from it. */
+/** Speeds were tuned at a 170px photo and scale from it. */
 const TUNED_D = 170;
 
 /** The rope's geometry for a photo of diameter `d` (CSS px). */
@@ -59,6 +63,8 @@ export type Fuse = {
   clear(): void;
   /** Runs the flame up the tail and round the ring over `ms`, then calls `onDone`. */
   burn(ms: number, onDone: () => void): void;
+  /** Starts loading the flame image, if it has not started yet. */
+  warm(): void;
   /** Stops the loop and drops the image listeners. */
   destroy(): void;
 };
@@ -215,7 +221,12 @@ export function createFuse(
     if (mode === "rest") rest();
   }
 
+  function warm() {
+    if (!flame.src) flame.src = FLAME_SRC;
+  }
+
   function burn(ms: number, onDone: () => void) {
+    warm();
     if (!ctx) {
       onDone();
       return;
@@ -283,7 +294,6 @@ export function createFuse(
     if (mode === "rest") rest();
   };
   rope.src = ROPE_SRC;
-  flame.src = FLAME_SRC;
   measure();
 
   return {
@@ -297,6 +307,7 @@ export function createFuse(
       begin();
     },
     burn,
+    warm,
     destroy() {
       cancelAnimationFrame(raf);
       raf = 0;
