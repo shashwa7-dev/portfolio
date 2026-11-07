@@ -21,7 +21,7 @@ import { Toran } from "@/components/diwali/art/Toran";
 import SparkCanvas from "@/components/diwali/SparkCanvas";
 import FireworksCanvas from "@/components/diwali/FireworksCanvas";
 import Finale from "@/components/diwali/Finale";
-import Plate from "@/components/diwali/Plate";
+import Plate, { PLATE_IMAGES } from "@/components/diwali/Plate";
 import { rozha, tiro } from "@/components/diwali/fonts";
 import type { DiwaliSound } from "@/components/diwali/sound";
 import {
@@ -375,11 +375,11 @@ export default function DiwaliShow({
     return () => fly.removeEventListener("transitionend", onEnd);
   }, [open]);
 
-  // ---- Warm the finale: the idols and both faces, from the light on, so a
-  // Skip on a slow connection never shows late idols or a fallback font. ----
+  // ---- Warm the finale and the plate: the idols, the laddoos and both faces,
+  // from the light on, so a Skip on a slow connection never shows late idols,
+  // an empty plate or a fallback font. ----
   useEffect(() => {
-    new Image().src = IDOLS;
-    new Image().src = LADDOO_ICON;
+    for (const src of [IDOLS, LADDOO_ICON, ...PLATE_IMAGES]) new Image().src = src;
     if (!("fonts" in document)) return;
     const faces = [
       `16px ${rozha.style.fontFamily}`,
@@ -495,6 +495,7 @@ export default function DiwaliShow({
       {plating && (
         <Plate
           phase={phase === "plate" ? "plate" : "picked"}
+          picked={state.picked}
           sound={sound}
           onPick={(index) => dispatch({ type: "PICK", index })}
           onDone={() => dispatch({ type: "PICK_DONE" })}

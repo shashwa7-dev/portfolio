@@ -9,13 +9,18 @@ import styles from "@/components/diwali/diwali.module.css";
 
 type Props = {
   phase: "plate" | "picked";
+  /** The show's pick: set by Esc as well as by a click on a laddoo. */
+  picked: number | null;
   sound: DiwaliSound;
   onPick(index: number): void;
   onDone(): void;
 };
 
+const PLATE = "/images/diwali/laddoo-plate.webp";
 const LADDOO = "/images/diwali/laddoo.webp";
 const BITTEN = "/images/diwali/laddoo-bitten.webp";
+/** Warmed by the show from the light on, so the plate is there when it opens. */
+export const PLATE_IMAGES = [PLATE, LADDOO, BITTEN] as const;
 
 /** Where the picked laddoo floats to, as a fraction of the viewport height. */
 const FLOAT_Y = 0.38;
@@ -57,15 +62,24 @@ function crumbs(host: HTMLElement, cx: number, cy: number, size: number) {
  * squash, a crunch and a spray of crumbs). Then `वाह!`, and `onDone` hands
  * back to the show for the way home.
  *
+ * Until the plate photo has loaded (or if it fails), every laddoo button wears
+ * its gold ring, so the targets are always visible. Esc picks the front-most
+ * laddoo (in the reducer); the same pick then plays for it here.
+ *
  * Reduced motion: no rise, float, squash or crumbs; the laddoo appears in the
  * middle at its full size and the bite still happens.
  */
-export default function Plate({ phase, sound, onPick, onDone }: Props) {
+export default function Plate({ phase, picked, sound, onPick, onDone }: Props) {
   const [reduced] = useState(
     () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
   const [chosen, setChosen] = useState<number | null>(null);
   const [bitten, setBitten] = useState(false);
+  const [plateImg, setPlateImg] = useState<"loading" | "ready" | "failed">(
+    "loading",
+  );
+  // A click sets `chosen` at once; Esc arrives as the show's pick.
+  const active = chosen ?? (phase === "picked" ? picked : null);
 
   const stage = useRef<HTMLDivElement>(null);
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
@@ -77,17 +91,18 @@ export default function Plate({ phase, sound, onPick, onDone }: Props) {
     latest.current = { sound, onDone };
   });
 
-  // Warm the two laddoo images, and hand focus to the first laddoo (the
-  // finale's button behind is disabled and inert from now on).
+  // Hand focus to the first laddoo (the finale's button behind is disabled
+  // and inert from now on). The images were warmed by the show at the light.
   useEffect(() => {
-    for (const src of [LADDOO, BITTEN]) new Image().src = src;
     buttons.current[0]?.focus({ preventScroll: true });
   }, []);
 
-  // The pick: lay the cut-out over its laddoo, then float it up.
+  // The pick, by click or Esc: the pop, then lay the cut-out over its laddoo
+  // and float it up.
   useLayoutEffect(() => {
-    if (chosen === null) return;
-    const btn = buttons.current[chosen];
+    if (active === null) return;
+    latest.current.sound.pop();
+    const btn = buttons.current[active];
     const el = cutout.current;
     const host = stage.current;
     if (!btn || !el || !host) return;
@@ -130,16 +145,15 @@ export default function Plate({ phase, sound, onPick, onDone }: Props) {
       window.clearTimeout(bite);
       window.clearTimeout(done);
     };
-  }, [chosen, reduced]);
+  }, [active, reduced]);
 
   const pick = (i: number) => {
-    if (phase !== "plate" || chosen !== null) return;
+    if (phase !== "plate" || active !== null) return;
     setChosen(i);
-    sound.pop();
     onPick(i);
   };
 
-  const picking = chosen !== null || phase === "picked";
+  const picking = active !== null || phase === "picked";
 
   return (
     <div
@@ -156,13 +170,17 @@ export default function Plate({ phase, sound, onPick, onDone }: Props) {
           role="group"
           aria-label="Plate of laddoos"
           className={styles.plate}
+          data-rings={plateImg === "ready" ? undefined : ""}
+          data-failed={plateImg === "failed" ? "" : undefined}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/diwali/laddoo-plate.webp"
+            src={PLATE}
             alt=""
             className={styles.plateImg}
             draggable={false}
+            onLoad={() => setPlateImg("ready")}
+            onError={() => setPlateImg("failed")}
           />
           {LADDOO_SPOTS.map((spot, i) => {
             const b = spotBox(spot);
@@ -189,7 +207,7 @@ export default function Plate({ phase, sound, onPick, onDone }: Props) {
         </div>
       </div>
       <div ref={cutout} aria-hidden className={styles.cutout}>
-        {chosen !== null && (
+        {active !== null && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={bitten ? BITTEN : LADDOO}

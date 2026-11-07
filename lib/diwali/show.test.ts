@@ -4,6 +4,7 @@ import {
   flyerTransform, toFlyerBox,
   type Phase, type ShowState, type ShowEvent,
 } from "./show";
+import { LADDOO_FRONT_INDEX, LADDOO_SPOTS } from "./laddoos";
 
 const at = (phase: Phase, picked: number | null = null): ShowState => ({ phase, picked });
 
@@ -45,6 +46,12 @@ describe("reduce", () => {
     const phases: Phase[] = ["lit", "centre", "corner", "finale", "plate", "picked", "returning"];
     for (const p of phases) expect(reduce(at(p, 4), { type: "ABORT" })).toEqual(INITIAL);
     expect(reduce(INITIAL, { type: "ABORT" })).toBe(INITIAL);
+  });
+  it("Esc on the plate picks the front-most laddoo", () => {
+    expect(LADDOO_FRONT_INDEX).toBe(LADDOO_SPOTS.length - 1);
+    expect(reduce(at("plate"), { type: "ESCAPE" })).toEqual(at("picked", LADDOO_FRONT_INDEX));
+    const picked = at("picked", 2);
+    expect(reduce(picked, { type: "ESCAPE" })).toBe(picked);
   });
   it("picks once", () => {
     const picked = at("picked", 2);

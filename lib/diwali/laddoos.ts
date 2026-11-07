@@ -28,6 +28,9 @@ export const LADDOO_SPOTS: readonly LaddooSpot[] = [
   { x: 44.8, y: 74.3, r: 10.8 },
 ];
 
+/** The front-most laddoo (the last spot): what Esc on the plate picks. */
+export const LADDOO_FRONT_INDEX = LADDOO_SPOTS.length - 1;
+
 /**
  * Where the ball sits inside `laddoo.webp` (and, within a few px,
  * `laddoo-bitten.webp`): a 640x602 canvas with the ball's centre at

@@ -1,3 +1,5 @@
+import { LADDOO_FRONT_INDEX } from "./laddoos";
+
 /** The song stops at 1:07. (Its id lives in `lib/diwali/video.ts`, out of the hero bundle.) */
 export const VIDEO_END_SECONDS = 67;
 
@@ -36,6 +38,8 @@ export function reduce(state: ShowState, event: ShowEvent): ShowState {
     case "ESCAPE":
       if (phase === "centre" || phase === "corner") return { ...state, phase: "finale" };
       if (phase === "finale") return { ...state, phase: "plate" };
+      // Keyboard users always have a way out: Esc takes the front laddoo.
+      if (phase === "plate") return { phase: "picked", picked: LADDOO_FRONT_INDEX };
       return state;
     case "OPEN_PLATE":
       return phase === "finale" ? { ...state, phase: "plate" } : state;

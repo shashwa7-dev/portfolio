@@ -934,6 +934,18 @@
   }
 }
 
+/* Until the plate photo has loaded, or if it fails, every laddoo wears its
+   ring, so the targets are always there to see and press. */
+.plate[data-rings] .laddooBtn:not(:disabled) {
+  box-shadow:
+    0 0 0 3px #f6c453,
+    0 0 24px rgba(255, 190, 80, 0.6);
+}
+
+.plate[data-failed] .plateImg {
+  visibility: hidden;
+}
+
 /* The picked laddoo: a cut-out laid exactly over its spot, floated up. */
 .cutout {
   position: absolute;
