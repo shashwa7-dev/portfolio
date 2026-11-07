@@ -11,31 +11,8 @@ export type DiwaliSound = {
   boom(size: number, pan: number, crackle: boolean): void;
   pop(): void;
   crunch(): void;
-  /**
-   * The spinning chakri: a jet hiss whooshing once a turn, a low roar and
-   * crackles, on until spinStop(). Fades in to level 1.
-   */
-  spinStart(): void;
-  /** Ramps the chakri voice to `level` (1 is full) over `seconds`. */
-  spinLevel(level: number, seconds: number): void;
-  /** Fades the chakri voice out over `seconds`, then stops it. */
-  spinStop(seconds: number): void;
   close(): void;
 };
-
-/** The running chakri voice: its own gain into master, its looping sources and its crackle timer. */
-type SpinVoice = {
-  gain: GainNode;
-  sources: AudioScheduledSourceNode[];
-  timer: number;
-};
-
-/** The chakri's turn rate, in turns a second: the hiss whooshes once a turn. */
-const SPIN_HZ = 4.5;
-/** Crackles a second while the chakri spins. */
-const SPIN_CRACKLES = 18;
-/** How far ahead the crackles are scheduled, in seconds (one batch per timer tick). */
-const SPIN_BATCH = 0.25;
 
 type AudioCtor = typeof AudioContext;
 
@@ -45,7 +22,6 @@ export function createDiwaliSound(): DiwaliSound {
   let master: GainNode | null = null;
   let noiseBuf: AudioBuffer | null = null;
   let closed = false;
-  let spin: SpinVoice | null = null;
 
   const ok = () => !closed && ac !== null && master !== null && noiseBuf !== null && ac.state !== "closed";
 
@@ -79,7 +55,6 @@ export function createDiwaliSound(): DiwaliSound {
     attack: number,
     pan: number,
     rate?: number,
-    dest?: AudioNode,
   ): { f: BiquadFilterNode; g: GainNode } {
     const c = ac!;
     const src = c.createBufferSource();
@@ -98,61 +73,13 @@ export function createDiwaliSound(): DiwaliSound {
     src.connect(f);
     f.connect(g);
     g.connect(p);
-    p.connect(dest ?? master!);
+    p.connect(master!);
     src.start(t, Math.random() * Math.max(0, 2.9 - dur));
     src.stop(t + dur + 0.05);
     return { f, g };
   }
 
-  /** A looping noise source through one filter and a gain, into `dest`. */
-  function loop(
-    filterType: BiquadFilterType,
-    freq: number,
-    q: number,
-    level: number,
-    dest: AudioNode,
-  ): { src: AudioBufferSourceNode; f: BiquadFilterNode; g: GainNode } {
-    const c = ac!;
-    const src = c.createBufferSource();
-    src.buffer = noiseBuf;
-    src.loop = true;
-    const f = c.createBiquadFilter();
-    f.type = filterType;
-    f.frequency.value = freq;
-    f.Q.value = q;
-    const g = c.createGain();
-    g.gain.value = level;
-    src.connect(f);
-    f.connect(g);
-    g.connect(dest);
-    return { src, f, g };
-  }
 
-  /** Stops the chakri voice's sources at `at` (now when omitted) and its crackle timer at once. */
-  function endSpin(at?: number) {
-    const v = spin;
-    if (!v) return;
-    spin = null;
-    window.clearInterval(v.timer);
-    for (const s of v.sources) {
-      try {
-        if (at === undefined) s.stop();
-        else s.stop(at);
-      } catch {
-        // Already stopped, or the context has gone.
-      }
-    }
-  }
-
-  /** Ramps a gain from wherever it is now to `level` over `seconds`. */
-  function rampGain(g: GainNode, level: number, seconds: number) {
-    const now = ac!.currentTime;
-    const param = g.gain;
-    const held = param.value;
-    param.cancelScheduledValues(now);
-    param.setValueAtTime(held, now);
-    param.linearRampToValueAtTime(level, now + Math.max(0.01, seconds));
-  }
 
   return {
     unlock,
@@ -316,75 +243,9 @@ export function createDiwaliSound(): DiwaliSound {
         }
       }
     },
-    spinStart() {
-      if (!ok() || spin) return;
-      const c = ac!;
-      const t = c.currentTime;
-      const gain = c.createGain();
-      gain.gain.setValueAtTime(0, t);
-      gain.gain.linearRampToValueAtTime(1, t + 0.4);
-      gain.connect(master!);
-
-      // The jet hiss, its level and pitch wobbled once a turn by one LFO.
-      const hiss = loop("bandpass", 3200, 0.9, 0.22, gain);
-      const lfo = c.createOscillator();
-      lfo.type = "sine";
-      lfo.frequency.value = SPIN_HZ;
-      const depth = c.createGain();
-      depth.gain.value = 0.22 * 0.35;
-      lfo.connect(depth);
-      depth.connect(hiss.g.gain);
-      const sweep = c.createGain();
-      sweep.gain.value = 500;
-      lfo.connect(sweep);
-      sweep.connect(hiss.f.frequency);
-
-      // The low roar under it.
-      const roar = loop("lowpass", 600, 0.7, 0.06, gain);
-
-      const sources: AudioScheduledSourceNode[] = [hiss.src, roar.src, lfo];
-      for (const s of sources) s.start(t);
-
-      // Crackles, scheduled a batch ahead each tick while the voice is on.
-      let until = t;
-      const batch = () => {
-        if (!ok()) return;
-        const now = ac!.currentTime;
-        if (until < now) until = now;
-        const n = Math.round(SPIN_CRACKLES * SPIN_BATCH);
-        for (let i = 0; i < n; i++) {
-          noise(
-            until + Math.random() * SPIN_BATCH,
-            0.01 + Math.random() * 0.02,
-            "highpass",
-            2500 + Math.random() * 4000,
-            1,
-            0.05 + Math.random() * 0.1,
-            0.002,
-            (Math.random() - 0.5) * 0.6,
-            undefined,
-            gain,
-          );
-        }
-        until += SPIN_BATCH;
-      };
-      batch();
-      const timer = window.setInterval(batch, SPIN_BATCH * 1000);
-      spin = { gain, sources, timer };
-    },
-    spinLevel(level, seconds) {
-      if (!ok() || !spin) return;
-      rampGain(spin.gain, level, seconds);
-    },
-    spinStop(seconds) {
-      if (!ok() || !spin) return;
-      rampGain(spin.gain, 0, seconds);
-      endSpin(ac!.currentTime + Math.max(0.01, seconds) + 0.05);
-    },
     close() {
       if (closed) return;
       closed = true;
-      endSpin();
       const c = ac;
       ac = null;
       master = null;

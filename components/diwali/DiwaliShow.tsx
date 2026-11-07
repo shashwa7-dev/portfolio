@@ -43,10 +43,6 @@ export type DiwaliShowProps = {
 const POLL_MS = 250;
 /** The song's fade-in, in this many volume steps. */
 const SONG_FADE_STEPS = 20;
-/** The chakri's spin sound under the song, as a share of its full level. */
-const SPIN_UNDER_SONG = 0.33;
-/** The chakri's spin sound once it has moved to the corner, as a share of its level before. */
-const SPIN_IN_CORNER = 0.7;
 
 const IDOLS = "/images/diwali/lakshmi-ganesh.webp";
 const LADDOO_ICON = "/images/diwali/laddoo-icon.webp";
@@ -182,11 +178,6 @@ export default function DiwaliShow({
       }
       case "corner":
         applyBoxRef.current("corner", true);
-        // Further away: the spin sound drops as it moves.
-        latest.current.sound.spinLevel(
-          (songOn.current ? SPIN_UNDER_SONG : 1) * SPIN_IN_CORNER,
-          duration.diwaliCorner,
-        );
         break;
       case "finale":
         // The video pauses and fades (the song effect's cleanup) and the
@@ -265,8 +256,7 @@ export default function DiwaliShow({
             }
             setPlaying(true);
             if (songOn.current) return;
-            // The first time only: the song fades up from silence while the
-            // chakri ducks under it.
+            // The first time only: the song fades up from silence.
             songOn.current = true;
             let step = 0;
             window.clearInterval(songFade.current);
@@ -275,11 +265,6 @@ export default function DiwaliShow({
               player.current?.setVolume((100 * step) / SONG_FADE_STEPS);
               if (step >= SONG_FADE_STEPS) window.clearInterval(songFade.current);
             }, (duration.diwaliSongFadeIn * 1000) / SONG_FADE_STEPS);
-            latest.current.sound.spinLevel(
-              SPIN_UNDER_SONG *
-                (phaseRef.current === "corner" ? SPIN_IN_CORNER : 1),
-              duration.diwaliSongFadeIn,
-            );
           },
           onEnded: reachedEnd,
           onError() {
@@ -298,17 +283,6 @@ export default function DiwaliShow({
       setPlaying(false);
     };
   }, [wantVideo]);
-
-  // ---- The chakri's spin sound, while it spins (never under reduced motion,
-  // where it does not); it fades out with the blackout when the show moves on
-  // or unmounts. ----
-  const spinVoice = !reduced && wantVideo;
-  useEffect(() => {
-    if (!spinVoice) return;
-    const voice = latest.current.sound;
-    voice.spinStart();
-    return () => voice.spinStop(duration.diwaliBlackout);
-  }, [spinVoice]);
 
   // ---- Keys: capture phase, so the site's shortcuts never see them. ----
   useEffect(() => {
