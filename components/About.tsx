@@ -3,6 +3,8 @@ import { Check, ArrowRight, Coffee } from "@phosphor-icons/react/ssr";
 import Container from "@/components/layout/Container";
 import AvatarHover from "@/components/AvatarHover";
 import SpinAvatar from "@/components/common/SpinAvatar";
+import DiwaliAvatar from "@/components/diwali/DiwaliAvatarLazy";
+import { DIWALI_ENABLED } from "@/lib/diwali";
 import LocalTime from "@/components/LocalTime";
 import Label from "@/components/layout/Label";
 import {
@@ -70,6 +72,10 @@ export default function About() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   {/* Click spins the photo like a fidget spinner. See SpinAvatar. */}
+                  {DIWALI_ENABLED ? (
+                    /* Diwali: the photo wears a chakri's fuse. See DiwaliAvatar. */
+                    <DiwaliAvatar className="group relative mx-1.5 inline-block cursor-pointer touch-manipulation select-none align-[-0.2em] -rotate-4 rounded-full transition-transform duration-fast ease-out hover:rotate-0" />
+                  ) : (
                   <SpinAvatar
                     photo={<AvatarHover />}
                     className="group relative mx-1.5 inline-block cursor-pointer touch-manipulation select-none align-[-0.2em] -rotate-4 rounded-full transition-transform duration-fast ease-out hover:rotate-0"
@@ -90,12 +96,16 @@ export default function About() {
                       className="absolute -bottom-[0.02em] -right-[0.04em] h-[0.28em] w-[0.28em] rounded-full bg-amber-700 ring-2 ring-background dark:bg-amber-300"
                     />
                   </SpinAvatar>
+                  )}
                 </TooltipTrigger>
                 {/* The spin hint lives here: F only exists on a keyboard, and
                     keyboard users are the ones who see a hover tooltip. */}
                 <TooltipContent className="flex items-center gap-2">
                   Open to work
                   <span aria-hidden className="opacity-40">·</span>
+                  {DIWALI_ENABLED ? (
+                    <span className="opacity-70">Click to light the chakri</span>
+                  ) : (
                   <span className="inline-flex items-center gap-1 opacity-70">
                     Press
                     <kbd className="grid h-4 min-w-4 place-items-center rounded border border-current/30 px-1 font-mono text-2xs">
@@ -103,6 +113,7 @@ export default function About() {
                     </kbd>
                     to spin
                   </span>
+                  )}
                 </TooltipContent>
               </Tooltip>{" "}
               <span className="whitespace-nowrap font-semibold text-foreground">

@@ -1,0 +1,219 @@
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi:ital@0;1&family=Rozha+One&display=swap">
+<h2>शुभ दीपावली finale: screens v5</h2>
+<p class="subtitle">The प्रसाद लीजिए button is now a solid gold button with a laddoo, a shine and a pulse, so it reads as the thing to press. "Replay" re-runs the entrance.</p>
+
+<style>
+  .screens { display:flex; flex-direction:column; gap:28px; }
+  .row { display:flex; gap:28px; flex-wrap:wrap; align-items:flex-start; }
+  .dev { display:flex; flex-direction:column; gap:8px; }
+  .dev-head { display:flex; justify-content:space-between; align-items:center; font:12px ui-monospace,monospace; color:var(--text-secondary,#888); }
+  .dev-head button { font:12px ui-monospace,monospace; padding:3px 10px; border-radius:999px; border:1px solid currentColor; background:none; color:inherit; cursor:pointer; }
+  .holder { position:relative; overflow:hidden; border-radius:14px; box-shadow:0 0 0 1px rgba(127,127,127,.3), 0 10px 30px rgba(0,0,0,.25); background:#000; }
+  .holder.phone { border-radius:28px; box-shadow:0 0 0 6px #222, 0 0 0 7px #444, 0 14px 30px rgba(0,0,0,.35); }
+  .scaler { position:absolute; left:0; top:0; transform-origin:0 0; }
+
+  /* ===== the finale, sized by its own box (container query units), not the window ===== */
+  .fin { position:relative; overflow:hidden; container-type:size; background:#0b0203; color:#f6e3b4; text-align:center; }
+  .fin canvas.fw { position:absolute; inset:0; width:100%; height:100%; }
+  .fin .wash { position:absolute; inset:0; background: radial-gradient(ellipse 75% 60% at 50% 38%, rgba(128,20,24,.6), rgba(64,6,12,.78) 55%, rgba(18,2,4,.92) 100%); }
+  .fin .petals { position:absolute; inset:0; pointer-events:none; }
+  .fin .petal { position:absolute; top:-3%; border-radius:60% 40% 60% 40%; opacity:0; }
+  .fin.on .petal { animation: petal-fall var(--d) linear var(--delay) infinite; }
+  @keyframes petal-fall { 0% { opacity:0; transform:translate(0,0) rotate(0); } 8% { opacity:.9; } 100% { opacity:.85; transform:translate(var(--dx), 110cqh) rotate(var(--r)); } }
+
+  /* gold border, one clean rule plus a thin inner line */
+  .fin .frame { position:absolute; inset:clamp(8px,1.6cqmin,16px); border:1.5px solid #c9932e; border-radius:4px; pointer-events:none;
+                box-shadow: inset 0 0 0 4px transparent, inset 0 0 0 5px rgba(201,147,46,.4); }
+  .fin .corner { position:absolute; width:clamp(40px,9cqmin,84px); height:auto; }
+  .fin .corner.tl { left:-2px; top:-2px; } .fin .corner.tr { right:-2px; top:-2px; transform:scaleX(-1); }
+  .fin .corner.bl { left:-2px; bottom:-2px; transform:scaleY(-1); } .fin .corner.br { right:-2px; bottom:-2px; transform:scale(-1,-1); }
+
+  .fin .toran { position:absolute; left:0; right:0; top:0; height:clamp(70px,15cqmin,140px); pointer-events:none; }
+  .fin .toran svg { width:100%; height:100%; overflow:visible; display:block; }
+  .fin .sway { transform-origin:50% 0; animation: sway 4s ease-in-out infinite; }
+  @keyframes sway { 0%,100% { transform:rotate(-1.2deg); } 50% { transform:rotate(1.2deg); } }
+
+  /* content column: sits between the toran and the rangoli */
+  .fin .col { position:absolute; left:0; right:0; top:clamp(64px,12cqh,110px); bottom:clamp(110px,19cqh,170px);
+              display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0 clamp(20px,6cqw,48px); }
+  .fin .shrine { position:relative; display:flex; justify-content:center; align-items:flex-end; flex:0 1 auto; min-height:0; }
+  .fin .arch { position:absolute; left:-6%; bottom:-2%; width:112%; height:auto; aspect-ratio:1.45; overflow:visible; }
+  .fin .idols { position:relative; display:block; width:min(74cqw, 30cqh * 1.5, 500px); height:auto; }
+  .fin .shrine { margin-top:clamp(18px,4cqh,40px); }
+  .fin .hi { margin-top:clamp(6px,1.6cqh,14px); font:400 clamp(40px, min(11cqw, 9cqh), 92px)/1.12 "Rozha One", "Tiro Devanagari Hindi", serif;
+             background: linear-gradient(180deg, #fff1c1 0%, #f3c454 45%, #c98a22 72%, #f6d27a 100%); -webkit-background-clip:text; background-clip:text; color:transparent;
+             filter: drop-shadow(0 2px 0 #5a1208) drop-shadow(0 0 18px rgba(255,170,50,.4)); }
+  .fin .divider { width:min(240px,56cqw); height:18px; margin:clamp(2px,.8cqh,8px) auto clamp(6px,1.4cqh,12px); }
+  .fin .bless { max-width:34em; margin:0; font:400 clamp(15px, min(4.1cqw, 2.3cqh), 19px)/1.7 "Tiro Devanagari Hindi", serif; color:#f6e3b4; text-wrap:balance; }
+  .fin .en { display:block; margin-top:2px; font:italic 400 clamp(12.5px, min(3.4cqw, 1.8cqh), 15px)/1.6 "Tiro Devanagari Hindi", Georgia, serif; color:#d6b574; }
+  .fin .sig { display:block; margin-top:clamp(4px,1cqh,8px); font:400 clamp(15px, min(4.2cqw,2.2cqh), 18px) "Rozha One", serif; color:#e9b955; }
+  /* the call to action: a solid gold button, the brightest flat thing on screen */
+  .fin .prasad-wrap { margin-top:clamp(14px,2.6cqh,24px); display:flex; flex-direction:column; align-items:center; gap:8px; }
+  .fin .prasad { position:relative; overflow:hidden; display:inline-flex; align-items:center; gap:12px; min-height:52px;
+                 padding:10px 26px 10px 12px; border:0; border-radius:999px; cursor:pointer;
+                 font:400 clamp(19px, min(5.2cqw,2.8cqh), 24px)/1 "Rozha One", "Tiro Devanagari Hindi", serif; color:#4a0d0d;
+                 background: linear-gradient(180deg, #ffe7a3 0%, #f6c453 45%, #d99a2b 100%);
+                 box-shadow: 0 0 0 2px #7a1a12, 0 0 0 4px #e9b955, 0 10px 28px rgba(0,0,0,.55), 0 0 40px rgba(255,180,60,.35);
+                 transition: transform .15s ease, filter .15s ease; }
+  .fin .prasad:hover { transform:translateY(-2px); filter:brightness(1.06); }
+  .fin .prasad:active { transform:scale(.97); }
+  .fin .prasad:focus-visible { outline:3px solid #fff; outline-offset:5px; }
+  .fin .prasad .ld { width:34px; height:34px; border-radius:50%; flex:none;
+    background: radial-gradient(circle at 35% 30%, rgba(255,240,190,.8) 0 9%, transparent 24%),
+                radial-gradient(circle, rgba(150,70,0,.35) 18%, transparent 22%) 0 0/5px 5px,
+                radial-gradient(circle at 40% 35%, #ffbf3f, #f39a1b 50%, #b85e0a 100%);
+    box-shadow: inset -3px -4px 6px rgba(90,40,0,.45), 0 2px 4px rgba(0,0,0,.35); }
+  .fin .prasad .arr { font:700 .8em system-ui, sans-serif; margin-left:2px; transition: transform .2s ease; }
+  .fin .prasad:hover .arr { transform:translateX(3px); }
+  /* a shine that sweeps across every few seconds */
+  .fin .prasad::after { content:''; position:absolute; top:0; bottom:0; width:40%; left:-60%;
+                        background: linear-gradient(100deg, transparent, rgba(255,255,255,.65), transparent); transform:skewX(-20deg); }
+  .fin.on .prasad::after { animation: shine 3.2s ease-in-out 3.2s infinite; }
+  @keyframes shine { 0% { left:-60%; } 35%, 100% { left:130%; } }
+  /* soft ring that pulses outward */
+  .fin.on .prasad { animation: rise .9s ease-out forwards, ring 2.4s ease-out 3.4s infinite; animation-delay: var(--t), 3.4s; }
+  @keyframes ring { 0% { box-shadow: 0 0 0 2px #7a1a12, 0 0 0 4px #e9b955, 0 10px 28px rgba(0,0,0,.55), 0 0 0 4px rgba(255,200,90,.55); }
+                    100% { box-shadow: 0 0 0 2px #7a1a12, 0 0 0 4px #e9b955, 0 10px 28px rgba(0,0,0,.55), 0 0 0 22px rgba(255,200,90,0); } }
+  .fin .prasad-hint { font:italic 400 clamp(12px, min(3.2cqw,1.7cqh), 14px)/1.4 "Tiro Devanagari Hindi", Georgia, serif; color:#cfae6c; }
+  .fin .prasad-hint .tap { display:none; }
+  @container (max-width: 600px) { .fin .prasad-hint .click { display:none; } .fin .prasad-hint .tap { display:inline; } }
+
+  .fin .rangoli { position:absolute; left:50%; bottom:calc(-1 * min(96cqw, 600px) * .07); width:min(96cqw,600px); aspect-ratio:1; transform:translateX(-50%) scaleY(.34); transform-origin:50% 100%; }
+  .fin .rangoli svg { width:100%; height:100%; display:block; opacity:.72; }
+  .fin .diyas { position:absolute; left:0; right:0; bottom:clamp(18px,4cqh,36px); display:flex; justify-content:center; gap:clamp(8px,3.4cqw,44px); }
+  .fin .diya { width:clamp(44px, 12cqw, 84px); filter: drop-shadow(0 0 10px rgba(255,170,60,.45)); }
+  .fin .diya svg { width:100%; display:block; overflow:visible; }
+  .fin .flame { transform-box:fill-box; transform-origin:50% 100%; animation: flicker 1.1s ease-in-out infinite; animation-delay: calc(var(--j) * -.3s); }
+  @keyframes flicker { 0%,100% { transform:scale(1,1) skewX(0); } 25% { transform:scale(.94,1.08) skewX(3deg); } 50% { transform:scale(1.04,.94) skewX(-2deg); } 75% { transform:scale(.97,1.05) skewX(2deg); } }
+
+  /* entrance sequence */
+  .fin .seq { opacity:0; transform:translateY(8px); }
+  .fin.on .seq { animation: rise .9s ease-out forwards; animation-delay: var(--t); }
+  @keyframes rise { to { opacity:1; transform:none; } }
+  .fin.on .idols { animation: rise 1.4s ease-out forwards, glow 4s ease-in-out 2s infinite; animation-delay: var(--t), 2s; }
+  @keyframes glow { 0%,100% { filter: drop-shadow(0 0 14px rgba(255,180,70,.28)); } 50% { filter: drop-shadow(0 0 26px rgba(255,180,70,.5)); } }
+</style>
+
+<div class="screens">
+  <div class="dev" data-w="1280" data-h="800"><div class="dev-head"><span>Desktop · 1280×800</span><button>Replay</button></div><div class="holder"></div></div>
+  <div class="row">
+    <div class="dev" data-w="390" data-h="844" data-phone><div class="dev-head"><span>iPhone · 390×844</span><button>Replay</button></div><div class="holder phone"></div></div>
+    <div class="dev" data-w="360" data-h="740" data-phone><div class="dev-head"><span>Small Android · 360×740</span><button>Replay</button></div><div class="holder phone"></div></div>
+    <div class="dev" data-w="768" data-h="1024"><div class="dev-head"><span>Tablet · 768×1024</span><button>Replay</button></div><div class="holder"></div></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const GOLD='#d9a53a';
+  const CORNER=`<path d="M4 4 H70 M4 4 V70" stroke="${GOLD}" stroke-width="2.5" fill="none"/>
+    <path d="M22 22 C 46 16, 58 34, 46 46 C 38 54, 26 48, 30 38 C 33 31, 42 33, 40 39" stroke="${GOLD}" stroke-width="2" fill="rgba(217,165,58,.12)"/>
+    <circle cx="38" cy="38" r="2.6" fill="#c0392b"/>
+    <path d="M64 14 q6 -8 12 0 q-6 6 -12 0z M14 64 q-8 6 0 12 q6 -6 0 -12z" fill="${GOLD}"/>`;
+  const DIVIDER=`<path d="M10 9 H96 M144 9 H230" stroke="${GOLD}" stroke-width="1.2"/>
+    <circle cx="6" cy="9" r="2.2" fill="${GOLD}"/><circle cx="234" cy="9" r="2.2" fill="${GOLD}"/>
+    <path d="M120 1 C 113 6, 113 13, 120 17 C 127 13, 127 6, 120 1Z" fill="#e9b955"/>
+    <path d="M120 17 C 111 15, 106 10, 104 6 C 111 7, 116 11, 120 17Z M120 17 C 129 15, 134 10, 136 6 C 129 7, 124 11, 120 17Z" fill="#c98a22"/>`;
+  function arch(){
+    const cx=145; let sc='';
+    for(let i=0;i<=22;i++){ const a=Math.PI*(i/22), x=cx-128*Math.cos(a), y=140-118*Math.sin(a); sc+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="5" fill="none" stroke="${GOLD}" stroke-width="1.4"/>`; }
+    return `<defs><radialGradient id="archFill" cx="50%" cy="70%" r="60%"><stop offset="0" stop-color="rgba(255,190,90,.26)"/><stop offset="1" stop-color="rgba(120,20,20,0)"/></radialGradient></defs>
+      <path d="M12 200 V140 A133 133 0 0 1 278 140 V200" fill="url(#archFill)" stroke="${GOLD}" stroke-width="2.4"/>
+      <path d="M24 200 V140 A121 121 0 0 1 266 140 V200" fill="none" stroke="${GOLD}" stroke-width="1" opacity=".55"/>${sc}
+      <path d="M${cx-10} 10 q10 -16 20 0 q-10 10 -20 0z" fill="${GOLD}"/><circle cx="${cx}" cy="4" r="3" fill="#c0392b"/>`;
+  }
+  function rangoli(){
+    const C=200, out=[]; const ring=(n,r,len,wid,col,rot=0)=>{ for(let i=0;i<n;i++) out.push(`<ellipse cx="${C}" cy="${C-r}" rx="${wid}" ry="${len}" fill="${col}" transform="rotate(${i/n*360+rot} ${C} ${C})"/>`); };
+    // earthy, gulal-on-floor tones: deep enough that the diyas' flames are the brightest thing down here
+    out.push(`<circle cx="${C}" cy="${C}" r="196" fill="#4a0d14"/><circle cx="${C}" cy="${C}" r="190" fill="none" stroke="#b8892f" stroke-width="2.5" stroke-dasharray="2 8" stroke-linecap="round"/>`);
+    ring(32,168,20,9,'#a8461f'); ring(32,168,12,5,'#b8892f',5.6);
+    out.push(`<circle cx="${C}" cy="${C}" r="140" fill="#1f3d2c"/>`); ring(24,118,24,11,'#8c2f4a'); ring(24,118,14,6,'#c9b48a',7.5);
+    out.push(`<circle cx="${C}" cy="${C}" r="92" fill="#223358"/>`); ring(16,66,24,12,'#b0662a'); ring(16,66,14,6,'#d8c9a3',11.25);
+    out.push(`<circle cx="${C}" cy="${C}" r="40" fill="#9a5a1c"/><circle cx="${C}" cy="${C}" r="26" fill="#7c2240"/><circle cx="${C}" cy="${C}" r="12" fill="#c9a13c"/>`);
+    return `<svg viewBox="0 0 400 400">${out.join('')}</svg>`;
+  }
+  const DIYA=`<svg viewBox="0 0 100 90">
+      <defs><radialGradient id="dglow"><stop offset="0" stop-color="rgba(255,200,90,.75)"/><stop offset=".45" stop-color="rgba(255,160,50,.25)"/><stop offset="1" stop-color="rgba(255,140,40,0)"/></radialGradient>
+        <linearGradient id="clay" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8853f"/><stop offset=".5" stop-color="#c25a26"/><stop offset="1" stop-color="#7a3214"/></linearGradient>
+        <radialGradient id="fl" cx="50%" cy="75%" r="70%"><stop offset="0" stop-color="#fff6c8"/><stop offset=".45" stop-color="#ffc23a"/><stop offset="1" stop-color="#ff6a00"/></radialGradient></defs>
+      <ellipse cx="50" cy="74" rx="46" ry="10" fill="rgba(10,2,2,.55)"/>
+      <ellipse cx="54" cy="34" rx="50" ry="42" fill="url(#dglow)"/>
+      <path class="flame" d="M58 44 C 52 34, 56 22, 62 12 C 66 24, 72 34, 64 44 Z" fill="url(#fl)"/>
+      <path d="M8 52 Q 50 92 92 52 Q 80 50 68 47 L 58 46 Q 30 48 8 52 Z" fill="url(#clay)"/>
+      <path d="M8 52 Q 30 46 60 46 Q 80 48 92 52 Q 50 58 8 52 Z" fill="#5a240c"/>
+      <path d="M8 52 Q 30 46 60 46 Q 80 48 92 52" fill="none" stroke="#ffcf7a" stroke-width="1.6" opacity=".9"/>
+      <path d="M14 60 Q 50 82 86 60" fill="none" stroke="#f2c14e" stroke-width="2" stroke-dasharray="1 5" stroke-linecap="round"/></svg>`;
+  function toran(W){
+    const swags=Math.max(2, Math.round(W/260)), sw=W/swags, sag=W<600?34:46, R=W<600?6:7, out=[];
+    out.push('<defs><radialGradient id="mg1" cx="40%" cy="35%"><stop offset="0" stop-color="#ffd25a"/><stop offset="1" stop-color="#f08a00"/></radialGradient><radialGradient id="mg2" cx="40%" cy="35%"><stop offset="0" stop-color="#ffb347"/><stop offset="1" stop-color="#e05a00"/></radialGradient></defs>');
+    const leaves=Math.round(W/34);
+    for(let i=0;i<leaves;i++){ const x=(i+0.5)*W/leaves, L=(W<600?24:30)+(i%3)*6, rot=(i%2?6:-6);
+      out.push(`<path d="M${x} 6 C ${x-9} ${6+L*0.35}, ${x-7} ${6+L*0.8}, ${x} ${6+L} C ${x+7} ${6+L*0.8}, ${x+9} ${6+L*0.35}, ${x} 6 Z" fill="${i%2?'#2f7d32':'#3d9a40'}" transform="rotate(${rot} ${x} 6)"/>`); }
+    for(let k=0;k<swags;k++){ const x0=k*sw, n=Math.round(sw/(R*1.7));
+      for(let i=0;i<=n;i++){ const u=i/n, x=x0+u*sw, y=10+sag*Math.sin(Math.PI*u);
+        out.push(`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${R}" fill="url(#mg${(i+k)%3?1:2})"/>`); }
+      if(k>0){ for(let j=0;j<4;j++) out.push(`<circle cx="${x0}" cy="${16+j*11}" r="${R-1}" fill="url(#mg${j%2?1:2})"/>`);
+        out.push(`<path d="M${x0-6} 74 Q ${x0} 60 ${x0+6} 74 Z" fill="#d9a520"/>`); } }
+    return `<svg viewBox="0 0 ${W} 140" preserveAspectRatio="xMidYMin meet"><g class="sway"><g transform="translate(0 -18)">${out.join('')}</g></g></svg>`;
+  }
+
+  function finale(W,H){
+    const phone=W<600, nDiyas=phone?5:7;
+    const petals=Array.from({length:phone?16:28},(_,i)=>{ const sc=0.7+Math.random()*0.8, cols=['#f59f00','#fd7e14','#ffd43b','#e8590c','#c2255c'];
+      return `<span class="petal" style="left:${Math.random()*100}%;width:${10*sc}px;height:${7*sc}px;background:${cols[i%5]};--d:${7+Math.random()*7}s;--delay:${-Math.random()*10}s;--dx:${(Math.random()-0.5)*160}px;--r:${Math.random()*720-360}deg"></span>`; }).join('');
+    return `<div class="fin on" style="width:${W}px;height:${H}px">
+      <canvas class="fw"></canvas><div class="wash"></div>
+      <div class="petals">${petals}</div>
+      <div class="frame">${['tl','tr','bl','br'].map(c=>`<svg class="corner ${c}" viewBox="0 0 100 100">${CORNER}</svg>`).join('')}</div>
+      <div class="rangoli">${rangoli()}</div>
+      <div class="diyas">${Array.from({length:nDiyas},(_,i)=>`<div class="diya" style="--j:${(i*7)%5}">${DIYA}</div>`).join('')}</div>
+      <div class="col">
+        <div class="shrine"><img class="idols seq" style="--t:.4s" src="/files/lakshmi-ganesh-2.png" alt="Lakshmi and Ganesh"></div>
+        <div class="hi seq" style="--t:1s">शुभ दीपावली</div>
+        <svg class="divider seq" style="--t:1.3s" viewBox="0 0 240 18">${DIVIDER}</svg>
+        <p class="bless seq" style="--t:1.6s">माँ लक्ष्मी और श्री गणेश की कृपा से आपका घर सुख, समृद्धि और प्रकाश से भरा रहे।
+          <span class="en">Wishing you and your family a very happy Diwali.</span>
+          <span class="sig">शाश्वत</span></p>
+        <div class="prasad-wrap">
+          <button type="button" class="prasad seq" style="--t:2.4s"><span class="ld" aria-hidden="true"></span>प्रसाद लीजिए<span class="arr" aria-hidden="true">→</span></button>
+          <span class="prasad-hint seq" style="--t:2.8s"><span class="click">Take a laddoo before you go</span><span class="tap">Take a laddoo before you go</span></span>
+        </div>
+      </div>
+      <div class="toran">${toran(W)}</div>
+    </div>`;
+  }
+
+  // small fireworks loop per screen, so each preview looks alive
+  function fireworks(cv){
+    const ctx=cv.getContext('2d'); let rockets=[], embers=[], next=0;
+    const P=[[45,100],[18,100],[330,90],[275,85],[190,90],[0,0]];
+    function size(){ cv.width=cv.clientWidth; cv.height=cv.clientHeight; } size();
+    (function loop(now){
+      const W=cv.width, H=cv.height;
+      ctx.globalCompositeOperation='destination-out'; ctx.fillStyle='rgba(0,0,0,.18)'; ctx.fillRect(0,0,W,H); ctx.globalCompositeOperation='lighter';
+      if(now>next){ const ty=H*(0.1+Math.random()*0.4); rockets.push({x:W*(0.1+Math.random()*0.8),y:H,ty,vy:-(H-ty)/48,col:P[Math.floor(Math.random()*6)]}); next=now+500+Math.random()*800; }
+      rockets=rockets.filter(r=>{ r.y+=r.vy; r.vy*=0.985; ctx.fillStyle='#ffd27a'; ctx.fillRect(r.x-1,r.y-1,2,3);
+        if(r.y<=r.ty){ const t=Math.random(), s=t<0.22?1:t<0.65?.55:.28, n=Math.round(40+150*s), sp=H*0.4*s/30;
+          for(let i=0;i<n;i++){ const a=i/n*Math.PI*2, v=sp*(0.4+Math.random()*0.6); embers.push({x:r.x,y:r.y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:50+60*s,max:50+60*s,col:r.col}); }
+          return false; } return true; });
+      embers=embers.filter(p=>{ const px=p.x,py=p.y; p.x+=p.vx; p.y+=p.vy; p.vx*=0.967; p.vy=p.vy*0.967+0.04; p.life--;
+        const k=p.life/p.max; ctx.strokeStyle=`hsla(${p.col[0]},${p.col[1]}%,${p.col[1]?60+25*k:90}%,${k})`; ctx.lineWidth=1.5;
+        ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(p.x,p.y); ctx.stroke(); return p.life>0; });
+      ctx.globalCompositeOperation='source-over'; requestAnimationFrame(loop);
+    })(0);
+  }
+
+  function mount(dev){
+    const W=+dev.dataset.w, H=+dev.dataset.h, holder=dev.querySelector('.holder');
+    const maxW = dev.dataset.phone ? 300 : (W>1000 ? Math.min(document.querySelector('.screens').clientWidth, 1100) : 420);
+    const s=Math.min(1, maxW/W);
+    holder.style.width=W*s+'px'; holder.style.height=H*s+'px';
+    holder.innerHTML=`<div class="scaler" style="transform:scale(${s})">${finale(W,H)}</div>`;
+    fireworks(holder.querySelector('canvas.fw'));
+  }
+  document.querySelectorAll('.dev').forEach(dev=>{
+    mount(dev);
+    dev.querySelector('button').addEventListener('click',()=>{ const f=dev.querySelector('.fin'); f.classList.remove('on'); void f.offsetWidth; f.classList.add('on'); });
+  });
+})();
+</script>

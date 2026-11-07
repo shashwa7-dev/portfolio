@@ -1,0 +1,102 @@
+/* ---- Hero fuse (DiwaliAvatar, fuse.ts) ----
+   Sized in em, like AvatarHover: the photo is 1.38em (--fuse-d), inside the
+   h1. The rope canvas reaches 0.9 of the photo past each edge (fuse.ts's
+   `pad`), room for the tail, flame, sparks and smoke; fuse.ts reads its size
+   back, so the two must agree. */
+.fuseButton {
+  --fuse-d: 1.38em;
+}
+
+.fusePhoto {
+  position: relative;
+  display: block;
+  width: var(--fuse-d);
+  height: var(--fuse-d);
+  overflow: hidden;
+  border-radius: 9999px;
+  background: #fff;
+}
+
+.fuseImg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1);
+  transition: filter var(--duration-base) var(--ease-out);
+}
+
+.fuseButton[data-phase="lit"] .fuseImg {
+  filter: none;
+}
+
+/* Hover devices only, so a tap never leaves the photo stuck in colour. */
+@media (hover: hover) {
+  .fuseButton:hover .fuseImg {
+    filter: none;
+  }
+}
+
+/* Drawn after the photo, so the rope sits over its edge; the live dot comes
+   after it. The overhang stays inside the headline (text on both sides) and
+   takes no pointer events. */
+.fuseRope {
+  position: absolute;
+  left: calc(var(--fuse-d) * -0.9);
+  top: calc(var(--fuse-d) * -0.9);
+  width: calc(var(--fuse-d) * 2.8);
+  height: calc(var(--fuse-d) * 2.8);
+  pointer-events: none;
+}
+
+/* Once the show is open the photo has flown off: hide it. (The rope canvas
+   stays: it has burnt away, and is drawn again under the dim on the way home.) */
+.fuseButton[data-overlay] .fusePhoto {
+  visibility: hidden;
+}
+
+/* The matchstick: its head (8,8 of the 70x16 drawing) sits on the pointer.
+   --mx / --my are written by DiwaliAvatar on pointer move. */
+.match {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 5;
+  display: none;
+  width: 1.6em;
+  height: 0.366em;
+  pointer-events: none;
+  opacity: 0;
+  transform-origin: 0.183em 0.183em;
+  transform: translate(var(--mx, 0), var(--my, 0)) translate(-0.183em, -0.183em) rotate(-35deg);
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.matchSvg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .fuseButton[data-phase="idle"] {
+    cursor: none;
+  }
+
+  .match {
+    display: block;
+  }
+
+  .fuseButton[data-phase="idle"]:hover .match {
+    opacity: 1;
+  }
+}
+
+/* Reduced motion: no flame, sparks or smoke; the rope fades to ash over the
+   fuse's burn, and is then cleared (DiwaliAvatar). */
+@media (prefers-reduced-motion: reduce) {
+  .fuseButton[data-phase="lit"] .fuseRope {
+    filter: grayscale(1) brightness(0.4);
+    transition: filter var(--duration-diwali-fuse) linear;
+  }
+}

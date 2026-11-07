@@ -478,6 +478,40 @@
   --duration-goggles-glint: 650ms;
   --ease-goggles-on: cubic-bezier(0.3, 1.4, 0.5, 1);
   --ease-goggles-off: cubic-bezier(0.5, 0, 0.75, 0);
+  /* Mirror duration.diwali* in lib/motionVariants.ts (the Diwali scene). */
+  --duration-diwali-fuse: 2000ms;
+  --duration-diwali-show-wait: 4000ms;
+  --duration-diwali-blackout: 800ms;
+  --duration-diwali-flight: 1100ms;
+  --duration-diwali-flip: 900ms;
+  --duration-diwali-centre-hold: 5000ms;
+  --duration-diwali-corner: 1100ms;
+  --duration-diwali-toran-drop: 1400ms;
+  --duration-diwali-rise: 900ms;
+  --duration-diwali-idols: 1400ms;
+  --duration-diwali-plate-rise: 600ms;
+  --duration-diwali-float: 700ms;
+  --duration-diwali-bite-at: 900ms;
+  --duration-diwali-picked: 3000ms;
+  --duration-diwali-return: 1150ms;
+  --duration-diwali-return-hold: 1500ms;
+  --duration-diwali-squash: 180ms;
+  --duration-diwali-sway: 4000ms;
+  --duration-diwali-flicker: 1100ms;
+  --duration-diwali-glow: 4000ms;
+  --duration-diwali-shine: 3200ms;
+  --duration-diwali-pulse: 2400ms;
+  --duration-diwali-at-idols: 400ms;
+  --duration-diwali-at-title: 1000ms;
+  --duration-diwali-at-divider: 1300ms;
+  --duration-diwali-at-blessing: 1600ms;
+  --duration-diwali-at-cta: 2400ms;
+  --duration-diwali-at-hint: 2800ms;
+  --duration-diwali-diya-step: 180ms;
+  --duration-diwali-song-fade-in: 3000ms;
+  /* Scene curves for the Diwali show, not UI curves. Mirror ease.diwaliFlight / ease.diwaliDrop. */
+  --ease-diwali-flight: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-diwali-drop: cubic-bezier(0.3, 1.4, 0.5, 1);
 }
 
 /* The dice on /card. The dice are made of the card's own paper. These

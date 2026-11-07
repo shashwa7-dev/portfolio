@@ -1,0 +1,1178 @@
+@media (prefers-reduced-motion: no-preference) {
+  .sway {
+    transform-origin: 50% 0;
+    animation: sway var(--duration-diwali-sway) ease-in-out infinite;
+  }
+
+  .flame {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: flicker var(--duration-diwali-flicker) ease-in-out infinite;
+    animation-delay: calc(var(--j, 0) * -0.3s);
+  }
+
+  .diyaGlow {
+    animation: glow var(--duration-diwali-glow) ease-in-out infinite;
+  }
+
+  @keyframes sway {
+    0%,
+    100% {
+      transform: rotate(-1.2deg);
+    }
+    50% {
+      transform: rotate(1.2deg);
+    }
+  }
+
+  @keyframes flicker {
+    0%,
+    100% {
+      transform: scale(1, 1) skewX(0);
+    }
+    25% {
+      transform: scale(0.94, 1.08) skewX(3deg);
+    }
+    50% {
+      transform: scale(1.04, 0.94) skewX(-2deg);
+    }
+    75% {
+      transform: scale(0.97, 1.05) skewX(2deg);
+    }
+  }
+
+  @keyframes glow {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.78;
+    }
+  }
+}
+
+/* ---- The show (DiwaliShow) ----
+   A portal on document.body, above the dock (z up to 56) and the command
+   palette (z-60). Layers inside, bottom to top: blackout (with the song),
+   spark canvas, flyer (photo / chakri), finale, toran, Skip, plate.
+   `data-on` is set once the flyer has lifted off and removed on the way home;
+   `data-phase` mirrors the show's phase. Ported from the flow prototype. */
+.show {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  overflow: hidden;
+}
+
+.blackout {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  container-type: size;
+  background: #000;
+  opacity: 0;
+  transition: opacity var(--duration-diwali-blackout) ease;
+}
+
+.show[data-on] .blackout {
+  opacity: 1;
+}
+
+/* On the way home the blackout eases to a dim and holds there, under the
+   landed photo, until DiwaliShow lifts it (removes `data-dim`). */
+.show[data-dim] .blackout {
+  opacity: 0.85;
+}
+
+/* The song fills the screen like a background: 16:9, cropped to cover. */
+.vid {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100cqw, 100cqh * 16 / 9);
+  aspect-ratio: 16 / 9;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--duration-diwali-blackout) ease;
+}
+
+.vid[data-on] {
+  opacity: 1;
+}
+
+.vid iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  pointer-events: none;
+}
+
+.showSparks {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* The flyer: the outer box moves, .spin turns, .flip turns photo to chakri.
+   It is laid out once at the centre box; every move is its transform
+   (translate, scale and tilt) transitioning, never its layout (FLIP). */
+.flyer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 3;
+  pointer-events: none;
+  perspective: 800px;
+  transform-origin: 50% 50%;
+  transition-property: transform, opacity;
+  transition-duration: var(--duration-diwali-flight), var(--duration-diwali-blackout);
+  transition-timing-function: var(--ease-diwali-flight), ease;
+}
+
+.show[data-phase="corner"] .flyer {
+  transition-duration: var(--duration-diwali-corner), var(--duration-diwali-blackout);
+}
+
+.show[data-phase="returning"] .flyer {
+  transition-duration: var(--duration-diwali-return), var(--duration-diwali-blackout);
+}
+
+/* At the finale the chakri fades; it comes back to fly home. */
+.show[data-phase="finale"] .flyer,
+.show[data-phase="plate"] .flyer,
+.show[data-phase="picked"] .flyer {
+  opacity: 0;
+}
+
+.spin {
+  position: absolute;
+  inset: 0;
+}
+
+.flip {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: transform var(--duration-diwali-flip) var(--ease-diwali-flight);
+}
+
+.flyer[data-flipped] .flip {
+  transform: rotateY(180deg);
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 9999px;
+  backface-visibility: hidden;
+}
+
+.facePhoto {
+  background: #fff;
+}
+
+.facePhoto img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* On the way home the photo greys to match the hero photo at rest, so it
+   lands without a snap. */
+.show[data-phase="returning"] .facePhoto img {
+  filter: grayscale(1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .facePhoto img {
+    transition: filter var(--duration-diwali-return) ease;
+  }
+}
+
+.faceChakri {
+  overflow: visible;
+  transform: rotateY(180deg);
+  filter: drop-shadow(0 0 30px rgba(255, 170, 60, 0.45));
+}
+
+.faceChakri svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* The toran drops in with a bounce just after the lights go out, and lifts
+   away on the way home. Its top string is tucked above the screen edge. */
+.toran {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 5;
+  height: 140px;
+  pointer-events: none;
+  transform: translateY(-110%);
+  transition: transform calc(var(--duration-diwali-return) * 0.6) ease-in;
+}
+
+.show[data-on] .toran {
+  transition: none;
+  animation: toranDrop var(--duration-diwali-toran-drop) var(--ease-diwali-drop)
+    calc(var(--duration-diwali-blackout) * 0.75) forwards;
+}
+
+.toran svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* Short windows: lifted, so only the swags and their gold drops hang into
+   the finale's column (see the finale's short rules). */
+@media (max-height: 600px) {
+  .toran {
+    translate: 0 -16px;
+  }
+}
+
+@keyframes toranDrop {
+  to {
+    transform: none;
+  }
+}
+
+/* Skip: bottom left, a solid marigold pill that fades in after a beat and
+   pulses three times. */
+.ctrl {
+  position: absolute;
+  left: max(24px, env(safe-area-inset-left));
+  bottom: max(24px, env(safe-area-inset-bottom));
+  z-index: 6;
+  display: flex;
+  animation: ctrlIn var(--duration-med) var(--ease-out)
+    calc(var(--duration-diwali-blackout) + var(--duration-base)) both;
+}
+
+@keyframes ctrlIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+.skip {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px 12px 20px;
+  border: 0;
+  border-radius: 9999px;
+  background: #ffd25a;
+  color: #1a1206;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.25) inset,
+    0 6px 24px rgba(0, 0, 0, 0.5),
+    0 0 0 0 rgba(255, 210, 90, 0.6);
+  transition:
+    transform var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+  animation: skipPulse var(--duration-diwali-pulse) ease-out
+    calc(var(--duration-diwali-blackout) * 2) 3;
+}
+
+.skip:hover {
+  background: #ffe28a;
+  transform: translateY(-1px);
+}
+
+.skip:active {
+  transform: scale(0.97);
+}
+
+.skip:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+.skip kbd {
+  padding: 3px 5px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.08);
+  color: #5a3d06;
+  font-family: ui-monospace, monospace;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+@keyframes skipPulse {
+  0% {
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.25) inset,
+      0 6px 24px rgba(0, 0, 0, 0.5),
+      0 0 0 0 rgba(255, 210, 90, 0.6);
+  }
+  100% {
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.25) inset,
+      0 6px 24px rgba(0, 0, 0, 0.5),
+      0 0 0 16px rgba(255, 210, 90, 0);
+  }
+}
+
+/* Reduced motion: no spin, jet or pulse (SparkCanvas is not mounted); the
+   flip is a crossfade, moves jump, the toran and Skip fade in place. */
+@media (prefers-reduced-motion: reduce) {
+  .flyer,
+  .show[data-phase="corner"] .flyer,
+  .show[data-phase="returning"] .flyer {
+    transition: opacity var(--duration-diwali-blackout) ease;
+  }
+
+  .flip,
+  .flyer[data-flipped] .flip {
+    transform: none;
+    transition: none;
+  }
+
+  .face {
+    backface-visibility: visible;
+    transition: opacity var(--duration-diwali-flip) ease;
+  }
+
+  .faceChakri {
+    transform: none;
+    opacity: 0;
+  }
+
+  .flyer[data-flipped] .faceChakri {
+    opacity: 1;
+  }
+
+  .flyer[data-flipped] .facePhoto {
+    opacity: 0;
+  }
+
+  .toran {
+    transform: none;
+    opacity: 0;
+    transition: opacity var(--duration-diwali-blackout) ease;
+  }
+
+  .show[data-on] .toran {
+    animation: none;
+    opacity: 1;
+  }
+
+  @keyframes ctrlIn {
+    from {
+      opacity: 0;
+    }
+  }
+
+  .skip {
+    animation: none;
+    transition: background-color var(--duration-fast) var(--ease-out);
+  }
+
+  .skip:hover,
+  .skip:active {
+    transform: none;
+  }
+}
+
+/* ---- The finale (Finale, FireworksCanvas) ----
+   Ported from the finale screens prototype (v5). The finale sizes itself by
+   its own box (container query units), not the window. It sits over the
+   blackout and the fireworks canvas and under the toran. Entrance offsets
+   (--t) are tokens: idols, title, divider, blessing, button, hint. */
+.fireworks {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.finale {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  overflow: hidden;
+  container-type: size;
+  color: #f6e3b4;
+  text-align: center;
+  animation: finFade var(--duration-diwali-blackout) ease backwards;
+  transition: opacity var(--duration-diwali-return) ease;
+}
+
+/* On the way home the card fades as the blackout eases to its dim. */
+.show[data-phase="returning"] .finale {
+  opacity: 0;
+}
+
+.wash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 75% 60% at 50% 38%,
+    rgba(128, 20, 24, 0.6),
+    rgba(64, 6, 12, 0.78) 55%,
+    rgba(18, 2, 4, 0.92) 100%
+  );
+}
+
+.petals {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.petal {
+  position: absolute;
+  top: -3%;
+  border-radius: 60% 40% 60% 40%;
+  opacity: 0;
+  animation: petalFall var(--d) linear var(--delay) infinite;
+}
+
+@keyframes petalFall {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(0);
+  }
+  8% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0.85;
+    transform: translate(var(--dx), 110cqh) rotate(var(--r));
+  }
+}
+
+/* The content column, between the toran and the rangoli. `safe` keeps a
+   column taller than its box from being cropped at the top. */
+.col {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: clamp(64px, 12cqh, 110px);
+  bottom: clamp(110px, 19cqh, 170px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: safe center;
+  padding: 0 clamp(20px, 6cqw, 48px);
+}
+
+.shrine {
+  position: relative;
+  display: flex;
+  flex: 1 1 0;
+  min-height: clamp(72px, 14cqh, 200px);
+  align-items: flex-end;
+  justify-content: center;
+  margin-top: clamp(10px, 2cqh, 24px);
+  transition: opacity var(--duration-med) ease;
+}
+
+.words {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition:
+    opacity var(--duration-med) ease,
+    filter var(--duration-med) ease;
+}
+
+/* The plate is up: the words dim and blur; the idols only dim, never blur. */
+.finale[data-plating] .words {
+  opacity: 0.15;
+  filter: blur(2px);
+}
+
+.finale[data-plating] .shrine {
+  opacity: 0.5;
+}
+
+.idols {
+  --t: var(--duration-diwali-at-idols);
+  position: relative;
+  display: block;
+  width: auto;
+  height: 100%;
+  max-width: min(74cqw, 500px);
+  max-height: 34cqh;
+  object-fit: contain;
+  filter: drop-shadow(0 0 14px rgba(255, 180, 70, 0.28));
+}
+
+.hi {
+  --t: var(--duration-diwali-at-title);
+  margin: clamp(14px, 2.6cqh, 28px) 0 0;
+  font-family: var(--font-diwali-display), var(--font-diwali-text), serif;
+  font-size: clamp(40px, min(11cqw, 9cqh), 92px);
+  font-weight: 400;
+  line-height: 1.12;
+  background: linear-gradient(180deg, #fff1c1 0%, #f3c454 45%, #c98a22 72%, #f6d27a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 0 #5a1208) drop-shadow(0 0 18px rgba(255, 170, 50, 0.4));
+}
+
+.divider {
+  --t: var(--duration-diwali-at-divider);
+  display: block;
+  width: min(240px, 56cqw);
+  height: 18px;
+  margin: clamp(6px, 1.2cqh, 12px) auto 0;
+}
+
+.bless {
+  --t: var(--duration-diwali-at-blessing);
+  max-width: 34em;
+  margin: clamp(10px, 1.8cqh, 18px) 0 0;
+  font-family: var(--font-diwali-text), serif;
+  font-size: clamp(15px, min(4.1cqw, 2.3cqh), 19px);
+  font-weight: 400;
+  line-height: 1.8;
+  color: #f6e3b4;
+  text-wrap: balance;
+}
+
+.en {
+  display: block;
+  margin-top: clamp(6px, 1cqh, 10px);
+  font-family: var(--font-diwali-text), Georgia, serif;
+  font-size: clamp(12.5px, min(3.4cqw, 1.8cqh), 15px);
+  font-style: italic;
+  line-height: 1.6;
+  color: #d6b574;
+}
+
+.sig {
+  display: block;
+  margin-top: clamp(10px, 1.6cqh, 16px);
+  font-family: var(--font-diwali-display), serif;
+  font-size: clamp(15px, min(4.2cqw, 2.2cqh), 18px);
+  color: #e9b955;
+}
+
+/* The call to action: a solid gold button, the brightest flat thing on screen. */
+.prasadWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(8px, 1.2cqh, 12px);
+  margin-top: clamp(20px, 3.2cqh, 34px);
+}
+
+.prasad {
+  --t: var(--duration-diwali-at-cta);
+  --prasad-ring: 0 0 0 2px #7a1a12, 0 0 0 4px #e9b955, 0 10px 28px rgba(0, 0, 0, 0.55);
+  position: relative;
+  display: inline-flex;
+  min-height: 52px;
+  align-items: center;
+  gap: 12px;
+  overflow: hidden;
+  padding: 10px 26px 10px 12px;
+  border: 0;
+  border-radius: 9999px;
+  background: linear-gradient(180deg, #ffe7a3 0%, #f6c453 45%, #d99a2b 100%);
+  color: #4a0d0d;
+  font-family: var(--font-diwali-display), var(--font-diwali-text), serif;
+  font-size: clamp(19px, min(5.2cqw, 2.8cqh), 24px);
+  font-weight: 400;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: var(--prasad-ring), 0 0 40px rgba(255, 180, 60, 0.35);
+  /* Hover and press use translate and scale, which the entrance (finRise,
+     filled on transform) never overrides. */
+  transition:
+    translate var(--duration-fast) ease,
+    scale var(--duration-fast) ease,
+    filter var(--duration-fast) ease;
+}
+
+.prasad:active {
+  scale: 0.97;
+}
+
+.prasad:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 5px;
+}
+
+.prasad:disabled {
+  cursor: default;
+}
+
+.ld {
+  position: relative;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  margin-left: -4px;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
+}
+
+.arr {
+  flex: none;
+  width: 0.8em;
+  height: 0.8em;
+  margin-left: 2px;
+  transition: transform var(--duration-base) ease;
+}
+
+/* The shine that sweeps across every few seconds (motion only). */
+.prasad::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -60%;
+  width: 40%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.65), transparent);
+  transform: skewX(-20deg);
+  pointer-events: none;
+}
+
+.prasadHint {
+  --t: var(--duration-diwali-at-hint);
+  font-family: var(--font-diwali-text), Georgia, serif;
+  font-size: clamp(12px, min(3.2cqw, 1.7cqh), 14px);
+  font-style: italic;
+  line-height: 1.4;
+  color: #cfae6c;
+}
+
+/* The rangoli, seen at an angle, under the diyas. */
+.rangoli {
+  position: absolute;
+  left: 50%;
+  bottom: calc(-1 * min(96cqw, 600px) * 0.07);
+  width: min(96cqw, 600px);
+  aspect-ratio: 1;
+  transform: translateX(-50%) scaleY(0.34);
+  transform-origin: 50% 100%;
+}
+
+.rangoli svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0.72;
+}
+
+.diyas {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: clamp(18px, 4cqh, 36px);
+  display: flex;
+  justify-content: center;
+  gap: clamp(8px, 3.4cqw, 44px);
+}
+
+.finDiya {
+  width: clamp(44px, 12cqw, 84px);
+  filter: drop-shadow(0 0 10px rgba(255, 170, 60, 0.45));
+}
+
+.finDiya svg {
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+
+/* Phones: 16 petals and 5 diyas. */
+@container (max-width: 600px) {
+  .petal:nth-child(n + 17),
+  .finDiya:nth-child(n + 6) {
+    display: none;
+  }
+}
+
+/* Short windows (a landscape phone, a small laptop window): tighter gaps,
+   a smaller title and button, smaller diyas sat lower, a smaller rangoli and
+   the toran lifted a little (below), so the column gets the height. */
+@container (max-height: 600px) {
+  .col {
+    top: 44px;
+    bottom: clamp(48px, 13cqh, 66px);
+  }
+
+  .shrine {
+    margin-top: clamp(6px, 1.2cqh, 14px);
+  }
+
+  .hi {
+    margin-top: clamp(8px, 1.6cqh, 17px);
+    font-size: clamp(28px, min(9cqw, 9cqh), 64px);
+  }
+
+  .divider {
+    height: 14px;
+    margin-top: clamp(4px, 0.7cqh, 7px);
+  }
+
+  .bless {
+    margin-top: clamp(6px, 1.1cqh, 11px);
+    line-height: 1.6;
+  }
+
+  .en {
+    margin-top: clamp(4px, 0.6cqh, 6px);
+  }
+
+  .sig {
+    margin-top: clamp(6px, 1cqh, 10px);
+  }
+
+  .prasadWrap {
+    margin-top: clamp(12px, 1.9cqh, 20px);
+    gap: clamp(5px, 0.7cqh, 7px);
+  }
+
+  .prasad {
+    min-height: 44px;
+    padding: 4px 22px 4px 10px;
+  }
+
+  .ld {
+    width: 32px;
+    height: 32px;
+  }
+
+  .diyas {
+    bottom: 8px;
+  }
+
+  .finDiya {
+    width: clamp(32px, min(12cqw, 11cqh), 56px);
+  }
+
+  .rangoli {
+    bottom: calc(-1 * min(96cqw, 600px, 110cqh) * 0.07);
+    width: min(96cqw, 600px, 110cqh);
+  }
+}
+
+/* Short and wide (a phone on its side): two columns, the idols on the left
+   at 70% of the column's height, the words centred on the right. */
+@container (max-height: 440px) and (min-aspect-ratio: 3 / 2) {
+  .col {
+    flex-direction: row;
+    gap: clamp(20px, 4cqw, 48px);
+  }
+
+  .shrine {
+    flex: 0 0 auto;
+    height: 70%;
+    min-height: 0;
+    margin-top: 0;
+    align-items: center;
+  }
+
+  .idols {
+    max-width: min(32cqw, 500px);
+    max-height: none;
+  }
+
+  .words {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+
+  .hi {
+    margin-top: 0;
+  }
+
+  .bless {
+    font-size: clamp(13px, 4cqh, 15px);
+  }
+}
+
+/* The entrance: each piece rises in at its own offset. */
+.seq {
+  opacity: 0;
+  animation: finRise var(--duration-diwali-rise) ease-out var(--t) both;
+}
+
+.idols.seq {
+  animation:
+    finRise var(--duration-diwali-idols) ease-out var(--t) both,
+    idolGlow var(--duration-diwali-glow) ease-in-out
+      calc(var(--t) + var(--duration-diwali-idols)) infinite;
+}
+
+.prasad.seq {
+  animation:
+    finRise var(--duration-diwali-rise) ease-out var(--t) both,
+    prasadRing var(--duration-diwali-pulse) ease-out
+      calc(var(--t) + var(--duration-diwali-rise)) infinite;
+}
+
+.prasad.seq::after {
+  animation: prasadShine var(--duration-diwali-shine) ease-in-out
+    calc(var(--t) + var(--duration-diwali-rise)) infinite;
+}
+
+@media (hover: hover) {
+  .prasad:hover:not(:disabled) {
+    translate: 0 -2px;
+    filter: brightness(1.06);
+  }
+
+  .prasad:hover:not(:disabled) .arr {
+    transform: translateX(3px);
+  }
+}
+
+/* Hidden until each piece's entrance starts, so the prasad button can be
+   neither clicked nor focused before it appears. */
+@keyframes finRise {
+  from {
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes finFade {
+  from {
+    visibility: hidden;
+    opacity: 0;
+  }
+  to {
+    visibility: visible;
+    opacity: 1;
+  }
+}
+
+@keyframes idolGlow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 14px rgba(255, 180, 70, 0.28));
+  }
+  50% {
+    filter: drop-shadow(0 0 26px rgba(255, 180, 70, 0.5));
+  }
+}
+
+@keyframes prasadShine {
+  0% {
+    left: -60%;
+  }
+  35%,
+  100% {
+    left: 130%;
+  }
+}
+
+@keyframes prasadRing {
+  0% {
+    box-shadow: var(--prasad-ring), 0 0 0 4px rgba(255, 200, 90, 0.55);
+  }
+  100% {
+    box-shadow: var(--prasad-ring), 0 0 0 22px rgba(255, 200, 90, 0);
+  }
+}
+
+/* Reduced motion: fades only, at the same offsets. No glow, shine, pulse or
+   hover lift; petals and fireworks are not rendered at all; the diyas are lit
+   from the start and do not flicker (see .flame above). */
+@media (prefers-reduced-motion: reduce) {
+  .seq,
+  .idols.seq,
+  .prasad.seq {
+    animation: finFade var(--duration-diwali-rise) ease var(--t) both;
+  }
+
+  .prasad.seq::after {
+    animation: none;
+  }
+
+  .prasad,
+  .prasad:active,
+  .arr {
+    translate: none;
+    scale: none;
+    transform: none;
+    transition: filter var(--duration-fast) ease;
+  }
+
+  .prasad:hover:not(:disabled),
+  .prasad:hover:not(:disabled) .arr {
+    translate: none;
+    transform: none;
+  }
+}
+
+/* ---- The prasad plate (Plate) ----
+   Over the finale card, the toran and Skip (z 7). The stage takes no pointer
+   events; only the laddoo buttons do, so they are the only clickable things
+   while the plate is up. Sized by the window (the stage is not a container). */
+.plateStage {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+  color: #ffe7b0;
+  text-align: center;
+  transition: opacity var(--duration-diwali-return) ease;
+}
+
+/* On the way home the plate fades with the card. */
+.show[data-phase="returning"] .plateStage {
+  opacity: 0;
+}
+
+.plateCol {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+}
+
+.ask {
+  margin: 0 0 clamp(4px, 1.2vh, 12px);
+  font-family: var(--font-diwali-text), serif;
+  font-size: clamp(26px, 4vw, 40px);
+  font-weight: 400;
+  line-height: 1.3;
+  text-shadow: 0 0 18px rgba(255, 170, 50, 0.6);
+  transition: opacity var(--duration-med) ease;
+}
+
+.ask small,
+.wah small {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--font-diwali-text), Georgia, serif;
+  font-size: clamp(14px, 1.6vw, 16px);
+  font-style: italic;
+  line-height: 1.4;
+  color: #e9d9b8;
+  text-shadow: none;
+}
+
+.plateStage[data-picked] .ask {
+  opacity: 0;
+}
+
+/* The photographed plate: 3:2, the same framing as the source the spots were
+   measured on. */
+.plate {
+  position: relative;
+  width: min(560px, 92vw, 54vh * 1.5);
+  aspect-ratio: 1536 / 1024;
+  transition: opacity var(--duration-diwali-float) ease;
+}
+
+.plateStage[data-picked] .plate {
+  opacity: 0.33;
+}
+
+.plateImg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.6));
+}
+
+/* One round, invisible button per laddoo; a gold ring on hover and focus. */
+.laddooBtn {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.laddooBtn:disabled {
+  cursor: default;
+  pointer-events: none;
+}
+
+.laddooBtn:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px #f6c453,
+    0 0 24px rgba(255, 190, 80, 0.6);
+}
+
+@media (hover: hover) {
+  .laddooBtn:hover:not(:disabled) {
+    box-shadow:
+      0 0 0 3px #f6c453,
+      0 0 24px rgba(255, 190, 80, 0.6);
+  }
+}
+
+/* Until the plate photo has loaded, or if it fails, every laddoo wears its
+   ring, so the targets are always there to see and press. */
+.plate[data-rings] .laddooBtn:not(:disabled) {
+  box-shadow:
+    0 0 0 3px #f6c453,
+    0 0 24px rgba(255, 190, 80, 0.6);
+}
+
+.plate[data-failed] .plateImg {
+  visibility: hidden;
+}
+
+/* The picked laddoo: a cut-out laid exactly over its spot, floated up. */
+.cutout {
+  position: absolute;
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cutout[data-on] {
+  opacity: 1;
+}
+
+.cutoutImg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  filter: drop-shadow(0 14px 24px rgba(0, 0, 0, 0.55));
+}
+
+.wah {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  margin: 0;
+  padding: 0 16px;
+  font-family: var(--font-diwali-display), var(--font-diwali-text), serif;
+  font-size: clamp(30px, 5vw, 48px);
+  font-weight: 400;
+  line-height: 1.2;
+  text-shadow: 0 0 18px rgba(255, 170, 50, 0.6);
+  opacity: 0;
+}
+
+.wah[data-on] {
+  opacity: 1;
+}
+
+.crumb {
+  position: absolute;
+  z-index: 2;
+  border-radius: 50%;
+  background: #f0a12a;
+  box-shadow: inset -1px -1px 2px rgba(120, 50, 0, 0.5);
+  pointer-events: none;
+}
+
+.crumb[data-light] {
+  background: #ffd27a;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .plate {
+    animation: plateRise var(--duration-diwali-plate-rise) var(--ease-diwali-drop) backwards;
+  }
+
+  .ask {
+    animation: finFade var(--duration-diwali-plate-rise) ease backwards;
+  }
+
+  .laddooBtn {
+    transition: box-shadow var(--duration-fast) ease;
+  }
+
+  .cutout {
+    transition: transform var(--duration-diwali-float) var(--ease-diwali-drop);
+  }
+
+  .cutoutImg[data-bitten] {
+    animation: squash var(--duration-diwali-squash) ease-out;
+  }
+
+  .wah[data-on] {
+    animation: finRise var(--duration-diwali-rise) ease-out backwards;
+  }
+
+  .crumb {
+    animation: crumbFall var(--d) ease-in forwards;
+  }
+
+  @keyframes plateRise {
+    from {
+      opacity: 0;
+      transform: translateY(60px) scale(0.92);
+    }
+  }
+
+  @keyframes squash {
+    40% {
+      transform: scale(0.94, 1.04);
+    }
+  }
+
+  @keyframes crumbFall {
+    to {
+      opacity: 0;
+      transform: translate(var(--dx), var(--dy)) rotate(var(--rot));
+    }
+  }
+}
+
+/* Reduced motion: the plate and the words fade in place, the laddoo appears
+   in the middle at once, and the bite swaps the image with no squash. */
+@media (prefers-reduced-motion: reduce) {
+  /* Its own fade, not finFade: finFade hides until it starts, and focus moves
+     to the first laddoo as the plate mounts. */
+  .plate {
+    animation: plateFade var(--duration-diwali-plate-rise) ease backwards;
+  }
+
+  @keyframes plateFade {
+    from {
+      opacity: 0;
+    }
+  }
+
+  .wah[data-on] {
+    animation: finFade var(--duration-diwali-rise) ease backwards;
+  }
+}

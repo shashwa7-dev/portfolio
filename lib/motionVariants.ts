@@ -18,6 +18,10 @@ export const ease = {
    * this file is that no ease-out can describe an arc that comes back down.
    */
   throw: [0.33, 0.02, 0.62, 1] as const,
+  /** Scene curve for the Diwali show. Not a UI curve: a symmetric ease-in-out for objects travelling across the scene. */
+  diwaliFlight: [0.65, 0, 0.35, 1] as const,
+  /** Scene curve for the Diwali show. Not a UI curve: an overshooting drop that settles hard. */
+  diwaliDrop: [0.3, 1.4, 0.5, 1] as const,
 } as const;
 
 export const duration = {
@@ -82,6 +86,69 @@ export const duration = {
   gogglesOff: 0.24,
   /** The one glint across the goggles' lenses after they land. */
   gogglesGlint: 0.65,
+  /**
+   * Diwali scene (lib/diwali). Mirrored as --duration-diwali-* in globals.css.
+   */
+  /** The hero fuse burning: the flame up the rope's tail and once round the ring, before the show opens. */
+  diwaliFuse: 2,
+  /** How long the burnt fuse waits for the show's code before giving up. */
+  diwaliShowWait: 4,
+  /** The show's blackout fading in (and the song's fade, the chakri's fade at the finale, the finale card's fade-in); also the toran's and Skip's entrance delays. */
+  diwaliBlackout: 0.8,
+  /** The photo's flight from the hero to the centre of the screen as it turns into the chakri. */
+  diwaliFlight: 1.1,
+  /** The flyer's half-turn between the photo face and the chakri face, both ways. */
+  diwaliFlip: 0.9,
+  /** How long the chakri spins at the centre after arriving, before it moves to the corner. */
+  diwaliCentreHold: 5,
+  /** The chakri's move from the centre to the bottom right corner. */
+  diwaliCorner: 1.1,
+  /** The toran (door garland) dropping in from the top edge with its bounce. */
+  diwaliToranDrop: 1.4,
+  /** Each finale entrance rising in (title, divider, blessing, prasad button, hint), and the plate's वाह!. */
+  diwaliRise: 0.9,
+  /** The Lakshmi and Ganesh image rising in at the finale (slower than the words). */
+  diwaliIdols: 1.4,
+  /** The laddoo plate and its heading rising in after the prasad button. */
+  diwaliPlateRise: 0.6,
+  /** The picked laddoo floating from the plate to the middle of the screen, and the plate dimming. */
+  diwaliFloat: 0.7,
+  /** From the pick to the bite: when the laddoo swaps to the bitten image, crunches and drops crumbs. */
+  diwaliBiteAt: 0.9,
+  /** From the pick to the way home: how long the bitten laddoo and वाह! stay before the show returns. */
+  diwaliPicked: 3,
+  /** The way home: the chakri flying back into the hero photo while the card and plate fade and the blackout eases to a dim. */
+  diwaliReturn: 1.15,
+  /** After the landing: the page stays dimmed with the landed photo above it, before the dim lifts (over diwaliBlackout). */
+  diwaliReturnHold: 1.5,
+  /** The bitten laddoo's squash at the bite. */
+  diwaliSquash: 0.18,
+  /** One sway of the toran's hanging strings. */
+  diwaliSway: 4,
+  /** One flicker of a diya flame (toran and finale diyas). */
+  diwaliFlicker: 1.1,
+  /** One breath of a diya's glow, and of the glow behind the idols. */
+  diwaliGlow: 4,
+  /** One cycle of the shine sweeping across the prasad button. */
+  diwaliShine: 3.2,
+  /** One ring pulse round the Skip button (three times) and the prasad button (looping). */
+  diwaliPulse: 2.4,
+  /** Finale entrance offsets, from the finale appearing: the idols. */
+  diwaliAtIdols: 0.4,
+  /** Finale entrance offset: the शुभ दीपावली title. */
+  diwaliAtTitle: 1,
+  /** Finale entrance offset: the lotus divider. */
+  diwaliAtDivider: 1.3,
+  /** Finale entrance offset: the blessing, English line and signature. */
+  diwaliAtBlessing: 1.6,
+  /** Finale entrance offset: the prasad button (focus moves to it once its entrance has finished). */
+  diwaliAtCta: 2.4,
+  /** Finale entrance offset: the hint under the prasad button. */
+  diwaliAtHint: 2.8,
+  /** The gap between one finale diya lighting and the next. */
+  diwaliDiyaStep: 0.18,
+  /** The song's volume rising from silence once it starts playing, while the chakri's spin sound ducks under it. */
+  diwaliSongFadeIn: 3,
 } as const;
 
 /** Per-item stagger offsets (seconds). Use instead of literal `i * 0.05`. */

@@ -88,6 +88,7 @@ count C20 "no band gutters or tick"      0 grep -rEoh "band-gutters|band-tick|--
 absent C21 "PageBand gone"               components/layout/PageBand.tsx
 absent C21 "Band gone"                   components/layout/Band.tsx
 absent C21 "BandLabel gone"              components/layout/BandLabel.tsx
+count C22 "Diwali flag defined once"      1 grep -rEoh "export const DIWALI_ENABLED = (true|false);" lib/diwali.ts
 
 echo ""
 if [ "$FAILED" = 0 ]; then
