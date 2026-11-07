@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type RefObject } from "react";
-import { chakriBox } from "@/lib/diwali/show";
+import { chakriBox, type FlyerBox } from "@/lib/diwali/show";
 import styles from "@/components/diwali/diwali.module.css";
 
 /**
@@ -29,6 +29,12 @@ type Spark = {
 type Props = {
   /** The flying chakri's box: the jet comes off its rim. */
   target: RefObject<HTMLElement | null>;
+  /**
+   * The chakri's box once it has landed (null while it is flying). At rest the
+   * jet uses it as is; only in flight is `target` measured, once per frame and
+   * before this frame's spin is written, so no layout is forced.
+   */
+  rest: RefObject<FlyerBox | null>;
   /** The element that spins (the jet's angle follows its rotation). */
   spin: RefObject<HTMLElement | null>;
   /** Whether the chakri is burning. When false, the last sparks die out and the loop stops. */
@@ -45,7 +51,7 @@ type Props = {
  * Only mounted when motion is allowed: under reduced motion the chakri sits
  * still and there is no jet.
  */
-export default function SparkCanvas({ target, spin, emitting }: Props) {
+export default function SparkCanvas({ target, rest, spin, emitting }: Props) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const emittingRef = useRef(emitting);
   const wake = useRef<() => void>(() => {});
@@ -85,17 +91,27 @@ export default function SparkCanvas({ target, spin, emitting }: Props) {
 
       const el = target.current;
       if (emittingRef.current && el) {
+        // Read first, write after: the box (measured only in flight), then the spin.
+        let box = rest.current;
+        if (!box) {
+          const r = el.getBoundingClientRect();
+          box = {
+            cx: r.left + r.width / 2,
+            cy: r.top + r.height / 2,
+            size: r.width,
+            rotate: 0,
+          };
+        }
         const age = (now - t0) / 1000;
         const power = age < SPIN_UP_S ? 0.3 + (age / SPIN_UP_S) * 0.7 : 1;
         rot -= dt * SPIN_RAD_S * power;
         if (spin.current) spin.current.style.transform = `rotate(${rot}rad)`;
 
-        const r = el.getBoundingClientRect();
-        const cx = (r.left + r.width / 2) * dpr;
-        const cy = (r.top + r.height / 2) * dpr;
-        const R = (r.width / 2) * 0.99 * dpr;
+        const cx = box.cx * dpr;
+        const cy = box.cy * dpr;
+        const R = (box.size / 2) * 0.99 * dpr;
         const centre = chakriBox("centre", window.innerWidth, window.innerHeight).size;
-        const scale = centre > 0 ? r.width / centre : 1;
+        const scale = centre > 0 ? box.size / centre : 1;
 
         // Like a real chakri: the jet fires from one point on the rim (the
         // fuse end), which whips round with the spin.
@@ -172,7 +188,7 @@ export default function SparkCanvas({ target, spin, emitting }: Props) {
       wake.current = () => {};
       window.removeEventListener("resize", size);
     };
-  }, [target, spin]);
+  }, [target, rest, spin]);
 
   return <canvas ref={canvas} aria-hidden className={styles.showSparks} />;
 }

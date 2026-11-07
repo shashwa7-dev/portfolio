@@ -1,13 +1,16 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { FastForward } from "@phosphor-icons/react/ssr";
 import {
   chakriBox,
+  flyerTransform,
   isOverlayOpen,
+  toFlyerBox,
   shouldPlayVideo,
   videoReachedEnd,
+  type FlyerBox,
   type Phase,
   type ShowEvent,
   type ShowState,
@@ -19,6 +22,7 @@ import SparkCanvas from "@/components/diwali/SparkCanvas";
 import FireworksCanvas from "@/components/diwali/FireworksCanvas";
 import Finale from "@/components/diwali/Finale";
 import Plate from "@/components/diwali/Plate";
+import { rozha, tiro } from "@/components/diwali/fonts";
 import type { DiwaliSound } from "@/components/diwali/sound";
 import {
   createPlayer,
@@ -30,18 +34,30 @@ import styles from "@/components/diwali/diwali.module.css";
 export type DiwaliShowProps = {
   state: ShowState;
   dispatch: (e: ShowEvent) => void;
-  photoRect: () => DOMRect;
+  /** The hero photo's own box and tilt: where the flyer lifts off and lands. */
+  photoBox: () => FlyerBox;
   sound: DiwaliSound;
 };
 
 /** How often the song's clock is read, as a backup for `end=67` not firing. */
 const POLL_MS = 250;
 
-function place(el: HTMLElement, x: number, y: number, size: number) {
-  el.style.left = `${x}px`;
-  el.style.top = `${y}px`;
-  el.style.width = `${size}px`;
-  el.style.height = `${size}px`;
+const IDOLS = "/images/diwali/lakshmi-ganesh.webp";
+/** Samples that make the browser fetch each face's Devanagari and Latin files. */
+const HI_SAMPLE = "शुभ दीपावली प्रसाद";
+const EN_SAMPLE = "Wishing you";
+
+/**
+ * Lays the flyer out once at the centre box (its largest size) and moves it
+ * with a transform only: translate and scale onto `box`, turned to its tilt.
+ */
+function place(el: HTMLElement, box: FlyerBox) {
+  const base = chakriBox("centre", window.innerWidth, window.innerHeight);
+  el.style.left = `${base.x}px`;
+  el.style.top = `${base.y}px`;
+  el.style.width = `${base.size}px`;
+  el.style.height = `${base.size}px`;
+  el.style.transform = flyerTransform(box, base);
 }
 
 /**
@@ -64,7 +80,7 @@ function place(el: HTMLElement, x: number, y: number, size: number) {
 export default function DiwaliShow({
   state,
   dispatch,
-  photoRect,
+  photoBox,
   sound,
 }: DiwaliShowProps) {
   const { phase } = state;
@@ -85,24 +101,39 @@ export default function DiwaliShow({
   const player = useRef<DiwaliPlayer | null>(null);
   const phaseRef = useRef<Phase>(phase);
   const ended = useRef(false);
+  /**
+   * The chakri's box once it has landed, for the spark jet; null while the
+   * flyer is in flight, when SparkCanvas measures it instead.
+   */
+  const rest = useRef<FlyerBox | null>(null);
+  /** Where the current move ends; becomes `rest` when the flight lands. */
+  const landing = useRef<FlyerBox | null>(null);
+  const titleId = useId();
+  const blessId = useId();
 
   // Latest props, for listeners and timers that outlive a render.
-  const latest = useRef({ dispatch, photoRect, sound });
+  const latest = useRef({ dispatch, photoBox, sound });
   useLayoutEffect(() => {
-    latest.current = { dispatch, photoRect, sound };
+    latest.current = { dispatch, photoBox, sound };
   });
 
-  /** Puts the flyer where the current phase wants it. */
-  const applyBox = (p: Phase) => {
+  /**
+   * Puts the flyer where the phase wants it. `moving` is false when the
+   * move jumps (a resize, or reduced motion), so the jet can use the box at once.
+   */
+  const applyBox = (p: Phase, moving: boolean) => {
     const el = flyer.current;
     if (!el) return;
+    let box: FlyerBox | null = null;
     if (p === "centre" || p === "corner") {
-      const b = chakriBox(p, window.innerWidth, window.innerHeight);
-      place(el, b.x, b.y, b.size);
+      box = toFlyerBox(chakriBox(p, window.innerWidth, window.innerHeight));
     } else if (p === "returning") {
-      const r = latest.current.photoRect();
-      place(el, r.left, r.top, r.width);
+      box = latest.current.photoBox();
     }
+    if (!box) return;
+    place(el, box);
+    landing.current = box;
+    rest.current = moving && !reduced ? null : box;
   };
   const applyBoxRef = useRef(applyBox);
   useLayoutEffect(() => {
@@ -120,16 +151,15 @@ export default function DiwaliShow({
     switch (phase) {
       case "centre": {
         if (!el || !fly) break;
-        // Lift-off: the flyer starts exactly on the hero photo, then the
-        // blackout, toran, flip and flight all start together.
-        const r = latest.current.photoRect();
+        // Lift-off: the flyer starts exactly on the hero photo (its size and
+        // tilt), then the blackout, toran, flip and flight all start together.
         fly.style.transition = "none";
-        place(fly, r.left, r.top, r.width);
+        place(fly, latest.current.photoBox());
         void fly.offsetWidth;
         fly.style.transition = "";
         el.dataset.on = "";
         fly.dataset.flipped = "";
-        applyBoxRef.current("centre");
+        applyBoxRef.current("centre", true);
         skip.current?.focus({ preventScroll: true });
         // Five seconds of centre stage after arriving.
         timer = window.setTimeout(
@@ -139,11 +169,12 @@ export default function DiwaliShow({
         break;
       }
       case "corner":
-        applyBoxRef.current("corner");
+        applyBoxRef.current("corner", true);
         break;
       case "finale":
         // The video pauses and fades (the song effect's cleanup) and the
-        // chakri fades (CSS); Finale moves focus to its button as it appears.
+        // chakri fades (CSS); Finale moves focus to its button once its
+        // entrance has finished.
         break;
       case "plate":
       case "picked":
@@ -155,7 +186,7 @@ export default function DiwaliShow({
         delete el.dataset.on;
         delete fly.dataset.flipped;
         if (spin.current) spin.current.style.transform = "";
-        applyBoxRef.current("returning");
+        applyBoxRef.current("returning", true);
         timer = window.setTimeout(
           () => send({ type: "RETURNED" }),
           duration.diwaliReturn * 1000,
@@ -201,7 +232,7 @@ export default function DiwaliShow({
             else player.current?.pause();
           },
           onPlaying() {
-            // The iframe autoplays: hold it if the show has moved on.
+            // A backstop: hold it if the show has moved on since play().
             if (!shouldPlayVideo(phaseRef.current)) {
               player.current?.pause();
               return;
@@ -277,9 +308,13 @@ export default function DiwaliShow({
     if (!open) return;
     const html = document.documentElement;
     const previous = html.style.overflow;
+    const previousGutter = html.style.scrollbarGutter;
+    // Keep the scrollbar's space while it is hidden, so the page never shifts.
+    html.style.scrollbarGutter = "stable";
     html.style.overflow = "hidden";
     return () => {
       html.style.overflow = previous;
+      html.style.scrollbarGutter = previousGutter;
     };
   }, [open]);
 
@@ -287,10 +322,46 @@ export default function DiwaliShow({
   useEffect(() => {
     const onResize = () => {
       setVw(window.innerWidth);
-      applyBoxRef.current(phaseRef.current);
+      // A resize jumps: no flight, so the jet's box is known at once.
+      const fly = flyer.current;
+      if (fly) fly.style.transition = "none";
+      applyBoxRef.current(phaseRef.current, false);
+      if (fly) {
+        void fly.offsetWidth;
+        fly.style.transition = "";
+      }
     };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  // ---- The flight has landed: hand the jet the box, so it stops measuring. ----
+  useEffect(() => {
+    const fly = flyer.current;
+    if (!fly) return;
+    const onEnd = (e: TransitionEvent) => {
+      if (e.target !== fly || e.propertyName !== "transform") return;
+      rest.current = landing.current;
+    };
+    fly.addEventListener("transitionend", onEnd);
+    return () => fly.removeEventListener("transitionend", onEnd);
+  }, [open]);
+
+  // ---- Warm the finale: the idols and both faces, from the light on, so a
+  // Skip on a slow connection never shows late idols or a fallback font. ----
+  useEffect(() => {
+    new Image().src = IDOLS;
+    if (!("fonts" in document)) return;
+    const faces = [
+      `16px ${rozha.style.fontFamily}`,
+      `16px ${tiro.style.fontFamily}`,
+      `italic 16px ${tiro.style.fontFamily}`,
+    ];
+    for (const font of faces) {
+      for (const text of [HI_SAMPLE, EN_SAMPLE]) {
+        document.fonts.load(font, text).catch(() => {});
+      }
+    }
   }, []);
 
   // ---- Unmount: nothing may outlive the show. ----
@@ -319,7 +390,10 @@ export default function DiwaliShow({
     phase === "plate" ||
     phase === "picked" ||
     phase === "returning";
-  const plating = phase === "plate" || phase === "picked";
+  // The card stays dimmed and blurred behind the plate on the way home too.
+  const plating =
+    phase === "plate" || phase === "picked" || phase === "returning";
+  const finaleUp = phase === "finale" || phase === "plate" || phase === "picked";
 
   return createPortal(
     <div
@@ -327,6 +401,7 @@ export default function DiwaliShow({
       role="dialog"
       aria-modal="true"
       aria-label="Diwali celebration"
+      aria-describedby={finaleUp ? `${titleId} ${blessId}` : undefined}
       data-phase={phase}
       className={styles.show}
     >
@@ -338,7 +413,12 @@ export default function DiwaliShow({
         />
       </div>
       {sparks && (
-        <SparkCanvas target={flyer} spin={spin} emitting={wantVideo} />
+        <SparkCanvas
+          target={flyer}
+          rest={rest}
+          spin={spin}
+          emitting={wantVideo}
+        />
       )}
       <div ref={flyer} aria-hidden className={styles.flyer}>
         <div ref={spin} className={styles.spin}>
@@ -358,6 +438,8 @@ export default function DiwaliShow({
       )}
       {finale && (
         <Finale
+          titleId={titleId}
+          blessId={blessId}
           plating={plating}
           onOpenPlate={() => dispatch({ type: "OPEN_PLATE" })}
         />
@@ -381,7 +463,7 @@ export default function DiwaliShow({
           </button>
         </div>
       )}
-      {(plating || phase === "returning") && (
+      {plating && (
         <Plate
           phase={phase === "plate" ? "plate" : "picked"}
           sound={sound}

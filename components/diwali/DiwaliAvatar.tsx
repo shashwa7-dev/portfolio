@@ -14,6 +14,7 @@ import {
   INITIAL,
   isOverlayOpen,
   reduce,
+  type FlyerBox,
   type ShowState,
 } from "@/lib/diwali/show";
 import { duration } from "@/lib/motionVariants";
@@ -100,10 +101,24 @@ export default function DiwaliAvatar({
 
   const send = dispatch;
 
-  const photoRect = useCallback(
-    () => photo.current?.getBoundingClientRect() ?? new DOMRect(),
-    [],
-  );
+  /**
+   * Where the flyer lifts off from and lands: the photo's own unrotated box
+   * and the button's tilt (`-rotate-4`, upright on hover). The bounding rect
+   * of a tilted element is larger than the photo, so only its centre is used;
+   * the side is the photo's layout width.
+   */
+  const photoBox = useCallback((): FlyerBox => {
+    const el = photo.current;
+    if (!el) return { cx: 0, cy: 0, size: 0, rotate: 0 };
+    const r = el.getBoundingClientRect();
+    const tilt = button.current ? getComputedStyle(button.current).rotate : "";
+    return {
+      cx: r.left + r.width / 2,
+      cy: r.top + r.height / 2,
+      size: el.offsetWidth,
+      rotate: Number.parseFloat(tilt) || 0,
+    };
+  }, []);
 
   // Back at rest after the show: close the show's sound, put the fuse back
   // and return focus here. (The `sound` state is left as is: it is only read
@@ -328,7 +343,7 @@ export default function DiwaliAvatar({
         <DiwaliShow
           state={state}
           dispatch={send}
-          photoRect={photoRect}
+          photoBox={photoBox}
           sound={sound}
         />
       )}

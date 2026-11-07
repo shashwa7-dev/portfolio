@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   INITIAL, reduce, shouldPlayVideo, isOverlayOpen, videoReachedEnd, chakriBox,
+  flyerTransform, toFlyerBox,
   type Phase, type ShowState, type ShowEvent,
 } from "./show";
 
@@ -66,5 +67,20 @@ describe("helpers", () => {
     expect(chakriBox("corner", 1280, 800)).toEqual({ size: 120, x: 1112, y: 632 });
     expect(chakriBox("corner", 390, 844)).toEqual({ size: 80, x: 278, y: 732 });
     expect(chakriBox("centre", 390, 844).size).toBeCloseTo(140.4, 5);
+  });
+});
+
+describe("flyerTransform", () => {
+  const base = chakriBox("centre", 1280, 800);
+  it("is the identity at the centre box", () => {
+    expect(flyerTransform(toFlyerBox(base), base)).toBe("translate(0px, 0px) scale(1) rotate(0deg)");
+  });
+  it("moves, scales and turns onto another box by its centre", () => {
+    expect(flyerTransform({ cx: 100, cy: 50, size: 72, rotate: -4 }, base)).toBe(
+      "translate(-540px, -350px) scale(0.25) rotate(-4deg)",
+    );
+    expect(flyerTransform(toFlyerBox(chakriBox("corner", 1280, 800)), base)).toBe(
+      "translate(532px, 292px) scale(0.4166666666666667) rotate(0deg)",
+    );
   });
 });

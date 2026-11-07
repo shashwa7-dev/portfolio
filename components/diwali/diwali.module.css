@@ -114,7 +114,9 @@
   pointer-events: none;
 }
 
-/* The flyer: the outer box moves, .spin turns, .flip turns photo to chakri. */
+/* The flyer: the outer box moves, .spin turns, .flip turns photo to chakri.
+   It is laid out once at the centre box; every move is its transform
+   (translate, scale and tilt) transitioning, never its layout (FLIP). */
 .flyer {
   position: absolute;
   left: 0;
@@ -122,21 +124,18 @@
   z-index: 3;
   pointer-events: none;
   perspective: 800px;
-  transition-property: left, top, width, height, opacity;
-  transition-duration: var(--duration-diwali-flight), var(--duration-diwali-flight),
-    var(--duration-diwali-flight), var(--duration-diwali-flight), var(--duration-diwali-blackout);
-  transition-timing-function: var(--ease-diwali-flight), var(--ease-diwali-flight),
-    var(--ease-diwali-flight), var(--ease-diwali-flight), ease;
+  transform-origin: 50% 50%;
+  transition-property: transform, opacity;
+  transition-duration: var(--duration-diwali-flight), var(--duration-diwali-blackout);
+  transition-timing-function: var(--ease-diwali-flight), ease;
 }
 
 .show[data-phase="corner"] .flyer {
-  transition-duration: var(--duration-diwali-corner), var(--duration-diwali-corner),
-    var(--duration-diwali-corner), var(--duration-diwali-corner), var(--duration-diwali-blackout);
+  transition-duration: var(--duration-diwali-corner), var(--duration-diwali-blackout);
 }
 
 .show[data-phase="returning"] .flyer {
-  transition-duration: var(--duration-diwali-return), var(--duration-diwali-return),
-    var(--duration-diwali-return), var(--duration-diwali-return), var(--duration-diwali-blackout);
+  transition-duration: var(--duration-diwali-return), var(--duration-diwali-blackout);
 }
 
 /* At the finale the chakri fades; it comes back to fly home. */
@@ -179,6 +178,18 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* On the way home the photo greys to match the hero photo at rest, so it
+   lands without a snap. */
+.show[data-phase="returning"] .facePhoto img {
+  filter: grayscale(1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .facePhoto img {
+    transition: filter var(--duration-diwali-return) ease;
+  }
 }
 
 .faceChakri {
@@ -616,13 +627,16 @@
   line-height: 1;
   cursor: pointer;
   box-shadow: var(--prasad-ring), 0 0 40px rgba(255, 180, 60, 0.35);
+  /* Hover and press use translate and scale, which the entrance (finRise,
+     filled on transform) never overrides. */
   transition:
-    transform var(--duration-fast) ease,
+    translate var(--duration-fast) ease,
+    scale var(--duration-fast) ease,
     filter var(--duration-fast) ease;
 }
 
 .prasad:active {
-  transform: scale(0.97);
+  scale: 0.97;
 }
 
 .prasad:focus-visible {
@@ -752,7 +766,7 @@
 
 @media (hover: hover) {
   .prasad:hover:not(:disabled) {
-    transform: translateY(-2px);
+    translate: 0 -2px;
     filter: brightness(1.06);
   }
 
@@ -761,12 +775,16 @@
   }
 }
 
+/* Hidden until each piece's entrance starts, so the prasad button can be
+   neither clicked nor focused before it appears. */
 @keyframes finRise {
   from {
+    visibility: hidden;
     opacity: 0;
     transform: translateY(8px);
   }
   to {
+    visibility: visible;
     opacity: 1;
     transform: none;
   }
@@ -774,9 +792,11 @@
 
 @keyframes finFade {
   from {
+    visibility: hidden;
     opacity: 0;
   }
   to {
+    visibility: visible;
     opacity: 1;
   }
 }
@@ -827,12 +847,15 @@
   .prasad,
   .prasad:active,
   .arr {
+    translate: none;
+    scale: none;
     transform: none;
     transition: filter var(--duration-fast) ease;
   }
 
   .prasad:hover:not(:disabled),
   .prasad:hover:not(:disabled) .arr {
+    translate: none;
     transform: none;
   }
 }
@@ -1050,8 +1073,16 @@
 /* Reduced motion: the plate and the words fade in place, the laddoo appears
    in the middle at once, and the bite swaps the image with no squash. */
 @media (prefers-reduced-motion: reduce) {
+  /* Its own fade, not finFade: finFade hides until it starts, and focus moves
+     to the first laddoo as the plate mounts. */
   .plate {
-    animation: finFade var(--duration-diwali-plate-rise) ease backwards;
+    animation: plateFade var(--duration-diwali-plate-rise) ease backwards;
+  }
+
+  @keyframes plateFade {
+    from {
+      opacity: 0;
+    }
   }
 
   .wah[data-on] {

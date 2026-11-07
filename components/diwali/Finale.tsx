@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type AnimationEvent,
+  type CSSProperties,
+} from "react";
 import { ArrowRight } from "@phosphor-icons/react/ssr";
 import { duration } from "@/lib/motionVariants";
 import { CornerMotif } from "@/components/diwali/art/CornerMotif";
@@ -15,6 +22,9 @@ type Props = {
   onOpenPlate: () => void;
   /** The plate is up: the words dim and blur, the idols only dim. */
   plating: boolean;
+  /** Ids for the title and the blessing, which describe the show's dialog. */
+  titleId: string;
+  blessId: string;
 };
 
 /** Petals and diyas rendered; the CSS hides the extras under 600px (16 and 5). */
@@ -68,17 +78,19 @@ function makePetals(): CSSProperties[] {
  * Reduced motion: no petals, glow, shine, pulse or flicker; the entrance is
  * fades only and the diyas are lit from the start.
  */
-export default function Finale({ onOpenPlate, plating }: Props) {
+export default function Finale({
+  onOpenPlate,
+  plating,
+  titleId,
+  blessId,
+}: Props) {
   const [reduced] = useState(
     () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
   const [petals] = useState(makePetals);
   const [litCount, setLitCount] = useState(() => (reduced ? DIYAS : 0));
-  const cta = useRef<HTMLButtonElement>(null);
-  const platingRef = useRef(plating);
-  useEffect(() => {
-    platingRef.current = plating;
-  }, [plating]);
+  const hintId = useId();
+  const focused = useRef(false);
 
   // The diyas light one after another, from the idols' entrance on.
   useEffect(() => {
@@ -92,13 +104,14 @@ export default function Finale({ onOpenPlate, plating }: Props) {
     return () => timers.forEach((t) => window.clearTimeout(t));
   }, [reduced]);
 
-  // Focus moves to the prasad button as it appears.
-  useEffect(() => {
-    const t = window.setTimeout(() => {
-      if (!platingRef.current) cta.current?.focus({ preventScroll: true });
-    }, duration.diwaliAtCta * 1000);
-    return () => window.clearTimeout(t);
-  }, []);
+  // Focus moves to the prasad button once its entrance has finished: until
+  // then it is `visibility: hidden` (the entrance keyframes), so it cannot be
+  // focused or clicked. Its other animations loop and never end.
+  const onCtaEntered = (e: AnimationEvent<HTMLButtonElement>) => {
+    if (e.target !== e.currentTarget || e.pseudoElement || focused.current) return;
+    focused.current = true;
+    if (!plating) e.currentTarget.focus({ preventScroll: true });
+  };
 
   return (
     <div
@@ -150,11 +163,11 @@ export default function Finale({ onOpenPlate, plating }: Props) {
           />
         </div>
         <div className={styles.words}>
-          <h2 lang="hi" className={`${styles.hi} ${styles.seq}`}>
+          <h2 id={titleId} lang="hi" className={`${styles.hi} ${styles.seq}`}>
             शुभ दीपावली
           </h2>
           <LotusDivider className={`${styles.divider} ${styles.seq}`} />
-          <p className={`${styles.bless} ${styles.seq}`}>
+          <p id={blessId} className={`${styles.bless} ${styles.seq}`}>
             <span lang="hi">
               {"माँ लक्ष्मी और श्री गणेश की कृपा से आपका घर सुख, समृद्धि और प्रकाश से भरा रहे।"}
             </span>
@@ -167,12 +180,13 @@ export default function Finale({ onOpenPlate, plating }: Props) {
           </p>
           <div className={styles.prasadWrap}>
             <button
-              ref={cta}
               type="button"
               lang="hi"
               className={`${styles.prasad} ${styles.seq}`}
+              aria-describedby={hintId}
               disabled={plating}
               onClick={onOpenPlate}
+              onAnimationEnd={onCtaEntered}
             >
               <span aria-hidden className={styles.ld} />
               प्रसाद लीजिए
@@ -182,7 +196,7 @@ export default function Finale({ onOpenPlate, plating }: Props) {
                 className={styles.arr}
               />
             </button>
-            <span className={`${styles.prasadHint} ${styles.seq}`}>
+            <span id={hintId} className={`${styles.prasadHint} ${styles.seq}`}>
               Take a laddoo before you go
             </span>
           </div>

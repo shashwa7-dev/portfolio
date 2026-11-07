@@ -74,3 +74,26 @@ export function chakriBox(
   const margin = Math.max(28, 0.4 * size);
   return { x: vw - size - margin, y: vh - size - margin, size };
 }
+
+/** A square on screen by its centre, side and rotation (degrees). */
+export type FlyerBox = { cx: number; cy: number; size: number; rotate: number };
+
+/** A chakriBox (top-left corner and side) as a FlyerBox, unrotated. */
+export function toFlyerBox(b: { x: number; y: number; size: number }): FlyerBox {
+  return { cx: b.x + b.size / 2, cy: b.y + b.size / 2, size: b.size, rotate: 0 };
+}
+
+/**
+ * The transform that puts the flyer, laid out once at `base` (the centre
+ * box) with its origin at its centre, onto `box`. The flight is this
+ * transform transitioning, never the flyer's layout box (FLIP).
+ */
+export function flyerTransform(
+  box: FlyerBox,
+  base: { x: number; y: number; size: number },
+): string {
+  const dx = box.cx - (base.x + base.size / 2);
+  const dy = box.cy - (base.y + base.size / 2);
+  const s = base.size > 0 ? box.size / base.size : 1;
+  return `translate(${dx}px, ${dy}px) scale(${s}) rotate(${box.rotate}deg)`;
+}
