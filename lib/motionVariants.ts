@@ -89,8 +89,8 @@ export const duration = {
   /**
    * Diwali scene (lib/diwali). Mirrored as --duration-diwali-* in globals.css.
    */
-  /** The hero fuse burning: the spark up the tail and once round the ring, before the show opens. */
-  diwaliFuse: 1.4,
+  /** The hero fuse burning: the flame up the rope's tail and once round the ring, before the show opens. */
+  diwaliFuse: 2,
   /** The show's blackout fading in (and the song's fade, the chakri's fade at the finale, the finale card's fade-in); also the toran's and Skip's entrance delays. */
   diwaliBlackout: 0.8,
   /** The photo's flight from the hero to the centre of the screen as it turns into the chakri. */

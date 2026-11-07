@@ -1,19 +1,17 @@
-/* ---- Hero fuse (DiwaliAvatar) ----
-   Sized in em, like AvatarHover: the photo is 1.38em, inside the h1. The fuse
-   box is the prototype's 120 unit square around a 92 unit photo, so it reaches
-   14/92 of the photo (0.21em) past each edge. The spark canvas is the
-   prototype's 400 unit square, reaching 140 units past the fuse box. */
+/* ---- Hero fuse (DiwaliAvatar, fuse.ts) ----
+   Sized in em, like AvatarHover: the photo is 1.38em (--fuse-d), inside the
+   h1. The rope canvas reaches 0.9 of the photo past each edge (fuse.ts's
+   `pad`), room for the tail, flame, sparks and smoke; fuse.ts reads its size
+   back, so the two must agree. */
 .fuseButton {
-  --fuse-cord: #8a5a2b;
-  --fuse-tip: #c9a36a;
-  --fuse-burnt: #3a2a1c;
+  --fuse-d: 1.38em;
 }
 
 .fusePhoto {
   position: relative;
   display: block;
-  width: 1.38em;
-  height: 1.38em;
+  width: var(--fuse-d);
+  height: var(--fuse-d);
   overflow: hidden;
   border-radius: 9999px;
   background: #fff;
@@ -39,43 +37,21 @@
   }
 }
 
-.fuseBox {
+/* Drawn after the photo, so the rope sits over its edge; the live dot comes
+   after it. The overhang stays inside the headline (text on both sides) and
+   takes no pointer events. */
+.fuseRope {
   position: absolute;
-  inset: -0.21em;
+  left: calc(var(--fuse-d) * -0.9);
+  top: calc(var(--fuse-d) * -0.9);
+  width: calc(var(--fuse-d) * 2.8);
+  height: calc(var(--fuse-d) * 2.8);
   pointer-events: none;
 }
 
-.fuseCord {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-
-.fuseRing {
-  stroke: var(--fuse-cord);
-}
-
-.fuseTail path {
-  stroke: var(--fuse-cord);
-}
-
-.fuseTail circle {
-  fill: var(--fuse-tip);
-}
-
-.fuseSparks {
-  position: absolute;
-  left: -116.667%;
-  top: -116.667%;
-  width: 333.333%;
-  height: 333.333%;
-}
-
-/* Once the show is open the photo has flown off: hide it and the spent fuse. */
-.fuseButton[data-overlay] .fusePhoto,
-.fuseButton[data-overlay] .fuseCord {
+/* Once the show is open the photo has flown off: hide it. (The rope canvas
+   stays: it has burnt away, and is drawn again under the dim on the way home.) */
+.fuseButton[data-overlay] .fusePhoto {
   visibility: hidden;
 }
 
@@ -116,11 +92,11 @@
   }
 }
 
-/* Reduced motion: no spark, the ring simply darkens over the fuse's burn. */
+/* Reduced motion: no flame, sparks or smoke; the rope fades to ash over the
+   fuse's burn, and is then cleared (DiwaliAvatar). */
 @media (prefers-reduced-motion: reduce) {
-  .fuseButton[data-phase="lit"] .fuseRing,
-  .fuseButton[data-phase="lit"] .fuseTail path {
-    stroke: var(--fuse-burnt);
-    transition: stroke var(--duration-diwali-fuse) linear;
+  .fuseButton[data-phase="lit"] .fuseRope {
+    filter: grayscale(1) brightness(0.4);
+    transition: filter var(--duration-diwali-fuse) linear;
   }
 }

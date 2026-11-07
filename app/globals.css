@@ -479,7 +479,7 @@
   --ease-goggles-on: cubic-bezier(0.3, 1.4, 0.5, 1);
   --ease-goggles-off: cubic-bezier(0.5, 0, 0.75, 0);
   /* Mirror duration.diwali* in lib/motionVariants.ts (the Diwali scene). */
-  --duration-diwali-fuse: 1400ms;
+  --duration-diwali-fuse: 2000ms;
   --duration-diwali-blackout: 800ms;
   --duration-diwali-flight: 1100ms;
   --duration-diwali-flip: 900ms;
