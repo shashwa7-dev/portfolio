@@ -434,11 +434,11 @@
   }
 }
 
-/* Temporary until Task 8/9: a centred stand-in for the finale and plate. */
+/* Temporary until Task 9: a centred stand-in for the plate, over the finale. */
 .tempStage {
   position: absolute;
   inset: 0;
-  z-index: 4;
+  z-index: 7;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -501,6 +501,469 @@
 
   .skip:hover,
   .skip:active {
+    transform: none;
+  }
+}
+
+/* ---- The finale (Finale, FireworksCanvas) ----
+   Ported from the finale screens prototype (v5). The finale sizes itself by
+   its own box (container query units), not the window. It sits over the
+   blackout and the fireworks canvas and under the toran. Entrance offsets
+   (--t) are tokens: idols, title, divider, blessing, button, hint. */
+.fireworks {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.finale {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  overflow: hidden;
+  container-type: size;
+  color: #f6e3b4;
+  text-align: center;
+  animation: finFade var(--duration-diwali-blackout) ease backwards;
+  transition: opacity var(--duration-diwali-return) ease;
+}
+
+/* On the way home the card fades with the blackout. */
+.show[data-phase="returning"] .finale {
+  opacity: 0;
+}
+
+.wash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 75% 60% at 50% 38%,
+    rgba(128, 20, 24, 0.6),
+    rgba(64, 6, 12, 0.78) 55%,
+    rgba(18, 2, 4, 0.92) 100%
+  );
+}
+
+.petals {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.petal {
+  position: absolute;
+  top: -3%;
+  border-radius: 60% 40% 60% 40%;
+  opacity: 0;
+  animation: petalFall var(--d) linear var(--delay) infinite;
+}
+
+@keyframes petalFall {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(0);
+  }
+  8% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0.85;
+    transform: translate(var(--dx), 110cqh) rotate(var(--r));
+  }
+}
+
+/* The gold border: one clean rule plus a thin inner line. */
+.frame {
+  position: absolute;
+  inset: clamp(8px, 1.6cqmin, 16px);
+  border: 1.5px solid #c9932e;
+  border-radius: 4px;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 0 4px transparent,
+    inset 0 0 0 5px rgba(201, 147, 46, 0.4);
+}
+
+.corner {
+  position: absolute;
+  width: clamp(40px, 9cqmin, 84px);
+  height: auto;
+}
+
+.cornerTl {
+  left: -2px;
+  top: -2px;
+}
+
+.cornerTr {
+  right: -2px;
+  top: -2px;
+}
+
+.cornerBl {
+  left: -2px;
+  bottom: -2px;
+}
+
+.cornerBr {
+  right: -2px;
+  bottom: -2px;
+}
+
+/* The content column, between the toran and the rangoli. */
+.col {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: clamp(64px, 12cqh, 110px);
+  bottom: clamp(110px, 19cqh, 170px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 clamp(20px, 6cqw, 48px);
+}
+
+.shrine {
+  position: relative;
+  display: flex;
+  flex: 0 1 auto;
+  min-height: 0;
+  align-items: flex-end;
+  justify-content: center;
+  margin-top: clamp(18px, 4cqh, 40px);
+  transition: opacity var(--duration-med) ease;
+}
+
+.words {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition:
+    opacity var(--duration-med) ease,
+    filter var(--duration-med) ease;
+}
+
+/* The plate is up: the words dim and blur; the idols only dim, never blur. */
+.finale[data-plating] .words {
+  opacity: 0.15;
+  filter: blur(2px);
+}
+
+.finale[data-plating] .shrine {
+  opacity: 0.5;
+}
+
+.idols {
+  --t: var(--duration-diwali-at-idols);
+  position: relative;
+  display: block;
+  width: min(74cqw, 30cqh * 1.5, 500px);
+  height: auto;
+  filter: drop-shadow(0 0 14px rgba(255, 180, 70, 0.28));
+}
+
+.hi {
+  --t: var(--duration-diwali-at-title);
+  margin: clamp(6px, 1.6cqh, 14px) 0 0;
+  font-family: var(--font-diwali-display), var(--font-diwali-text), serif;
+  font-size: clamp(40px, min(11cqw, 9cqh), 92px);
+  font-weight: 400;
+  line-height: 1.12;
+  background: linear-gradient(180deg, #fff1c1 0%, #f3c454 45%, #c98a22 72%, #f6d27a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 0 #5a1208) drop-shadow(0 0 18px rgba(255, 170, 50, 0.4));
+}
+
+.divider {
+  --t: var(--duration-diwali-at-divider);
+  display: block;
+  width: min(240px, 56cqw);
+  height: 18px;
+  margin: clamp(2px, 0.8cqh, 8px) auto clamp(6px, 1.4cqh, 12px);
+}
+
+.bless {
+  --t: var(--duration-diwali-at-blessing);
+  max-width: 34em;
+  margin: 0;
+  font-family: var(--font-diwali-text), serif;
+  font-size: clamp(15px, min(4.1cqw, 2.3cqh), 19px);
+  font-weight: 400;
+  line-height: 1.7;
+  color: #f6e3b4;
+  text-wrap: balance;
+}
+
+.en {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--font-diwali-text), Georgia, serif;
+  font-size: clamp(12.5px, min(3.4cqw, 1.8cqh), 15px);
+  font-style: italic;
+  line-height: 1.6;
+  color: #d6b574;
+}
+
+.sig {
+  display: block;
+  margin-top: clamp(4px, 1cqh, 8px);
+  font-family: var(--font-diwali-display), serif;
+  font-size: clamp(15px, min(4.2cqw, 2.2cqh), 18px);
+  color: #e9b955;
+}
+
+/* The call to action: a solid gold button, the brightest flat thing on screen. */
+.prasadWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: clamp(14px, 2.6cqh, 24px);
+}
+
+.prasad {
+  --t: var(--duration-diwali-at-cta);
+  --prasad-ring: 0 0 0 2px #7a1a12, 0 0 0 4px #e9b955, 0 10px 28px rgba(0, 0, 0, 0.55);
+  position: relative;
+  display: inline-flex;
+  min-height: 52px;
+  align-items: center;
+  gap: 12px;
+  overflow: hidden;
+  padding: 10px 26px 10px 12px;
+  border: 0;
+  border-radius: 9999px;
+  background: linear-gradient(180deg, #ffe7a3 0%, #f6c453 45%, #d99a2b 100%);
+  color: #4a0d0d;
+  font-family: var(--font-diwali-display), var(--font-diwali-text), serif;
+  font-size: clamp(19px, min(5.2cqw, 2.8cqh), 24px);
+  font-weight: 400;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: var(--prasad-ring), 0 0 40px rgba(255, 180, 60, 0.35);
+  transition:
+    transform var(--duration-fast) ease,
+    filter var(--duration-fast) ease;
+}
+
+.prasad:active {
+  transform: scale(0.97);
+}
+
+.prasad:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 5px;
+}
+
+.prasad:disabled {
+  cursor: default;
+}
+
+.ld {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255, 240, 190, 0.8) 0 9%, transparent 24%),
+    radial-gradient(circle, rgba(150, 70, 0, 0.35) 18%, transparent 22%) 0 0 / 5px 5px,
+    radial-gradient(circle at 40% 35%, #ffbf3f, #f39a1b 50%, #b85e0a 100%);
+  box-shadow:
+    inset -3px -4px 6px rgba(90, 40, 0, 0.45),
+    0 2px 4px rgba(0, 0, 0, 0.35);
+}
+
+.arr {
+  flex: none;
+  width: 0.8em;
+  height: 0.8em;
+  margin-left: 2px;
+  transition: transform var(--duration-base) ease;
+}
+
+/* The shine that sweeps across every few seconds (motion only). */
+.prasad::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -60%;
+  width: 40%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.65), transparent);
+  transform: skewX(-20deg);
+  pointer-events: none;
+}
+
+.prasadHint {
+  --t: var(--duration-diwali-at-hint);
+  font-family: var(--font-diwali-text), Georgia, serif;
+  font-size: clamp(12px, min(3.2cqw, 1.7cqh), 14px);
+  font-style: italic;
+  line-height: 1.4;
+  color: #cfae6c;
+}
+
+/* The rangoli, seen at an angle, under the diyas. */
+.rangoli {
+  position: absolute;
+  left: 50%;
+  bottom: calc(-1 * min(96cqw, 600px) * 0.07);
+  width: min(96cqw, 600px);
+  aspect-ratio: 1;
+  transform: translateX(-50%) scaleY(0.34);
+  transform-origin: 50% 100%;
+}
+
+.rangoli svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0.72;
+}
+
+.diyas {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: clamp(18px, 4cqh, 36px);
+  display: flex;
+  justify-content: center;
+  gap: clamp(8px, 3.4cqw, 44px);
+}
+
+.finDiya {
+  width: clamp(44px, 12cqw, 84px);
+  filter: drop-shadow(0 0 10px rgba(255, 170, 60, 0.45));
+}
+
+.finDiya svg {
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+
+/* Phones: 16 petals and 5 diyas. */
+@container (max-width: 600px) {
+  .petal:nth-child(n + 17),
+  .finDiya:nth-child(n + 6) {
+    display: none;
+  }
+}
+
+/* The entrance: each piece rises in at its own offset. */
+.seq {
+  opacity: 0;
+  animation: finRise var(--duration-diwali-rise) ease-out var(--t) both;
+}
+
+.idols.seq {
+  animation:
+    finRise var(--duration-diwali-idols) ease-out var(--t) both,
+    idolGlow var(--duration-diwali-glow) ease-in-out
+      calc(var(--t) + var(--duration-diwali-idols)) infinite;
+}
+
+.prasad.seq {
+  animation:
+    finRise var(--duration-diwali-rise) ease-out var(--t) both,
+    prasadRing var(--duration-diwali-pulse) ease-out
+      calc(var(--t) + var(--duration-diwali-rise)) infinite;
+}
+
+.prasad.seq::after {
+  animation: prasadShine var(--duration-diwali-shine) ease-in-out
+    calc(var(--t) + var(--duration-diwali-rise)) infinite;
+}
+
+@media (hover: hover) {
+  .prasad:hover:not(:disabled) {
+    transform: translateY(-2px);
+    filter: brightness(1.06);
+  }
+
+  .prasad:hover:not(:disabled) .arr {
+    transform: translateX(3px);
+  }
+}
+
+@keyframes finRise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes finFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes idolGlow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 14px rgba(255, 180, 70, 0.28));
+  }
+  50% {
+    filter: drop-shadow(0 0 26px rgba(255, 180, 70, 0.5));
+  }
+}
+
+@keyframes prasadShine {
+  0% {
+    left: -60%;
+  }
+  35%,
+  100% {
+    left: 130%;
+  }
+}
+
+@keyframes prasadRing {
+  0% {
+    box-shadow: var(--prasad-ring), 0 0 0 4px rgba(255, 200, 90, 0.55);
+  }
+  100% {
+    box-shadow: var(--prasad-ring), 0 0 0 22px rgba(255, 200, 90, 0);
+  }
+}
+
+/* Reduced motion: fades only, at the same offsets. No glow, shine, pulse or
+   hover lift; petals and fireworks are not rendered at all; the diyas are lit
+   from the start and do not flicker (see .flame above). */
+@media (prefers-reduced-motion: reduce) {
+  .seq,
+  .idols.seq,
+  .prasad.seq {
+    animation: finFade var(--duration-diwali-rise) ease var(--t) both;
+  }
+
+  .prasad.seq::after {
+    animation: none;
+  }
+
+  .prasad,
+  .prasad:active,
+  .arr {
+    transform: none;
+    transition: filter var(--duration-fast) ease;
+  }
+
+  .prasad:hover:not(:disabled),
+  .prasad:hover:not(:disabled) .arr {
     transform: none;
   }
 }

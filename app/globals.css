@@ -499,6 +499,13 @@
   --duration-diwali-glow: 4000ms;
   --duration-diwali-shine: 3200ms;
   --duration-diwali-pulse: 2400ms;
+  --duration-diwali-at-idols: 400ms;
+  --duration-diwali-at-title: 1000ms;
+  --duration-diwali-at-divider: 1300ms;
+  --duration-diwali-at-blessing: 1600ms;
+  --duration-diwali-at-cta: 2400ms;
+  --duration-diwali-at-hint: 2800ms;
+  --duration-diwali-diya-step: 180ms;
   /* Scene curves for the Diwali show, not UI curves. Mirror ease.diwaliFlight / ease.diwaliDrop. */
   --ease-diwali-flight: cubic-bezier(0.65, 0, 0.35, 1);
   --ease-diwali-drop: cubic-bezier(0.3, 1.4, 0.5, 1);

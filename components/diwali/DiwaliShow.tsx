@@ -16,6 +16,8 @@ import { duration } from "@/lib/motionVariants";
 import { Chakri } from "@/components/diwali/art/Chakri";
 import { Toran } from "@/components/diwali/art/Toran";
 import SparkCanvas from "@/components/diwali/SparkCanvas";
+import FireworksCanvas from "@/components/diwali/FireworksCanvas";
+import Finale from "@/components/diwali/Finale";
 import type { DiwaliSound } from "@/components/diwali/sound";
 import {
   createPlayer,
@@ -49,7 +51,9 @@ function place(el: HTMLElement, x: number, y: number, size: number) {
  * in, and a copy of the photo lifts out of the headline, flips into the
  * chakri and flies to the centre, spinning with its spark jet while the Diwali
  * Song plays behind it. Five seconds after arriving it moves to the corner
- * (`corner`). At 1:07, or on Skip or Esc, the finale takes over (`finale`).
+ * (`corner`). At 1:07, or on Skip or Esc, the finale takes over (`finale`):
+ * the song pauses and fades, the chakri fades, the शुभ दीपावली card rises in
+ * and the fireworks start; they keep going under the plate (`plate`, `picked`).
  * On the way out (`returning`) it all lifts away and the chakri flips back
  * into the photo as it flies home.
  *
@@ -138,12 +142,15 @@ export default function DiwaliShow({
         applyBoxRef.current("corner");
         break;
       case "finale":
+        // The video pauses and fades (the song effect's cleanup) and the
+        // chakri fades (CSS); Finale moves focus to its button as it appears.
+        break;
       case "plate":
-        // Temporary until Task 8/9: the finale's and plate's own buttons.
+        // Temporary until Task 9: the plate's own buttons.
         temp.current?.focus({ preventScroll: true });
         break;
       case "picked":
-        // Temporary until Task 8/9: the bite plays out, then the way home.
+        // Temporary until Task 9: the bite plays out, then the way home.
         timer = window.setTimeout(
           () => send({ type: "PICK_DONE" }),
           duration.diwaliPicked * 1000,
@@ -311,6 +318,13 @@ export default function DiwaliShow({
   const sparks =
     !reduced &&
     (phase === "centre" || phase === "corner" || phase === "finale");
+  // The card stays up through the plate and fades out on the way home.
+  const finale =
+    phase === "finale" ||
+    phase === "plate" ||
+    phase === "picked" ||
+    phase === "returning";
+  const plating = phase === "plate" || phase === "picked";
 
   return createPortal(
     <div
@@ -344,6 +358,15 @@ export default function DiwaliShow({
           </div>
         </div>
       </div>
+      {finale && (
+        <FireworksCanvas running={phase !== "returning"} sound={sound} />
+      )}
+      {finale && (
+        <Finale
+          plating={plating}
+          onOpenPlate={() => dispatch({ type: "OPEN_PLATE" })}
+        />
+      )}
       <div aria-hidden className={styles.toran}>
         <Toran width={vw} idPrefix="dws-toran" />
       </div>
@@ -363,19 +386,7 @@ export default function DiwaliShow({
           </button>
         </div>
       )}
-      {/* Temporary until Task 8/9: stand-ins for the finale and the plate. */}
-      {phase === "finale" && (
-        <div className={styles.tempStage}>
-          <button
-            ref={temp}
-            type="button"
-            className={styles.skip}
-            onClick={() => dispatch({ type: "OPEN_PLATE" })}
-          >
-            प्रसाद लीजिए
-          </button>
-        </div>
-      )}
+      {/* Temporary until Task 9: a stand-in for the plate. */}
       {phase === "plate" && (
         <div className={styles.tempStage}>
           <button

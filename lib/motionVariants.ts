@@ -129,6 +129,20 @@ export const duration = {
   diwaliShine: 3.2,
   /** One pulse of the Diwali scene's lights. */
   diwaliPulse: 2.4,
+  /** Finale entrance offsets, from the finale appearing: the idols. */
+  diwaliAtIdols: 0.4,
+  /** Finale entrance offset: the शुभ दीपावली title. */
+  diwaliAtTitle: 1,
+  /** Finale entrance offset: the lotus divider. */
+  diwaliAtDivider: 1.3,
+  /** Finale entrance offset: the blessing, English line and signature. */
+  diwaliAtBlessing: 1.6,
+  /** Finale entrance offset: the prasad button (focus moves to it then). */
+  diwaliAtCta: 2.4,
+  /** Finale entrance offset: the hint under the prasad button. */
+  diwaliAtHint: 2.8,
+  /** The gap between one finale diya lighting and the next. */
+  diwaliDiyaStep: 0.18,
 } as const;
 
 /** Per-item stagger offsets (seconds). Use instead of literal `i * 0.05`. */
