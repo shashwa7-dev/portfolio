@@ -238,6 +238,14 @@
   overflow: visible;
 }
 
+/* Short windows: lifted, so only the swags and their gold drops hang into
+   the finale's column (see the finale's short rules). */
+@media (max-height: 600px) {
+  .toran {
+    translate: 0 -16px;
+  }
+}
+
 @keyframes toranDrop {
   to {
     transform: none;
@@ -461,7 +469,8 @@
   }
 }
 
-/* The content column, between the toran and the rangoli. */
+/* The content column, between the toran and the rangoli. `safe` keeps a
+   column taller than its box from being cropped at the top. */
 .col {
   position: absolute;
   left: 0;
@@ -471,7 +480,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: safe center;
   padding: 0 clamp(20px, 6cqw, 48px);
 }
 
@@ -479,7 +488,7 @@
   position: relative;
   display: flex;
   flex: 1 1 0;
-  min-height: clamp(110px, 16cqh, 200px);
+  min-height: clamp(72px, 14cqh, 200px);
   align-items: flex-end;
   justify-content: center;
   margin-top: clamp(10px, 2cqh, 24px);
@@ -702,6 +711,106 @@
   .petal:nth-child(n + 17),
   .finDiya:nth-child(n + 6) {
     display: none;
+  }
+}
+
+/* Short windows (a landscape phone, a small laptop window): tighter gaps,
+   a smaller title and button, smaller diyas sat lower, a smaller rangoli and
+   the toran lifted a little (below), so the column gets the height. */
+@container (max-height: 600px) {
+  .col {
+    top: 44px;
+    bottom: clamp(48px, 13cqh, 66px);
+  }
+
+  .shrine {
+    margin-top: clamp(6px, 1.2cqh, 14px);
+  }
+
+  .hi {
+    margin-top: clamp(8px, 1.6cqh, 17px);
+    font-size: clamp(28px, min(9cqw, 9cqh), 64px);
+  }
+
+  .divider {
+    height: 14px;
+    margin-top: clamp(4px, 0.7cqh, 7px);
+  }
+
+  .bless {
+    margin-top: clamp(6px, 1.1cqh, 11px);
+    line-height: 1.6;
+  }
+
+  .en {
+    margin-top: clamp(4px, 0.6cqh, 6px);
+  }
+
+  .sig {
+    margin-top: clamp(6px, 1cqh, 10px);
+  }
+
+  .prasadWrap {
+    margin-top: clamp(12px, 1.9cqh, 20px);
+    gap: clamp(5px, 0.7cqh, 7px);
+  }
+
+  .prasad {
+    min-height: 44px;
+    padding: 4px 22px 4px 10px;
+  }
+
+  .ld {
+    width: 32px;
+    height: 32px;
+  }
+
+  .diyas {
+    bottom: 8px;
+  }
+
+  .finDiya {
+    width: clamp(32px, min(12cqw, 11cqh), 56px);
+  }
+
+  .rangoli {
+    bottom: calc(-1 * min(96cqw, 600px, 110cqh) * 0.07);
+    width: min(96cqw, 600px, 110cqh);
+  }
+}
+
+/* Short and wide (a phone on its side): two columns, the idols on the left
+   at 70% of the column's height, the words centred on the right. */
+@container (max-height: 440px) and (min-aspect-ratio: 3 / 2) {
+  .col {
+    flex-direction: row;
+    gap: clamp(20px, 4cqw, 48px);
+  }
+
+  .shrine {
+    flex: 0 0 auto;
+    height: 70%;
+    min-height: 0;
+    margin-top: 0;
+    align-items: center;
+  }
+
+  .idols {
+    max-width: min(32cqw, 500px);
+    max-height: none;
+  }
+
+  .words {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+
+  .hi {
+    margin-top: 0;
+  }
+
+  .bless {
+    font-size: clamp(13px, 4cqh, 15px);
   }
 }
 
