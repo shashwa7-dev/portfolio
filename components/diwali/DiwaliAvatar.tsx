@@ -19,7 +19,7 @@ import {
 import { duration } from "@/lib/motionVariants";
 import { Matchstick } from "@/components/diwali/art/Matchstick";
 import { createDiwaliSound, type DiwaliSound } from "@/components/diwali/sound";
-import styles from "@/components/diwali/diwali.module.css";
+import styles from "@/components/diwali/fuse.module.css";
 
 /**
  * The show is heavy (video, fireworks, finale art), so it is its own chunk,
