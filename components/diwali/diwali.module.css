@@ -482,7 +482,7 @@
   min-height: 0;
   align-items: flex-end;
   justify-content: center;
-  margin-top: clamp(18px, 4cqh, 40px);
+  margin-top: clamp(8px, 1.5cqh, 16px);
   transition: opacity var(--duration-med) ease;
 }
 
@@ -509,14 +509,14 @@
   --t: var(--duration-diwali-at-idols);
   position: relative;
   display: block;
-  width: min(74cqw, 30cqh * 1.5, 500px);
+  width: min(74cqw, 20cqh * 1.5, 500px);
   height: auto;
   filter: drop-shadow(0 0 14px rgba(255, 180, 70, 0.28));
 }
 
 .hi {
   --t: var(--duration-diwali-at-title);
-  margin: clamp(6px, 1.6cqh, 14px) 0 0;
+  margin: clamp(14px, 2.6cqh, 28px) 0 0;
   font-family: var(--font-diwali-display), var(--font-diwali-text), serif;
   font-size: clamp(40px, min(11cqw, 9cqh), 92px);
   font-weight: 400;
@@ -533,24 +533,24 @@
   display: block;
   width: min(240px, 56cqw);
   height: 18px;
-  margin: clamp(2px, 0.8cqh, 8px) auto clamp(6px, 1.4cqh, 12px);
+  margin: clamp(6px, 1.2cqh, 12px) auto 0;
 }
 
 .bless {
   --t: var(--duration-diwali-at-blessing);
   max-width: 34em;
-  margin: 0;
+  margin: clamp(10px, 1.8cqh, 18px) 0 0;
   font-family: var(--font-diwali-text), serif;
   font-size: clamp(15px, min(4.1cqw, 2.3cqh), 19px);
   font-weight: 400;
-  line-height: 1.7;
+  line-height: 1.8;
   color: #f6e3b4;
   text-wrap: balance;
 }
 
 .en {
   display: block;
-  margin-top: 2px;
+  margin-top: clamp(6px, 1cqh, 10px);
   font-family: var(--font-diwali-text), Georgia, serif;
   font-size: clamp(12.5px, min(3.4cqw, 1.8cqh), 15px);
   font-style: italic;
@@ -560,7 +560,7 @@
 
 .sig {
   display: block;
-  margin-top: clamp(4px, 1cqh, 8px);
+  margin-top: clamp(10px, 1.6cqh, 16px);
   font-family: var(--font-diwali-display), serif;
   font-size: clamp(15px, min(4.2cqw, 2.2cqh), 18px);
   color: #e9b955;
@@ -571,8 +571,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  margin-top: clamp(14px, 2.6cqh, 24px);
+  gap: clamp(8px, 1.2cqh, 12px);
+  margin-top: clamp(20px, 3.2cqh, 34px);
 }
 
 .prasad {
@@ -617,17 +617,12 @@
 }
 
 .ld {
+  position: relative;
   flex: none;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 35% 30%, rgba(255, 240, 190, 0.8) 0 9%, transparent 24%),
-    radial-gradient(circle, rgba(150, 70, 0, 0.35) 18%, transparent 22%) 0 0 / 5px 5px,
-    radial-gradient(circle at 40% 35%, #ffbf3f, #f39a1b 50%, #b85e0a 100%);
-  box-shadow:
-    inset -3px -4px 6px rgba(90, 40, 0, 0.45),
-    0 2px 4px rgba(0, 0, 0, 0.35);
+  width: 36px;
+  height: 36px;
+  margin-left: -4px;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
 }
 
 .arr {

@@ -239,14 +239,14 @@ export function createFuse(
           parts.push(
             spark(at0.x, at0.y, Math.random() * Math.PI * 2, (0.6 + Math.random() * 2.2) * scale, 14 + Math.random() * 16),
           );
-          parts[parts.length - 1].vy -= 0.4;
+          parts[parts.length - 1].vy -= 0.4 * scale;
         }
         if (Math.random() < 0.5) {
           parts.push({
             x: at0.x,
             y: at0.y,
-            vx: (Math.random() - 0.5) * 0.3,
-            vy: -0.35 - Math.random() * 0.3,
+            vx: (Math.random() - 0.5) * 0.3 * scale,
+            vy: (-0.35 - Math.random() * 0.3) * scale,
             life: 50,
             max: 50,
             smoke: true,

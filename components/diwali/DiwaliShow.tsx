@@ -43,6 +43,7 @@ export type DiwaliShowProps = {
 const POLL_MS = 250;
 
 const IDOLS = "/images/diwali/lakshmi-ganesh.webp";
+const LADDOO_ICON = "/images/diwali/laddoo-icon.webp";
 /** Samples that make the browser fetch each face's Devanagari and Latin files. */
 const HI_SAMPLE = "शुभ दीपावली प्रसाद";
 const EN_SAMPLE = "Wishing you";
@@ -361,6 +362,7 @@ export default function DiwaliShow({
   // Skip on a slow connection never shows late idols or a fallback font. ----
   useEffect(() => {
     new Image().src = IDOLS;
+    new Image().src = LADDOO_ICON;
     if (!("fonts" in document)) return;
     const faces = [
       `16px ${rozha.style.fontFamily}`,

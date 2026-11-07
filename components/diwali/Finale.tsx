@@ -171,7 +171,16 @@ export default function Finale({
               onClick={onOpenPlate}
               onAnimationEnd={onCtaEntered}
             >
-              <span aria-hidden className={styles.ld} />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                className={styles.ld}
+                src="/images/diwali/laddoo-icon.webp"
+                alt=""
+                aria-hidden
+                width={96}
+                height={96}
+                decoding="async"
+              />
               प्रसाद लीजिए
               <ArrowRight
                 aria-hidden
