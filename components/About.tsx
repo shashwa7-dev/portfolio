@@ -3,7 +3,7 @@ import { Check, ArrowRight, Coffee } from "@phosphor-icons/react/ssr";
 import Container from "@/components/layout/Container";
 import AvatarHover from "@/components/AvatarHover";
 import SpinAvatar from "@/components/common/SpinAvatar";
-import DiwaliAvatar from "@/components/diwali/DiwaliAvatar";
+import DiwaliAvatar from "@/components/diwali/DiwaliAvatarLazy";
 import { DIWALI_ENABLED } from "@/lib/diwali";
 import LocalTime from "@/components/LocalTime";
 import Label from "@/components/layout/Label";

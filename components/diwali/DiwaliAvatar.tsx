@@ -14,7 +14,6 @@ import {
   INITIAL,
   isOverlayOpen,
   reduce,
-  type ShowEvent,
   type ShowState,
 } from "@/lib/diwali/show";
 import { duration } from "@/lib/motionVariants";
@@ -99,25 +98,22 @@ export default function DiwaliAvatar({
     else if (ref) ref.current = el;
   };
 
-  const send = useCallback((event: ShowEvent) => {
-    if (event.type === "RETURNED" && phaseRef.current === "returning") {
-      soundRef.current?.close();
-      soundRef.current = null;
-      setSound(null);
-    }
-    dispatch(event);
-  }, []);
+  const send = dispatch;
 
   const photoRect = useCallback(
     () => photo.current?.getBoundingClientRect() ?? new DOMRect(),
     [],
   );
 
-  // Back at rest after the show: put the fuse back and return focus here.
+  // Back at rest after the show: close the show's sound, put the fuse back
+  // and return focus here. (The `sound` state is left as is: it is only read
+  // while the phase is past idle, and the next light replaces it.)
   useEffect(() => {
     const previous = phaseRef.current;
     phaseRef.current = state.phase;
     if (state.phase === "idle" && previous !== "idle") {
+      soundRef.current?.close();
+      soundRef.current = null;
       ring.current?.style.removeProperty("stroke");
       tail.current?.style.removeProperty("opacity");
       button.current?.focus({ preventScroll: true });
@@ -234,6 +230,8 @@ export default function DiwaliAvatar({
     if (phaseRef.current !== "idle") return;
     phaseRef.current = "lit";
     dispatch({ type: "LIGHT" });
+    // Guard: never leave an earlier show's AudioContext open.
+    soundRef.current?.close();
     const s = createDiwaliSound();
     s.unlock();
     s.strike();
