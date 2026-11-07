@@ -176,7 +176,7 @@
 /* ---- The show (DiwaliShow) ----
    A portal on document.body, above the dock (z up to 56) and the command
    palette (z-60). Layers inside, bottom to top: blackout (with the song),
-   spark canvas, flyer (photo / chakri), toran, Skip.
+   spark canvas, flyer (photo / chakri), finale, toran, Skip, plate.
    `data-on` is set once the flyer has lifted off and removed on the way home;
    `data-phase` mirrors the show's phase. Ported from the flow prototype. */
 .show {
@@ -432,16 +432,6 @@
       0 6px 24px rgba(0, 0, 0, 0.5),
       0 0 0 16px rgba(255, 210, 90, 0);
   }
-}
-
-/* Temporary until Task 9: a centred stand-in for the plate, over the finale. */
-.tempStage {
-  position: absolute;
-  inset: 0;
-  z-index: 7;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 /* Reduced motion: no spin, jet or pulse (SparkCanvas is not mounted); the
@@ -965,5 +955,227 @@
   .prasad:hover:not(:disabled),
   .prasad:hover:not(:disabled) .arr {
     transform: none;
+  }
+}
+
+/* ---- The prasad plate (Plate) ----
+   Over the finale card, the toran and Skip (z 7). The stage takes no pointer
+   events; only the laddoo buttons do, so they are the only clickable things
+   while the plate is up. Sized by the window (the stage is not a container). */
+.plateStage {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+  color: #ffe7b0;
+  text-align: center;
+  transition: opacity var(--duration-diwali-return) ease;
+}
+
+/* On the way home the plate fades with the card. */
+.show[data-phase="returning"] .plateStage {
+  opacity: 0;
+}
+
+.plateCol {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+}
+
+.ask {
+  margin: 0 0 clamp(4px, 1.2vh, 12px);
+  font-family: var(--font-diwali-text), serif;
+  font-size: clamp(26px, 4vw, 40px);
+  font-weight: 400;
+  line-height: 1.3;
+  text-shadow: 0 0 18px rgba(255, 170, 50, 0.6);
+  transition: opacity var(--duration-med) ease;
+}
+
+.ask small,
+.wah small {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--font-diwali-text), Georgia, serif;
+  font-size: clamp(14px, 1.6vw, 16px);
+  font-style: italic;
+  line-height: 1.4;
+  color: #e9d9b8;
+  text-shadow: none;
+}
+
+.plateStage[data-picked] .ask {
+  opacity: 0;
+}
+
+/* The photographed plate: 3:2, the same framing as the source the spots were
+   measured on. */
+.plate {
+  position: relative;
+  width: min(560px, 92vw, 54vh * 1.5);
+  aspect-ratio: 1536 / 1024;
+  transition: opacity var(--duration-diwali-float) ease;
+}
+
+.plateStage[data-picked] .plate {
+  opacity: 0.33;
+}
+
+.plateImg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.6));
+}
+
+/* One round, invisible button per laddoo; a gold ring on hover and focus. */
+.laddooBtn {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.laddooBtn:disabled {
+  cursor: default;
+  pointer-events: none;
+}
+
+.laddooBtn:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px #f6c453,
+    0 0 24px rgba(255, 190, 80, 0.6);
+}
+
+@media (hover: hover) {
+  .laddooBtn:hover:not(:disabled) {
+    box-shadow:
+      0 0 0 3px #f6c453,
+      0 0 24px rgba(255, 190, 80, 0.6);
+  }
+}
+
+/* The picked laddoo: a cut-out laid exactly over its spot, floated up. */
+.cutout {
+  position: absolute;
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cutout[data-on] {
+  opacity: 1;
+}
+
+.cutoutImg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  filter: drop-shadow(0 14px 24px rgba(0, 0, 0, 0.55));
+}
+
+.wah {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  margin: 0;
+  padding: 0 16px;
+  font-family: var(--font-diwali-display), var(--font-diwali-text), serif;
+  font-size: clamp(30px, 5vw, 48px);
+  font-weight: 400;
+  line-height: 1.2;
+  text-shadow: 0 0 18px rgba(255, 170, 50, 0.6);
+  opacity: 0;
+}
+
+.wah[data-on] {
+  opacity: 1;
+}
+
+.crumb {
+  position: absolute;
+  z-index: 2;
+  border-radius: 50%;
+  background: #f0a12a;
+  box-shadow: inset -1px -1px 2px rgba(120, 50, 0, 0.5);
+  pointer-events: none;
+}
+
+.crumb[data-light] {
+  background: #ffd27a;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .plate {
+    animation: plateRise var(--duration-diwali-plate-rise) var(--ease-diwali-drop) backwards;
+  }
+
+  .ask {
+    animation: finFade var(--duration-diwali-plate-rise) ease backwards;
+  }
+
+  .laddooBtn {
+    transition: box-shadow var(--duration-fast) ease;
+  }
+
+  .cutout {
+    transition: transform var(--duration-diwali-float) var(--ease-diwali-drop);
+  }
+
+  .cutoutImg[data-bitten] {
+    animation: squash var(--duration-diwali-squash) ease-out;
+  }
+
+  .wah[data-on] {
+    animation: finRise var(--duration-diwali-rise) ease-out backwards;
+  }
+
+  .crumb {
+    animation: crumbFall var(--d) ease-in forwards;
+  }
+
+  @keyframes plateRise {
+    from {
+      opacity: 0;
+      transform: translateY(60px) scale(0.92);
+    }
+  }
+
+  @keyframes squash {
+    40% {
+      transform: scale(0.94, 1.04);
+    }
+  }
+
+  @keyframes crumbFall {
+    to {
+      opacity: 0;
+      transform: translate(var(--dx), var(--dy)) rotate(var(--rot));
+    }
+  }
+}
+
+/* Reduced motion: the plate and the words fade in place, the laddoo appears
+   in the middle at once, and the bite swaps the image with no squash. */
+@media (prefers-reduced-motion: reduce) {
+  .plate {
+    animation: finFade var(--duration-diwali-plate-rise) ease backwards;
+  }
+
+  .wah[data-on] {
+    animation: finFade var(--duration-diwali-rise) ease backwards;
   }
 }

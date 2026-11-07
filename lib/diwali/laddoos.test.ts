@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { LADDOO_SPOTS, spotBox } from "./laddoos";
+import { LADDOO_IMAGE, LADDOO_SPOTS, laddooImageBox, spotBox } from "./laddoos";
 
 describe("laddoo spots", () => {
   it("has nine, all inside the plate", () => {
@@ -21,5 +21,13 @@ describe("laddoo spots", () => {
       expect(b.top).toBeGreaterThanOrEqual(0);
       expect(b.top + b.height).toBeLessThanOrEqual(100);
     }
+  });
+  it("laddooImageBox puts the image's ball on the given circle", () => {
+    const b = laddooImageBox(100, 200, 73);
+    const k = b.width / LADDOO_IMAGE.width;
+    expect(b.left + LADDOO_IMAGE.cx * k).toBeCloseTo(100);
+    expect(b.top + LADDOO_IMAGE.cy * k).toBeCloseTo(200);
+    expect(2 * LADDOO_IMAGE.r * k).toBeCloseTo(73);
+    expect(b.height / b.width).toBeCloseTo(LADDOO_IMAGE.height / LADDOO_IMAGE.width);
   });
 });

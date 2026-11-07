@@ -18,6 +18,7 @@ import { Toran } from "@/components/diwali/art/Toran";
 import SparkCanvas from "@/components/diwali/SparkCanvas";
 import FireworksCanvas from "@/components/diwali/FireworksCanvas";
 import Finale from "@/components/diwali/Finale";
+import Plate from "@/components/diwali/Plate";
 import type { DiwaliSound } from "@/components/diwali/sound";
 import {
   createPlayer,
@@ -81,7 +82,6 @@ export default function DiwaliShow({
   const spin = useRef<HTMLDivElement>(null);
   const vid = useRef<HTMLDivElement>(null);
   const skip = useRef<HTMLButtonElement>(null);
-  const temp = useRef<HTMLButtonElement>(null);
   const player = useRef<DiwaliPlayer | null>(null);
   const phaseRef = useRef<Phase>(phase);
   const ended = useRef(false);
@@ -146,15 +146,9 @@ export default function DiwaliShow({
         // chakri fades (CSS); Finale moves focus to its button as it appears.
         break;
       case "plate":
-        // Temporary until Task 9: the plate's own buttons.
-        temp.current?.focus({ preventScroll: true });
-        break;
       case "picked":
-        // Temporary until Task 9: the bite plays out, then the way home.
-        timer = window.setTimeout(
-          () => send({ type: "PICK_DONE" }),
-          duration.diwaliPicked * 1000,
-        );
+        // Plate moves focus to its first laddoo, plays the bite and sends
+        // PICK_DONE itself.
         break;
       case "returning": {
         if (!el || !fly) break;
@@ -318,7 +312,8 @@ export default function DiwaliShow({
   const sparks =
     !reduced &&
     (phase === "centre" || phase === "corner" || phase === "finale");
-  // The card stays up through the plate and fades out on the way home.
+  // The card (and the plate, once up) stays through the bite and fades out on
+  // the way home; returning only ever follows a pick.
   const finale =
     phase === "finale" ||
     phase === "plate" ||
@@ -386,18 +381,13 @@ export default function DiwaliShow({
           </button>
         </div>
       )}
-      {/* Temporary until Task 9: a stand-in for the plate. */}
-      {phase === "plate" && (
-        <div className={styles.tempStage}>
-          <button
-            ref={temp}
-            type="button"
-            className={styles.skip}
-            onClick={() => dispatch({ type: "PICK", index: 0 })}
-          >
-            प्रसाद ग्रहण कीजिए
-          </button>
-        </div>
+      {(plating || phase === "returning") && (
+        <Plate
+          phase={phase === "plate" ? "plate" : "picked"}
+          sound={sound}
+          onPick={(index) => dispatch({ type: "PICK", index })}
+          onDone={() => dispatch({ type: "PICK_DONE" })}
+        />
       )}
     </div>,
     document.body,
