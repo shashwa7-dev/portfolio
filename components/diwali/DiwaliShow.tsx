@@ -72,7 +72,8 @@ function place(el: HTMLElement, box: FlyerBox) {
  * the song pauses and fades, the chakri fades, the शुभ दीपावली card rises in
  * and the fireworks start; they keep going under the plate (`plate`, `picked`).
  * On the way out (`returning`) it all lifts away and the chakri flips back
- * into the photo as it flies home.
+ * into the photo as it flies home; the page stays dimmed with the landed
+ * photo above it for a beat, then the dim lifts and the show ends.
  *
  * Positions and the flip are written to the DOM, not React state; the CSS
  * module carries the transitions, keyed on `data-phase` and `data-on`.
@@ -183,14 +184,23 @@ export default function DiwaliShow({
         break;
       case "returning": {
         if (!el || !fly) break;
+        // The flight home, over a page that stays dimmed (`data-dim`): the
+        // landed photo sits above the dim for the hold, then the dim lifts,
+        // and only then does the hero photo take over (RETURNED).
+        el.dataset.dim = "";
         delete el.dataset.on;
         delete fly.dataset.flipped;
         if (spin.current) spin.current.style.transform = "";
         applyBoxRef.current("returning", true);
-        timer = window.setTimeout(
-          () => send({ type: "RETURNED" }),
-          duration.diwaliReturn * 1000,
-        );
+        const landed =
+          (duration.diwaliReturn + duration.diwaliReturnHold) * 1000;
+        timer = window.setTimeout(() => {
+          delete el.dataset.dim;
+          timer = window.setTimeout(
+            () => send({ type: "RETURNED" }),
+            duration.diwaliBlackout * 1000,
+          );
+        }, landed);
         break;
       }
     }

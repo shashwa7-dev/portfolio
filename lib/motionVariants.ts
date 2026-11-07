@@ -115,8 +115,10 @@ export const duration = {
   diwaliBiteAt: 0.9,
   /** From the pick to the way home: how long the bitten laddoo and वाह! stay before the show returns. */
   diwaliPicked: 3,
-  /** The way home: the chakri flying back into the hero photo while the card, plate and blackout fade. */
+  /** The way home: the chakri flying back into the hero photo while the card and plate fade and the blackout eases to a dim. */
   diwaliReturn: 1.15,
+  /** After the landing: the page stays dimmed with the landed photo above it, before the dim lifts (over diwaliBlackout). */
+  diwaliReturnHold: 1.5,
   /** The bitten laddoo's squash at the bite. */
   diwaliSquash: 0.18,
   /** One sway of the toran's hanging strings. */
@@ -137,7 +139,7 @@ export const duration = {
   diwaliAtDivider: 1.3,
   /** Finale entrance offset: the blessing, English line and signature. */
   diwaliAtBlessing: 1.6,
-  /** Finale entrance offset: the prasad button (focus moves to it then). */
+  /** Finale entrance offset: the prasad button (focus moves to it once its entrance has finished). */
   diwaliAtCta: 2.4,
   /** Finale entrance offset: the hint under the prasad button. */
   diwaliAtHint: 2.8,

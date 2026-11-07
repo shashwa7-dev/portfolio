@@ -80,6 +80,12 @@
   opacity: 1;
 }
 
+/* On the way home the blackout eases to a dim and holds there, under the
+   landed photo, until DiwaliShow lifts it (removes `data-dim`). */
+.show[data-dim] .blackout {
+  opacity: 0.85;
+}
+
 /* The song fills the screen like a background: 16:9, cropped to cover. */
 .vid {
   position: absolute;
@@ -411,7 +417,7 @@
   transition: opacity var(--duration-diwali-return) ease;
 }
 
-/* On the way home the card fades with the blackout. */
+/* On the way home the card fades as the blackout eases to its dim. */
 .show[data-phase="returning"] .finale {
   opacity: 0;
 }
