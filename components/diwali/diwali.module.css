@@ -172,3 +172,335 @@
     transition: stroke var(--duration-diwali-fuse) linear;
   }
 }
+
+/* ---- The show (DiwaliShow) ----
+   A portal on document.body, above the dock (z up to 56) and the command
+   palette (z-60). Layers inside, bottom to top: blackout (with the song),
+   spark canvas, flyer (photo / chakri), toran, Skip.
+   `data-on` is set once the flyer has lifted off and removed on the way home;
+   `data-phase` mirrors the show's phase. Ported from the flow prototype. */
+.show {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  overflow: hidden;
+}
+
+.blackout {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  container-type: size;
+  background: #000;
+  opacity: 0;
+  transition: opacity var(--duration-diwali-blackout) ease;
+}
+
+.show[data-on] .blackout {
+  opacity: 1;
+}
+
+/* The song fills the screen like a background: 16:9, cropped to cover. */
+.vid {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100cqw, 100cqh * 16 / 9);
+  aspect-ratio: 16 / 9;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--duration-diwali-blackout) ease;
+}
+
+.vid[data-on] {
+  opacity: 1;
+}
+
+.vid iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  pointer-events: none;
+}
+
+.showSparks {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* The flyer: the outer box moves, .spin turns, .flip turns photo to chakri. */
+.flyer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 3;
+  pointer-events: none;
+  perspective: 800px;
+  transition-property: left, top, width, height, opacity;
+  transition-duration: var(--duration-diwali-flight), var(--duration-diwali-flight),
+    var(--duration-diwali-flight), var(--duration-diwali-flight), var(--duration-diwali-blackout);
+  transition-timing-function: var(--ease-diwali-flight), var(--ease-diwali-flight),
+    var(--ease-diwali-flight), var(--ease-diwali-flight), ease;
+}
+
+.show[data-phase="corner"] .flyer {
+  transition-duration: var(--duration-diwali-corner), var(--duration-diwali-corner),
+    var(--duration-diwali-corner), var(--duration-diwali-corner), var(--duration-diwali-blackout);
+}
+
+.show[data-phase="returning"] .flyer {
+  transition-duration: var(--duration-diwali-return), var(--duration-diwali-return),
+    var(--duration-diwali-return), var(--duration-diwali-return), var(--duration-diwali-blackout);
+}
+
+/* At the finale the chakri fades; it comes back to fly home. */
+.show[data-phase="finale"] .flyer,
+.show[data-phase="plate"] .flyer,
+.show[data-phase="picked"] .flyer {
+  opacity: 0;
+}
+
+.spin {
+  position: absolute;
+  inset: 0;
+}
+
+.flip {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: transform var(--duration-diwali-flip) var(--ease-diwali-flight);
+}
+
+.flyer[data-flipped] .flip {
+  transform: rotateY(180deg);
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 9999px;
+  backface-visibility: hidden;
+}
+
+.facePhoto {
+  background: #fff;
+}
+
+.facePhoto img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.faceChakri {
+  overflow: visible;
+  transform: rotateY(180deg);
+  filter: drop-shadow(0 0 30px rgba(255, 170, 60, 0.45));
+}
+
+.faceChakri svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* The toran drops in with a bounce just after the lights go out, and lifts
+   away on the way home. Its top string is tucked above the screen edge. */
+.toran {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 5;
+  height: 140px;
+  pointer-events: none;
+  transform: translateY(-110%);
+  transition: transform calc(var(--duration-diwali-return) * 0.6) ease-in;
+}
+
+.show[data-on] .toran {
+  transition: none;
+  animation: toranDrop var(--duration-diwali-toran-drop) var(--ease-diwali-drop)
+    calc(var(--duration-diwali-blackout) * 0.75) forwards;
+}
+
+.toran svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+@keyframes toranDrop {
+  to {
+    transform: none;
+  }
+}
+
+/* Skip: bottom left, a solid marigold pill that fades in after a beat and
+   pulses three times. */
+.ctrl {
+  position: absolute;
+  left: max(24px, env(safe-area-inset-left));
+  bottom: max(24px, env(safe-area-inset-bottom));
+  z-index: 6;
+  display: flex;
+  animation: ctrlIn var(--duration-med) var(--ease-out)
+    calc(var(--duration-diwali-blackout) + var(--duration-base)) both;
+}
+
+@keyframes ctrlIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+.skip {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px 12px 20px;
+  border: 0;
+  border-radius: 9999px;
+  background: #ffd25a;
+  color: #1a1206;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.25) inset,
+    0 6px 24px rgba(0, 0, 0, 0.5),
+    0 0 0 0 rgba(255, 210, 90, 0.6);
+  transition:
+    transform var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+  animation: skipPulse var(--duration-diwali-pulse) ease-out
+    calc(var(--duration-diwali-blackout) * 2) 3;
+}
+
+.skip:hover {
+  background: #ffe28a;
+  transform: translateY(-1px);
+}
+
+.skip:active {
+  transform: scale(0.97);
+}
+
+.skip:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+.skip kbd {
+  padding: 3px 5px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.08);
+  color: #5a3d06;
+  font-family: ui-monospace, monospace;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+@keyframes skipPulse {
+  0% {
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.25) inset,
+      0 6px 24px rgba(0, 0, 0, 0.5),
+      0 0 0 0 rgba(255, 210, 90, 0.6);
+  }
+  100% {
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.25) inset,
+      0 6px 24px rgba(0, 0, 0, 0.5),
+      0 0 0 16px rgba(255, 210, 90, 0);
+  }
+}
+
+/* Temporary until Task 8/9: a centred stand-in for the finale and plate. */
+.tempStage {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Reduced motion: no spin, jet or pulse (SparkCanvas is not mounted); the
+   flip is a crossfade, moves jump, the toran and Skip fade in place. */
+@media (prefers-reduced-motion: reduce) {
+  .flyer,
+  .show[data-phase="corner"] .flyer,
+  .show[data-phase="returning"] .flyer {
+    transition: opacity var(--duration-diwali-blackout) ease;
+  }
+
+  .flip,
+  .flyer[data-flipped] .flip {
+    transform: none;
+    transition: none;
+  }
+
+  .face {
+    backface-visibility: visible;
+    transition: opacity var(--duration-diwali-flip) ease;
+  }
+
+  .faceChakri {
+    transform: none;
+    opacity: 0;
+  }
+
+  .flyer[data-flipped] .faceChakri {
+    opacity: 1;
+  }
+
+  .flyer[data-flipped] .facePhoto {
+    opacity: 0;
+  }
+
+  .toran {
+    transform: none;
+    opacity: 0;
+    transition: opacity var(--duration-diwali-blackout) ease;
+  }
+
+  .show[data-on] .toran {
+    animation: none;
+    opacity: 1;
+  }
+
+  @keyframes ctrlIn {
+    from {
+      opacity: 0;
+    }
+  }
+
+  .skip {
+    animation: none;
+    transition: background-color var(--duration-fast) var(--ease-out);
+  }
+
+  .skip:hover,
+  .skip:active {
+    transform: none;
+  }
+}

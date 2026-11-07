@@ -1,4 +1,4 @@
-export const VIDEO_ID = "QirCMADtks8";
+/** The song stops at 1:07. (Its id lives in `lib/diwali/video.ts`, out of the hero bundle.) */
 export const VIDEO_END_SECONDS = 67;
 
 export type Phase =
