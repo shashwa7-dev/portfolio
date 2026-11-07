@@ -455,44 +455,6 @@
   }
 }
 
-/* The gold border: one clean rule plus a thin inner line. */
-.frame {
-  position: absolute;
-  inset: clamp(8px, 1.6cqmin, 16px);
-  border: 1.5px solid #c9932e;
-  border-radius: 4px;
-  pointer-events: none;
-  box-shadow:
-    inset 0 0 0 4px transparent,
-    inset 0 0 0 5px rgba(201, 147, 46, 0.4);
-}
-
-.corner {
-  position: absolute;
-  width: clamp(40px, 9cqmin, 84px);
-  height: auto;
-}
-
-.cornerTl {
-  left: -2px;
-  top: -2px;
-}
-
-.cornerTr {
-  right: -2px;
-  top: -2px;
-}
-
-.cornerBl {
-  left: -2px;
-  bottom: -2px;
-}
-
-.cornerBr {
-  right: -2px;
-  bottom: -2px;
-}
-
 /* The content column, between the toran and the rangoli. */
 .col {
   position: absolute;

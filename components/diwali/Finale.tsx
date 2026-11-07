@@ -10,7 +10,6 @@ import {
 } from "react";
 import { ArrowRight } from "@phosphor-icons/react/ssr";
 import { duration } from "@/lib/motionVariants";
-import { CornerMotif } from "@/components/diwali/art/CornerMotif";
 import { Diya } from "@/components/diwali/art/Diya";
 import { LotusDivider } from "@/components/diwali/art/LotusDivider";
 import { Rangoli } from "@/components/diwali/art/Rangoli";
@@ -40,13 +39,6 @@ const PETAL_FALL_MIN_S = 7;
 const PETAL_FALL_SPREAD_S = 7;
 const PETAL_HEAD_START_S = 10;
 
-const CORNERS = [
-  ["tl", styles.cornerTl],
-  ["tr", styles.cornerTr],
-  ["bl", styles.cornerBl],
-  ["br", styles.cornerBr],
-] as const;
-
 function makePetals(): CSSProperties[] {
   return Array.from({ length: PETALS }, (_, i) => {
     const sc = 0.7 + Math.random() * 0.8;
@@ -65,11 +57,11 @@ function makePetals(): CSSProperties[] {
 
 /**
  * The शुभ दीपावली card, ported from the finale screens prototype (v5): a
- * kumkum-red wash, falling marigold and rose petals, a gold frame with four
- * paisley corners, Lakshmi and Ganesh with a breathing glow, the title, a
- * lotus divider, the blessing, an English line and the signature, then the
+ * kumkum-red wash, falling marigold and rose petals, Lakshmi and Ganesh with
+ * a breathing glow, the title, a lotus divider, the blessing, an English line and the signature, then the
  * prasad button and its hint, over a rangoli and a row of diyas that light one
- * after another. No mandir arch.
+ * after another. No mandir arch, and no border: the gold frame and its four
+ * corner motifs were removed.
  *
  * Laid out with container query units on its own box, so it fits a desktop,
  * tablet or phone without breakpoints on the window. The fireworks and the
@@ -127,15 +119,6 @@ export default function Finale({
           ))}
         </div>
       )}
-      <div aria-hidden className={styles.frame}>
-        {CORNERS.map(([corner, cls]) => (
-          <CornerMotif
-            key={corner}
-            corner={corner}
-            className={`${styles.corner} ${cls}`}
-          />
-        ))}
-      </div>
       <div aria-hidden className={styles.rangoli}>
         <Rangoli />
       </div>
