@@ -51,3 +51,124 @@
     }
   }
 }
+
+/* ---- Hero fuse (DiwaliAvatar) ----
+   Sized in em, like AvatarHover: the photo is 1.38em, inside the h1. The fuse
+   box is the prototype's 120 unit square around a 92 unit photo, so it reaches
+   14/92 of the photo (0.21em) past each edge. The spark canvas is the
+   prototype's 400 unit square, reaching 140 units past the fuse box. */
+.fuseButton {
+  --fuse-cord: #8a5a2b;
+  --fuse-tip: #c9a36a;
+  --fuse-burnt: #3a2a1c;
+}
+
+.fusePhoto {
+  position: relative;
+  display: block;
+  width: 1.38em;
+  height: 1.38em;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: #fff;
+}
+
+.fuseImg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1);
+  transition: filter var(--duration-base) var(--ease-out);
+}
+
+.fuseButton:hover .fuseImg,
+.fuseButton[data-phase="lit"] .fuseImg {
+  filter: none;
+}
+
+.fuseBox {
+  position: absolute;
+  inset: -0.21em;
+  pointer-events: none;
+}
+
+.fuseCord {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.fuseRing {
+  stroke: var(--fuse-cord);
+}
+
+.fuseTail path {
+  stroke: var(--fuse-cord);
+}
+
+.fuseTail circle {
+  fill: var(--fuse-tip);
+}
+
+.fuseSparks {
+  position: absolute;
+  left: -116.667%;
+  top: -116.667%;
+  width: 333.333%;
+  height: 333.333%;
+}
+
+/* Once the show is open the photo has flown off: hide it and the spent fuse. */
+.fuseButton[data-overlay] .fusePhoto,
+.fuseButton[data-overlay] .fuseCord {
+  visibility: hidden;
+}
+
+/* The matchstick: its head (8,8 of the 70x16 drawing) sits on the pointer.
+   --mx / --my are written by DiwaliAvatar on pointer move. */
+.match {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 5;
+  display: none;
+  width: 1.6em;
+  height: 0.366em;
+  pointer-events: none;
+  opacity: 0;
+  transform-origin: 0.183em 0.183em;
+  transform: translate(var(--mx, 0), var(--my, 0)) translate(-0.183em, -0.183em) rotate(-35deg);
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.matchSvg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .fuseButton[data-phase="idle"] {
+    cursor: none;
+  }
+
+  .match {
+    display: block;
+  }
+
+  .fuseButton[data-phase="idle"]:hover .match {
+    opacity: 1;
+  }
+}
+
+/* Reduced motion: no spark, the ring simply darkens over the fuse's burn. */
+@media (prefers-reduced-motion: reduce) {
+  .fuseButton[data-phase="lit"] .fuseRing,
+  .fuseButton[data-phase="lit"] .fuseTail path {
+    stroke: var(--fuse-burnt);
+    transition: stroke var(--duration-diwali-fuse) linear;
+  }
+}
