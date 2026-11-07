@@ -91,6 +91,7 @@ export default function DiwaliAvatar({
   const soundRef = useRef<DiwaliSound | null>(null);
   const phaseRef = useRef<ShowState["phase"]>(state.phase);
   const timer = useRef(0);
+  const waitTimer = useRef(0);
   /** Set while focus is put back here after the show, so the tooltip stays shut. */
   const quietFocus = useRef(false);
 
@@ -130,6 +131,7 @@ export default function DiwaliAvatar({
   const abort = useCallback(() => {
     if (phaseRef.current === "idle") return;
     window.clearTimeout(timer.current);
+    window.clearTimeout(waitTimer.current);
     fuse.current?.rest();
     dispatch({ type: "ABORT" });
   }, []);
@@ -225,6 +227,7 @@ export default function DiwaliAvatar({
   useEffect(
     () => () => {
       window.clearTimeout(timer.current);
+      window.clearTimeout(waitTimer.current);
       soundRef.current?.close();
       soundRef.current = null;
     },
@@ -244,8 +247,15 @@ export default function DiwaliAvatar({
     // The show takes over only once its chunk is here (usually long before
     // the fuse has burnt). A failed import has already aborted the light.
     const done = () => {
+      // A stalled import neither resolves nor rejects: give up after a wait.
+      window.clearTimeout(waitTimer.current);
+      waitTimer.current = window.setTimeout(
+        abort,
+        duration.diwaliShowWait * 1000,
+      );
       ready.then(
         () => {
+          window.clearTimeout(waitTimer.current);
           if (phaseRef.current !== "lit") return;
           send({ type: "FUSE_BURNT" });
           soundRef.current?.whoomp();
