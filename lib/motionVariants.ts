@@ -18,6 +18,10 @@ export const ease = {
    * this file is that no ease-out can describe an arc that comes back down.
    */
   throw: [0.33, 0.02, 0.62, 1] as const,
+  /** Scene curve for the Diwali show. Not a UI curve: a symmetric ease-in-out for objects travelling across the scene. */
+  diwaliFlight: [0.65, 0, 0.35, 1] as const,
+  /** Scene curve for the Diwali show. Not a UI curve: an overshooting drop that settles hard. */
+  diwaliDrop: [0.3, 1.4, 0.5, 1] as const,
 } as const;
 
 export const duration = {
@@ -82,6 +86,49 @@ export const duration = {
   gogglesOff: 0.24,
   /** The one glint across the goggles' lenses after they land. */
   gogglesGlint: 0.65,
+  /**
+   * Diwali scene (lib/diwali). Mirrored as --duration-diwali-* in globals.css.
+   */
+  /** The fuse burning down before the Diwali show's blackout. */
+  diwaliFuse: 1.4,
+  /** The scene going dark before the show starts. */
+  diwaliBlackout: 0.8,
+  /** A lamp or object flying across the Diwali scene. */
+  diwaliFlight: 1.1,
+  /** One half-turn of a flipped object in the Diwali scene. */
+  diwaliFlip: 0.9,
+  /** How long the centre of the Diwali scene holds still. */
+  diwaliCentreHold: 5,
+  /** The move of an object into a corner of the Diwali scene. */
+  diwaliCorner: 1.1,
+  /** The toran (door garland) dropping into place. */
+  diwaliToranDrop: 1.4,
+  /** Something rising up through the Diwali scene. */
+  diwaliRise: 0.9,
+  /** The idols arriving in the Diwali scene. */
+  diwaliIdols: 1.4,
+  /** A plate of sweets rising into view. */
+  diwaliPlateRise: 0.6,
+  /** A small object floating in the Diwali scene. */
+  diwaliFloat: 0.7,
+  /** The moment a sweet is bitten in the Diwali scene. */
+  diwaliBiteAt: 0.9,
+  /** How long a picked-up object stays in the Diwali scene's hand. */
+  diwaliPicked: 3,
+  /** An object returning to its place in the Diwali scene. */
+  diwaliReturn: 1.15,
+  /** The squash of a sweet when it lands. */
+  diwaliSquash: 0.18,
+  /** One sway of a hanging object in the Diwali scene. */
+  diwaliSway: 4,
+  /** One flicker of a diya flame. */
+  diwaliFlicker: 1.1,
+  /** One breath of the Diwali scene's glow. */
+  diwaliGlow: 4,
+  /** One pass of a shine across a Diwali object. */
+  diwaliShine: 3.2,
+  /** One pulse of the Diwali scene's lights. */
+  diwaliPulse: 2.4,
 } as const;
 
 /** Per-item stagger offsets (seconds). Use instead of literal `i * 0.05`. */
