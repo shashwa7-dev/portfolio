@@ -19,7 +19,7 @@
 - Copy, verbatim, no em-dashes: title `शुभ दीपावली`; blessing `माँ लक्ष्मी और श्री गणेश की कृपा से आपका घर सुख, समृद्धि और प्रकाश से भरा रहे।`; English `Wishing you and your family a very happy Diwali.`; signature `शाश्वत`; CTA `प्रसाद लीजिए`, hint `Take a laddoo before you go`; plate heading `प्रसाद ग्रहण कीजिए`, sub `Take a laddoo before you go`; after the bite `वाह!`, sub `Happy Diwali. Enjoy the rest of it.`; Skip button `Skip` + forward icon + `Esc` key hint; hero tooltip while enabled `Open to work · Click to light the chakri`; overlay dialog label `Diwali celebration`; idol alt `Lakshmi and Ganesh`.
 - Repo rules: no `text-[Npx]`, no `transition-all`, no `font-serif`, icons only from `@phosphor-icons/react/ssr`; durations are tokens in `lib/motionVariants.ts` mirrored as `--duration-*` in `app/globals.css`; `scripts/verify-simplification.sh`, `npm run lint`, `npm test`, `npm run build` all pass.
 - Fonts: Rozha One and Tiro Devanagari Hindi via `next/font/google`, subsets `devanagari` + `latin`, declared only inside `components/diwali/`.
-- Overlay sits above the dock (dock reaches z-index 56; use 100+), locks page scroll, is `role="dialog" aria-modal="true"`.
+- Overlay sits above the dock (z-index up to 56) and the command palette (`z-60`); use `z-index: 100` and up. It locks page scroll, is `role="dialog" aria-modal="true"`.
 - Reduced motion (spec §7): no spin, spark jet, fireworks, petals, flicker, shine or pulse; flip becomes a crossfade; moves jump instead of glide; diyas lit from the start; the bite still happens without float or crumbs.
 - No browser verification steps: Shashwat checks visuals himself.
 
@@ -29,7 +29,23 @@
 2. **Skip before the video loads:** Skip or Esc pressed while YouTube is still loading must land on the finale and the late-arriving player must never start playing over it. Pinned in Task 2 (`shouldPlayVideo`) and used in Task 7.
 3. **Phone rotation / window resize mid-show:** the chakri must stay centred (or in the corner) and the canvases must match the new size. Pinned in Task 2 (`chakriBox` for both phases at two sizes) and Task 7 (resize listener recomputes).
 4. **`end=67` not firing** (tab in background, YouTube quirk): the show must still reach the finale at 1:07. Pinned in Task 2 (`videoReachedEnd`) and polled in Task 7.
-5. **Leaving the page mid-show** (dock link, back button): audio context closed, rAF loops stopped, player destroyed, scroll unlocked, no stray portal. Covered by Task 7's unmount checklist step (not unit-testable here).
+5. **Global shortcuts firing under the overlay:** `components/KeyboardShortcuts.tsx` and `CommandPalette.tsx` listen on `window` keydown; while the overlay is open, a key like `g`, `/` or ⌘K must not navigate, open the palette or toggle the theme behind the show. Pinned in Task 7 Step 3 (capture-phase listener).
+6. **Leaving the page mid-show** (dock link, back button): audio context closed, rAF loops stopped, player destroyed, scroll unlocked, no stray portal. Covered by Task 7's unmount checklist step (not unit-testable here).
+
+**How "not in the bundle" is checked.** A lazily imported module always gets its own file in `.next/static/chunks`, so grepping that folder proves nothing. What matters is what the homepage loads up front: the `<script src="/_next/static/chunks/….js">` tags in the prerendered `.next/server/app/index.html`. Tasks 6 and 10 use this script (save it as `scripts/check-diwali-bundle.sh`, executable, created in Task 6):
+```bash
+#!/usr/bin/env bash
+# Fails if the homepage's initial JS mentions the Diwali show's heavy parts.
+set -euo pipefail
+html=.next/server/app/index.html
+hits=0
+for c in $(grep -oE '/_next/static/chunks/[^"]+\.js' "$html" | sort -u); do
+  f=".next${c#/_next}"
+  if grep -qE 'QirCMADtks8|iframe_api|Rozha|laddoo-plate|lakshmi-ganesh' "$f"; then echo "heavy Diwali code in initial chunk: $c"; hits=1; fi
+done
+exit $hits
+```
+With the flag **on** this must pass (the show is lazy). With the flag **off** it must pass and, in addition, `grep -c "diwali" .next/server/app/index.html` must print `0` (no fuse markup in the HTML).
 
 ---
 
@@ -105,12 +121,14 @@ Transitions: `idle+LIGHT→lit`; `lit+FUSE_BURNT→centre`; `centre+CENTRE_HOLD_
   - `export function burstTier(r: number): BurstTier` (`r < 0.22` huge, `r < 0.65` medium, else small)
   - `export const TIER_SIZE: Record<BurstTier, number> = { huge: 1, medium: 0.55, small: 0.28 };`
   - `export function emberCount(size: number, jitter: number): number` = `Math.round(50 + 190 * size * (0.8 + jitter * 0.4))`
-  - `export type LaddooSpot = { x: number; y: number; r: number };` (centre x and radius r in percent of the plate image's width, y in percent of its height)
+  - `export type LaddooSpot = { x: number; y: number; r: number };` (centre x and radius r in percent of the plate image's **width**, centre y in percent of its **height**)
+  - `export const PLATE_ASPECT = 1536 / 1024;`
+  - `export function spotBox(s: LaddooSpot): { left: number; top: number; width: number; height: number }` in percent of the plate box: `left = x - r`, `width = 2r`, `height = 2r * PLATE_ASPECT`, `top = y - r * PLATE_ASPECT`. Plate.tsx positions buttons with this, never with raw `r` as a height.
   - `export const LADDOO_SPOTS: readonly LaddooSpot[]` (nine spots, front-most last so DOM order matches stacking)
 
 - [ ] **Step 1: Write the failing tests.**
   - fireworks: `burstTier(0)` huge, `burstTier(0.219)` huge, `burstTier(0.22)` medium, `burstTier(0.649)` medium, `burstTier(0.65)` small, `burstTier(0.999)` small; `emberCount(1, 0.5) === 240`, `emberCount(0.28, 0) === 93`; over 10 000 evenly spaced `r` values the share of huge is 0.22 ± 0.01.
-  - laddoos: `LADDOO_SPOTS.length === 9`; every spot has `x - r >= 0`, `x + r <= 100`, `y` in `(0, 100)`, `r > 3`.
+  - laddoos: `LADDOO_SPOTS.length === 9`; every spot has `x - r >= 0`, `x + r <= 100`, `y` in `(0, 100)`, `r > 3`; `spotBox({x:50,y:50,r:10})` → `{ left: 40, width: 20, height: 30, top: 35 }`; every spot's `spotBox` has `top >= 0` and `top + height <= 100`.
 - [ ] **Step 2:** Run `npx vitest run lib/diwali`. Expected: the two new files FAIL.
 - [ ] **Step 3:** Implement both modules. Starting spots, measured by eye from the 1536×1024 plate (refine against `public/images/diwali/laddoo-plate.webp` so each circle sits on its laddoo): top `{50.8,20.5,10.7}`, upper-left `{36.1,40,8}`, upper-right `{63.5,43,8.5}`, far-left `{25.4,51.8,6}`, far-right `{75.5,62.5,7.2}`, middle `{47,50.8,10.6}`, front-left `{29.3,68.4,9.9}`, front-right `{65.8,72.8,10.7}`, front-centre `{44.9,72.8,10.9}`.
 - [ ] **Step 4:** Run `npx vitest run lib/diwali`. Expected: PASS.
@@ -157,19 +175,20 @@ Transitions: `idle+LIGHT→lit`; `lit+FUSE_BURNT→centre`; `centre+CENTRE_HOLD_
 
 **Files:**
 - Create: `components/diwali/DiwaliAvatar.tsx` (client)
-- Modify: `components/About.tsx:66-108` (the `Tooltip` around the photo)
+- Modify: `components/About.tsx:66-108` (the `Tooltip` around the photo). `About.tsx` is a **server** component; `DiwaliAvatar` is a client component it renders.
+- Create: `scripts/check-diwali-bundle.sh`
 
 **Interfaces:**
 - Consumes: `DIWALI_ENABLED`, `reduce`/`INITIAL`/`isOverlayOpen` (Task 2), `Matchstick` (Task 5), `createDiwaliSound` (Task 5), `duration.diwaliFuse`.
 - Produces: `export default function DiwaliAvatar(props: Omit<ComponentProps<"button">, "children">)`: a `button` (forwarding `ref` the same way `SpinAvatar.setButton` does, so the Radix tooltip trigger works) containing the greyscale photo (`/images/avatar.png`, as in `AvatarHover`, no goggles), the fuse ring and tail SVG (prototype `.fuse`), the amber live dot, and on hover devices a `Matchstick` that follows the pointer while `cursor: none`. It owns the `ShowState` via `useReducer(reduce, INITIAL)` and renders `<DiwaliShow>` (Task 7) once the phase leaves `idle`.
   - Warm-up: `const loadShow = () => import("@/components/diwali/DiwaliShow")`, called on `pointerenter` and `focus`; the component itself is `next/dynamic(loadShow, { ssr: false })`.
-  - Light (click, Enter, Space): dispatch `LIGHT`, create and `unlock()` the sound, `strike()`, `fuse(1.4)`, animate the spark up the tail and round the ring for `duration.diwaliFuse` (canvas around the photo as in the prototype; under reduced motion the ring simply darkens), then dispatch `FUSE_BURNT`. The YouTube API load is kicked off from this same click (Task 7 exposes `primeYouTube()`).
+  - Light (click, Enter, Space): dispatch `LIGHT`, create and `unlock()` the sound, `strike()`, `fuse(1.4)`, animate the spark up the tail and round the ring for `duration.diwaliFuse` (canvas around the photo as in the prototype; under reduced motion the ring simply darkens), then dispatch `FUSE_BURNT`. The YouTube API load is kicked off from this same click by calling `primeYouTube()` (Task 7's `youtube.ts`; Task 6 may create that file with just this function and Task 7 extends it). `DiwaliAvatar` owns the single `DiwaliSound` (in a ref) and passes it to `DiwaliShow`; it calls `sound.close()` on `RETURNED` and on unmount.
   - On `RETURNED`, restore the fuse, and move focus back to this button.
 
 - [ ] **Step 1:** In `About.tsx`, wrap the existing `SpinAvatar` block in `DIWALI_ENABLED ? <DiwaliAvatar className=…same classes… /> : <SpinAvatar …unchanged…>`, and the tooltip's spin hint in `DIWALI_ENABLED ? "Click to light the chakri" : <existing Press F markup>`. The SpinAvatar branch must be untouched character for character.
 - [ ] **Step 2:** Implement `DiwaliAvatar.tsx` as specified; styles in `diwali.module.css`.
 - [ ] **Step 3:** Run `npx tsc --noEmit && npm run lint && bash scripts/verify-simplification.sh`. Expected: clean, exit 0.
-- [ ] **Step 4:** Flip `DIWALI_ENABLED` to `false`, run `npm run build`, then `grep -rl "QirCMADtks8\|Rozha" .next/static/chunks | wc -l`. Expected: `0`. Flip back to `true`.
+- [ ] **Step 4:** Create `scripts/check-diwali-bundle.sh` (Review Focus section). `npm run build && bash scripts/check-diwali-bundle.sh` → exit 0. Flip `DIWALI_ENABLED` to `false`, rebuild, run it again → exit 0, and `grep -c "diwali" .next/server/app/index.html` → `0`. Flip back to `true`. If the flag-off grep is not 0, load `DiwaliAvatar` in `About.tsx` with `next/dynamic` inside the `DIWALI_ENABLED` branch instead of a static import, and re-check.
 - [ ] **Step 5:** Commit: "Diwali: fuse on the hero photo, switched by DIWALI_ENABLED".
 
 ### Task 7: The show overlay (blackout, chakri, video, toran, Skip)
@@ -180,13 +199,13 @@ Transitions: `idle+LIGHT→lit`; `lit+FUSE_BURNT→centre`; `centre+CENTRE_HOLD_
 **Interfaces:**
 - Consumes: Task 2 (`reduce` events, `shouldPlayVideo`, `videoReachedEnd`, `chakriBox`, `VIDEO_ID`, `VIDEO_END_SECONDS`), Task 5 art + sound, Task 4 tokens.
 - Produces:
-  - `youtube.ts`: `export function primeYouTube(): void` (inject `https://www.youtube.com/iframe_api` once) and `export function createPlayer(host: HTMLElement, handlers: { onPlaying(): void; onEnded(): void; onError(code: number): void }): { play(): void; pause(): void; currentTime(): number; destroy(): void }`. The iframe is built by hand (`youtube-nocookie.com/embed/${VIDEO_ID}?enablejsapi=1&autoplay=1&start=0&end=${VIDEO_END_SECONDS}&controls=0&rel=0&playsinline=1&disablekb=1&origin=…`, `allow="autoplay; encrypted-media"`, `referrerpolicy` as in Global Constraints) and then handed to `new YT.Player(iframe, …)`.
+  - `youtube.ts`: `export function primeYouTube(): Promise<void>` (inject `https://www.youtube.com/iframe_api` once, chain any existing `window.onYouTubeIframeAPIReady`, resolve when `window.YT.Player` exists; the same promise on every call) and `export function createPlayer(host: HTMLElement, handlers: { onPlaying(): void; onEnded(): void; onError(code: number): void }): { play(): void; pause(): void; currentTime(): number; destroy(): void }`. The iframe is built by hand (`youtube-nocookie.com/embed/${VIDEO_ID}?enablejsapi=1&autoplay=1&start=0&end=${VIDEO_END_SECONDS}&controls=0&rel=0&playsinline=1&disablekb=1&origin=…`, `allow="autoplay; encrypted-media"`, `referrerpolicy` as in Global Constraints) and then handed to `new YT.Player(iframe, …)`.
   - `DiwaliShow({ state, dispatch, photoRect, sound }: { state: ShowState; dispatch: (e: ShowEvent) => void; photoRect: () => DOMRect; sound: DiwaliSound })`: portal to `document.body`.
   - `SparkCanvas({ target })`: full-screen canvas drawing the rim jet and rim glow for the element in `target` (prototype `loop`, jet from one rim point, sparks thrown backward along the tangent; count scales with chakri size).
 
-- [ ] **Step 1:** `youtube.ts` as above. `play()` is called only when `shouldPlayVideo(state.phase)`; `onReady` checks the **current** phase (via a ref), never the phase at creation.
+- [ ] **Step 1:** `youtube.ts` as above. `DiwaliShow` awaits `primeYouTube()` (already started by the light click) before `createPlayer`; if the component has unmounted by then, it does nothing. `play()` is called only when `shouldPlayVideo(state.phase)`; `onReady` checks the **current** phase (via a ref), never the phase at creation.
 - [ ] **Step 2:** `DiwaliShow`: on mount (phase `centre`) fade in the blackout, drop the toran, create the flyer at `photoRect()`, flip to `Chakri` (crossfade under reduced motion), move to `chakriBox("centre", …)` over `duration.diwaliFlight`, start a `setTimeout` for `CENTRE_HOLD_DONE` at flight + `duration.diwaliCentreHold`. Phase `corner` moves to `chakriBox("corner", …)`. A `resize` listener re-applies the current box and resizes canvases. Poll `videoReachedEnd(player.currentTime())` every 250 ms; dispatch `VIDEO_ENDED` once.
-- [ ] **Step 3:** Skip button bottom-left (prototype v9 styling: marigold pill, Phosphor `FastForward` icon from `@phosphor-icons/react/ssr`, `<kbd>Esc</kbd>`, three pulses after a 1s fade-in, ≥ 44px tall), `onClick → SKIP`. A window `keydown` for `Escape` dispatches `ESCAPE`. Focus Skip when it appears.
+- [ ] **Step 3:** Skip button bottom-left (prototype v9 styling: marigold pill, Phosphor `FastForward` icon from `@phosphor-icons/react/ssr`, `<kbd>Esc</kbd>`, three pulses after a 1s fade-in, ≥ 44px tall), `onClick → SKIP`. One `keydown` listener on `window` in the **capture** phase while `isOverlayOpen(phase)`: `Escape` dispatches `ESCAPE`; every key except `Tab`, `Shift`, `Enter` and `Space` gets `stopImmediatePropagation()` so `KeyboardShortcuts.tsx` and `CommandPalette.tsx` (bubble-phase `window` listeners) never see it. `Enter`/`Space` are let through only to the focused button. Focus Skip when it appears.
 - [ ] **Step 4:** Dialog semantics and scroll lock: `role="dialog" aria-modal="true" aria-label="Diwali celebration"`; `document.documentElement.style.overflow = "hidden"` while `isOverlayOpen`, restored on close and on unmount.
 - [ ] **Step 5:** Phase `returning`: stop the spark loop, lift the toran, fade the blackout, flip the chakri back and move the flyer to `photoRect()` over `duration.diwaliReturn`, then dispatch `RETURNED`.
 - [ ] **Step 6: Unmount checklist** (Review Focus 5): the effect cleanup cancels every rAF and timer, calls `player.destroy()`, `sound.close()`, restores `overflow`, removes `resize`/`keydown` listeners. Read the cleanup once against this list.
@@ -219,7 +238,7 @@ Transitions: `idle+LIGHT→lit`; `lit+FUSE_BURNT→centre`; `centre+CENTRE_HOLD_
 - Modify: `components/diwali/DiwaliShow.tsx`, `components/diwali/diwali.module.css`
 
 **Interfaces:**
-- Consumes: `LADDOO_SPOTS` (Task 3), `sound.pop/crunch`, tokens `diwaliPlateRise`, `diwaliFloat`, `diwaliBiteAt`, `diwaliPicked`.
+- Consumes: `LADDOO_SPOTS`, `spotBox` (Task 3), `sound.pop/crunch`, tokens `diwaliPlateRise`, `diwaliFloat`, `diwaliBiteAt`, `diwaliPicked`.
 - Produces: `Plate({ phase, onPick, onDone }: { phase: "plate" | "picked"; onPick(index: number): void; onDone(): void })`.
   - Heading `प्रसाद ग्रहण कीजिए` / sub; the plate image (`/images/diwali/laddoo-plate.webp`) rising over `diwaliPlateRise`; one round `<button aria-label="Laddoo N">` per spot, positioned in percent, gold ring on hover/focus; focus the first on open; preload `laddoo.webp` and `laddoo-bitten.webp` (`new Image()`) when the plate mounts.
   - On pick: `onPick(i)`, `sound.pop()`, place `laddoo.webp` exactly over that spot's box, float it to 38% of the viewport height while scaling to about 2.2× over `diwaliFloat`; plate fades to 0.33; at `diwaliBiteAt` swap the `src` to `laddoo-bitten.webp` with a 180 ms squash (token-free: it is a physical squash like SpinAvatar's constants; name it `SQUASH_MS` with a comment), `sound.crunch()`, 14 crumbs from the bite side (right edge, 40–60% height); then `वाह!` and its sub; `onDone()` at `diwaliPicked`.
@@ -235,6 +254,6 @@ Transitions: `idle+LIGHT→lit`; `lit+FUSE_BURNT→centre`; `centre+CENTRE_HOLD_
 **Files:** none new.
 
 - [ ] **Step 1:** Run `npm test && npm run lint && bash scripts/verify-simplification.sh && npm run build`. Expected: all pass.
-- [ ] **Step 2:** With `DIWALI_ENABLED = false`, `npm run build` and `grep -rl "QirCMADtks8\|Rozha\|lakshmi-ganesh" .next/static/chunks | wc -l` → `0`; `git diff` on `About.tsx` shows only the ternaries. Restore `true`.
+- [ ] **Step 2:** `bash scripts/check-diwali-bundle.sh` → exit 0 (flag on). Then with `DIWALI_ENABLED = false`: `npm run build && bash scripts/check-diwali-bundle.sh && grep -c "diwali" .next/server/app/index.html` → exit 0 and `0`; `git diff master -- components/About.tsx` shows only the flag branches. Restore `true` and rebuild.
 - [ ] **Step 3:** Grep the new files for em-dashes in strings: `grep -rn "—" components/diwali lib/diwali` → no hits in user-facing strings.
 - [ ] **Step 4:** Commit any fixes: "Diwali: final checks".
