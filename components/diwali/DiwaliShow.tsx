@@ -81,7 +81,6 @@ export default function DiwaliShow({
   const player = useRef<DiwaliPlayer | null>(null);
   const phaseRef = useRef<Phase>(phase);
   const ended = useRef(false);
-  const alive = useRef(false);
 
   // Latest props, for listeners and timers that outlive a render.
   const latest = useRef({ dispatch, photoRect, sound });
@@ -255,6 +254,12 @@ export default function DiwaliShow({
         return;
       }
       if (k === "Shift") return;
+      // A held Enter or Space must not chain through the show's buttons.
+      if ((k === "Enter" || k === " ") && e.repeat) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        return;
+      }
       if (k === "Enter" || k === " ") {
         const t = e.target;
         if (t instanceof HTMLButtonElement && root.current?.contains(t)) return;
@@ -290,21 +295,15 @@ export default function DiwaliShow({
   // ---- Unmount: nothing may outlive the show. ----
   // (Timers, the poll, listeners and the scroll lock are each undone by their
   // own effect's cleanup above; the spark loop by SparkCanvas's.)
-  useEffect(() => {
-    alive.current = true;
-    return () => {
-      alive.current = false;
+  // The sound is DiwaliAvatar's: it closes it on return to idle and on its
+  // own unmount, so it is not closed here.
+  useEffect(
+    () => () => {
       player.current?.destroy();
       player.current = null;
-      // Deferred a tick so a development double-mount (setup runs again at
-      // once) does not close the sound the next mount still needs. A real
-      // unmount stays dead and closes it. DiwaliAvatar closes it too.
-      const s = latest.current.sound;
-      window.setTimeout(() => {
-        if (!alive.current) s.close();
-      }, 0);
-    };
-  }, []);
+    },
+    [],
+  );
 
   if (!open) return null;
 
