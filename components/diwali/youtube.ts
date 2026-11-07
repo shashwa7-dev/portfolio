@@ -85,14 +85,15 @@ export type DiwaliPlayer = {
  * only once `primeYouTube()` has resolved. Every method swallows the API's
  * errors: a half-loaded player must never break the show.
  *
- * The iframe autoplays, so a caller that no longer wants the song must pause
- * it from `onPlaying`.
+ * The iframe does not autoplay (`autoplay=0`): the caller starts the song from
+ * `onReady`, and only if it still wants it, so a show that has moved on never
+ * hears a moment of it. `onPlaying` can still pause it as a backstop.
  */
 export function createPlayer(
   host: HTMLElement,
   handlers: {
-    /** The API can take commands. Optional: the iframe autoplays anyway. */
-    onReady?(): void;
+    /** The API can take commands: call `play()` here to start the song. */
+    onReady(): void;
     onPlaying(): void;
     onEnded(): void;
     onError(code: number): void;
@@ -100,7 +101,7 @@ export function createPlayer(
 ): DiwaliPlayer {
   const params = new URLSearchParams({
     enablejsapi: "1",
-    autoplay: "1",
+    autoplay: "0",
     start: "0",
     end: String(VIDEO_END_SECONDS),
     controls: "0",
@@ -127,7 +128,7 @@ export function createPlayer(
       player = new Player(iframe, {
         events: {
           onReady: () => {
-            if (!destroyed) handlers.onReady?.();
+            if (!destroyed) handlers.onReady();
           },
           onStateChange: (e) => {
             if (destroyed) return;

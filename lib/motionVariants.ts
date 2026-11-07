@@ -89,45 +89,45 @@ export const duration = {
   /**
    * Diwali scene (lib/diwali). Mirrored as --duration-diwali-* in globals.css.
    */
-  /** The fuse burning down before the Diwali show's blackout. */
+  /** The hero fuse burning: the spark up the tail and once round the ring, before the show opens. */
   diwaliFuse: 1.4,
-  /** The scene going dark before the show starts. */
+  /** The show's blackout fading in (and the song's fade, the chakri's fade at the finale, the finale card's fade-in); also the toran's and Skip's entrance delays. */
   diwaliBlackout: 0.8,
-  /** A lamp or object flying across the Diwali scene. */
+  /** The photo's flight from the hero to the centre of the screen as it turns into the chakri. */
   diwaliFlight: 1.1,
-  /** One half-turn of a flipped object in the Diwali scene. */
+  /** The flyer's half-turn between the photo face and the chakri face, both ways. */
   diwaliFlip: 0.9,
-  /** How long the centre of the Diwali scene holds still. */
+  /** How long the chakri spins at the centre after arriving, before it moves to the corner. */
   diwaliCentreHold: 5,
-  /** The move of an object into a corner of the Diwali scene. */
+  /** The chakri's move from the centre to the bottom right corner. */
   diwaliCorner: 1.1,
-  /** The toran (door garland) dropping into place. */
+  /** The toran (door garland) dropping in from the top edge with its bounce. */
   diwaliToranDrop: 1.4,
-  /** Something rising up through the Diwali scene. */
+  /** Each finale entrance rising in (title, divider, blessing, prasad button, hint), and the plate's वाह!. */
   diwaliRise: 0.9,
-  /** The idols arriving in the Diwali scene. */
+  /** The Lakshmi and Ganesh image rising in at the finale (slower than the words). */
   diwaliIdols: 1.4,
-  /** A plate of sweets rising into view. */
+  /** The laddoo plate and its heading rising in after the prasad button. */
   diwaliPlateRise: 0.6,
-  /** A small object floating in the Diwali scene. */
+  /** The picked laddoo floating from the plate to the middle of the screen, and the plate dimming. */
   diwaliFloat: 0.7,
-  /** The moment a sweet is bitten in the Diwali scene. */
+  /** From the pick to the bite: when the laddoo swaps to the bitten image, crunches and drops crumbs. */
   diwaliBiteAt: 0.9,
-  /** How long a picked-up object stays in the Diwali scene's hand. */
+  /** From the pick to the way home: how long the bitten laddoo and वाह! stay before the show returns. */
   diwaliPicked: 3,
-  /** An object returning to its place in the Diwali scene. */
+  /** The way home: the chakri flying back into the hero photo while the card, plate and blackout fade. */
   diwaliReturn: 1.15,
-  /** The squash of a sweet when it lands. */
+  /** The bitten laddoo's squash at the bite. */
   diwaliSquash: 0.18,
-  /** One sway of a hanging object in the Diwali scene. */
+  /** One sway of the toran's hanging strings. */
   diwaliSway: 4,
-  /** One flicker of a diya flame. */
+  /** One flicker of a diya flame (toran and finale diyas). */
   diwaliFlicker: 1.1,
-  /** One breath of the Diwali scene's glow. */
+  /** One breath of a diya's glow, and of the glow behind the idols. */
   diwaliGlow: 4,
-  /** One pass of a shine across a Diwali object. */
+  /** One cycle of the shine sweeping across the prasad button. */
   diwaliShine: 3.2,
-  /** One pulse of the Diwali scene's lights. */
+  /** One ring pulse round the Skip button (three times) and the prasad button (looping). */
   diwaliPulse: 2.4,
   /** Finale entrance offsets, from the finale appearing: the idols. */
   diwaliAtIdols: 0.4,

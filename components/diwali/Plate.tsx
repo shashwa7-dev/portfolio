@@ -19,8 +19,11 @@ const BITTEN = "/images/diwali/laddoo-bitten.webp";
 
 /** Where the picked laddoo floats to, as a fraction of the viewport height. */
 const FLOAT_Y = 0.38;
-/** How much it grows on the way. */
-const FLOAT_SCALE = 2.2;
+/**
+ * The size it floats to, as a fraction of the window's shorter side: the same
+ * for every laddoo, whatever its size on the plate.
+ */
+const FLOAT_SIZE = 0.3;
 const CRUMBS = 14;
 
 /** Crumbs off the bitten side: the right edge, 40 to 60% down the ball. */
@@ -49,7 +52,7 @@ function crumbs(host: HTMLElement, cx: number, cy: number, size: number) {
  * The prasad plate, over the finale card once its button is pressed: a
  * heading, then the photographed plate rising in with one round button per
  * laddoo. Picking one lifts a cut-out of that laddoo off the plate, floats it
- * to the middle of the screen at about twice the size while the plate dims,
+ * to the middle of the screen at one fixed size while the plate dims,
  * and takes one bite out of it (the image swaps to the bitten one, with a
  * squash, a crunch and a spray of crumbs). Then `वाह!`, and `onDone` hands
  * back to the show for the way home.
@@ -95,7 +98,7 @@ export default function Plate({ phase, sound, onPick, onDone }: Props) {
     const cy = r.top + d / 2;
     const tx = window.innerWidth / 2;
     const ty = window.innerHeight * FLOAT_Y;
-    const end = d * FLOAT_SCALE;
+    const end = FLOAT_SIZE * Math.min(window.innerWidth, window.innerHeight);
 
     const from = reduced
       ? laddooImageBox(tx, ty, end)
@@ -108,7 +111,7 @@ export default function Plate({ phase, sound, onPick, onDone }: Props) {
     if (!reduced) {
       el.style.transform = "none";
       void el.offsetWidth;
-      el.style.transform = `translate(${tx - cx}px, ${ty - cy}px) scale(${FLOAT_SCALE})`;
+      el.style.transform = `translate(${tx - cx}px, ${ty - cy}px) scale(${d > 0 ? end / d : 1})`;
     }
     el.dataset.on = "";
 
