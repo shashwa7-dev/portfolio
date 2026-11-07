@@ -17,6 +17,7 @@ type YTPlayer = {
   playVideo(): void;
   pauseVideo(): void;
   getCurrentTime(): number;
+  setVolume(volume: number): void;
   destroy(): void;
 };
 
@@ -76,6 +77,8 @@ export type DiwaliPlayer = {
   play(): void;
   pause(): void;
   currentTime(): number;
+  /** The song's volume, 0 to 100. */
+  setVolume(volume: number): void;
   destroy(): void;
 };
 
@@ -87,7 +90,9 @@ export type DiwaliPlayer = {
  *
  * The iframe does not autoplay (`autoplay=0`): the caller starts the song from
  * `onReady`, and only if it still wants it, so a show that has moved on never
- * hears a moment of it. `onPlaying` can still pause it as a backstop.
+ * hears a moment of it. `onPlaying` can still pause it as a backstop. The
+ * player is silenced (volume 0) before `onReady` runs, so the caller can fade
+ * the song in once it is actually playing.
  */
 export function createPlayer(
   host: HTMLElement,
@@ -127,8 +132,14 @@ export function createPlayer(
     try {
       player = new Player(iframe, {
         events: {
-          onReady: () => {
-            if (!destroyed) handlers.onReady();
+          onReady: (e) => {
+            if (destroyed) return;
+            try {
+              e.target.setVolume(0);
+            } catch {
+              // A player that cannot take a volume plays at its own.
+            }
+            handlers.onReady();
           },
           onStateChange: (e) => {
             if (destroyed) return;
@@ -157,6 +168,8 @@ export function createPlayer(
   return {
     play: () => call((p) => p.playVideo()),
     pause: () => call((p) => p.pauseVideo()),
+    setVolume: (volume) =>
+      call((p) => p.setVolume(Math.max(0, Math.min(100, Math.round(volume))))),
     currentTime() {
       let t = 0;
       call((p) => {

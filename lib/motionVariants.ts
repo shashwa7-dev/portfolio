@@ -145,6 +145,8 @@ export const duration = {
   diwaliAtHint: 2.8,
   /** The gap between one finale diya lighting and the next. */
   diwaliDiyaStep: 0.18,
+  /** The song's volume rising from silence once it starts playing, while the chakri's spin sound ducks under it. */
+  diwaliSongFadeIn: 3,
 } as const;
 
 /** Per-item stagger offsets (seconds). Use instead of literal `i * 0.05`. */
