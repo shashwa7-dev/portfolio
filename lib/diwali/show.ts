@@ -17,7 +17,9 @@ export type ShowEvent =
   | { type: "OPEN_PLATE" }
   | { type: "PICK"; index: number }
   | { type: "PICK_DONE" }
-  | { type: "RETURNED" };
+  | { type: "RETURNED" }
+  /** The show could not load or render: back to rest from wherever it was. */
+  | { type: "ABORT" };
 
 export function reduce(state: ShowState, event: ShowEvent): ShowState {
   const { phase } = state;
@@ -43,6 +45,8 @@ export function reduce(state: ShowState, event: ShowEvent): ShowState {
       return phase === "picked" ? { ...state, phase: "returning" } : state;
     case "RETURNED":
       return phase === "returning" ? INITIAL : state;
+    case "ABORT":
+      return phase === "idle" ? state : INITIAL;
     default:
       return state;
   }

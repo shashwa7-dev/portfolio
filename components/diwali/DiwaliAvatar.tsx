@@ -1,6 +1,5 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import {
   useCallback,
   useEffect,
@@ -8,6 +7,7 @@ import {
   useRef,
   useState,
   type ComponentProps,
+  type ComponentType,
   type PointerEvent as ReactPointerEvent,
 } from "react";
 import {
@@ -21,14 +21,21 @@ import { duration } from "@/lib/motionVariants";
 import { Matchstick } from "@/components/diwali/art/Matchstick";
 import { createDiwaliSound, type DiwaliSound } from "@/components/diwali/sound";
 import { createFuse, type Fuse } from "@/components/diwali/fuse";
+import ShowBoundary from "@/components/diwali/ShowBoundary";
+import type { DiwaliShowProps } from "@/components/diwali/DiwaliShow";
 import styles from "@/components/diwali/fuse.module.css";
+
+type ShowComponent = ComponentType<DiwaliShowProps>;
 
 /**
  * The show is heavy (video, fireworks, finale art), so it is its own chunk,
- * warmed on hover or focus and only mounted once the fuse is lit.
+ * warmed on hover or focus. It is a plain import, not `next/dynamic`, so the
+ * avatar knows when it has arrived: the show is only mounted once it has, and
+ * a failed import (a deploy skew, or offline) puts the photo back at rest
+ * instead of dimming the page with no show over it.
  */
-const loadShow = () => import("@/components/diwali/DiwaliShow");
-const DiwaliShow = dynamic(loadShow, { ssr: false });
+const loadShow = (): Promise<ShowComponent> =>
+  import("@/components/diwali/DiwaliShow").then((m) => m.default);
 
 type Props = Omit<ComponentProps<"button">, "children">;
 
@@ -58,6 +65,8 @@ export default function DiwaliAvatar({
 }: Props) {
   const [state, dispatch] = useReducer(reduce, INITIAL);
   const [sound, setSound] = useState<DiwaliSound | null>(null);
+  const [Show, setShow] = useState<ShowComponent | null>(null);
+  const showLoad = useRef<Promise<ShowComponent> | null>(null);
 
   const button = useRef<HTMLButtonElement | null>(null);
   const photo = useRef<HTMLSpanElement>(null);
@@ -77,6 +86,36 @@ export default function DiwaliAvatar({
   };
 
   const send = dispatch;
+
+  /**
+   * Starts the show's import, or returns the one already under way. A failed
+   * import is forgotten, so the next hover or light tries again.
+   */
+  const warmShow = useCallback((): Promise<ShowComponent> => {
+    if (!showLoad.current) {
+      const load = loadShow();
+      showLoad.current = load;
+      load.then(
+        (C) => setShow(() => C),
+        () => {
+          if (showLoad.current === load) showLoad.current = null;
+        },
+      );
+    }
+    return showLoad.current;
+  }, []);
+
+  /**
+   * The show could not load or threw while running: back to rest. The idle
+   * effect below restores the rope and photo, closes the sound and returns
+   * focus; `data-overlay` goes with the phase.
+   */
+  const abort = useCallback(() => {
+    if (phaseRef.current === "idle") return;
+    window.clearTimeout(timer.current);
+    fuse.current?.rest();
+    dispatch({ type: "ABORT" });
+  }, []);
 
   /**
    * Where the flyer lifts off from and lands: the photo's own unrotated box
@@ -140,19 +179,27 @@ export default function DiwaliAvatar({
   );
 
   /**
-   * Burns the fuse, then hands over to the show: the whoomp and the chime,
-   * then FUSE_BURNT. Under reduced motion the rope fades to ash in CSS
+   * Burns the fuse, then hands over to the show: FUSE_BURNT, then the whoomp
+   * and the chime. Under reduced motion the rope fades to ash in CSS
    * (`data-phase="lit"`) over the same duration and is then cleared.
    */
-  function burn() {
+  function burn(ready: Promise<ShowComponent>) {
     const ms = duration.diwaliFuse * 1000;
     const reduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
+    // The show takes over only once its chunk is here (usually long before
+    // the fuse has burnt). A failed import has already aborted the light.
     const done = () => {
-      soundRef.current?.whoomp();
-      soundRef.current?.chime();
-      send({ type: "FUSE_BURNT" });
+      ready.then(
+        () => {
+          if (phaseRef.current !== "lit") return;
+          send({ type: "FUSE_BURNT" });
+          soundRef.current?.whoomp();
+          soundRef.current?.chime();
+        },
+        () => {},
+      );
     };
     const f = fuse.current;
     if (reduced || !f) {
@@ -169,19 +216,22 @@ export default function DiwaliAvatar({
     if (phaseRef.current !== "idle") return;
     phaseRef.current = "lit";
     dispatch({ type: "LIGHT" });
+    const ready = warmShow();
+    ready.catch(abort);
     // Guard: never leave an earlier show's AudioContext open.
     soundRef.current?.close();
     const s = createDiwaliSound();
+    soundRef.current = s;
+    setSound(s);
     s.unlock();
     s.strike();
     s.fuse(duration.diwaliFuse);
-    soundRef.current = s;
-    setSound(s);
-    void loadShow();
     // Imported lazily so the IFrame API's URL stays out of the homepage's
     // initial JavaScript. It still starts from this click.
-    void import("@/components/diwali/youtube").then((m) => m.primeYouTube());
-    burn();
+    void import("@/components/diwali/youtube")
+      .then((m) => m.primeYouTube())
+      .catch(() => {});
+    burn(ready);
   }
 
   /** Puts the matchstick's head on the pointer. Written to the DOM, not state. */
@@ -205,7 +255,7 @@ export default function DiwaliAvatar({
         className={`${className ?? ""} ${styles.fuseButton}`}
         onPointerEnter={(e) => {
           onPointerEnter?.(e);
-          void loadShow();
+          void warmShow();
           follow(e);
         }}
         onPointerMove={(e) => {
@@ -214,7 +264,7 @@ export default function DiwaliAvatar({
         }}
         onFocus={(e) => {
           onFocus?.(e);
-          void loadShow();
+          void warmShow();
         }}
         onClick={(e) => {
           onClick?.(e);
@@ -239,14 +289,17 @@ export default function DiwaliAvatar({
         </span>
       </button>
       {/* A sibling, not a child: the show has its own buttons, and a button
-        inside a button is invalid. It renders through a portal (Task 7). */}
-      {state.phase !== "idle" && sound && (
-        <DiwaliShow
-          state={state}
-          dispatch={send}
-          photoBox={photoBox}
-          sound={sound}
-        />
+        inside a button is invalid. It renders through a portal. The boundary
+        keeps any error in the show from reaching the homepage. */}
+      {state.phase !== "idle" && sound && Show && (
+        <ShowBoundary onError={abort}>
+          <Show
+            state={state}
+            dispatch={send}
+            photoBox={photoBox}
+            sound={sound}
+          />
+        </ShowBoundary>
       )}
     </>
   );

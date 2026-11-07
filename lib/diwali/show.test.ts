@@ -41,6 +41,11 @@ describe("reduce", () => {
     expect(reduce(finale, { type: "RETURNED" })).toBe(finale);
     expect(reduce(finale, { type: "PICK", index: 0 })).toBe(finale);
   });
+  it("ABORT returns to idle from any phase past idle", () => {
+    const phases: Phase[] = ["lit", "centre", "corner", "finale", "plate", "picked", "returning"];
+    for (const p of phases) expect(reduce(at(p, 4), { type: "ABORT" })).toEqual(INITIAL);
+    expect(reduce(INITIAL, { type: "ABORT" })).toBe(INITIAL);
+  });
   it("picks once", () => {
     const picked = at("picked", 2);
     const next = reduce(picked, { type: "PICK", index: 1 });
