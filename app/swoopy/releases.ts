@@ -15,9 +15,44 @@ export type Release = {
 
 export const releases: Release[] = [
   {
+    version: "1.3.0",
+    date: "November 10, 2026",
+    status: "In review",
+    summary: "Pick anything on the page to inspect it, pick colours from the screen, capture part of a page as a framed image, and a new dock layout.",
+    groups: [
+      {
+        title: "New",
+        items: [
+          "Pick on page (Alt+Shift+I): hover any image, SVG, video, gradient or text to inspect it, then download, copy or Shift-click to collect images into a ZIP.",
+          "Which font is that? Hover a heading and see the font that actually rendered, with its size, weight and colours.",
+          "Pick a colour anywhere on screen and copy it as HEX, RGB, HSL or OKLCH, with the nearest colour name.",
+          "Capture (Alt+Shift+C): click an element or drag a box, add a background, padding, rounded corners and a shadow, then copy or save it as PNG, WebP or JPEG.",
+          "A small Swoopy watermark on captures, which you can turn off in one click.",
+          "Settings → Keyboard shortcuts: every shortcut in one place, written the way your OS writes them.",
+        ],
+      },
+      {
+        title: "Improved",
+        items: [
+          "A new layout: tabs in a dock at the bottom, a floating tool dock on Inspect and a floating download bar on Site → Images.",
+          "Tooltips on every tool, with its shortcut.",
+          "Site → Images: the rescan button lights up when the page loads more images, and new ones are tagged NEW.",
+          "Long SVG colour lists show the first 10, with Show all.",
+        ],
+      },
+      {
+        title: "Fixed",
+        items: [
+          "Edit SVG works on inline SVGs that set their size in CSS.",
+          "Palettes for chart SVGs that draw with HTML inside.",
+        ],
+      },
+    ],
+  },
+  {
     version: "1.2.0",
     date: "October 29, 2026",
-    status: "In review",
+    status: "Live",
     summary: "A new Site tab that reads any page's images and design, Download as WebP, video downloads and a cleaner panel.",
     groups: [
       {
