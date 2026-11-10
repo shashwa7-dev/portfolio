@@ -12,6 +12,8 @@ import {
   ClipboardText,
   ClockCounterClockwise,
   Coffee,
+  Crosshair,
+  Crop,
   FileZip,
   FrameCorners,
   Globe,
@@ -152,15 +154,49 @@ const scenarios = [
       </>
     ),
   },
+  {
+    tag: "Type",
+    title: "“Which font is that?”",
+    body: (
+      <>
+        The site lists five fonts and only one shows up. Press{" "}
+        <strong className="font-semibold text-foreground">Pick on page</strong>, hover the heading and see the one that actually rendered, with its size and color.
+      </>
+    ),
+  },
+  {
+    tag: "Sharing",
+    title: "Just that one card, please",
+    body: (
+      <>
+        Screenshots grab the whole screen and need cropping.{" "}
+        <strong className="font-semibold text-foreground">Capture</strong> the card you want, add a background and rounded corners, then paste it into Slack or a slide.
+      </>
+    ),
+  },
 ];
 
 const features = [
   {
+    icon: Crosshair,
+    title: "Pick anything on the page",
+    body: "Press Pick on page, or Alt+Shift+I, and hover. Swoopy outlines the image, SVG, video, gradient or text under your cursor, shows which font actually rendered, and lets you download it, copy it or Shift-click to collect a few into one ZIP. Need a color from the screen? Pick colour grabs it as HEX, RGB, HSL or OKLCH.",
+    image: "/swoopy/screens/pick-card.webp",
+    alt: "Hovering a photo with Pick on page: Swoopy's card shows it is a 266 × 168 JPG, with Download and Inspect buttons",
+  },
+  {
+    icon: Crop,
+    title: "Capture part of a page",
+    body: "Press Capture, or Alt+Shift+C, then click an element or drag a box. Add a background, padding, rounded corners and a shadow, then copy it or save it as PNG, WebP or JPEG. A small Swoopy watermark sits in the corner, and you can turn it off.",
+    image: "/swoopy/screens/capture-panel.webp",
+    alt: "A captured jellyfish photo on a green gradient background in Swoopy's capture editor, with background and padding options",
+  },
+  {
     icon: ArrowsInSimple,
     title: "Compress and convert, right here",
-    body: "No more uploading images to a compressor website. Choose to download the original, or export it as WebP, PNG or JPEG at the quality you pick, with each file's size shown first. A 2.5 MB PNG can go out as a 296 KB WebP. You can also right-click Download as WebP, or point and press Alt+Shift+W.",
+    body: "No more uploading images to a compressor website. Choose to download the original, or export it as WebP, PNG or JPEG at the quality you pick, with each file's size shown first. A 1.4 MB PNG can go out as a 68 KB WebP. You can also right-click Download as WebP, or point and press Alt+Shift+W.",
     image: "/swoopy/screens/convert-panel.webp",
-    alt: "Swoopy's Save as options: a 2.5 MB PNG shown as a 296 KB WebP, 89% smaller, with a quality slider",
+    alt: "Swoopy's Save as options: a 1.4 MB PNG shown as a 68 KB WebP, 95% smaller, with a quality slider",
   },
   {
     icon: Globe,
@@ -188,7 +224,7 @@ const features = [
     title: "Make any icon yours",
     body: "Recolor an SVG to your brand in seconds, try a palette, tweak the code, then export SVG, PNG, React or React Native.",
     image: "/swoopy/screens/svg-editor-panel.webp",
-    alt: "Swoopy's SVG editor recoloring a badge with the Sunset palette",
+    alt: "Swoopy's SVG editor showing an icon's colors, ready to change",
   },
   {
     icon: ClockCounterClockwise,
@@ -210,6 +246,10 @@ const included = [
   "Real GIFs and videos",
   "Copy any image as PNG",
   "Private history on device",
+  "Pick on page, see any font",
+  "Color picker for the screen",
+  "Capture part of a page",
+  "Shortcuts for every tool",
 ];
 
 const faqs = [
@@ -218,7 +258,9 @@ const faqs = [
   { q: "Can it download videos?", a: "Yes, when the video is a file. Right-click it and choose Download Video, Copy Video Address or Open Video in New Tab. Streaming players like YouTube don't play a single file, so there Swoopy saves the cover image and tells you." },
   { q: "Is it allowed to save images like this?", a: "Swoopy only saves what is already loaded on your screen, much like a screenshot but sharper. What you do with an image is up to you: respect the creator's rights and each site's rules. The Terms of Service has the details." },
   { q: "Does it send my data anywhere?", a: "No. Everything runs in your browser. There is no account, no analytics and no tracking, and your history never leaves your device." },
-  { q: "Why does Chrome say it can \"read and change data\" on websites?", a: "Chrome shows that warning for any extension that works on every site. Swoopy uses it only to look at the spot you right-click and find the image there, and, only when you open its Site tab, to read that page's images, colors, fonts and tags. It never changes the page." },
+  { q: "Why does Chrome say it can \"read and change data\" on websites?", a: "Chrome shows that warning for any extension that works on every site. Swoopy uses it only to look at the spot you right-click and find the image there, to show what's under your cursor while you pick, to take the screenshot when you capture, and, only when you open its Site tab, to read that page's images, colors, fonts and tags. It never changes the page." },
+  { q: "Can it take screenshots?", a: "Of part of a page, yes. Press Capture (or Alt+Shift+C), click an element or drag a box, frame it and copy or save it. The capture stays on your device: it's never uploaded or kept in your history." },
+  { q: "Are there keyboard shortcuts?", a: "Yes: Alt+Shift+I to pick on page, Alt+Shift+C to capture, Alt+Shift+S to save the image under your cursor and Alt+Shift+W to save it as WebP (Option+Shift on a Mac). Settings → Keyboard shortcuts lists them all and links to Chrome's page for changing them." },
   { q: "Which browsers does it work in?", a: "Chrome, and other browsers that install from the Chrome Web Store, such as Brave, Arc and Edge." },
   { q: "Is it really free?", a: "Yes, every feature, for everyone. If Swoopy saves your day, you can buy me a coffee, but it unlocks nothing extra." },
 ];
@@ -346,7 +388,7 @@ export default function SwoopyPage() {
           Swoopy fetches the images Chrome won&apos;t.
         </h1>
         <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground">
-          That Instagram post. That Pinterest pin. That logo hiding in the code. If it&apos;s on your screen, right-click and Swoopy saves it, lets you export a lighter WebP, or breaks it down into colors you can use.
+          That Instagram post. That Pinterest pin. That logo hiding in the code. If it&apos;s on your screen, right-click and Swoopy saves it, lets you export a lighter WebP, or breaks it down into colors you can use. Hover anything to see its font, or capture part of the page as a tidy image.
         </p>
         <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
           <InstallButton />
@@ -360,7 +402,7 @@ export default function SwoopyPage() {
         </div>
         <Image
           src="/swoopy/screens/right-click-menu.webp"
-          alt="Right-clicking a photo shows Swoopy's menu: Download, Download as WebP, Copy Image, Copy Image Address, Open Image in New Tab and Inspect Colors and Details, with the side panel open"
+          alt="Right-clicking a photo shows Swoopy's menu: Download, Download as WebP, Copy Image, Copy Image Address, Open Image in New Tab and Inspect Colors and Details, with the side panel showing the photo and its Save as options"
           width={1280}
           height={800}
           priority
@@ -380,7 +422,7 @@ export default function SwoopyPage() {
       {/* Real moments */}
       <Section id="moments" label="Real life, real saves" title="Moments where Swoopy just works">
         <p className="-mt-4 mb-6 text-muted-foreground">
-          Six times you&apos;d normally give up, take a blurry screenshot, or go digging in developer tools.
+          Eight times you&apos;d normally give up, take a blurry screenshot, or go digging in developer tools.
         </p>
         <div className="grid gap-4 sm:grid-cols-2">
           {scenarios.map((s) => (
