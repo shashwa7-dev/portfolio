@@ -64,7 +64,7 @@
   cursor: grab;
   touch-action: none;
 }
-.dragging {
+.hang[data-dragging] {
   cursor: grabbing;
 }
 
