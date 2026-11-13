@@ -128,21 +128,27 @@
   --rope: #3a6df0;
 }
 /* B: warm orange, halftone, soft sun rays behind the mascot. */
+/*
+ * B: a three-ink print, the way real toy packaging is printed: tangerine
+ * board, cream for the title and highlights, one deep navy for every label
+ * and the strap. Navy sits opposite orange, so labels stay crisp without the
+ * bright royal blue fighting the board.
+ */
 .orange {
-  --face: #f5a33b;
-  --edge: #e3cfb0;
-  --edge2: #cdb48e;
-  --t1: #2148c9;
-  --t2: #fff2d6;
-  --side: #1d2f86;
-  --side-star: #fff2d6;
-  --chip: #fff2d6;
-  --badge: #2148c9;
-  --badge-fg: #fff2d6;
-  --stamp: #fff2d6;
-  --warn: #1d2f86;
-  --warn-bg: #fff2d6;
-  --rope: #2148c9;
+  --face: #f39a2e;
+  --edge: #e6cfab;
+  --edge2: #cfb185;
+  --t1: #fff4df;
+  --t2: #1e2a5e;
+  --side: #1e2a5e;
+  --side-star: #fff4df;
+  --chip: #fff4df;
+  --badge: #1e2a5e;
+  --badge-fg: #fff4df;
+  --stamp: #fff4df;
+  --warn: #1e2a5e;
+  --warn-bg: #fff4df;
+  --rope: #1e2a5e;
 }
 
 .layer {
@@ -217,10 +223,13 @@
 }
 .orange .rays {
   display: block;
-  background: repeating-conic-gradient(from 0deg at 26% 52%, rgba(255, 236, 190, 0.38) 0 9deg, transparent 9deg 22deg);
+  /* Softer rays, warmer toward the mascot, so they glow rather than stripe. */
+  background:
+    radial-gradient(ellipse at 26% 52%, rgba(255, 214, 140, 0.55), transparent 60%),
+    repeating-conic-gradient(from 0deg at 26% 52%, rgba(255, 228, 170, 0.26) 0 8deg, transparent 8deg 20deg);
 }
 .orange .dots {
-  background-image: radial-gradient(rgba(150, 60, 0, 0.28) 1.3px, transparent 1.7px);
+  background-image: radial-gradient(rgba(170, 70, 0, 0.22) 1.2px, transparent 1.6px);
   -webkit-mask-image: radial-gradient(ellipse at 70% 80%, #000 10%, transparent 75%);
   mask-image: radial-gradient(ellipse at 70% 80%, #000 10%, transparent 75%);
 }
