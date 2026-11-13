@@ -6,7 +6,7 @@
  * `pods`. Nothing else needs touching. Spec:
  * docs/superpowers/specs/2026-11-13-starter-pack-design.md
  */
-export type ThemeId = "card-stock" | "ink";
+export type ThemeId = "card-stock" | "sky";
 
 export type BubbleDef = {
   id: string;
@@ -81,7 +81,7 @@ export const starterPack: StarterPackConfig = {
     tag: "SCAN ME",
     location: "BLR",
   },
-  themes: ["card-stock", "ink"],
+  themes: ["card-stock", "sky"],
 };
 
 const two = (n: number) => String(n).padStart(2, "0");

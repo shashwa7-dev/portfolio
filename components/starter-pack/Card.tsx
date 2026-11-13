@@ -30,7 +30,7 @@ export default function Card({
 }) {
   const c = starterPack;
   return (
-    <figure ref={tiltRef} className={`${s.card} ${theme === "ink" ? s.ink : s.cardStock}`}>
+    <figure ref={tiltRef} className={`${s.card} ${theme === "sky" ? s.sky : s.cardStock}`}>
       <figcaption className={s.srOnly}>
         {`${c.title} ${c.subtitle}: a toy card of Shashwat. Shipped: ${c.bubbles.map((b) => b.name).join(", ")}. ${c.sideLabel}: ${c.pods.map((p) => p.label.toLowerCase()).join(", ")}. ${c.badge}.`}
       </figcaption>

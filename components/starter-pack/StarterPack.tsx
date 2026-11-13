@@ -111,7 +111,7 @@ export default function StarterPack({ variant }: { variant: Variant }) {
     return () => window.removeEventListener("resize", onResize);
   }, [rootRef]);
 
-  const themeClass = theme === "ink" ? s.ink : s.cardStock;
+  const themeClass = theme === "sky" ? s.sky : s.cardStock;
   return (
     <div ref={rootRef} className={`${s.root} ${themeClass} ${spMarker.variable} ${spLabel.variable}`}>
       {ready && (
