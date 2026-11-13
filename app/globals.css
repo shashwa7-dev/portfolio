@@ -1502,6 +1502,11 @@ table {
    Desktop (from 1280px): hangs in the header's top-right corner, takes no layout space, and only
    the card takes the pointer. Below 1280px: a reserved 640px slot above the
    footer (keep in step with FOOTER_SLOT_HEIGHT and WIDE_QUERY). */
+.starter-pack-hang,
+.starter-pack-slot {
+  -webkit-user-select: none;
+  user-select: none;
+}
 .starter-pack-hang {
   display: none;
   position: absolute;

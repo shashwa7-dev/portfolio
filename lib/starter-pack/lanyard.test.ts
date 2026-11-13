@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cardPose, createLanyard, lanyardAtRest, LANYARD, setAnchor, stepLanyard, toLocal } from "./lanyard";
+import { breeze, cardPose, createLanyard, ENTRANCE, entranceY, lanyardAtRest, LANYARD, setAnchor, stepLanyard, toLocal } from "./lanyard";
 import { STEP } from "./loop";
 
 const run = (s: ReturnType<typeof createLanyard>, n: number, drag: { x: number; y: number } | null = null) => {
@@ -46,5 +46,37 @@ describe("lanyard", () => {
 
   it("maps a pointer through the card's scale", () => {
     expect(toLocal({ x: 160, y: 130 }, { left: 100, top: 100 }, 0.6)).toEqual({ x: 100, y: 50 });
+  });
+});
+
+describe("natural dangling", () => {
+  it("keeps swaying gently in the breeze and never comes to rest", () => {
+    const s = createLanyard({ x: 200, y: -40 }, 0);
+    let maxAngle = 0;
+    let stillSeconds = 0;
+    let movedThisSecond = 0;
+    for (let i = 0; i < 120 * 60; i++) {
+      stepLanyard(s, STEP, null, LANYARD, breeze(i * STEP));
+      if (i < 120 * 10) continue;
+      maxAngle = Math.max(maxAngle, Math.abs(cardPose(s).angle));
+      movedThisSecond = Math.max(movedThisSecond, s.moved);
+      if (i % 120 === 119) {
+        // A swing slows at its ends, but every second the card visibly moves.
+        if (movedThisSecond < 0.1) stillSeconds++;
+        movedThisSecond = 0;
+      }
+    }
+    expect(stillSeconds).toBe(0);
+    expect(maxAngle).toBeGreaterThan(0.02);
+    expect(maxAngle).toBeLessThan(0.15);
+  });
+
+  it("drops in from above the page and lands on its anchor", () => {
+    expect(entranceY(0, -40)).toBeLessThan(-40 - 800);
+    expect(entranceY(ENTRANCE.seconds, -40)).toBe(-40);
+    expect(entranceY(ENTRANCE.seconds * 2, -40)).toBe(-40);
+    for (let t = 0; t < ENTRANCE.seconds; t += 0.05) {
+      expect(entranceY(t + 0.05, -40)).toBeGreaterThanOrEqual(entranceY(t, -40));
+    }
   });
 });

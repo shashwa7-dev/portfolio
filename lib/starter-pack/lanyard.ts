@@ -81,7 +81,17 @@ function satisfy(a: Particle, b: Particle, len: number): void {
   b.y -= dy * f * b.invMass;
 }
 
-export function stepLanyard(s: LanyardState, dt: number, drag: Vec | null, p: LanyardParams = LANYARD): void {
+/**
+ * `wind` is a sideways push on the card in px/s² (see `breeze`), so it keeps
+ * dangling instead of hanging dead still.
+ */
+export function stepLanyard(
+  s: LanyardState,
+  dt: number,
+  drag: Vec | null,
+  p: LanyardParams = LANYARD,
+  wind = 0,
+): void {
   const all = [...s.points, s.arm];
   const before = all.map((q) => ({ x: q.x, y: q.y }));
   for (const q of all) {
@@ -93,6 +103,7 @@ export function stepLanyard(s: LanyardState, dt: number, drag: Vec | null, p: La
     q.x += vx;
     q.y += vy + p.gravity * dt * dt;
   }
+  if (s.arm.invMass > 0) s.arm.x += wind * dt * dt;
   const pin = () => {
     s.points[0].x = s.anchor.x;
     s.points[0].y = s.anchor.y;
@@ -140,4 +151,27 @@ export function lanyardAtRest(s: LanyardState, eps = 0.02): boolean {
 
 export function toLocal(client: Vec, rect: { left: number; top: number }, scale: number): Vec {
   return { x: (client.x - rect.left) / scale, y: (client.y - rect.top) / scale };
+}
+
+/**
+ * A light, never-repeating breeze in px/s²: three slow waves at unrelated
+ * periods, so the card sways a few degrees forever and never looks looped.
+ */
+export const BREEZE = { strength: 70, periods: [3.7, 5.9, 2.3], weights: [1, 0.6, 0.35] } as const;
+
+export function breeze(t: number): number {
+  let f = 0;
+  BREEZE.periods.forEach((period, i) => {
+    f += BREEZE.weights[i] * Math.sin((2 * Math.PI * t) / period + i * 1.3);
+  });
+  return BREEZE.strength * f;
+}
+
+/** The drop-in: the strap's anchor falls from above the page to its place. */
+export const ENTRANCE = { seconds: 0.9, drop: 1100 } as const;
+
+export function entranceY(t: number, restY: number): number {
+  const k = Math.min(1, Math.max(0, t / ENTRANCE.seconds));
+  const eased = 1 - Math.pow(1 - k, 3);
+  return k >= 1 ? restY : restY - ENTRANCE.drop * (1 - eased);
 }

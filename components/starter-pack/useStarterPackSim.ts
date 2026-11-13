@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useRef, type RefObject } from "react";
-import { ballsAtRest, createBalls, frameGravity, poke, stepBalls, type Ball } from "@/lib/starter-pack/bubbles";
+import { createBalls, frameGravity, poke, stepBalls, type Ball } from "@/lib/starter-pack/bubbles";
 import { starterPack } from "@/lib/starter-pack/config";
 import {
+  breeze,
   cardPose,
   createLanyard,
-  lanyardAtRest,
+  ENTRANCE,
+  entranceY,
   setAnchor,
   stepLanyard,
   toLocal,
@@ -82,7 +84,11 @@ export function useStarterPackSim(scale: number, anchor: Vec): SimRefs {
     host.querySelectorAll<HTMLElement>("[data-ball]").forEach((el) => ballEls.set(el.dataset.ball ?? "", el));
 
     const start = anchorRef.current;
-    let lanyard: LanyardState = createLanyard(start, OPENING_SWING);
+    // Starts above the page: the anchor drops in on first view and the card follows it down.
+    let lanyard: LanyardState = createLanyard({ x: start.x, y: start.y - ENTRANCE.drop }, OPENING_SWING);
+    let entered = false;
+    let entranceT = 0;
+    let simT = 0;
     let state: Ball[] = createBalls(starterPack.bubbles.map((b) => ({ id: b.id, r: b.r })), BOX);
     let drag: Vec | null = null;
     let grab: Vec = { x: 0, y: 0 };
@@ -94,6 +100,7 @@ export function useStarterPackSim(scale: number, anchor: Vec): SimRefs {
     const settleNow = () => {
       // Reduced motion: hang straight and let the bubbles fall before anything is shown.
       lanyard = createLanyard(anchorRef.current, 0);
+      entered = true;
       live.current.lanyard = lanyard;
       state = createBalls(starterPack.bubbles.map((b) => ({ id: b.id, r: b.r })), BOX);
       for (let i = 0; i < 120 * 20; i++) stepBalls(state, BOX, STEP, frameGravity(0, { x: 0, y: 0 }));
@@ -126,13 +133,19 @@ export function useStarterPackSim(scale: number, anchor: Vec): SimRefs {
       raf = 0;
       const steps = clock.tick(t);
       for (let i = 0; i < steps; i++) {
-        stepLanyard(lanyard, STEP, drag);
+        simT += STEP;
+        if (!entered) {
+          entranceT += STEP;
+          setAnchor(lanyard, { x: anchorRef.current.x, y: entranceY(entranceT, anchorRef.current.y) });
+          if (entranceT >= ENTRANCE.seconds) entered = true;
+        }
+        // Held cards stay where the hand puts them; otherwise the breeze keeps them dangling.
+        stepLanyard(lanyard, STEP, drag, undefined, drag ? 0 : breeze(simT));
         stepBalls(state, BOX, STEP, frameGravity(cardPose(lanyard).angle, lanyard.acc));
       }
       draw();
-      const asleep = !drag && lanyardAtRest(lanyard) && ballsAtRest(state);
-      // Keep going without resetting the clock; stop when asleep, off screen or hidden.
-      if (!asleep && onScreen && document.visibilityState === "visible" && !reduce.matches) {
+      // Never sleeps while seen: it dangles. Stops only off screen, in a hidden tab, or under reduced motion.
+      if (onScreen && document.visibilityState === "visible" && !reduce.matches) {
         raf = requestAnimationFrame(frame);
       }
     };
