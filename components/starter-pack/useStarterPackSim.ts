@@ -22,8 +22,8 @@ import { playBloop } from "./bloopSound";
 const BOX = { w: 208, h: 136 };
 /** Card pixels from the card's top left to the clip's hole. */
 const HOLE = { x: 235, y: 8 };
-/** How far (card px) the card starts off-centre, so it arrives with a gentle swing, away from the screen edge. */
-const OPENING_SWING = -50;
+/** How far (card px) the card starts off-centre. Zero: the drop and the breeze give it all the swing it needs. */
+const OPENING_SWING = 0;
 const TILT = { y: -14, x: 4, rangeY: 24, rangeX: 12 };
 
 export type SimRefs = {

@@ -11,15 +11,17 @@ import s from "./StarterPack.module.css";
 export type Variant = "hang" | "footer";
 
 /**
- * Desktop: the card hangs in the header's top-right corner, in the margin
- * beside the hero column. The page box (`.starter-pack-hang`) is 420 x 576 CSS
- * px; the card scales with the margin so it never reaches the hero text.
+ * Desktop: the card hangs in the header's top-right corner. The page box
+ * (`.starter-pack-hang`) spans the full width and is 900 CSS px tall, so the
+ * card can swing freely; it scales with the margin beside the hero column so
+ * it never reaches the hero text.
  */
-const HANG_BOX = { w: 420, h: 576 };
+const HANG_BOX_H = 900;
 const HANG_SCALE = { min: 0.45, max: 0.6 };
-/** CSS px kept clear between the card and the hero column, and the screen edge. */
+/** CSS px kept clear between the card and the hero column. */
 const HANG_CLEARANCE = 40;
-const HANG_EDGE = 16;
+/** CSS px from the card's right edge to the screen's right edge. */
+const HANG_EDGE = 32;
 /** The phone slot's height in CSS pixels, reserved by the server markup in app/page.tsx. */
 export const FOOTER_SLOT_HEIGHT = 640;
 const FOOTER_MAX_SCALE = 0.68;
@@ -37,9 +39,8 @@ function layout(variant: Variant, width: number) {
   if (variant === "hang") {
     const margin = (width - measure()) / 2;
     const scale = Math.min(HANG_SCALE.max, Math.max(HANG_SCALE.min, (margin - HANG_CLEARANCE) / CARD_W));
-    // The card's right edge sits HANG_EDGE px in from the box's right edge.
-    const anchorX = (HANG_BOX.w - HANG_EDGE) / scale - CARD_W / 2;
-    return { scale, w: HANG_BOX.w / scale, h: HANG_BOX.h / scale, anchorX };
+    const anchorX = (width - HANG_EDGE) / scale - CARD_W / 2;
+    return { scale, w: width / scale, h: HANG_BOX_H / scale, anchorX };
   }
   const scale = Math.min(FOOTER_MAX_SCALE, (width - GUTTER) / CARD_W);
   const w = width / scale;
@@ -73,12 +74,11 @@ export default function StarterPack({ variant }: { variant: Variant }) {
   } = useStarterPackSim(scale, anchor);
 
   useEffect(() => {
-    const onResize = () =>
-      setWidth(variant === "hang" ? window.innerWidth : (rootRef.current?.clientWidth ?? window.innerWidth));
+    const onResize = () => setWidth(rootRef.current?.clientWidth ?? window.innerWidth);
     onResize();
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
-  }, [variant, rootRef]);
+  }, [rootRef]);
 
   const themeClass = theme === "orange" ? s.orange : s.cardStock;
   return (
