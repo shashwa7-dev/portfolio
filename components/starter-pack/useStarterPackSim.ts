@@ -19,7 +19,6 @@ import {
   type LanyardState,
   type Vec,
 } from "@/lib/starter-pack/lanyard";
-import { lightInCard } from "@/lib/starter-pack/light";
 import { createFrameClock, STEP } from "@/lib/starter-pack/loop";
 import { playClack, primeClack } from "./clackSound";
 
@@ -142,23 +141,9 @@ export function useStarterPackSim(
       for (let i = 0; i < 120 * 20; i++) stepBalls(state, BOX, STEP, frameGravity(0, { x: 0, y: 0 }));
     };
 
-    // Where the card is on screen, for the light at the viewport's top-left.
-    // Cached: refreshed on scroll and resize, never read inside the frame.
-    let vrect = rootEl.getBoundingClientRect();
-    let lit = { x: NaN, y: NaN };
-    const light = (angle: number) => {
-      const l = lightInCard({ x: vrect.left + lanyard.arm.x * scaleRef.current, y: vrect.top + lanyard.arm.y * scaleRef.current }, angle);
-      if (Math.abs(l.x - lit.x) < 0.004 && Math.abs(l.y - lit.y) < 0.004) return;
-      lit = l;
-      tiltEl.style.setProperty("--lx", l.x.toFixed(3));
-      tiltEl.style.setProperty("--ly", l.y.toFixed(3));
-      tiltEl.style.setProperty("--la", `${((Math.atan2(-l.x, l.y) * 180) / Math.PI).toFixed(1)}deg`);
-    };
-
     const draw = () => {
       const { clip: c, angle } = cardPose(lanyard);
       hangEl.style.transform = `translate(${c.x - HOLE.x}px, ${c.y - HOLE.y}px) rotate(${angle}rad)`;
-      light(angle);
       hangEl.style.visibility = "visible";
       const p = lanyard.points;
       let d = `M${p[0].x} ${p[0].y}`;
@@ -272,11 +257,6 @@ export function useStarterPackSim(
       tiltEl.style.transform = "";
     };
 
-    const onScroll = () => {
-      vrect = rootEl.getBoundingClientRect();
-      // Under reduced motion nothing loops, so re-light on the spot.
-      if (reduce.matches) draw();
-    };
     const cancel = (e: Event) => e.preventDefault();
     const onVisibility = () => schedule();
     const onReduce = () => {
@@ -320,8 +300,6 @@ export function useStarterPackSim(
     rootEl.addEventListener("selectstart", cancel);
     rootEl.addEventListener("dragstart", cancel);
     document.addEventListener("visibilitychange", onVisibility);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
     reduce.addEventListener("change", onReduce);
 
     return () => {
@@ -338,8 +316,6 @@ export function useStarterPackSim(
       rootEl.removeEventListener("selectstart", cancel);
       rootEl.removeEventListener("dragstart", cancel);
       document.removeEventListener("visibilitychange", onVisibility);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
       reduce.removeEventListener("change", onReduce);
     };
   }, [dropIn, ready]);
