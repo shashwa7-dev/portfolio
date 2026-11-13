@@ -290,6 +290,7 @@ function InstallButton({ compact = false }: { compact?: boolean }) {
   }
   return (
     <a href={STORE_URL} target="_blank" rel="noopener noreferrer" className={`${base} transition-colors duration-fast ease-out hover:bg-accent-hover`}>
+      <ChromeMark className="size-4" />
       Add to Chrome
       <ArrowUpRight size={16} weight="bold" aria-hidden />
     </a>
@@ -538,6 +539,37 @@ export default function SwoopyPage() {
           <a href="/swoopy/privacy.html" className={linkClass}>Privacy Policy</a>
           <Link href="/swoopy/changelog" className={linkClass}>Version history</Link>
         </p>
+        <h3 className="mt-10 text-sm font-medium text-foreground">Find Swoopy on</h3>
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          {/* Third-party badges: plain <img> on purpose, they are remote SVGs. */}
+          <a href="https://launchbuff.com/products/swoopy-0a6yk6" target="_blank" rel="noopener noreferrer" title="Featured on LaunchBuff">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="https://launchbuff.com/badge-featured-dark.svg" alt="Featured on LaunchBuff" width={128} height={40} className="h-10 w-auto" />
+          </a>
+          <a
+            href="https://www.producthunt.com/products/swoopy-2?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-swoopy-2"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1312458&theme=neutral&t=1794554045315"
+              alt="Swoopy - Save the images Chrome won't! | Product Hunt"
+              width={186}
+              height={40}
+              className="h-10 w-auto"
+            />
+          </a>
+          <a href="https://peerlist.io/shashwa7/project/swoopy" target="_blank" rel="noopener noreferrer">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="https://peerlist.io/api/v1/projects/embed/PRJH7B86QMJ8PB9AKIRMDPBDK6JLEL?showUpvote=true&theme=light"
+              alt="Swoopy on Peerlist"
+              height={40}
+              className="h-10 w-auto"
+            />
+          </a>
+        </div>
       </Section>
     </main>
   );
