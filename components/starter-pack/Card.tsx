@@ -1,7 +1,7 @@
 import type { Ref } from "react";
 import { starterPack, type ThemeId } from "@/lib/starter-pack/config";
 import BubblePod from "./BubblePod";
-import Pod from "./Pod";
+import Pod, { Walls } from "./Pod";
 import Ticket from "./Ticket";
 import s from "./StarterPack.module.css";
 
@@ -63,7 +63,9 @@ export default function Card({
         {c.sideLabel}
       </div>
 
-      <div className={`${s.z} ${s.pod} ${s.figure}`} />
+      <div className={`${s.z} ${s.pod} ${s.figure}`}>
+        <Walls />
+      </div>
       <div className={`${s.z} ${s.mascotShadow}`} aria-hidden>
         {/* eslint-disable-next-line @next/next/no-img-element -- a blurred silhouette copy, decorative */}
         <img src={c.mascot.src} alt="" draggable={false} loading="lazy" decoding="async" />

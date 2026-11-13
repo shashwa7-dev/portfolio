@@ -417,7 +417,7 @@
   border: 1.5px solid rgba(255, 255, 255, 0.95);
   box-shadow:
     inset 0 0 0 4px rgba(255, 255, 255, 0.18),
-    inset calc(var(--lx) * 8px) calc(var(--ly) * 10px) 16px rgba(0, 0, 0, 0.1),
+    inset calc(var(--lx) * 10px) calc(var(--ly) * 12px) 18px rgba(0, 0, 0, 0.16),
     0 0 0 1px rgba(0, 0, 0, 0.12),
     calc(var(--lx) * -9px) calc(var(--ly) * -12px) 14px rgba(0, 0, 0, 0.18);
 }
@@ -446,11 +446,35 @@
   border-radius: inherit;
   background: radial-gradient(
     ellipse 75% 60% at calc(50% + var(--lx) * 34%) calc(50% + var(--ly) * 38%),
-    rgba(255, 255, 255, 0.42),
-    rgba(255, 255, 255, 0.12) 45%,
+    rgba(255, 255, 255, 0.55),
+    rgba(255, 255, 255, 0.16) 45%,
     rgba(255, 255, 255, 0) 72%
   );
   pointer-events: none;
+}
+/* The side wall: clear rings stepping down to the card, brighter on the
+   side facing the light, so the blister reads as a raised 3D shell. */
+.walls {
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+.walls i {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  border-top-color: rgba(255, 255, 255, calc(0.22 - var(--ly) * 0.25));
+  border-left-color: rgba(255, 255, 255, calc(0.22 - var(--lx) * 0.25));
+  border-bottom-color: rgba(255, 255, 255, calc(0.12 + var(--ly) * 0.1));
+  border-right-color: rgba(255, 255, 255, calc(0.12 + var(--lx) * 0.1));
+}
+.walls i:last-child {
+  /* The flange where the blister meets the card. */
+  border-width: 2px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
 }
 /* Contents sit behind the plastic. */
 .item {

@@ -1,5 +1,6 @@
 import type { Ref } from "react";
 import type { BubbleDef } from "@/lib/starter-pack/config";
+import { Walls } from "./Pod";
 import s from "./StarterPack.module.css";
 
 /**
@@ -10,6 +11,7 @@ import s from "./StarterPack.module.css";
 export default function BubblePod({ bubbles, hostRef }: { bubbles: BubbleDef[]; hostRef: Ref<HTMLDivElement> }) {
   return (
     <div className={`${s.z} ${s.pod} ${s.shippedPod}`}>
+      <Walls />
       <div className={s.balls} ref={hostRef} aria-hidden>
         {bubbles.map((b) => (
           <span key={b.id} className={s.ball} data-ball={b.id} style={{ width: b.r * 2, height: b.r * 2 }}>
