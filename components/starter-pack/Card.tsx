@@ -34,7 +34,7 @@ export default function Card({
       <figcaption className={s.srOnly}>
         {`${c.title} ${c.subtitle}: a toy card of Shashwat. Shipped: ${c.bubbles.map((b) => b.name).join(", ")}. ${c.sideLabel}: ${c.pods.map((p) => p.label.toLowerCase()).join(", ")}. ${c.badge}.`}
       </figcaption>
-      <div className={`${s.layer} ${s.shadowDots}`} />
+      <div className={`${s.layer} ${s.castShadow}`} />
       {[5, 10, 15].map((d) => (
         <div key={d} className={`${s.layer} ${s.edge}`} style={{ transform: `translateZ(-${d}px)` }} />
       ))}
