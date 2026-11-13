@@ -10,16 +10,12 @@ import {
   createLanyard,
   ENTRANCE,
   entranceY,
-  REEL,
-  reelLength,
-  setReel,
   setAnchor,
   stepLanyard,
   toLocal,
   type LanyardState,
   type Vec,
 } from "@/lib/starter-pack/lanyard";
-import { lightInCard } from "@/lib/starter-pack/light";
 import { createFrameClock, STEP } from "@/lib/starter-pack/loop";
 import { playClack, primeClack } from "./clackSound";
 
@@ -49,16 +45,10 @@ export type SimRefs = {
  * on screen and the tab is visible, and stops when it is off screen, in a
  * hidden tab, or under reduced motion. The physics steps allocate nothing.
  */
-/**
- * `dropIn`: the card falls in from above the page on first view (desktop,
- * where the strap comes from the screen's top edge). Without it the card
- * starts hanging from its slit. `bounds` is the world size: a drag can never
- * pull the card outside it.
- */
+/** `bounds` is the world size: a drag can never pull the card outside it. */
 export function useStarterPackSim(
   scale: number,
   anchor: Vec,
-  dropIn: boolean,
   bounds: { w: number; h: number },
   ready: boolean,
 ): SimRefs {
@@ -111,17 +101,8 @@ export function useStarterPackSim(
 
     const start = anchorRef.current;
     // Starts above the page: the anchor drops in on first view and the card follows it down.
-    // Desktop: starts above the page and the anchor drops in. Slit: the strap
-    // starts short and feeds out of the page, lowering the card smoothly.
-    let lanyard: LanyardState = createLanyard(
-      { x: start.x, y: dropIn ? start.y - ENTRANCE.drop : start.y },
-      OPENING_SWING,
-      undefined,
-      dropIn ? 1 : REEL.from,
-    );
-    let entered = !dropIn;
-    let reeled = dropIn;
-    let reelT = 0;
+    let lanyard: LanyardState = createLanyard({ x: start.x, y: start.y - ENTRANCE.drop }, OPENING_SWING);
+    let entered = false;
     let entranceT = 0;
     let simT = 0;
     let state: Ball[] = createBalls(starterPack.bubbles.map((b) => ({ id: b.id, r: b.r })), BOX);
@@ -136,29 +117,50 @@ export function useStarterPackSim(
       // Reduced motion: hang straight and let the bubbles fall before anything is shown.
       lanyard = createLanyard(anchorRef.current, 0);
       entered = true;
-      reeled = true;
       live.current.lanyard = lanyard;
       state = createBalls(starterPack.bubbles.map((b) => ({ id: b.id, r: b.r })), BOX);
       for (let i = 0; i < 120 * 20; i++) stepBalls(state, BOX, STEP, frameGravity(0, { x: 0, y: 0 }));
     };
 
-    // Where the card is on screen, for the light at the viewport's top-left.
-    // Cached: refreshed on scroll and resize, never read inside the frame.
-    let vrect = rootEl.getBoundingClientRect();
-    let lit = { x: NaN, y: NaN };
-    const light = (angle: number) => {
-      const l = lightInCard({ x: vrect.left + lanyard.arm.x * scaleRef.current, y: vrect.top + lanyard.arm.y * scaleRef.current }, angle);
-      if (Math.abs(l.x - lit.x) < 0.004 && Math.abs(l.y - lit.y) < 0.004) return;
-      lit = l;
-      tiltEl.style.setProperty("--lx", l.x.toFixed(3));
-      tiltEl.style.setProperty("--ly", l.y.toFixed(3));
-      tiltEl.style.setProperty("--la", `${((Math.atan2(-l.x, l.y) * 180) / Math.PI).toFixed(1)}deg`);
+    // Last values written for each bubble.
+    const drawn = new Map<string, { x: number; y: number; a: number; q: number }>();
+    // The strap's SVG covers only a padded box around the strap, not the whole
+    // world, so each frame repaints a strip instead of a screenful. The box is
+    // refitted only when the strap (or the clip drawn around its
+    // ends, which reach about 26px out) comes within MARGIN of its edge; a bigger PAD
+    // refits less but repaints more area every frame, so keep it tight. It is
+    // placed with a transform; only a change of size costs a layout.
+    const svgEl = edgeEl.ownerSVGElement;
+    const PAD = 80;
+    const MARGIN = 30;
+    let box = { x: 0, y: 0, w: 0, h: 0 };
+    const fitRope = (c: Vec) => {
+      if (!svgEl) return;
+      let x0 = c.x, y0 = c.y, x1 = c.x, y1 = c.y;
+      for (const q of lanyard.points) {
+        if (q.x < x0) x0 = q.x;
+        if (q.y < y0) y0 = q.y;
+        if (q.x > x1) x1 = q.x;
+        if (q.y > y1) y1 = q.y;
+      }
+      const inside =
+        box.w > 0 && x0 >= box.x + MARGIN && y0 >= box.y + MARGIN && x1 <= box.x + box.w - MARGIN && y1 <= box.y + box.h - MARGIN;
+      if (inside) return;
+      const w = Math.ceil(x1 - x0 + PAD * 2);
+      const h = Math.ceil(y1 - y0 + PAD * 2);
+      if (w !== box.w || h !== box.h) {
+        svgEl.style.width = `${w}px`;
+        svgEl.style.height = `${h}px`;
+      }
+      box = { x: x0 - PAD, y: y0 - PAD, w, h };
+      // translateZ(0) keeps the strap on its own layer above the card in WebKit.
+      svgEl.style.transform = `translate(${box.x}px, ${box.y}px) translateZ(0)`;
+      svgEl.setAttribute("viewBox", `${box.x} ${box.y} ${box.w} ${box.h}`);
     };
 
     const draw = () => {
       const { clip: c, angle } = cardPose(lanyard);
       hangEl.style.transform = `translate(${c.x - HOLE.x}px, ${c.y - HOLE.y}px) rotate(${angle}rad)`;
-      light(angle);
       hangEl.style.visibility = "visible";
       const p = lanyard.points;
       let d = `M${p[0].x} ${p[0].y}`;
@@ -169,13 +171,27 @@ export function useStarterPackSim(
       edgeEl.setAttribute("d", d);
       fillEl.setAttribute("d", d);
       stitchEl.setAttribute("d", d);
+      fitRope(c);
       clipEl.setAttribute("transform", `translate(${c.x} ${c.y}) rotate(${(angle * 180) / Math.PI})`);
       for (const b of state) {
         const el = ballEls.get(b.id);
         if (!el) continue;
+        // Most frames the bubbles sit still while the card sways: skip writes
+        // that would change nothing, so the browser has nothing to redo.
+        let last = drawn.get(b.id);
+        if (!last) {
+          last = { x: NaN, y: NaN, a: NaN, q: 1 };
+          drawn.set(b.id, last);
+        }
+        if (Math.abs(last.x - b.x) < 0.05 && Math.abs(last.y - b.y) < 0.05 && Math.abs(last.a - b.angle) < 0.002 && b.squash < 0.002 && last.q < 0.002) continue;
         const q = b.squash * 0.22;
         el.style.transform = `translate(${b.x - b.r}px, ${b.y - b.r}px) scale(${1 + q}, ${1 - q})`;
         (el.firstElementChild as HTMLElement | null)?.style.setProperty("transform", `rotate(${b.angle}rad)`);
+        // Reuse the one record per bubble: no allocation in the frame.
+        last.x = b.x;
+        last.y = b.y;
+        last.a = b.angle;
+        last.q = b.squash;
       }
     };
 
@@ -185,11 +201,6 @@ export function useStarterPackSim(
       let loudest = 0;
       for (let i = 0; i < steps; i++) {
         simT += STEP;
-        if (!reeled) {
-          reelT += STEP;
-          setReel(lanyard, reelLength(reelT));
-          if (reelT >= REEL.seconds) reeled = true;
-        }
         if (!entered) {
           entranceT += STEP;
           setAnchor(lanyard, { x: anchorRef.current.x, y: entranceY(entranceT, anchorRef.current.y) });
@@ -272,11 +283,6 @@ export function useStarterPackSim(
       tiltEl.style.transform = "";
     };
 
-    const onScroll = () => {
-      vrect = rootEl.getBoundingClientRect();
-      // Under reduced motion nothing loops, so re-light on the spot.
-      if (reduce.matches) draw();
-    };
     const cancel = (e: Event) => e.preventDefault();
     const onVisibility = () => schedule();
     const onReduce = () => {
@@ -320,8 +326,6 @@ export function useStarterPackSim(
     rootEl.addEventListener("selectstart", cancel);
     rootEl.addEventListener("dragstart", cancel);
     document.addEventListener("visibilitychange", onVisibility);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
     reduce.addEventListener("change", onReduce);
 
     return () => {
@@ -338,11 +342,9 @@ export function useStarterPackSim(
       rootEl.removeEventListener("selectstart", cancel);
       rootEl.removeEventListener("dragstart", cancel);
       document.removeEventListener("visibilitychange", onVisibility);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
       reduce.removeEventListener("change", onReduce);
     };
-  }, [dropIn, ready]);
+  }, [ready]);
 
   return { root, world, hang, tilt, balls, edge, fill, stitch, clip };
 }

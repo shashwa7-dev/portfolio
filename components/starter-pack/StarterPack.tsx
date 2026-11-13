@@ -11,10 +11,8 @@ import s from "./StarterPack.module.css";
 
 export type { Variant } from "@/lib/starter-pack/layout";
 
-/** Desktop: the strap comes down from above the screen's top edge. */
+/** The strap comes down from above the screen's top edge. */
 const ANCHOR_Y = -40;
-/** Elsewhere it comes out of a slit cut in the page, this many CSS px below the box's top. */
-const SLIT_TOP = 16;
 
 /** The hero column's width: `--measure` in app/globals.css (never hard-coded). */
 function measure(): number {
@@ -38,11 +36,7 @@ export default function StarterPack({ variant }: { variant: Variant }) {
   const ready = width !== null;
 
   const { scale, w, h, anchorX } = useMemo(() => layout(variant, width ?? 375, measure()), [variant, width]);
-  const fromSlit = variant !== "hang";
-  const anchor = useMemo(
-    () => ({ x: anchorX, y: fromSlit ? SLIT_TOP / scale : ANCHOR_Y }),
-    [anchorX, fromSlit, scale],
-  );
+  const anchor = useMemo(() => ({ x: anchorX, y: ANCHOR_Y }), [anchorX]);
   const bounds = useMemo(() => ({ w, h }), [w, h]);
   const {
     root: rootRef,
@@ -54,7 +48,7 @@ export default function StarterPack({ variant }: { variant: Variant }) {
     fill: fillRef,
     stitch: stitchRef,
     clip: clipRef,
-  } = useStarterPackSim(scale, anchor, !fromSlit, bounds, ready);
+  } = useStarterPackSim(scale, anchor, bounds, ready);
 
   // Layout effect: measure the real box before the first paint, so the card
   // never hangs from the window's width when its box is narrower.
@@ -74,7 +68,6 @@ export default function StarterPack({ variant }: { variant: Variant }) {
             <Card theme={theme} date={date} tiltRef={tiltRef} ballsRef={ballsRef} />
           </div>
           <Lanyard
-            slit={fromSlit ? anchor : null}
             edgeRef={edgeRef}
             fillRef={fillRef}
             stitchRef={stitchRef}

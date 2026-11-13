@@ -99,6 +99,12 @@ The prototype that settled the look is
 
 ## Placement
 
+> **Update (2026-11-14):** tablets and phones (under 1280px) no longer get a
+> card at all. It is decoration, and on touch devices its 3D layers cost too
+> much (about a fifth of a phone's main thread, measured), so it is desktop
+> only. The slit and strap feed-out went with the tablet card. The per-frame lighting was also removed: the light is constant.
+> Where this document still mentions a phone card, the update wins.
+
 - **Wide screens**: absolute at the top right of the homepage, in the empty
   margin right of the hero column, the strap coming from the top edge of the
   page; scrolls away with the page. Scaled to fit the margin (about 60%).

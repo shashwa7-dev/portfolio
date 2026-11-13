@@ -41,16 +41,6 @@ export default function Home() {
           that copy is a parting note for someone who has scrolled the whole
           page, so it only reads honestly from here. */}
       <Closing />
-      {/* Tablets: the same card hangs just above the footer (phones get a half
-          size one beside the footer's links, see components/Footer.tsx). The
-          slot's height is reserved here, in server markup, so nothing moves
-          when the card loads. */}
-      <div className="starter-pack-slot">
-        <StarterPackMount variant="footer" />
-      </div>
-      {/* Phones: the small card, portalled into the footer's anchor beside
-          Connect (components/Footer.tsx), so only the homepage loads it. */}
-      <StarterPackMount variant="mini" />
       {/* Homepage only, deliberately: mounted here rather than in the layout so
           it never appears on a blog post or a case study. */}
       <LaunchNudge />

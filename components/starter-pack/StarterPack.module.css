@@ -38,10 +38,12 @@
 /* ---------- Lanyard ---------- */
 
 .rope {
+  /* Sized and placed every time the strap leaves its box (useStarterPackSim). */
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
   overflow: visible;
   pointer-events: none;
   z-index: 5;
@@ -51,33 +53,6 @@
 .ropeFill {
   stroke: var(--rope);
 }
-/* The cut the strap comes out of: a soft dent in the page, a dark opening,
-   and a lower lip that sits over the strap. */
-.slitShade {
-  fill: rgba(0, 0, 0, 0.07);
-  filter: blur(2px);
-}
-.slitHole {
-  fill: #2a2730;
-}
-.slitLip {
-  fill: none;
-  /* The page itself, so the lip reads as the cut's edge in either theme. */
-  stroke: hsl(var(--background));
-  stroke-width: 5;
-  stroke-linecap: round;
-}
-/* Dark mode: a pure black hole read as a flat blot. A lighter opening with a
-   faint lit rim reads as a groove cut into the page. */
-:global(.dark) .slitShade {
-  fill: rgba(255, 255, 255, 0.07);
-}
-:global(.dark) .slitHole {
-  fill: #2c2a31;
-  stroke: rgba(255, 255, 255, 0.12);
-  stroke-width: 1.5;
-}
-
 .hang {
   position: absolute;
   left: 0;
@@ -108,8 +83,9 @@
   transition: transform var(--duration-fast) var(--ease-out);
   --mk: var(--sp-marker), cursive;
   --lb: var(--sp-label), system-ui, sans-serif;
-  /* Direction to the light (viewport top-left) in the card's frame, set every
-     frame by useStarterPackSim; gloss sits toward it, shadows fall away. */
+  /* One fixed light from the top-left: the plastic's gloss sits toward it and
+     every shadow falls away. Constant on purpose: updating these every frame
+     restyled and repainted the whole card, which dropped frames on phones. */
   --lx: -0.85;
   --ly: -0.53;
   --la: 122deg;
@@ -178,13 +154,18 @@
  * sheen, and a soft shadow thrown on the page behind it.
  */
 .castShadow {
-  background: rgba(0, 0, 0, 0.22);
-  filter: blur(18px);
+  /* A pre-blurred rounded rectangle (card-shadow.webp, padded 60px all round),
+     not a live blur filter, which is redone every frame the card moves. Keeps
+     the card's corners in its shadow. */
+  inset: -60px;
+  border-radius: 0;
+  background: url(/starter-pack/card-shadow.webp) center / 100% 100% no-repeat;
+  opacity: 0.22;
   transform: translateZ(-60px) translate(calc(var(--lx) * -18px), calc(var(--ly) * -40px)) scale(0.98);
 }
 /* The shadow is the one thing that adapts to the site theme. */
 :global(.dark) .castShadow {
-  background: rgba(0, 0, 0, 0.55);
+  opacity: 0.55;
 }
 .edge {
   background: var(--edge);
@@ -471,7 +452,6 @@
   height: 9px;
   border-radius: 999px;
   background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.8) 30%, rgba(255, 255, 255, 0.6) 70%, rgba(255, 255, 255, 0) 100%);
-  filter: blur(0.6px);
   transform: translateZ(1px) translate(calc((var(--lx) + 0.85) * 26px), calc((var(--ly) + 0.53) * 18px)) rotate(-14deg);
 }
 .walls i:last-of-type {
@@ -541,7 +521,11 @@
   transform: translateZ(6px);
 }
 .mascotShadow img {
-  filter: brightness(0) opacity(0.3) blur(3px);
+  /* The silhouette pre-blurred (no live filter), padded 24px of its 829px
+     height so the blur fades out instead of stopping at the image's edge. */
+  left: -11.9px;
+  bottom: -11.9px;
+  height: 433.7px;
   transform: translate(calc(var(--lx) * -16px), calc(var(--ly) * -22px));
 }
 
