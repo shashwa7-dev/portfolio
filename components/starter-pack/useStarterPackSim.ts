@@ -20,6 +20,8 @@ import { playBloop } from "./bloopSound";
 const BOX = { w: 208, h: 136 };
 /** Card pixels from the card's top left to the clip's hole. */
 const HOLE = { x: 235, y: 8 };
+/** How far (card px) the card starts off-centre, so it arrives with a gentle swing, away from the screen edge. */
+const OPENING_SWING = -50;
 const TILT = { y: -14, x: 4, rangeY: 24, rangeX: 12 };
 
 export type SimRefs = {
@@ -80,7 +82,7 @@ export function useStarterPackSim(scale: number, anchor: Vec): SimRefs {
     host.querySelectorAll<HTMLElement>("[data-ball]").forEach((el) => ballEls.set(el.dataset.ball ?? "", el));
 
     const start = anchorRef.current;
-    let lanyard: LanyardState = createLanyard(start);
+    let lanyard: LanyardState = createLanyard(start, OPENING_SWING);
     let state: Ball[] = createBalls(starterPack.bubbles.map((b) => ({ id: b.id, r: b.r })), BOX);
     let drag: Vec | null = null;
     let grab: Vec = { x: 0, y: 0 };

@@ -151,6 +151,7 @@ Coinbase, Polygon, Play AI, ShopOS
 
 - **Location:** Bengaluru, India. The homepage hero shows it as "BLR" beside an Indian flag, and the footer lists it in full under "Based in".
 - **Timezone:** IST, Asia/Kolkata. The homepage hero shows his current local time live next to the city, so if someone asks about overlap or working hours, answer from IST.
+- **Starter pack card:** the homepage has a toy "OFFCOD8 STARTER PACK" card on a lanyard you can grab and swing: his 3D figure, bubbles for what he has shipped (Swoopy, Sloosh, ShopOS, Coinbase, DeHidden, Polygon, Santul, Play AI), and pods for builds, coffee, music and gym. On phones it hangs just above the footer.
 - **Interests:** Music, Gym, Walking, Gaming, Cooking, Home Barista, Coffee Enthusiast
 - **Favorite series:** Big Bang Theory, Brooklyn 99, Silicon Valley, Breaking Bad, Young Sheldon
 - **Music background:** Before software, music was the main thing. Trained in Hindustani music at the True School of Music in Lower Parel, Mumbai, performed and helped out at venues including Hard Rock Cafe and The Blue Frog, worked on a couple of jingle projects, and sang raw vocals on friends' tracks. The letter at `/offcod8` tells that chapter in his own words.

@@ -63,6 +63,8 @@
   transform-style: preserve-3d;
   cursor: grab;
   touch-action: none;
+  /* The page box around the card ignores the pointer; the card does not. */
+  pointer-events: auto;
 }
 .hang[data-dragging] {
   cursor: grabbing;

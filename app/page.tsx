@@ -8,6 +8,7 @@ import Faq from "@/components/Faq";
 import Closing from "@/components/Closing";
 import LaunchNudge from "@/components/LaunchNudge";
 import ChatBotMount from "@/components/ChatBotMount";
+import StarterPackMount from "@/components/starter-pack/StarterPackMount";
 import { profilePageLd } from "@/lib/seo";
 
 
@@ -23,6 +24,12 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(profilePageLd()) }}
       />
       <BrandBackdrop />
+      {/* The starter pack card on its lanyard, hanging into the right margin on
+          wide screens. Takes no layout space; only the card itself takes the
+          pointer. Contents: lib/starter-pack/config.ts. */}
+      <div className="starter-pack-hang">
+        <StarterPackMount variant="hang" />
+      </div>
       <About />
       <ExperienceWork />
       <Writing />
@@ -34,6 +41,12 @@ export default function Home() {
           that copy is a parting note for someone who has scrolled the whole
           page, so it only reads honestly from here. */}
       <Closing />
+      {/* Phones and tablets: the same card hangs just above the footer. The
+          slot's height is reserved here, in server markup, so nothing moves
+          when the card loads. */}
+      <div className="starter-pack-slot">
+        <StarterPackMount variant="footer" />
+      </div>
       {/* Homepage only, deliberately: mounted here rather than in the layout so
           it never appears on a blog post or a case study. */}
       <LaunchNudge />

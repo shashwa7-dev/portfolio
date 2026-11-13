@@ -13,7 +13,7 @@ export type Variant = "hang" | "footer";
 /** Unscaled world for the wide-screen card: room for the strap, the card and its swing. */
 const HANG = { w: 700, h: 960, scale: 0.6 };
 /** The phone slot's height in CSS pixels, reserved by the server markup in app/page.tsx. */
-export const FOOTER_SLOT_HEIGHT = 600;
+export const FOOTER_SLOT_HEIGHT = 640;
 const FOOTER_MAX_SCALE = 0.68;
 const CARD_W = 470;
 const GUTTER = 32;
