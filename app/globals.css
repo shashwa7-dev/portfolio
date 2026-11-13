@@ -866,16 +866,24 @@ table {
   .status-ring { animation: status-ring-turn var(--duration-status-ring) linear infinite; }
   .spin-clip { opacity: 0; transition: opacity var(--duration-spin-clip) var(--ease-spin-clip); }
   .spin-clip[data-on] { opacity: 1; }
-  /* The hero photo as a ball, lit from the top-left like the starter
-     pack's bubbles. It sits outside the spinning layer, so the photo turns
-     underneath while the highlight and shading stay put, the way light stays
-     on a real spinning ball. Sized in em, like the photo. */
+  /* Neumorphism: the photo is a soft disc pressed up out of the page. Two
+     shadows in the page's own tones, a light one up-left and a dark one
+     down-right, plus a faint inner pair for the rounded edge. It sits outside
+     the spinning layer, so the photo turns while the light stays put. Sized in
+     em, like the photo. */
   .avatar-ball {
-    /* Shading only, no white highlight: the photo stays clean on top. */
-    background: radial-gradient(circle at 70% 80%, rgb(0 0 0 / 0.32), rgb(0 0 0 / 0) 62%);
     box-shadow:
-      inset -0.07em -0.09em 0.16em rgb(0 0 0 / 0.32),
-      0.03em 0.08em 0.16em rgb(0 0 0 / 0.22);
+      -0.09em -0.09em 0.2em rgb(255 255 255 / 0.95),
+      0.1em 0.11em 0.22em rgb(120 105 85 / 0.32),
+      inset 0.03em 0.03em 0.07em rgb(255 255 255 / 0.35),
+      inset -0.04em -0.04em 0.08em rgb(0 0 0 / 0.18);
+  }
+  .dark .avatar-ball {
+    box-shadow:
+      -0.09em -0.09em 0.2em rgb(255 255 255 / 0.07),
+      0.1em 0.11em 0.24em rgb(0 0 0 / 0.75),
+      inset 0.03em 0.03em 0.07em rgb(255 255 255 / 0.12),
+      inset -0.04em -0.04em 0.08em rgb(0 0 0 / 0.35);
   }
 }
 @keyframes status-ring-turn { to { transform: rotate(1turn); } }
