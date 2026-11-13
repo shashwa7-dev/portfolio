@@ -35,15 +35,17 @@ export default function Card({
         {`${c.title} ${c.subtitle}: a toy card of Shashwat. Shipped: ${c.bubbles.map((b) => b.name).join(", ")}. ${c.sideLabel}: ${c.pods.map((p) => p.label.toLowerCase()).join(", ")}. ${c.badge}.`}
       </figcaption>
       <div className={`${s.layer} ${s.castShadow}`} />
-      {[5, 10, 15].map((d) => (
+      {/* A couple of millimetres of board, not a thick slab. */}
+      {[1.5, 3].map((d) => (
         <div key={d} className={`${s.layer} ${s.edge}`} style={{ transform: `translateZ(-${d}px)` }} />
       ))}
-      <div className={`${s.layer} ${s.edge} ${s.edgeBack}`} style={{ transform: "translateZ(-20px)" }} />
+      <div className={`${s.layer} ${s.edge} ${s.edgeBack}`} style={{ transform: "translateZ(-4.5px)" }} />
       <div className={`${s.layer} ${s.face}`}>
         <div className={s.rays} />
         <div className={s.dots} />
         <div className={s.band} />
         <div className={s.rule} />
+        <div className={s.sheen} />
       </div>
 
       <div className={`${s.z} ${s.tab}`} />

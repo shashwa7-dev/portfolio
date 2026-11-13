@@ -87,8 +87,8 @@
 /* A: card stock. Cream board, one amber corner, dots fading up. */
 .cardStock {
   --face: #f3eee4;
-  --edge: #cfc4ae;
-  --edge2: #a6987e;
+  --edge: #ddd5c6;
+  --edge2: #c4baa6;
   --t1: #3a6df0;
   --t2: #ff5a7a;
   --side: #c8264f;
@@ -104,8 +104,8 @@
 /* B: warm orange, halftone, soft sun rays behind the mascot. */
 .orange {
   --face: #f5a33b;
-  --edge: #b96a14;
-  --edge2: #8b4e0c;
+  --edge: #e3cfb0;
+  --edge2: #cdb48e;
   --t1: #2148c9;
   --t2: #fff2d6;
   --side: #1d2f86;
@@ -122,30 +122,46 @@
 .layer {
   position: absolute;
   inset: 0;
-  border-radius: 20px;
+  border-radius: 14px;
 }
-/* A soft cast shadow behind the card (it replaced a halftone dot shadow,
-   which vanished against the dark theme). Stronger in dark mode, the one
-   thing on the card that adapts to the site theme. */
+/*
+ * Material: a printed card a couple of millimetres thick, hanging a little
+ * way in front of the page. Thin board edge, no outline, a faint laminate
+ * sheen, and a soft shadow thrown on the page behind it.
+ */
 .castShadow {
-  background: rgba(0, 0, 0, 0.28);
-  filter: blur(14px);
-  transform: translateZ(-34px) translate(22px, 26px);
+  background: rgba(0, 0, 0, 0.22);
+  filter: blur(18px);
+  transform: translateZ(-60px) translate(14px, 30px) scale(0.98);
 }
+/* The shadow is the one thing that adapts to the site theme. */
 :global(.dark) .castShadow {
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.55);
 }
 .edge {
   background: var(--edge);
-  border: 3px solid var(--ink);
 }
 .edgeBack {
   background: var(--edge2);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
 }
 .face {
   background: var(--face);
-  border: 4px solid var(--ink);
   overflow: hidden;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+.sheen {
+  background: linear-gradient(
+    118deg,
+    rgba(255, 255, 255, 0.34) 0%,
+    rgba(255, 255, 255, 0.08) 28%,
+    rgba(255, 255, 255, 0) 45%,
+    rgba(0, 0, 0, 0) 70%,
+    rgba(0, 0, 0, 0.07) 100%
+  );
+  pointer-events: none;
 }
 .face > div {
   position: absolute;
@@ -194,24 +210,27 @@
   margin-left: -44px;
   top: -16px;
   width: 88px;
-  height: 44px;
-  background: #ebe7ee;
-  border: 4px solid var(--ink);
-  border-radius: 22px 22px 14px 14px;
-  transform: translateZ(3px);
+  height: 40px;
+  background: var(--face);
+  border-radius: 20px 20px 0 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+  transform: translateZ(0.5px);
 }
+/* The punched slot: the page shows through, with the board's cut edge inside it. */
 .tab::after {
   content: "";
   position: absolute;
   left: 50%;
-  top: 14px;
+  top: 12px;
   margin-left: -20px;
   width: 40px;
-  height: 12px;
-  border: 3px solid var(--ink);
-  border-radius: 8px;
-  background: #c9c4cf;
-  box-shadow: inset 0 3px 0 rgba(0, 0, 0, 0.25);
+  height: 11px;
+  border-radius: 6px;
+  background: #e9e6ec;
+  box-shadow: inset 0 2px 2px rgba(0, 0, 0, 0.35), 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+:global(.dark) .tab::after {
+  background: #1b1a1e;
 }
 
 .title {
@@ -335,13 +354,13 @@
 .pod {
   border-radius: 30px;
   transform: translateZ(24px);
-  background: linear-gradient(140deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.1) 42%, rgba(255, 255, 255, 0.26));
-  border: 3px solid rgba(255, 255, 255, 0.98);
+  background: linear-gradient(140deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.08) 42%, rgba(255, 255, 255, 0.22));
+  border: 1.5px solid rgba(255, 255, 255, 0.95);
   box-shadow:
-    inset 0 0 0 5px rgba(255, 255, 255, 0.2),
-    inset -8px -10px 18px rgba(0, 0, 0, 0.13),
-    0 0 0 3px rgba(23, 21, 28, 0.55),
-    9px 13px 0 rgba(23, 21, 28, 0.28);
+    inset 0 0 0 4px rgba(255, 255, 255, 0.18),
+    inset -6px -8px 16px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(0, 0, 0, 0.12),
+    4px 8px 14px rgba(0, 0, 0, 0.18);
 }
 .pod::before {
   content: "";
