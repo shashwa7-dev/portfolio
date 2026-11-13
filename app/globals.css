@@ -1539,19 +1539,26 @@ table {
 @media (min-width: 768px) and (max-width: 1279px) {
   .starter-pack-slot { display: block; }
 }
-/* Phones: a half-size card in the footer cell beside Connect, homepage only
-   (the homepage's <main> carries data-home). Keep the height in step with
-   MINI_CELL_HEIGHT. */
+/* Phones: a small card in the empty footer cell beside Connect, homepage
+   only (the homepage's <main> carries data-home). The cell has no height; the
+   box is absolute against the cell's right edge and overlays the empty right
+   side of the rows below. Keep the box in step with MINI_BOX in
+   StarterPack.tsx. */
 .starter-pack-foot {
   display: none;
   position: relative;
-  height: 320px;
-  /* Never clipped here: a card pulled down hangs over the footer below, in
-     front of it. The footer itself clips the screen's sides. */
-  overflow: visible;
-  z-index: 38;
+  height: 0;
   -webkit-user-select: none;
   user-select: none;
+}
+.starter-pack-foot-box {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 150px;
+  height: 300px;
+  z-index: 38;
+  pointer-events: none;
 }
 @media (max-width: 767px) {
   body:has(main[data-home]) .starter-pack-foot { display: block; }

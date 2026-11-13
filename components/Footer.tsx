@@ -167,12 +167,15 @@ const Footer = () => {
           </ul>
         </div>
 
-        {/* Phones, homepage only: the starter pack card at half size, hanging
-            beside Connect in the cell that is otherwise empty. Its height is
-            reserved by CSS (`.starter-pack-foot`, shown only when the page is
-            the homepage), so nothing moves when it loads. */}
+        {/* Phones, homepage only: a small starter pack card hanging from the
+            empty cell beside Connect. The cell takes no height; the card is
+            absolutely positioned against the right edge, overlaying the empty
+            right-hand side of the rows below without touching their text, so
+            it adds no white space and nothing moves when it loads. */}
         <div className="starter-pack-foot">
-          <StarterPackMount variant="mini" />
+          <div className="starter-pack-foot-box">
+            <StarterPackMount variant="mini" />
+          </div>
         </div>
       </Container>
 

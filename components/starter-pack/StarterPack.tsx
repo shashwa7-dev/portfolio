@@ -36,9 +36,14 @@ const GUTTER = 32;
 const ANCHOR_Y = -40;
 /** Elsewhere it comes out of a slit cut in the page, this many CSS px below the box's top. */
 const SLIT_TOP = 16;
-/** Phones: half the tablet card, in a footer cell reserved at MINI_CELL_HEIGHT CSS px. */
-const MINI_SCALE = FOOTER_MAX_SCALE / 2;
-export const MINI_CELL_HEIGHT = 320;
+/**
+ * Phones: a small card in a 150 x 300 CSS px box overlaid at the right edge of
+ * the footer (`.starter-pack-foot-box`). At 0.3 it is about 141 px wide, clear
+ * of the footer's left-hand text, and its strap and card end above the
+ * copyright row.
+ */
+const MINI_SCALE = 0.3;
+const MINI_BOX_H = 300;
 
 /** The hero column's width: `--measure` in app/globals.css (never hard-coded). */
 function measure(): number {
@@ -55,7 +60,8 @@ function layout(variant: Variant, width: number) {
   }
   if (variant === "mini") {
     const w = width / MINI_SCALE;
-    return { scale: MINI_SCALE, w, h: MINI_CELL_HEIGHT / MINI_SCALE, anchorX: w / 2 };
+    // Right-aligned: the card's right edge meets the box's right edge.
+    return { scale: MINI_SCALE, w, h: MINI_BOX_H / MINI_SCALE, anchorX: w - CARD_W / 2 };
   }
   const scale = Math.min(FOOTER_MAX_SCALE, (width - GUTTER) / CARD_W);
   const w = width / scale;
