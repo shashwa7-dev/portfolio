@@ -130,6 +130,66 @@ The prototype that settled the look is
   type check must pass.
 - Pure physics modules carry vitest tests and touch no DOM.
 
+## Performance and web vitals (binding)
+
+The card is decoration; it must cost the homepage nothing it can see.
+
+- **LCP**: the hero stays the LCP element. The card is loaded with
+  `next/dynamic` (`ssr: false`) and mounted only after the page has loaded
+  and the browser is idle (`requestIdleCallback`, with a timeout fallback),
+  so it can never be an LCP candidate that arrives late. No card image uses
+  `priority` or `fetchPriority="high"`; all are lazy. The mascot ships as a
+  WebP sized for its largest on-screen size at 2x (about 260x830), not the
+  1024x1536 source.
+- **Fonts**: Sedgwick Ave Display and Barlow Condensed are loaded with
+  `next/font` with `preload: false`, imported only inside the dynamic chunk,
+  so they never compete with the hero's fonts. `display: "swap"` is
+  acceptable because the card drops in from above anyway.
+- **CLS**: on wide screens the card is absolutely positioned and takes no
+  layout space. In the footer, its container has a fixed height reserved in
+  the server-rendered HTML before the card mounts, so nothing below it moves.
+- **INP / main thread**: one `requestAnimationFrame` loop for the lanyard
+  and the bubbles together, fixed timestep with a cap on catch-up steps. It
+  runs only while the card is intersecting the viewport and the tab is
+  visible, and stops completely once the card and every bubble are at rest;
+  any input wakes it. Pointer handlers do no layout reads in the move path
+  beyond one cached `getBoundingClientRect` per gesture.
+- **Bundle**: nothing from the card lands in the homepage's initial JS or
+  CSS. Add a check in the spirit of `scripts/check-diwali-bundle.sh` that
+  fails if card code or styles reach the initial chunks.
+- **Images**: logos and pod art are small (circle logos at most 128px,
+  SVG for pod art and QR).
+
+## Known bug risks the build must handle
+
+- **Hydration**: the random theme and the barcode date differ between server
+  and client. Both are decided on the client only (the card is client-only).
+- **Resize**: the lanyard anchor and the scale are recomputed on resize and
+  orientation change; the prototype computed them once.
+- **Scaled card and the pointer**: physics runs in the card's unscaled
+  coordinates; pointer positions must be converted through the current scale
+  and the card's 3D tilt must not throw grabs off.
+- **Touch**: `touch-action: none` only on the card itself, so page scroll is
+  untouched elsewhere. A press on a bubble or the ticket never starts a card
+  drag, and pointer capture must not swallow the ticket's click.
+- **Selection**: `user-select: none`, `-webkit-user-drag: none`,
+  `draggable="false"`, no tap highlight or touch callout, and `selectstart`
+  and `dragstart` cancelled on the card.
+- **Paint order**: chip in front of its pod; mascot, items and bubbles behind
+  their plastic; strap and clip above the title. Verified in Chromium and
+  WebKit (WebKit sorts 3D layers differently).
+- **Tab switch and backgrounding**: the timestep clamp stops a jump when the
+  tab returns.
+- **Reduced motion** can change while the page is open; listen for it.
+- **Unmount**: client navigation away from and back to the homepage must not
+  leak listeners, observers, the rAF loop or the AudioContext.
+- **Overlap**: on wide screens the card must not cover hero text, the
+  margin notes (`lib/marginNotes.ts`, right margin from `lg`) or the dock.
+  In the footer on phones it must clear the bottom dock and the chat bubble.
+- **Sound in tests**: automated tests never trigger audio; e2e runs muted.
+- **QR**: the committed QR must decode to the exact ticket URL; the owner
+  scans it once on a phone before merge.
+
 ## Structure (the builder's call within this shape)
 
 - `components/starter-pack/`: the card, a pod, the bubbles pod, the lanyard
@@ -140,6 +200,12 @@ The prototype that settled the look is
 - `lib/starter-pack/`: `lanyard.ts` (verlet) and `bubbles.ts` (ball physics),
   pure and tested; `bloop.ts` for sound.
 - `public/starter-pack/`: mascot, logos, pod art, QR.
+
+## Owner defaults (asked, not yet answered; change in config)
+
+- The ticket link stays exactly as given (it starts a YouTube radio mix after
+  the song).
+- The tag on the ticket reads "SCAN ME".
 
 ## Left to the builder
 
