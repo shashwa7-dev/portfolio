@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { usePathname } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import type { Variant } from "./StarterPack";
 
@@ -13,18 +14,29 @@ import type { Variant } from "./StarterPack";
  */
 const StarterPack = dynamic(() => import("./StarterPack"), { ssr: false });
 
-/** Desktop (the dock moves to the left edge here too): the card hangs in the header's top-right corner. */
-export const WIDE_QUERY = "(min-width: 1280px)";
+/** Which screen each variant belongs to. Keep in step with app/globals.css. */
+export const VARIANT_QUERY: Record<Variant, string> = {
+  hang: "(min-width: 1280px)",
+  footer: "(min-width: 768px) and (max-width: 1279px)",
+  mini: "(max-width: 767px)",
+};
 
-function subscribe(onChange: () => void) {
-  const mq = window.matchMedia(WIDE_QUERY);
-  mq.addEventListener("change", onChange);
-  return () => mq.removeEventListener("change", onChange);
+function useMatches(query: string): boolean {
+  return useSyncExternalStore(
+    (onChange) => {
+      const mq = window.matchMedia(query);
+      mq.addEventListener("change", onChange);
+      return () => mq.removeEventListener("change", onChange);
+    },
+    () => window.matchMedia(query).matches,
+    () => false,
+  );
 }
-const isWide = () => window.matchMedia(WIDE_QUERY).matches;
 
 export default function StarterPackMount({ variant }: { variant: Variant }) {
-  const wide = useSyncExternalStore(subscribe, isWide, () => false);
+  const fits = useMatches(VARIANT_QUERY[variant]);
+  // The footer is shared by every page; the card belongs to the homepage.
+  const home = usePathname() === "/";
   const [idle, setIdle] = useState(false);
 
   useEffect(() => {
@@ -43,6 +55,5 @@ export default function StarterPackMount({ variant }: { variant: Variant }) {
     };
   }, []);
 
-  const fits = variant === "hang" ? wide : !wide;
-  return idle && fits ? <StarterPack variant={variant} /> : null;
+  return idle && fits && home ? <StarterPack variant={variant} /> : null;
 }

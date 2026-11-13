@@ -228,7 +228,16 @@ export function useStarterPackSim(scale: number, anchor: Vec): SimRefs {
     });
 
     if (reduce.matches) settleNow();
-    live.current = { lanyard, wake: schedule };
+    // Under reduced motion nothing steps, so a moved anchor must re-hang the card at once.
+    const follow = () => {
+      if (reduce.matches) {
+        settleNow();
+        draw();
+      } else {
+        schedule();
+      }
+    };
+    live.current = { lanyard, wake: follow };
     draw();
     io.observe(rootEl);
     hangEl.addEventListener("pointerdown", onDown);

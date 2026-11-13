@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useState } from "react";
 import { formatTicketDate, starterPack, type ThemeId } from "@/lib/starter-pack/config";
 import Card from "./Card";
 import Lanyard from "./Lanyard";
@@ -8,7 +8,12 @@ import { spLabel, spMarker } from "./fonts";
 import { useStarterPackSim } from "./useStarterPackSim";
 import s from "./StarterPack.module.css";
 
-export type Variant = "hang" | "footer";
+/**
+ * Where the card hangs: `hang` in the header's top-right corner (desktop),
+ * `footer` in its own slot above the footer (tablets), `mini` at half size
+ * beside the footer's links (phones).
+ */
+export type Variant = "hang" | "footer" | "mini";
 
 /**
  * Desktop: the card hangs in the header's top-right corner. The page box
@@ -28,6 +33,9 @@ const FOOTER_MAX_SCALE = 0.68;
 const CARD_W = 470;
 const GUTTER = 32;
 const ANCHOR_Y = -40;
+/** Phones: half the tablet card, in a footer cell reserved at MINI_CELL_HEIGHT CSS px. */
+const MINI_SCALE = FOOTER_MAX_SCALE / 2;
+export const MINI_CELL_HEIGHT = 320;
 
 /** The hero column's width: `--measure` in app/globals.css (never hard-coded). */
 function measure(): number {
@@ -41,6 +49,10 @@ function layout(variant: Variant, width: number) {
     const scale = Math.min(HANG_SCALE.max, Math.max(HANG_SCALE.min, (margin - HANG_CLEARANCE) / CARD_W));
     const anchorX = (width - HANG_EDGE) / scale - CARD_W / 2;
     return { scale, w: width / scale, h: HANG_BOX_H / scale, anchorX };
+  }
+  if (variant === "mini") {
+    const w = width / MINI_SCALE;
+    return { scale: MINI_SCALE, w, h: MINI_CELL_HEIGHT / MINI_SCALE, anchorX: w / 2 };
   }
   const scale = Math.min(FOOTER_MAX_SCALE, (width - GUTTER) / CARD_W);
   const w = width / scale;
@@ -73,7 +85,9 @@ export default function StarterPack({ variant }: { variant: Variant }) {
     clip: clipRef,
   } = useStarterPackSim(scale, anchor);
 
-  useEffect(() => {
+  // Layout effect: measure the real box before the first paint, so the card
+  // never hangs from the window's width when its box is narrower.
+  useLayoutEffect(() => {
     const onResize = () => setWidth(rootRef.current?.clientWidth ?? window.innerWidth);
     onResize();
     window.addEventListener("resize", onResize);
