@@ -80,10 +80,6 @@ export default function About() {
                     photo={<AvatarHover />}
                     className="group relative mx-1.5 inline-block cursor-pointer touch-manipulation select-none align-[-0.2em] -rotate-4 rounded-full transition-transform duration-fast ease-out hover:rotate-0"
                   >
-                    {/* The ball: a fixed highlight and shading over the photo, so it
-                        reads as a glossy sphere that spins under its own light
-                        (`.avatar-ball`). */}
-                    <span aria-hidden className="avatar-ball pointer-events-none absolute inset-0 rounded-full" />
                     {/* The status ring: an accent (ink) dotted circle turning slowly
                         around the photo (`.status-ring`), plus a live dot.
                         Both say "open to work" at a glance; under reduced
