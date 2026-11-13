@@ -1514,7 +1514,10 @@ table {
   right: 0;
   width: 420px;
   height: 576px;
-  z-index: 10;
+  /* Above everything in the header; below the dock and its scrim (39, 40),
+     the launch nudge (40), the chat bubble and modals (50) and the command
+     palette (60). */
+  z-index: 38;
   pointer-events: none;
   overflow-x: clip;
 }
