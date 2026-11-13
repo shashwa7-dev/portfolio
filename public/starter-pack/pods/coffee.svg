@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="#2b2733" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">
+  <defs>
+    <linearGradient id="body" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#d8b48a"/><stop offset=".5" stop-color="#b98a58"/><stop offset="1" stop-color="#8a6238"/></linearGradient>
+    <linearGradient id="sleeve" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7a5230"/><stop offset=".5" stop-color="#5f3d22"/><stop offset="1" stop-color="#432a17"/></linearGradient>
+    <linearGradient id="lid" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#4b4755"/><stop offset="1" stop-color="#1f1d26"/></linearGradient>
+  </defs>
+  <ellipse cx="50" cy="92" rx="26" ry="4.500" fill="#000" opacity=".16" stroke="none"/>
+  <path d="M27 30h46l-6 58c-.3 2.500-2 4-4.500 4H37.500c-2.500 0-4.200-1.500-4.500-4z" fill="url(#body)"/>
+  <path d="M29.500 52h41l-2.400 26H31.900z" fill="url(#sleeve)"/>
+  <path d="M33 38l4 48" stroke="#fff" stroke-width="3" opacity=".35"/>
+  <rect x="24" y="24" width="52" height="9" rx="4" fill="url(#lid)"/>
+  <path d="M29 24c0-7 5-10 12-10h18c7 0 12 3 12 10z" fill="url(#lid)"/>
+  <path d="M36 19c3-2 8-2 14-2" stroke="#fff" stroke-width="2" opacity=".35"/>
+  <rect x="55" y="17" width="10" height="3.500" rx="1.800" fill="#14121a"/>
+</svg>
