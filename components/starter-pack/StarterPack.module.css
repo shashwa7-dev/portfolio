@@ -421,24 +421,36 @@
     0 0 0 1px rgba(0, 0, 0, 0.12),
     calc(var(--lx) * -9px) calc(var(--ly) * -12px) 14px rgba(0, 0, 0, 0.18);
 }
+/*
+ * How moulded plastic catches light: no hard glint, but a bright rim along
+ * the edge that faces the light, fading round to nothing on the far side,
+ * and a soft, diffuse bloom on the curved face toward the light. Both follow
+ * --lx / --ly / --la, so they slide round as the card swings.
+ */
 .pod::before {
   content: "";
   position: absolute;
-  inset: 6px;
-  border-radius: 24px;
-  border: 2px solid rgba(255, 255, 255, 0.7);
+  inset: 3px;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(var(--la), rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.35) 30%, rgba(255, 255, 255, 0) 60%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  pointer-events: none;
 }
 .pod::after {
   content: "";
   position: absolute;
-  top: 9px;
-  left: 14px;
-  width: 34%;
-  height: 12px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.85);
-  /* The specular glint slides toward the light. */
-  transform: translate(calc((var(--lx) + 0.85) * 26px), calc((var(--ly) + 0.53) * 18px)) rotate(-14deg);
+  inset: 4px;
+  border-radius: inherit;
+  background: radial-gradient(
+    ellipse 75% 60% at calc(50% + var(--lx) * 34%) calc(50% + var(--ly) * 38%),
+    rgba(255, 255, 255, 0.42),
+    rgba(255, 255, 255, 0.12) 45%,
+    rgba(255, 255, 255, 0) 72%
+  );
+  pointer-events: none;
 }
 /* Contents sit behind the plastic. */
 .item {
@@ -468,15 +480,16 @@
   height: 436px;
   border-radius: 44px 44px 28px 28px;
 }
+/* The tall dome: a long, soft sheen down the side facing the light. */
 .figure::after {
-  top: 16px;
-  left: 16px;
-  width: 30px;
-  height: 52%;
-  border-radius: 24px;
-  transform: translate(calc((var(--lx) + 0.85) * 60px), calc((var(--ly) + 0.53) * 40px)) rotate(7deg);
-  opacity: 0.55;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0));
+  inset: 4px;
+  border-radius: inherit;
+  background: radial-gradient(
+    ellipse 45% 80% at calc(50% + var(--lx) * 38%) calc(50% + var(--ly) * 20%),
+    rgba(255, 255, 255, 0.38),
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0) 75%
+  );
 }
 .mascot,
 .mascotShadow {
