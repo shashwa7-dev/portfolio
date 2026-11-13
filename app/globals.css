@@ -1465,18 +1465,19 @@ table {
 
 /* ── Hero goggles ───────────────────────────────────────────────────────
    Slide onto the portrait on hover (AvatarHover + Goggles). Placed in percent
-   of the photo, measured from its glasses: lens centres 32/180 apart at
-   y 74/180, midpoint x 92.5/180. In the 200 x 176 drawing the lens centres
-   are 76 apart at y 134, which gives the width, left and top below. At rest
+   of the photo, measured from its glasses (avatar-hero.png, measured on the
+   1024px source): lens centres 174/1024 apart at y 430/1024, midpoint x
+   527/1024. In the 200 x 176 drawing the lens centres are 76 apart at y 134,
+   which gives the width, left and top below. At rest
    they sit above the frame and the photo's overflow-hidden hides them.
    `translate`, not `transform`, so nothing stacks with a Tailwind translate.
    Hover only where hover is real, so a tap on a phone never leaves them stuck. */
 @layer components {
   .goggles {
     position: absolute;
-    left: 28%;
-    top: 9.7%;
-    width: 46.8%;
+    left: 29.1%;
+    top: 12%;
+    width: 44.7%;
     aspect-ratio: 200 / 176;
     pointer-events: none;
     translate: 0 -130%;

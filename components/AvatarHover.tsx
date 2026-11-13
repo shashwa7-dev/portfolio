@@ -23,12 +23,16 @@ import Goggles from "@/components/common/Goggles";
  * so it is sized in `em`: about the height of the letters around it, whatever
  * size the line is set at. Round, and clipped to the circle.
  *
+ * The portrait (`/images/avatar-hero.png`) has a transparent background, so the
+ * page shows through around the head and the neumorphic disc (`.avatar-ball`)
+ * reads as the page itself raised. /cv and the CV PDF keep `/images/avatar.png`.
+ *
  * The photo is greyscale at rest and returns to colour on hover, so this
  * matches every other image surface in the app. The goggles stay in colour.
  */
 export default function AvatarHover() {
   return (
-    <span className="relative block h-[1.38em] w-[1.38em] overflow-hidden rounded-full bg-white">
+    <span className="relative block h-[1.38em] w-[1.38em] overflow-hidden rounded-full">
       {/* The portrait has its own file. It used to be served from
           `/apple-touch-icon.png`, which meant the hero's face and the home
           screen icon were one asset: replacing the icon set silently replaced
@@ -37,7 +41,7 @@ export default function AvatarHover() {
           with the coupling removed. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/images/avatar.png"
+        src="/images/avatar-hero.png"
         alt="Shashwat Tripathi"
         className="block h-full w-full object-cover grayscale candy:grayscale-0 transition-[filter] duration-base ease-out group-hover:grayscale-0"
       />
