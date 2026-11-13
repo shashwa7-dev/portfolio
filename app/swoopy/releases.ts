@@ -17,7 +17,7 @@ export const releases: Release[] = [
   {
     version: "1.3.0",
     date: "November 10, 2026",
-    status: "In review",
+    status: "Live",
     summary: "Pick anything on the page to inspect it, pick colours from the screen, capture part of a page as a framed image, and a new dock layout.",
     groups: [
       {
