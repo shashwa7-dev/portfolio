@@ -17,6 +17,7 @@ import {
 } from "@/lib/starter-pack/lanyard";
 import { createFrameClock, STEP } from "@/lib/starter-pack/loop";
 import { playBloop } from "./bloopSound";
+import { playClack, primeClack } from "./clackSound";
 
 /** The bubbles' inner box, in card pixels: the 222 x 150 pod less its 7px inset. */
 const BOX = { w: 208, h: 136 };
@@ -150,6 +151,7 @@ export function useStarterPackSim(
     const frame = (t: number) => {
       raf = 0;
       const steps = clock.tick(t);
+      let loudest = 0;
       for (let i = 0; i < steps; i++) {
         simT += STEP;
         if (!entered) {
@@ -159,8 +161,11 @@ export function useStarterPackSim(
         }
         // Held cards stay where the hand puts them; otherwise the breeze keeps them dangling.
         stepLanyard(lanyard, STEP, drag, undefined, drag ? 0 : breeze(simT));
-        stepBalls(state, BOX, STEP, frameGravity(cardPose(lanyard).angle, lanyard.acc));
+        const hits = stepBalls(state, BOX, STEP, frameGravity(cardPose(lanyard).angle, lanyard.acc));
+        for (const v of hits) loudest = Math.max(loudest, v);
       }
+      // One clack per frame at most: the hardest hit in it.
+      if (loudest > 0) playClack(loudest);
       draw();
       // Never sleeps while seen: it dangles. Stops only off screen, in a hidden tab, or under reduced motion.
       if (onScreen && document.visibilityState === "visible" && !reduce.matches) {
@@ -182,6 +187,8 @@ export function useStarterPackSim(
     const onDown = (e: PointerEvent) => {
       const target = e.target as Element;
       if (target.closest("[data-ticket]")) return;
+      // The first touch unlocks sound and loads the clack; nothing sounds before it.
+      primeClack();
       const ballEl = target.closest<HTMLElement>("[data-ball]");
       e.preventDefault();
       if (ballEl) {

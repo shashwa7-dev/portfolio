@@ -1,23 +1,14 @@
 "use client";
 
 import { bloopFrequency } from "@/lib/starter-pack/bloop";
+import { getAudio } from "./audio";
 
 /**
  * The soft "bloop" when a bubble is pressed: a sine swept down to its pitch
  * with a quiet triangle an octave up, all gone in a quarter second. Lower for
- * bigger bubbles. Same shape as components/common/spinSound.ts: the context is
- * created lazily inside the press, never at module scope, and every failure
- * is a silent no-op. It only ever plays in response to a press.
+ * bigger bubbles. The context comes from ./audio (created lazily inside a
+ * press); every failure is a silent no-op. It only ever plays in response to a press.
  */
-let ctx: AudioContext | null = null;
-
-function getContext(): AudioContext | null {
-  if (typeof window === "undefined" || typeof window.AudioContext === "undefined") return null;
-  if (!ctx) ctx = new window.AudioContext();
-  if (ctx.state === "suspended") void ctx.resume().catch(() => {});
-  return ctx;
-}
-
 const VOICES: { ratio: number; type: OscillatorType; gain: number }[] = [
   { ratio: 1, type: "sine", gain: 0.13 },
   { ratio: 2.01, type: "triangle", gain: 0.03 },
@@ -25,7 +16,7 @@ const VOICES: { ratio: number; type: OscillatorType; gain: number }[] = [
 
 export function playBloop(r: number): void {
   try {
-    const audio = getContext();
+    const audio = getAudio();
     if (!audio) return;
     const f = bloopFrequency(r);
     const t = audio.currentTime;

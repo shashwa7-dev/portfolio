@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ballsAtRest, createBalls, frameGravity, poke, stepBalls, type Ball, type Box } from "./bubbles";
+import { ballsAtRest, CLACK_MIN_SPEED, createBalls, frameGravity, poke, stepBalls, type Ball, type Box } from "./bubbles";
 import { STEP } from "./loop";
 
 /** Deterministic stand-in for Math.random. */
@@ -81,5 +81,31 @@ describe("bubbles", () => {
     const balls = createBalls([30, 25, 15, 14, 15, 14, 15, 14].map((r, i) => ({ id: `b${i}`, r })), box);
     for (let i = 0; i < 120 * 20; i++) stepBalls(balls, box, STEP, frameGravity(0, { x: 0, y: 0 }));
     expect(ballsAtRest(balls)).toBe(true);
+  });
+});
+
+describe("clack impacts", () => {
+  it("reports a head-on hit with its closing speed", () => {
+    const box: Box = { w: 1000, h: 1000 };
+    const balls = [ball("a", 15, 400, 500, 200, 0), ball("b", 15, 440, 500, -200, 0)];
+    let hits: number[] = [];
+    for (let i = 0; i < 20 && hits.length === 0; i++) hits = stepBalls(balls, box, STEP, { x: 0, y: 0 });
+    expect(hits).toHaveLength(1);
+    expect(hits[0]).toBeGreaterThan(350);
+    expect(hits[0]).toBeLessThan(450);
+  });
+
+  it("stays quiet while the bubbles rest in a gently swaying card", () => {
+    const box: Box = { w: 208, h: 136 };
+    const balls = createBalls([30, 25, 15, 14, 15, 14, 15, 14].map((r, i) => ({ id: `b${i}`, r })), box);
+    for (let i = 0; i < 120 * 15; i++) stepBalls(balls, box, STEP, frameGravity(0, { x: 0, y: 0 }));
+    let loud = 0;
+    for (let i = 0; i < 120 * 30; i++) {
+      const t = i * STEP;
+      // About the breeze's sway: a few degrees, a few seconds a cycle.
+      const g = frameGravity(0.08 * Math.sin((2 * Math.PI * t) / 3.4), { x: 0, y: 0 });
+      loud += stepBalls(balls, box, STEP, g).filter((v) => v >= CLACK_MIN_SPEED).length;
+    }
+    expect(loud).toBe(0);
   });
 });

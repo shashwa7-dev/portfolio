@@ -67,7 +67,15 @@ export function frameGravity(angle: number, acc: Vec, g: number = BUBBLES.gravit
   return { x: fx * c + fy * s, y: -fx * s + fy * c };
 }
 
-export function stepBalls(balls: Ball[], box: Box, dt: number, gravity: Vec): void {
+/** Below this closing speed (px/s) two bubbles touching make no clack. */
+export const CLACK_MIN_SPEED = 60;
+
+/**
+ * Advances the bubbles one step. Returns the closing speed (px/s) of every
+ * bubble-on-bubble hit in this step, for the clack sound.
+ */
+export function stepBalls(balls: Ball[], box: Box, dt: number, gravity: Vec): number[] {
+  const hits: number[] = [];
   const B = BUBBLES;
   const start = balls.map((b) => ({ x: b.x, y: b.y }));
   for (const b of balls) {
@@ -107,7 +115,10 @@ export function stepBalls(balls: Ball[], box: Box, dt: number, gravity: Vec): vo
   // lets a wall clamp push one ball back into its neighbour.
   for (let pass = 0; pass < 4; pass++) {
     for (let i = 0; i < balls.length; i++) {
-      for (let j = i + 1; j < balls.length; j++) separate(balls[i], balls[j], pass === 0);
+      for (let j = i + 1; j < balls.length; j++) {
+        const v = separate(balls[i], balls[j], pass === 0);
+        if (v > 0) hits.push(v);
+      }
     }
     for (const b of balls) {
       b.x = Math.min(box.w - b.r, Math.max(b.r, b.x));
@@ -126,14 +137,16 @@ export function stepBalls(balls: Ball[], box: Box, dt: number, gravity: Vec): vo
       b.vy = ay;
     }
   });
+  return hits;
 }
 
-function separate(p: Ball, q: Ball, withImpulse: boolean): void {
+/** Pushes two overlapping balls apart; returns the closing speed if it applied an impulse, else 0. */
+function separate(p: Ball, q: Ball, withImpulse: boolean): number {
   const dx = q.x - p.x;
   const dy = q.y - p.y;
   const d = Math.hypot(dx, dy);
   const min = p.r + q.r;
-  if (d >= min || d === 0) return;
+  if (d >= min || d === 0) return 0;
   const nx = dx / d;
   const ny = dy / d;
   const over = min - d;
@@ -142,15 +155,16 @@ function separate(p: Ball, q: Ball, withImpulse: boolean): void {
   p.y -= (ny * over * q.m) / tm;
   q.x += (nx * over * p.m) / tm;
   q.y += (ny * over * p.m) / tm;
-  if (!withImpulse) return;
+  if (!withImpulse) return 0;
   const rv = (q.vx - p.vx) * nx + (q.vy - p.vy) * ny;
-  if (rv >= 0) return;
+  if (rv >= 0) return 0;
   const e = -rv < BUBBLES.restSpeed ? 0 : BUBBLES.ballRestitution;
   const imp = (-(1 + e) * rv) / (1 / p.m + 1 / q.m);
   p.vx -= (imp * nx) / p.m;
   p.vy -= (imp * ny) / p.m;
   q.vx += (imp * nx) / q.m;
   q.vy += (imp * ny) / q.m;
+  return -rv;
 }
 
 /** A press: the ball squashes and jumps. The same push sends light balls further. */
