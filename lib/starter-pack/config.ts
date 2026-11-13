@@ -81,7 +81,10 @@ export const starterPack: StarterPackConfig = {
     tag: "SCAN ME",
     location: "BLR",
   },
-  themes: ["card-stock", "sky"],
+  // Which themes the card picks from at random on each load. Only card stock
+  // for now; the sky and navy theme is kept and styled, so add "sky" back
+  // here to put it in rotation again.
+  themes: ["card-stock"],
 };
 
 const two = (n: number) => String(n).padStart(2, "0");
