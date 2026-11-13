@@ -13,8 +13,8 @@ import type { Variant } from "./StarterPack";
  */
 const StarterPack = dynamic(() => import("./StarterPack"), { ssr: false });
 
-/** Wide enough for the scaled card in the right margin, clear of the hero column. */
-export const WIDE_QUERY = "(min-width: 1536px)";
+/** Desktop (the dock moves to the left edge here too): the card hangs in the header's top-right corner. */
+export const WIDE_QUERY = "(min-width: 1280px)";
 
 function subscribe(onChange: () => void) {
   const mq = window.matchMedia(WIDE_QUERY);

@@ -1499,14 +1499,14 @@ table {
 
 /* ---------- Starter pack card (components/starter-pack) ----------
    Page-level boxes only; the card styles itself in StarterPack.module.css.
-   Wide screens: hangs into the right margin, takes no layout space, and only
-   the card takes the pointer. Below 1536px: a reserved 640px slot above the
+   Desktop (from 1280px): hangs in the header's top-right corner, takes no layout space, and only
+   the card takes the pointer. Below 1280px: a reserved 640px slot above the
    footer (keep in step with FOOTER_SLOT_HEIGHT and WIDE_QUERY). */
 .starter-pack-hang {
   display: none;
   position: absolute;
   top: 0;
-  right: 16px;
+  right: 0;
   width: 420px;
   height: 576px;
   z-index: 10;
@@ -1520,7 +1520,7 @@ table {
      closing section's links above it. */
   overflow: clip;
 }
-@media (min-width: 1536px) {
+@media (min-width: 1280px) {
   .starter-pack-hang { display: block; }
   .starter-pack-slot { display: none; }
 }
