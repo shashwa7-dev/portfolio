@@ -51,6 +51,28 @@
 .ropeFill {
   stroke: var(--rope);
 }
+/* The cut the strap comes out of: a soft dent in the page, a dark opening,
+   and a lower lip that sits over the strap. */
+.slitShade {
+  fill: rgba(0, 0, 0, 0.07);
+  filter: blur(2px);
+}
+.slitHole {
+  fill: #2a2730;
+}
+.slitLip {
+  fill: none;
+  /* The page itself, so the lip reads as the cut's edge in either theme. */
+  stroke: hsl(var(--background));
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+:global(.dark) .slitShade {
+  fill: rgba(0, 0, 0, 0.35);
+}
+:global(.dark) .slitHole {
+  fill: #050506;
+}
 
 .hang {
   position: absolute;

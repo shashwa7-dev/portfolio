@@ -32,7 +32,10 @@ export const FOOTER_SLOT_HEIGHT = 640;
 const FOOTER_MAX_SCALE = 0.68;
 const CARD_W = 470;
 const GUTTER = 32;
+/** Desktop: the strap comes down from above the screen's top edge. */
 const ANCHOR_Y = -40;
+/** Elsewhere it comes out of a slit cut in the page, this many CSS px below the box's top. */
+const SLIT_TOP = 16;
 /** Phones: half the tablet card, in a footer cell reserved at MINI_CELL_HEIGHT CSS px. */
 const MINI_SCALE = FOOTER_MAX_SCALE / 2;
 export const MINI_CELL_HEIGHT = 320;
@@ -72,7 +75,12 @@ export default function StarterPack({ variant }: { variant: Variant }) {
   const [width, setWidth] = useState(() => (typeof window === "undefined" ? 375 : window.innerWidth));
 
   const { scale, w, h, anchorX } = useMemo(() => layout(variant, width), [variant, width]);
-  const anchor = useMemo(() => ({ x: anchorX, y: ANCHOR_Y }), [anchorX]);
+  const fromSlit = variant !== "hang";
+  const anchor = useMemo(
+    () => ({ x: anchorX, y: fromSlit ? SLIT_TOP / scale : ANCHOR_Y }),
+    [anchorX, fromSlit, scale],
+  );
+  const bounds = useMemo(() => ({ w, h }), [w, h]);
   const {
     root: rootRef,
     world: worldRef,
@@ -83,7 +91,7 @@ export default function StarterPack({ variant }: { variant: Variant }) {
     fill: fillRef,
     stitch: stitchRef,
     clip: clipRef,
-  } = useStarterPackSim(scale, anchor);
+  } = useStarterPackSim(scale, anchor, !fromSlit, bounds);
 
   // Layout effect: measure the real box before the first paint, so the card
   // never hangs from the window's width when its box is narrower.
@@ -102,6 +110,7 @@ export default function StarterPack({ variant }: { variant: Variant }) {
           <Card theme={theme} date={date} tiltRef={tiltRef} ballsRef={ballsRef} />
         </div>
         <Lanyard
+          slit={fromSlit ? anchor : null}
           edgeRef={edgeRef}
           fillRef={fillRef}
           stitchRef={stitchRef}

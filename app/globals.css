@@ -1554,3 +1554,7 @@ table {
 @media (max-width: 767px) {
   body:has(main[data-home]) .starter-pack-foot { display: block; }
 }
+/* A card thrown past the screen edge must never widen the page. */
+.site-footer {
+  overflow-x: clip;
+}

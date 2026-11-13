@@ -44,7 +44,18 @@ export type SimRefs = {
  * runs while the card is on screen and the tab is visible, and sleeps once
  * everything is at rest; any press, drag or resize wakes it.
  */
-export function useStarterPackSim(scale: number, anchor: Vec): SimRefs {
+/**
+ * `dropIn`: the card falls in from above the page on first view (desktop,
+ * where the strap comes from the screen's top edge). Without it the card
+ * starts hanging from its slit. `bounds` is the world size: a drag can never
+ * pull the card outside it.
+ */
+export function useStarterPackSim(
+  scale: number,
+  anchor: Vec,
+  dropIn: boolean,
+  bounds: { w: number; h: number },
+): SimRefs {
   const root = useRef<HTMLDivElement>(null);
   const world = useRef<HTMLDivElement>(null);
   const hang = useRef<HTMLDivElement>(null);
@@ -57,6 +68,10 @@ export function useStarterPackSim(scale: number, anchor: Vec): SimRefs {
   const { x: ax, y: ay } = anchor;
   // The anchor moves on resize; the running simulation follows it without restarting.
   const anchorRef = useRef<Vec>({ x: ax, y: ay });
+  const boundsRef = useRef(bounds);
+  useEffect(() => {
+    boundsRef.current = bounds;
+  }, [bounds]);
   const live = useRef<{ lanyard: LanyardState | null; wake: () => void }>({ lanyard: null, wake: () => {} });
   useEffect(() => {
     anchorRef.current = { x: ax, y: ay };
@@ -85,8 +100,11 @@ export function useStarterPackSim(scale: number, anchor: Vec): SimRefs {
 
     const start = anchorRef.current;
     // Starts above the page: the anchor drops in on first view and the card follows it down.
-    let lanyard: LanyardState = createLanyard({ x: start.x, y: start.y - ENTRANCE.drop }, OPENING_SWING);
-    let entered = false;
+    let lanyard: LanyardState = createLanyard(
+      { x: start.x, y: dropIn ? start.y - ENTRANCE.drop : start.y },
+      OPENING_SWING,
+    );
+    let entered = !dropIn;
     let entranceT = 0;
     let simT = 0;
     let state: Ball[] = createBalls(starterPack.bubbles.map((b) => ({ id: b.id, r: b.r })), BOX);
@@ -187,7 +205,8 @@ export function useStarterPackSim(scale: number, anchor: Vec): SimRefs {
     const onMove = (e: PointerEvent) => {
       if (!drag) return;
       const p = local(e);
-      drag = { x: p.x + grab.x, y: p.y + grab.y };
+      const b = boundsRef.current;
+      drag = { x: Math.min(b.w, Math.max(0, p.x + grab.x)), y: Math.min(b.h, Math.max(0, p.y + grab.y)) };
       schedule();
     };
     const onUp = () => {
@@ -266,7 +285,7 @@ export function useStarterPackSim(scale: number, anchor: Vec): SimRefs {
       document.removeEventListener("visibilitychange", onVisibility);
       reduce.removeEventListener("change", onReduce);
     };
-  }, [scale]);
+  }, [scale, dropIn]);
 
   return { root, world, hang, tilt, balls, edge, fill, stitch, clip };
 }
