@@ -460,7 +460,21 @@
   border-bottom-color: rgba(255, 255, 255, calc(0.12 + var(--ly) * 0.1));
   border-right-color: rgba(255, 255, 255, calc(0.12 + var(--lx) * 0.1));
 }
-.walls i:last-child {
+/* A soft pill of reflected light on the face, toward the light. Blurred and
+   faded at its ends so it reads as a reflection, not a sticker. */
+.glint {
+  position: absolute;
+  top: 9px;
+  left: 14px;
+  width: 38%;
+  max-width: 70px;
+  height: 9px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.8) 30%, rgba(255, 255, 255, 0.6) 70%, rgba(255, 255, 255, 0) 100%);
+  filter: blur(0.6px);
+  transform: translateZ(1px) translate(calc((var(--lx) + 0.85) * 26px), calc((var(--ly) + 0.53) * 18px)) rotate(-14deg);
+}
+.walls i:last-of-type {
   /* The flange where the blister meets the card. */
   border-width: 2px;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
