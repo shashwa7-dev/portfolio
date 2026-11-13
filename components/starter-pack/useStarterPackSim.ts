@@ -13,7 +13,7 @@ import {
   type LanyardState,
   type Vec,
 } from "@/lib/starter-pack/lanyard";
-import { advance, STEP } from "@/lib/starter-pack/loop";
+import { createFrameClock, STEP } from "@/lib/starter-pack/loop";
 import { playBloop } from "./bloopSound";
 
 /** The bubbles' inner box, in card pixels: the 222 x 150 pod less its 7px inset. */
@@ -89,8 +89,7 @@ export function useStarterPackSim(scale: number, anchor: Vec): SimRefs {
     let rect: DOMRect | null = null;
     let onScreen = false;
     let raf = 0;
-    let last = 0;
-    let acc = 0;
+    const clock = createFrameClock();
 
     const settleNow = () => {
       // Reduced motion: hang straight and let the bubbles fall before anything is shown.
@@ -125,22 +124,22 @@ export function useStarterPackSim(scale: number, anchor: Vec): SimRefs {
 
     const frame = (t: number) => {
       raf = 0;
-      const { steps, acc: rest } = advance(acc, t - last);
-      last = t;
-      acc = rest;
+      const steps = clock.tick(t);
       for (let i = 0; i < steps; i++) {
         stepLanyard(lanyard, STEP, drag);
         stepBalls(state, BOX, STEP, frameGravity(cardPose(lanyard).angle, lanyard.acc));
       }
       draw();
       const asleep = !drag && lanyardAtRest(lanyard) && ballsAtRest(state);
-      if (!asleep) schedule();
+      // Keep going without resetting the clock; stop when asleep, off screen or hidden.
+      if (!asleep && onScreen && document.visibilityState === "visible" && !reduce.matches) {
+        raf = requestAnimationFrame(frame);
+      }
     };
 
     const schedule = () => {
       if (raf || !onScreen || document.visibilityState !== "visible" || reduce.matches) return;
-      last = performance.now();
-      acc = 0;
+      clock.wake(performance.now());
       raf = requestAnimationFrame(frame);
     };
 
