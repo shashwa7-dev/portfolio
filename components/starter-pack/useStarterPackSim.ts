@@ -2,13 +2,16 @@
 
 import { useEffect, useRef, type RefObject } from "react";
 import { createBalls, frameGravity, poke, stepBalls, type Ball } from "@/lib/starter-pack/bubbles";
-import { starterPack } from "@/lib/starter-pack/config";
+import { BUBBLE_BOX, starterPack } from "@/lib/starter-pack/config";
 import {
   breeze,
   cardPose,
   createLanyard,
   ENTRANCE,
   entranceY,
+  REEL,
+  reelLength,
+  setReel,
   setAnchor,
   stepLanyard,
   toLocal,
@@ -16,11 +19,9 @@ import {
   type Vec,
 } from "@/lib/starter-pack/lanyard";
 import { createFrameClock, STEP } from "@/lib/starter-pack/loop";
-import { playBloop } from "./bloopSound";
 import { playClack, primeClack } from "./clackSound";
 
-/** The bubbles' inner box, in card pixels: the 222 x 150 pod less its 7px inset. */
-const BOX = { w: 208, h: 136 };
+const BOX = BUBBLE_BOX;
 /** Card pixels from the card's top left to the clip's hole. */
 const HOLE = { x: 235, y: 8 };
 /** How far (card px) the card starts off-centre. Zero: the drop and the breeze give it all the swing it needs. */
@@ -56,6 +57,7 @@ export function useStarterPackSim(
   anchor: Vec,
   dropIn: boolean,
   bounds: { w: number; h: number },
+  ready: boolean,
 ): SimRefs {
   const root = useRef<HTMLDivElement>(null);
   const world = useRef<HTMLDivElement>(null);
@@ -92,7 +94,7 @@ export function useStarterPackSim(
     const fillEl = fill.current;
     const stitchEl = stitch.current;
     const clipEl = clip.current;
-    if (!rootEl || !worldEl || !hangEl || !tiltEl || !host || !edgeEl || !fillEl || !stitchEl || !clipEl) return;
+    if (!ready || !rootEl || !worldEl || !hangEl || !tiltEl || !host || !edgeEl || !fillEl || !stitchEl || !clipEl) return;
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
     const finePointer = window.matchMedia("(pointer: fine)");
@@ -101,11 +103,17 @@ export function useStarterPackSim(
 
     const start = anchorRef.current;
     // Starts above the page: the anchor drops in on first view and the card follows it down.
+    // Desktop: starts above the page and the anchor drops in. Slit: the strap
+    // starts short and feeds out of the page, lowering the card smoothly.
     let lanyard: LanyardState = createLanyard(
       { x: start.x, y: dropIn ? start.y - ENTRANCE.drop : start.y },
       OPENING_SWING,
+      undefined,
+      dropIn ? 1 : REEL.from,
     );
     let entered = !dropIn;
+    let reeled = dropIn;
+    let reelT = 0;
     let entranceT = 0;
     let simT = 0;
     let state: Ball[] = createBalls(starterPack.bubbles.map((b) => ({ id: b.id, r: b.r })), BOX);
@@ -120,6 +128,7 @@ export function useStarterPackSim(
       // Reduced motion: hang straight and let the bubbles fall before anything is shown.
       lanyard = createLanyard(anchorRef.current, 0);
       entered = true;
+      reeled = true;
       live.current.lanyard = lanyard;
       state = createBalls(starterPack.bubbles.map((b) => ({ id: b.id, r: b.r })), BOX);
       for (let i = 0; i < 120 * 20; i++) stepBalls(state, BOX, STEP, frameGravity(0, { x: 0, y: 0 }));
@@ -154,6 +163,11 @@ export function useStarterPackSim(
       let loudest = 0;
       for (let i = 0; i < steps; i++) {
         simT += STEP;
+        if (!reeled) {
+          reelT += STEP;
+          setReel(lanyard, reelLength(reelT));
+          if (reelT >= REEL.seconds) reeled = true;
+        }
         if (!entered) {
           entranceT += STEP;
           setAnchor(lanyard, { x: anchorRef.current.x, y: entranceY(entranceT, anchorRef.current.y) });
@@ -193,9 +207,7 @@ export function useStarterPackSim(
       e.preventDefault();
       if (ballEl) {
         const b = state.find((x) => x.id === ballEl.dataset.ball);
-        if (!b) return;
-        playBloop(b.r);
-        if (reduce.matches) return;
+        if (!b || reduce.matches) return;
         poke(b);
         schedule();
         return;
@@ -292,7 +304,7 @@ export function useStarterPackSim(
       document.removeEventListener("visibilitychange", onVisibility);
       reduce.removeEventListener("change", onReduce);
     };
-  }, [scale, dropIn]);
+  }, [scale, dropIn, ready]);
 
   return { root, world, hang, tilt, balls, edge, fill, stitch, clip };
 }

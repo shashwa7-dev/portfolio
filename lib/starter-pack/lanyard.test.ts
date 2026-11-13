@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { breeze, cardPose, createLanyard, ENTRANCE, entranceY, lanyardAtRest, LANYARD, setAnchor, stepLanyard, toLocal } from "./lanyard";
+import { breeze, cardPose, createLanyard, ENTRANCE, entranceY, lanyardAtRest, LANYARD, REEL, reelLength, setAnchor, setReel, stepLanyard, toLocal } from "./lanyard";
 import { STEP } from "./loop";
 
 const run = (s: ReturnType<typeof createLanyard>, n: number, drag: { x: number; y: number } | null = null) => {
@@ -78,5 +78,30 @@ describe("natural dangling", () => {
     for (let t = 0; t < ENTRANCE.seconds; t += 0.05) {
       expect(entranceY(t + 0.05, -40)).toBeGreaterThanOrEqual(entranceY(t, -40));
     }
+  });
+});
+
+describe("feeding out of the slit", () => {
+  it("eases the strap from short to full length", () => {
+    expect(reelLength(0)).toBeCloseTo(REEL.from, 5);
+    expect(reelLength(REEL.seconds)).toBe(1);
+    expect(reelLength(REEL.seconds * 3)).toBe(1);
+    for (let t = 0; t < REEL.seconds; t += 0.02) expect(reelLength(t + 0.02)).toBeGreaterThanOrEqual(reelLength(t));
+  });
+
+  it("lowers the card smoothly, with no jump between steps", () => {
+    const s = createLanyard({ x: 200, y: 20 }, 0, LANYARD, REEL.from);
+    let prev = cardPose(s).clip.y;
+    let maxJump = 0;
+    for (let i = 0; i < 120 * 3; i++) {
+      setReel(s, reelLength(i * STEP));
+      stepLanyard(s, STEP, null);
+      const y = cardPose(s).clip.y;
+      maxJump = Math.max(maxJump, Math.abs(y - prev));
+      prev = y;
+    }
+    // About 2 px a step at most, at 120 steps a second: a glide, not a snap.
+    expect(maxJump).toBeLessThan(2.5);
+    expect(Math.abs(prev - (20 + LANYARD.segments * LANYARD.segLen))).toBeLessThan(2);
   });
 });

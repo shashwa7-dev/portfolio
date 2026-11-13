@@ -27,7 +27,7 @@ describe("bubbles", () => {
   });
 
   it("stays in the box and never overlaps, even when poked", () => {
-    const radii = [30, 25, 15, 14, 15, 14, 15, 14];
+    const radii = [40, 34, 20, 19, 20, 19, 20, 19];
     const box: Box = { w: 208, h: 136 };
     const rand = seeded();
     const balls = createBalls(radii.map((r, i) => ({ id: `b${i}`, r })), box);
@@ -78,7 +78,7 @@ describe("bubbles", () => {
 
   it("comes fully to rest, so the animation loop can sleep", () => {
     const box: Box = { w: 208, h: 136 };
-    const balls = createBalls([30, 25, 15, 14, 15, 14, 15, 14].map((r, i) => ({ id: `b${i}`, r })), box);
+    const balls = createBalls([40, 34, 20, 19, 20, 19, 20, 19].map((r, i) => ({ id: `b${i}`, r })), box);
     for (let i = 0; i < 120 * 20; i++) stepBalls(balls, box, STEP, frameGravity(0, { x: 0, y: 0 }));
     expect(ballsAtRest(balls)).toBe(true);
   });
@@ -97,7 +97,7 @@ describe("clack impacts", () => {
 
   it("stays quiet while the bubbles rest in a gently swaying card", () => {
     const box: Box = { w: 208, h: 136 };
-    const balls = createBalls([30, 25, 15, 14, 15, 14, 15, 14].map((r, i) => ({ id: `b${i}`, r })), box);
+    const balls = createBalls([40, 34, 20, 19, 20, 19, 20, 19].map((r, i) => ({ id: `b${i}`, r })), box);
     for (let i = 0; i < 120 * 15; i++) stepBalls(balls, box, STEP, frameGravity(0, { x: 0, y: 0 }));
     let loud = 0;
     for (let i = 0; i < 120 * 30; i++) {

@@ -1,8 +1,7 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { formatTicketDate, starterPack } from "./config";
-import { bloopFrequency } from "./bloop";
+import { BUBBLE_BOX, formatTicketDate, starterPack } from "./config";
 
 describe("starter pack config", () => {
   it("links the ticket to the exact video", () => {
@@ -34,11 +33,14 @@ describe("starter pack config", () => {
     expect(formatTicketDate(new Date(2026, 10, 13))).toBe("13 11 26");
     expect(formatTicketDate(new Date(2027, 0, 5))).toBe("05 01 27");
   });
-});
 
-describe("bloop pitch", () => {
-  it("is lower for bigger bubbles", () => {
-    expect(bloopFrequency(30)).toBe(380);
-    expect(bloopFrequency(14)).toBeGreaterThan(bloopFrequency(30));
+  it("fills 50 to 60% of the bubbles pod, with Swoopy and Sloosh the biggest", () => {
+    const area = starterPack.bubbles.reduce((sum, b) => sum + Math.PI * b.r * b.r, 0);
+    const fill = area / (BUBBLE_BOX.w * BUBBLE_BOX.h);
+    expect(fill).toBeGreaterThanOrEqual(0.5);
+    expect(fill).toBeLessThanOrEqual(0.6);
+    const big = starterPack.bubbles.filter((b) => b.id === "swoopy" || b.id === "sloosh");
+    const rest = starterPack.bubbles.filter((b) => b.id !== "swoopy" && b.id !== "sloosh");
+    expect(Math.min(...big.map((b) => b.r))).toBeGreaterThan(Math.max(...rest.map((b) => b.r)));
   });
 });

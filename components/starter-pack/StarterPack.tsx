@@ -78,9 +78,12 @@ export default function StarterPack({ variant }: { variant: Variant }) {
     () => starterPack.themes[Math.floor(Math.random() * starterPack.themes.length)],
   );
   const [date] = useState(() => formatTicketDate(new Date()));
-  const [width, setWidth] = useState(() => (typeof window === "undefined" ? 375 : window.innerWidth));
+  // Null until the box is measured: the card does not start (or draw) until
+  // it knows its real size, so the first frames can't jump to a new anchor.
+  const [width, setWidth] = useState<number | null>(null);
+  const ready = width !== null;
 
-  const { scale, w, h, anchorX } = useMemo(() => layout(variant, width), [variant, width]);
+  const { scale, w, h, anchorX } = useMemo(() => layout(variant, width ?? 375), [variant, width]);
   const fromSlit = variant !== "hang";
   const anchor = useMemo(
     () => ({ x: anchorX, y: fromSlit ? SLIT_TOP / scale : ANCHOR_Y }),
@@ -97,7 +100,7 @@ export default function StarterPack({ variant }: { variant: Variant }) {
     fill: fillRef,
     stitch: stitchRef,
     clip: clipRef,
-  } = useStarterPackSim(scale, anchor, !fromSlit, bounds);
+  } = useStarterPackSim(scale, anchor, !fromSlit, bounds, ready);
 
   // Layout effect: measure the real box before the first paint, so the card
   // never hangs from the window's width when its box is narrower.
@@ -111,18 +114,20 @@ export default function StarterPack({ variant }: { variant: Variant }) {
   const themeClass = theme === "orange" ? s.orange : s.cardStock;
   return (
     <div ref={rootRef} className={`${s.root} ${themeClass} ${spMarker.variable} ${spLabel.variable}`}>
-      <div ref={worldRef} className={s.world} style={{ width: w, height: h, transform: `scale(${scale})` }}>
-        <div ref={hangRef} className={s.hang} style={{ visibility: "hidden" }}>
-          <Card theme={theme} date={date} tiltRef={tiltRef} ballsRef={ballsRef} />
+      {ready && (
+        <div ref={worldRef} className={s.world} style={{ width: w, height: h, transform: `scale(${scale})` }}>
+          <div ref={hangRef} className={s.hang} style={{ visibility: "hidden" }}>
+            <Card theme={theme} date={date} tiltRef={tiltRef} ballsRef={ballsRef} />
+          </div>
+          <Lanyard
+            slit={fromSlit ? anchor : null}
+            edgeRef={edgeRef}
+            fillRef={fillRef}
+            stitchRef={stitchRef}
+            clipRef={clipRef}
+          />
         </div>
-        <Lanyard
-          slit={fromSlit ? anchor : null}
-          edgeRef={edgeRef}
-          fillRef={fillRef}
-          stitchRef={stitchRef}
-          clipRef={clipRef}
-        />
-      </div>
+      )}
     </div>
   );
 }

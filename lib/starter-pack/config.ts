@@ -12,7 +12,10 @@ export type BubbleDef = {
   id: string;
   name: string;
   src: string;
-  /** Radius in card pixels. Big bubbles are 25 to 30, small ones 14 to 15. */
+  /**
+   * Radius in card pixels. Together the bubbles fill 50 to 60% of
+   * BUBBLE_BOX (a test holds this); Swoopy and Sloosh are the biggest.
+   */
   r: number;
   bg: string;
   fit: "cover" | "contain";
@@ -36,6 +39,9 @@ export type StarterPackConfig = {
   themes: ThemeId[];
 };
 
+/** The 'SHIPPED' pod's inner box in card pixels: the 222 x 150 pod less its 7px inset. */
+export const BUBBLE_BOX = { w: 208, h: 136 } as const;
+
 const logo = (id: string, ext = "png") => `/starter-pack/logos/${id}.${ext}`;
 
 export const starterPack: StarterPackConfig = {
@@ -54,14 +60,14 @@ export const starterPack: StarterPackConfig = {
     alt: "Shashwat as a toy figure in a cap, glasses and an offcod8 T-shirt",
   },
   bubbles: [
-    { id: "swoopy", name: "Swoopy", src: logo("swoopy", "svg"), r: 30, bg: "#ffffff", fit: "contain" },
-    { id: "sloosh", name: "Sloosh", src: logo("sloosh"), r: 25, bg: "#ffd84a", fit: "cover" },
-    { id: "shopos", name: "ShopOS", src: logo("shopos"), r: 15, bg: "#ffffff", fit: "cover" },
-    { id: "coinbase", name: "Coinbase", src: logo("coinbase"), r: 14, bg: "#0052ff", fit: "cover" },
-    { id: "dehidden", name: "DeHidden", src: logo("dehidden"), r: 15, bg: "#b0224f", fit: "cover" },
-    { id: "polygon", name: "Polygon", src: logo("polygon"), r: 14, bg: "#7b3fe4", fit: "cover" },
-    { id: "santul", name: "Santul", src: logo("santul"), r: 15, bg: "#111410", fit: "cover" },
-    { id: "playai", name: "Play AI", src: logo("playai"), r: 14, bg: "#000000", fit: "cover" },
+    { id: "swoopy", name: "Swoopy", src: logo("swoopy", "svg"), r: 40, bg: "#ffffff", fit: "contain" },
+    { id: "sloosh", name: "Sloosh", src: logo("sloosh"), r: 34, bg: "#ffd84a", fit: "cover" },
+    { id: "shopos", name: "ShopOS", src: logo("shopos"), r: 20, bg: "#ffffff", fit: "cover" },
+    { id: "coinbase", name: "Coinbase", src: logo("coinbase"), r: 19, bg: "#0052ff", fit: "cover" },
+    { id: "dehidden", name: "DeHidden", src: logo("dehidden"), r: 20, bg: "#b0224f", fit: "cover" },
+    { id: "polygon", name: "Polygon", src: logo("polygon"), r: 19, bg: "#7b3fe4", fit: "cover" },
+    { id: "santul", name: "Santul", src: logo("santul"), r: 20, bg: "#111410", fit: "cover" },
+    { id: "playai", name: "Play AI", src: logo("playai"), r: 19, bg: "#000000", fit: "cover" },
   ],
   pods: [
     { id: "builds", label: "BUILDS", art: "/starter-pack/pods/builds.svg" },
