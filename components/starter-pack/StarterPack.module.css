@@ -1,0 +1,672 @@
+/*
+ * The starter pack card. A printed object, so it keeps its own colours in both
+ * site themes. Sizes are in card pixels (the card is 470 x 650); the world is
+ * scaled as a whole by StarterPack.tsx. Spec:
+ * docs/superpowers/specs/2026-11-13-starter-pack-design.md
+ */
+
+.root {
+  --ink: #17151c;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.root * {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+.root img {
+  -webkit-user-drag: none;
+}
+.root ::selection {
+  background: transparent;
+}
+
+.world {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+  perspective: 1600px;
+}
+
+/* ---------- Lanyard ---------- */
+
+.rope {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 5;
+  /* WebKit otherwise paints the 3D card over the strap and clip. */
+  transform: translateZ(0);
+}
+.ropeFill {
+  stroke: var(--rope);
+}
+/* The cut the strap comes out of: a soft dent in the page, a dark opening,
+   and a lower lip that sits over the strap. */
+.slitShade {
+  fill: rgba(0, 0, 0, 0.07);
+  filter: blur(2px);
+}
+.slitHole {
+  fill: #2a2730;
+}
+.slitLip {
+  fill: none;
+  /* The page itself, so the lip reads as the cut's edge in either theme. */
+  stroke: hsl(var(--background));
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+/* Dark mode: a pure black hole read as a flat blot. A lighter opening with a
+   faint lit rim reads as a groove cut into the page. */
+:global(.dark) .slitShade {
+  fill: rgba(255, 255, 255, 0.07);
+}
+:global(.dark) .slitHole {
+  fill: #2c2a31;
+  stroke: rgba(255, 255, 255, 0.12);
+  stroke-width: 1.5;
+}
+
+.hang {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 470px;
+  height: 650px;
+  z-index: 1;
+  transform-origin: 235px 8px;
+  transform-style: preserve-3d;
+  cursor: grab;
+  touch-action: none;
+  /* The page box around the card ignores the pointer; the card does not. */
+  pointer-events: auto;
+}
+.hang[data-dragging] {
+  cursor: grabbing;
+}
+
+/* ---------- Card ---------- */
+
+.card {
+  position: relative;
+  width: 470px;
+  height: 650px;
+  margin: 0;
+  transform-style: preserve-3d;
+  transform: rotateY(-14deg) rotateX(4deg);
+  transition: transform var(--duration-fast) var(--ease-out);
+  --mk: var(--sp-marker), cursive;
+  --lb: var(--sp-label), system-ui, sans-serif;
+  /* Direction to the light (viewport top-left) in the card's frame, set every
+     frame by useStarterPackSim; gloss sits toward it, shadows fall away. */
+  --lx: -0.85;
+  --ly: -0.53;
+  --la: 122deg;
+}
+
+/* A: card stock. Cream board, one amber corner, dots fading up. */
+.cardStock {
+  --face: #f3eee4;
+  --edge: #ddd5c6;
+  --edge2: #c4baa6;
+  --t1: #3a6df0;
+  --t2: #ff5a7a;
+  --side: #c8264f;
+  --side-star: #ffb400;
+  --chip: #e9ff4f;
+  --badge: #e2412f;
+  --badge-fg: #fff;
+  --stamp: #fff;
+  --warn: #d9342b;
+  --warn-bg: #fff4ef;
+  --rope: #3a6df0;
+  /* Outlines and drops: deeper shades and the design system's amber 700, never black. */
+  --t1-line: #1d3d9c;
+  --t2-line: #a3203f;
+  --pop: #b45309;
+  --pop2: #b45309;
+  --badge-line: #a3203f;
+  --pod-label: #17151c;
+}
+/*
+ * B: sky and navy. A soft sky board, light enough for the clear plastic to
+ * read; cream title on a peach drop; one navy for every label, the badge and
+ * the strap. No black anywhere.
+ */
+.sky {
+  --face: #a9cdf0;
+  --edge: #cfe0f1;
+  --edge2: #a3bfdc;
+  --t1: #fffaf0;
+  --t2: #22306e;
+  --side: #22306e;
+  --side-star: #ff9a6b;
+  --chip: #ff9a6b;
+  --badge: #22306e;
+  --badge-fg: #fffaf0;
+  --stamp: #fffaf0;
+  --warn: #22306e;
+  --warn-bg: #fffaf0;
+  --rope: #22306e;
+  --t1-line: #22306e;
+  --t2-line: #fffaf0;
+  --pop: #ff9a6b;
+  --pop2: #ff9a6b;
+  --badge-line: #141d47;
+  --pod-label: #22306e;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+}
+/*
+ * Material: a printed card a couple of millimetres thick, hanging a little
+ * way in front of the page. Thin board edge, no outline, a faint laminate
+ * sheen, and a soft shadow thrown on the page behind it.
+ */
+.castShadow {
+  background: rgba(0, 0, 0, 0.22);
+  filter: blur(18px);
+  transform: translateZ(-60px) translate(calc(var(--lx) * -18px), calc(var(--ly) * -40px)) scale(0.98);
+}
+/* The shadow is the one thing that adapts to the site theme. */
+:global(.dark) .castShadow {
+  background: rgba(0, 0, 0, 0.55);
+}
+.edge {
+  background: var(--edge);
+}
+.edgeBack {
+  background: var(--edge2);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+.face {
+  background: var(--face);
+  overflow: hidden;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+.sheen {
+  background: linear-gradient(
+    118deg,
+    rgba(255, 255, 255, 0.34) 0%,
+    rgba(255, 255, 255, 0.08) 28%,
+    rgba(255, 255, 255, 0) 45%,
+    rgba(0, 0, 0, 0) 70%,
+    rgba(0, 0, 0, 0.07) 100%
+  );
+  pointer-events: none;
+}
+.face > div {
+  position: absolute;
+  inset: 0;
+}
+.dots {
+  background-image: radial-gradient(rgba(23, 21, 28, 0.16) 1.2px, transparent 1.6px);
+  background-size: 7px 7px;
+}
+.rule {
+  inset: 10px !important;
+  border: 2px solid rgba(23, 21, 28, 0.18);
+  border-radius: 12px;
+}
+.rays,
+.band {
+  display: none;
+}
+.cardStock .band {
+  display: block;
+  background: #ffc93c;
+  clip-path: polygon(0 0, 64% 0, 40% 22%, 0 30%);
+}
+.cardStock .dots {
+  -webkit-mask-image: linear-gradient(to top, #000 0, rgba(0, 0, 0, 0.6) 35%, transparent 70%);
+  mask-image: linear-gradient(to top, #000 0, rgba(0, 0, 0, 0.6) 35%, transparent 70%);
+}
+.sky .rays {
+  display: block;
+  background:
+    radial-gradient(ellipse at 26% 52%, rgba(255, 255, 255, 0.4), transparent 60%),
+    repeating-conic-gradient(from 0deg at 26% 52%, rgba(255, 255, 255, 0.22) 0 8deg, transparent 8deg 20deg);
+}
+.sky .dots {
+  background-image: radial-gradient(rgba(34, 48, 110, 0.14) 1.2px, transparent 1.6px);
+  -webkit-mask-image: radial-gradient(ellipse at 70% 80%, #000 10%, transparent 75%);
+  mask-image: radial-gradient(ellipse at 70% 80%, #000 10%, transparent 75%);
+}
+
+/* Everything placed on the card. */
+.z {
+  position: absolute;
+  transform-style: preserve-3d;
+}
+
+.tab {
+  left: 50%;
+  margin-left: -44px;
+  top: -16px;
+  width: 88px;
+  height: 40px;
+  background: var(--face);
+  border-radius: 20px 20px 0 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+  transform: translateZ(0.5px);
+}
+/* The punched slot: the page shows through, with the board's cut edge inside it. */
+.tab::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 12px;
+  margin-left: -20px;
+  width: 40px;
+  height: 11px;
+  border-radius: 6px;
+  background: #e9e6ec;
+  box-shadow: inset 0 2px 2px rgba(0, 0, 0, 0.35), 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+:global(.dark) .tab::after {
+  background: #1b1a1e;
+}
+
+.title {
+  left: 18px;
+  top: 40px;
+  margin: 0;
+  font: 400 56px/0.82 var(--mk);
+  color: var(--t1);
+  /* Outlined in a deeper shade of its own ink, with a coloured drop instead of
+     black, so the lettering pops like a sticker print. */
+  -webkit-text-stroke: 3px var(--t1-line);
+  paint-order: stroke fill;
+  text-shadow: 4px 5px 0 var(--pop);
+  transform: translateZ(8px) rotate(-4deg);
+}
+.subtitle {
+  display: block;
+  margin: 4px 0 0 10px;
+  font-size: 36px;
+  color: var(--t2);
+  -webkit-text-stroke: 3px var(--t2-line);
+  text-shadow: 3px 4px 0 var(--pop2);
+}
+
+.label {
+  font-family: var(--lb);
+  font-style: italic;
+  font-weight: 900;
+  letter-spacing: 0.6px;
+}
+
+.badge {
+  right: 16px;
+  top: 30px;
+  width: 92px;
+  text-align: center;
+  font-size: 15px;
+  line-height: 0.95;
+  color: var(--badge-fg);
+  background: var(--badge);
+  border: 3px solid var(--badge-line);
+  border-radius: 8px;
+  padding: 6px 4px;
+  transform: translateZ(10px) rotate(4deg);
+  box-shadow: 3px 4px 0 var(--pop);
+}
+.stamp {
+  right: 36px;
+  top: 78px;
+  width: 46px;
+  height: 46px;
+  border: 3px solid var(--ink);
+  border-radius: 50%;
+  background: var(--stamp);
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transform: translateZ(12px) rotate(-10deg);
+}
+/*
+ * Printed labels: ESSENTIALS, HI :) and SHIPPED are all ink on the card,
+ * the same face, colour and depth (translateZ 14px, under every blister's
+ * plastic at 24px), with no box or shadow of their own.
+ */
+.speech {
+  left: 112px;
+  top: 133px;
+  font-size: 27px;
+  letter-spacing: 1.5px;
+  color: var(--side);
+  white-space: nowrap;
+  transform: translateZ(14px) rotate(-3deg);
+}
+.side {
+  left: 196px;
+  top: 520px;
+  font-size: 27px;
+  letter-spacing: 1.5px;
+  color: var(--side);
+  white-space: nowrap;
+  transform: translateZ(14px) rotate(-90deg);
+  transform-origin: left top;
+}
+.side::after {
+  content: " \2605";
+  color: var(--side-star);
+}
+.warn {
+  left: 20px;
+  bottom: 10px;
+  border: 3px solid var(--warn);
+  background: var(--warn-bg);
+  color: var(--warn);
+  font-size: 12px;
+  line-height: 1.1;
+  padding: 3px 6px;
+  text-align: center;
+  transform: translateZ(9px) rotate(-2deg);
+}
+.struck {
+  position: relative;
+  opacity: 0.55;
+}
+.struck::after {
+  content: "";
+  position: absolute;
+  left: -2px;
+  right: -2px;
+  top: 50%;
+  height: 2px;
+  background: currentColor;
+  transform: rotate(-12deg);
+}
+
+/* ---------- Plastic ---------- */
+
+.pod {
+  border-radius: 30px;
+  transform: translateZ(24px);
+  background: linear-gradient(var(--la), rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.08) 42%, rgba(255, 255, 255, 0.22));
+  border: 1.5px solid rgba(255, 255, 255, 0.95);
+  box-shadow:
+    inset 0 0 0 4px rgba(255, 255, 255, 0.18),
+    inset calc(var(--lx) * 10px) calc(var(--ly) * 12px) 18px rgba(0, 0, 0, 0.16),
+    0 0 0 1px rgba(0, 0, 0, 0.12),
+    calc(var(--lx) * -9px) calc(var(--ly) * -12px) 14px rgba(0, 0, 0, 0.18);
+}
+/*
+ * How moulded plastic catches light: no hard glint, but a bright rim along
+ * the edge that faces the light, fading round to nothing on the far side,
+ * and a soft, diffuse bloom on the curved face toward the light. Both follow
+ * --lx / --ly / --la, so they slide round as the card swings.
+ */
+.pod::before {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(var(--la), rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.35) 30%, rgba(255, 255, 255, 0) 60%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  pointer-events: none;
+}
+.pod::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: inherit;
+  background: radial-gradient(
+    ellipse 75% 60% at calc(50% + var(--lx) * 34%) calc(50% + var(--ly) * 38%),
+    rgba(255, 255, 255, 0.55),
+    rgba(255, 255, 255, 0.16) 45%,
+    rgba(255, 255, 255, 0) 72%
+  );
+  pointer-events: none;
+}
+/* The side wall: clear rings stepping down to the card, brighter on the
+   side facing the light, so the blister reads as a raised 3D shell. */
+.walls {
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+.walls i {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  border-top-color: rgba(255, 255, 255, calc(0.22 - var(--ly) * 0.25));
+  border-left-color: rgba(255, 255, 255, calc(0.22 - var(--lx) * 0.25));
+  border-bottom-color: rgba(255, 255, 255, calc(0.12 + var(--ly) * 0.1));
+  border-right-color: rgba(255, 255, 255, calc(0.12 + var(--lx) * 0.1));
+}
+/* A soft pill of reflected light on the face, toward the light. Blurred and
+   faded at its ends so it reads as a reflection, not a sticker. */
+.glint {
+  position: absolute;
+  top: 9px;
+  left: 14px;
+  width: 38%;
+  max-width: 70px;
+  height: 9px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.8) 30%, rgba(255, 255, 255, 0.6) 70%, rgba(255, 255, 255, 0) 100%);
+  filter: blur(0.6px);
+  transform: translateZ(1px) translate(calc((var(--lx) + 0.85) * 26px), calc((var(--ly) + 0.53) * 18px)) rotate(-14deg);
+}
+.walls i:last-of-type {
+  /* The flange where the blister meets the card. */
+  border-width: 2px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+/* Contents sit behind the plastic. */
+.item {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--pod-label);
+  font-size: 13px;
+  font-weight: 800;
+  transform: translateZ(-8px);
+}
+.art {
+  width: 80px;
+  height: 80px;
+  margin-top: -6px;
+}
+
+/* The mascot's dome. */
+.figure {
+  left: 14px;
+  top: 160px;
+  width: 166px;
+  height: 436px;
+  border-radius: 44px 44px 28px 28px;
+}
+/* The tall dome: a long, soft sheen down the side facing the light. */
+.figure::after {
+  inset: 4px;
+  border-radius: inherit;
+  background: radial-gradient(
+    ellipse 45% 80% at calc(50% + var(--lx) * 38%) calc(50% + var(--ly) * 20%),
+    rgba(255, 255, 255, 0.38),
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0) 75%
+  );
+}
+.mascot,
+.mascotShadow {
+  left: 30px;
+  top: 176px;
+  width: 140px;
+  height: 410px;
+}
+.mascot img,
+.mascotShadow img {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 410px;
+  width: auto;
+}
+.mascot img {
+  transform: translateZ(12px);
+}
+.mascotShadow {
+  left: 34px;
+  transform: translateZ(6px);
+}
+.mascotShadow img {
+  filter: brightness(0) opacity(0.3) blur(3px);
+  transform: translate(calc(var(--lx) * -16px), calc(var(--ly) * -22px));
+}
+
+/* ---------- Bubbles ---------- */
+
+.shippedPod {
+  left: 226px;
+  top: 150px;
+  width: 222px;
+  height: 150px;
+  pointer-events: none;
+}
+.balls {
+  position: absolute;
+  inset: 7px;
+  transform: translateZ(-8px);
+  transform-style: preserve-3d;
+}
+.ball {
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 50%;
+  pointer-events: auto;
+  cursor: pointer;
+  touch-action: none;
+  will-change: transform;
+}
+.tex,
+.shine {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+.shine {
+  background:
+    radial-gradient(circle at calc(50% + var(--lx) * 24%) calc(50% + var(--ly) * 28%), rgba(255, 255, 255, 0.95) 0 7%, rgba(255, 255, 255, 0) 26%),
+    radial-gradient(circle at calc(50% - var(--lx) * 20%) calc(50% - var(--ly) * 30%), rgba(0, 0, 0, 0.42), rgba(0, 0, 0, 0) 62%);
+  box-shadow:
+    inset calc(var(--lx) * 4px) calc(var(--ly) * 6px) 9px rgba(0, 0, 0, 0.35),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.35),
+    0 0 0 1.5px rgba(23, 21, 28, 0.7);
+}
+.chip {
+  left: 236px;
+  top: 116px;
+  font-size: 27px;
+  letter-spacing: 1.5px;
+  color: var(--side);
+  white-space: nowrap;
+  transform: translateZ(14px) rotate(-3deg);
+}
+.chip::after {
+  content: " \2605";
+  color: var(--side-star);
+}
+
+/* ---------- Ticket ---------- */
+
+.ticket {
+  right: 16px;
+  bottom: 12px;
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  background: #fff;
+  border: 3px solid var(--ink);
+  border-radius: 4px;
+  padding: 5px 5px 4px;
+  transform: translateZ(3px);
+  text-decoration: none;
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow: 3px 4px 0 rgba(23, 21, 28, 0.25);
+}
+.ticket:focus-visible {
+  outline: 3px solid var(--rope);
+  outline-offset: 3px;
+}
+.bars {
+  display: block;
+  width: 78px;
+}
+.bars i {
+  display: block;
+  height: 44px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--ink) 0 2px,
+    #fff 2px 4px,
+    var(--ink) 4px 5px,
+    #fff 5px 8px,
+    var(--ink) 8px 11px,
+    #fff 11px 12px
+  );
+}
+.bars b {
+  display: block;
+  font: 700 8px/1.4 ui-monospace, monospace;
+  text-align: center;
+}
+.qr {
+  width: 62px;
+  height: 62px;
+  display: block;
+  image-rendering: pixelated;
+}
+.tag {
+  position: absolute;
+  right: 6px;
+  top: -15px;
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 1px;
+  background: var(--chip);
+  border: 2px solid var(--ink);
+  padding: 1px 5px;
+  transform: rotate(3deg);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

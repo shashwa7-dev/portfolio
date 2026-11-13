@@ -1,0 +1,216 @@
+/**
+ * The starter pack's lanyard: a verlet strap hanging from an anchor above the
+ * page, with the card as a heavy rigid arm from the clip to the card's centre.
+ *
+ * Pure: no DOM. Coordinates are the card's unscaled pixels; the component
+ * converts pointer positions with `toLocal`.
+ */
+export type Vec = { x: number; y: number };
+export type Particle = Vec & { px: number; py: number; invMass: number };
+
+export type LanyardParams = {
+  segments: number;
+  segLen: number;
+  armLen: number;
+  armInvMass: number;
+  gravity: number;
+  damping: number;
+  iterations: number;
+};
+
+export const LANYARD: LanyardParams = {
+  segments: 11,
+  segLen: 22,
+  armLen: 317,
+  armInvMass: 1 / 8,
+  gravity: 2000,
+  damping: 0.996,
+  iterations: 24,
+};
+
+export type LanyardState = {
+  anchor: Vec;
+  /** `points[0]` is pinned to `anchor`; the last point is the clip. */
+  points: Particle[];
+  /** The card's centre. */
+  arm: Particle;
+  /** The arm's smoothed acceleration, px/s². */
+  acc: Vec;
+  /** How much of the strap is out of the slit, 0 to 1 (1 = full length). */
+  reel: number;
+  /** Largest distance any particle moved in the last step. */
+  moved: number;
+  vel: Vec;
+};
+
+const ACC_LIMIT = 6000;
+const ACC_SMOOTH = 0.15;
+
+function particle(x: number, y: number, invMass: number): Particle {
+  return { x, y, px: x, py: y, invMass };
+}
+
+export function createLanyard(anchor: Vec, swingX = 110, p: LanyardParams = LANYARD, reel = 1): LanyardState {
+  const points: Particle[] = [];
+  const seg = p.segLen * reel;
+  for (let i = 0; i <= p.segments; i++) points.push(particle(anchor.x, anchor.y + i * seg, i === 0 ? 0 : 1));
+  const clip = points[p.segments];
+  const dy = Math.sqrt(Math.max(0, p.armLen * p.armLen - swingX * swingX));
+  return {
+    anchor: { ...anchor },
+    points,
+    arm: particle(clip.x + swingX, clip.y + dy, p.armInvMass),
+    acc: { x: 0, y: 0 },
+    reel,
+    moved: Infinity,
+    vel: { x: 0, y: 0 },
+  };
+}
+
+export function setReel(s: LanyardState, reel: number): void {
+  s.reel = Math.min(1, Math.max(0, reel));
+}
+
+export function setAnchor(s: LanyardState, anchor: Vec): void {
+  s.anchor = { ...anchor };
+  s.moved = Infinity;
+}
+
+function satisfy(a: Particle, b: Particle, len: number): void {
+  const w = a.invMass + b.invMass;
+  if (w === 0) return;
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const d = Math.hypot(dx, dy) || 1e-6;
+  const f = (d - len) / d / w;
+  a.x += dx * f * a.invMass;
+  a.y += dy * f * a.invMass;
+  b.x -= dx * f * b.invMass;
+  b.y -= dy * f * b.invMass;
+}
+
+/**
+ * `wind` is a sideways push on the card in px/s² (see `breeze`), so it keeps
+ * dangling instead of hanging dead still.
+ */
+function integrate(q: Particle, damping: number, drop: number): void {
+  const vx = (q.x - q.px) * damping;
+  const vy = (q.y - q.py) * damping;
+  q.px = q.x;
+  q.py = q.y;
+  q.x += vx;
+  q.y += vy + drop;
+}
+
+function pin(s: LanyardState, drag: Vec | null): void {
+  s.points[0].x = s.anchor.x;
+  s.points[0].y = s.anchor.y;
+  if (drag) {
+    s.arm.x = drag.x;
+    s.arm.y = drag.y;
+  }
+}
+
+/**
+ * One physics step. Allocation-free: it runs 120 times a second for as long
+ * as the card is on screen, so it reuses each particle's previous position
+ * (px, py) instead of building arrays.
+ */
+export function stepLanyard(
+  s: LanyardState,
+  dt: number,
+  drag: Vec | null,
+  p: LanyardParams = LANYARD,
+  wind = 0,
+): void {
+  const drop = p.gravity * dt * dt;
+  for (let i = 1; i < s.points.length; i++) integrate(s.points[i], p.damping, drop);
+  integrate(s.arm, p.damping, drop);
+  s.arm.x += wind * dt * dt;
+  pin(s, drag);
+  const clip = s.points[p.segments];
+  for (let k = 0; k < p.iterations; k++) {
+    for (let i = 0; i < p.segments; i++) satisfy(s.points[i], s.points[i + 1], p.segLen * s.reel);
+    satisfy(clip, s.arm, p.armLen);
+    pin(s, drag);
+  }
+
+  // px, py hold where each particle was before this step.
+  let moved = Math.hypot(s.arm.x - s.arm.px, s.arm.y - s.arm.py);
+  for (let i = 1; i < s.points.length; i++) {
+    const q = s.points[i];
+    moved = Math.max(moved, Math.hypot(q.x - q.px, q.y - q.py));
+  }
+  s.moved = moved;
+
+  const vx = (s.arm.x - s.arm.px) / dt;
+  const vy = (s.arm.y - s.arm.py) / dt;
+  let ax = (vx - s.vel.x) / dt;
+  let ay = (vy - s.vel.y) / dt;
+  s.vel.x = vx;
+  s.vel.y = vy;
+  const m = Math.hypot(ax, ay);
+  if (m > ACC_LIMIT) {
+    ax *= ACC_LIMIT / m;
+    ay *= ACC_LIMIT / m;
+  }
+  s.acc.x = s.acc.x * (1 - ACC_SMOOTH) + ax * ACC_SMOOTH;
+  s.acc.y = s.acc.y * (1 - ACC_SMOOTH) + ay * ACC_SMOOTH;
+}
+
+/** The card's swing angle (CSS clockwise radians) without allocating; see cardPose. */
+export function armAngle(s: LanyardState): number {
+  const clip = s.points[s.points.length - 1];
+  return Math.atan2(-(s.arm.x - clip.x), s.arm.y - clip.y);
+}
+
+/** The clip position and the card's angle (CSS clockwise radians, 0 = hanging straight). */
+export function cardPose(s: LanyardState): { clip: Vec; angle: number } {
+  const clip = s.points[s.points.length - 1];
+  return { clip: { x: clip.x, y: clip.y }, angle: Math.atan2(-(s.arm.x - clip.x), s.arm.y - clip.y) };
+}
+
+export function lanyardAtRest(s: LanyardState, eps = 0.02): boolean {
+  return s.moved < eps;
+}
+
+export function toLocal(client: Vec, rect: { left: number; top: number }, scale: number): Vec {
+  return { x: (client.x - rect.left) / scale, y: (client.y - rect.top) / scale };
+}
+
+/**
+ * A light, never-repeating breeze in px/s²: three slow waves at unrelated
+ * periods, so the card sways a few degrees forever and never looks looped.
+ */
+export const BREEZE = { strength: 70, periods: [3.7, 5.9, 2.3], weights: [1, 0.6, 0.35] } as const;
+
+export function breeze(t: number): number {
+  let f = 0;
+  BREEZE.periods.forEach((period, i) => {
+    f += BREEZE.weights[i] * Math.sin((2 * Math.PI * t) / period + i * 1.3);
+  });
+  return BREEZE.strength * f;
+}
+
+/** The drop-in: the strap's anchor falls from above the page to its place. */
+export const ENTRANCE = { seconds: 0.9, drop: 1100 } as const;
+
+export function entranceY(t: number, restY: number): number {
+  const k = Math.min(1, Math.max(0, t / ENTRANCE.seconds));
+  const eased = 1 - Math.pow(1 - k, 3);
+  return k >= 1 ? restY : restY - ENTRANCE.drop * (1 - eased);
+}
+
+/**
+ * Feeding out of a slit: the strap starts at `from` of its length and eases
+ * out to full over `seconds`, so the card glides down out of the page rather
+ * than appearing already hung.
+ */
+export const REEL = { from: 0.12, seconds: 1.6 } as const;
+
+export function reelLength(t: number): number {
+  const k = Math.min(1, Math.max(0, t / REEL.seconds));
+  if (k >= 1) return 1;
+  const eased = k * k * (3 - 2 * k);
+  return REEL.from + (1 - REEL.from) * eased;
+}

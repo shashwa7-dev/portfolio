@@ -1,5 +1,7 @@
 "use client";
 
+import { getAudioContext, peekAudioContext } from "./audioContext";
+
 /**
  * The fidget spinner's sounds (SpinAvatar): a soft flick on each click, a
  * light bearing tick every half turn that slows and fades with the spin, and
@@ -7,7 +9,7 @@
  *
  * Synthesised the same way as the dice (card/dice/diceSound.ts): a few
  * milliseconds of white noise through a bandpass filter. No audio file to
- * host or decode. The context is created lazily on the first click, inside
+ * host or decode. The shared context (./audioContext.ts) is created lazily on the first click, inside
  * a user gesture, never at module scope (there is no AudioContext on the
  * server). Every failure is a silent no-op: a sound must never break the toy.
  */
@@ -20,19 +22,11 @@ const VOICES: Record<Kind, { frequency: number; gain: number; seconds: number }>
   settle: { frequency: 1300, gain: 0.06, seconds: 0.02 },
 };
 
-let ctx: AudioContext | null = null;
-
-function getContext(): AudioContext | null {
-  if (typeof window === "undefined" || typeof window.AudioContext === "undefined") return null;
-  if (!ctx) ctx = new window.AudioContext();
-  if (ctx.state === "suspended") void ctx.resume().catch(() => {});
-  return ctx;
-}
 
 /** `level` (0 to 1) scales the voice's gain, so ticks fade as the spin slows. */
 export function playSpinSound(kind: Kind, level = 1): void {
   try {
-    const audio = getContext();
+    const audio = getAudioContext();
     if (!audio) return;
     const { frequency, gain, seconds } = VOICES[kind];
     const now = audio.currentTime;
@@ -69,7 +63,7 @@ export function playSpinSound(kind: Kind, level = 1): void {
  */
 export function routeThroughGain(el: HTMLMediaElement): GainNode | null {
   try {
-    const audio = getContext();
+    const audio = getAudioContext();
     if (!audio) return null;
     const amp = audio.createGain();
     audio.createMediaElementSource(el).connect(amp).connect(audio.destination);
@@ -87,7 +81,7 @@ const samples = new Map<string, Promise<AudioBuffer | null>>();
  * can retry. Resolves to null when there is no context or the load fails.
  */
 export function loadSample(url: string): Promise<AudioBuffer | null> {
-  const audio = getContext();
+  const audio = getAudioContext();
   if (!audio) return Promise.resolve(null);
   let pending = samples.get(url);
   if (!pending) {
@@ -110,7 +104,7 @@ export function loadSample(url: string): Promise<AudioBuffer | null> {
  */
 export function playSample(buffer: AudioBuffer, gain: number): AudioBufferSourceNode | null {
   try {
-    const audio = getContext();
+    const audio = getAudioContext();
     if (!audio) return null;
     const source = audio.createBufferSource();
     source.buffer = buffer;
@@ -126,5 +120,5 @@ export function playSample(buffer: AudioBuffer, gain: number): AudioBufferSource
 
 /** The context's clock, for scheduling gain ramps. */
 export function audioNow(): number {
-  return ctx?.currentTime ?? 0;
+  return peekAudioContext()?.currentTime ?? 0;
 }
