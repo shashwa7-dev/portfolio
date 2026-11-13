@@ -10,9 +10,6 @@ import {
   createLanyard,
   ENTRANCE,
   entranceY,
-  REEL,
-  reelLength,
-  setReel,
   setAnchor,
   stepLanyard,
   toLocal,
@@ -48,16 +45,10 @@ export type SimRefs = {
  * on screen and the tab is visible, and stops when it is off screen, in a
  * hidden tab, or under reduced motion. The physics steps allocate nothing.
  */
-/**
- * `dropIn`: the card falls in from above the page on first view (desktop,
- * where the strap comes from the screen's top edge). Without it the card
- * starts hanging from its slit. `bounds` is the world size: a drag can never
- * pull the card outside it.
- */
+/** `bounds` is the world size: a drag can never pull the card outside it. */
 export function useStarterPackSim(
   scale: number,
   anchor: Vec,
-  dropIn: boolean,
   bounds: { w: number; h: number },
   ready: boolean,
 ): SimRefs {
@@ -110,17 +101,8 @@ export function useStarterPackSim(
 
     const start = anchorRef.current;
     // Starts above the page: the anchor drops in on first view and the card follows it down.
-    // Desktop: starts above the page and the anchor drops in. Slit: the strap
-    // starts short and feeds out of the page, lowering the card smoothly.
-    let lanyard: LanyardState = createLanyard(
-      { x: start.x, y: dropIn ? start.y - ENTRANCE.drop : start.y },
-      OPENING_SWING,
-      undefined,
-      dropIn ? 1 : REEL.from,
-    );
-    let entered = !dropIn;
-    let reeled = dropIn;
-    let reelT = 0;
+    let lanyard: LanyardState = createLanyard({ x: start.x, y: start.y - ENTRANCE.drop }, OPENING_SWING);
+    let entered = false;
     let entranceT = 0;
     let simT = 0;
     let state: Ball[] = createBalls(starterPack.bubbles.map((b) => ({ id: b.id, r: b.r })), BOX);
@@ -135,7 +117,6 @@ export function useStarterPackSim(
       // Reduced motion: hang straight and let the bubbles fall before anything is shown.
       lanyard = createLanyard(anchorRef.current, 0);
       entered = true;
-      reeled = true;
       live.current.lanyard = lanyard;
       state = createBalls(starterPack.bubbles.map((b) => ({ id: b.id, r: b.r })), BOX);
       for (let i = 0; i < 120 * 20; i++) stepBalls(state, BOX, STEP, frameGravity(0, { x: 0, y: 0 }));
@@ -145,7 +126,7 @@ export function useStarterPackSim(
     const drawn = new Map<string, { x: number; y: number; a: number; q: number }>();
     // The strap's SVG covers only a padded box around the strap, not the whole
     // world, so each frame repaints a strip instead of a screenful. The box is
-    // refitted only when the strap (or the clip and slit drawn around its
+    // refitted only when the strap (or the clip drawn around its
     // ends, which reach about 26px out) comes within MARGIN of its edge; a bigger PAD
     // refits less but repaints more area every frame, so keep it tight. It is
     // placed with a transform; only a change of size costs a layout.
@@ -220,11 +201,6 @@ export function useStarterPackSim(
       let loudest = 0;
       for (let i = 0; i < steps; i++) {
         simT += STEP;
-        if (!reeled) {
-          reelT += STEP;
-          setReel(lanyard, reelLength(reelT));
-          if (reelT >= REEL.seconds) reeled = true;
-        }
         if (!entered) {
           entranceT += STEP;
           setAnchor(lanyard, { x: anchorRef.current.x, y: entranceY(entranceT, anchorRef.current.y) });
@@ -368,7 +344,7 @@ export function useStarterPackSim(
       document.removeEventListener("visibilitychange", onVisibility);
       reduce.removeEventListener("change", onReduce);
     };
-  }, [dropIn, ready]);
+  }, [ready]);
 
   return { root, world, hang, tilt, balls, edge, fill, stitch, clip };
 }

@@ -53,32 +53,6 @@
 .ropeFill {
   stroke: var(--rope);
 }
-/* The cut the strap comes out of: a soft dent in the page, a dark opening,
-   and a lower lip that sits over the strap. */
-.slitShade {
-  fill: rgba(0, 0, 0, 0.07);
-}
-.slitHole {
-  fill: #2a2730;
-}
-.slitLip {
-  fill: none;
-  /* The page itself, so the lip reads as the cut's edge in either theme. */
-  stroke: hsl(var(--background));
-  stroke-width: 5;
-  stroke-linecap: round;
-}
-/* Dark mode: a pure black hole read as a flat blot. A lighter opening with a
-   faint lit rim reads as a groove cut into the page. */
-:global(.dark) .slitShade {
-  fill: rgba(255, 255, 255, 0.07);
-}
-:global(.dark) .slitHole {
-  fill: #2c2a31;
-  stroke: rgba(255, 255, 255, 0.12);
-  stroke-width: 1.5;
-}
-
 .hang {
   position: absolute;
   left: 0;

@@ -16,7 +16,6 @@ const StarterPack = dynamic(() => import("./StarterPack"), { ssr: false });
 /** Which screen each variant belongs to. Keep in step with app/globals.css. */
 export const VARIANT_QUERY: Record<Variant, string> = {
   hang: "(min-width: 1280px)",
-  footer: "(min-width: 768px) and (max-width: 1279px)",
 };
 
 function useMatches(query: string): boolean {

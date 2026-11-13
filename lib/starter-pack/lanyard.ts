@@ -36,8 +36,6 @@ export type LanyardState = {
   arm: Particle;
   /** The arm's smoothed acceleration, px/s². */
   acc: Vec;
-  /** How much of the strap is out of the slit, 0 to 1 (1 = full length). */
-  reel: number;
   /** Largest distance any particle moved in the last step. */
   moved: number;
   vel: Vec;
@@ -50,9 +48,9 @@ function particle(x: number, y: number, invMass: number): Particle {
   return { x, y, px: x, py: y, invMass };
 }
 
-export function createLanyard(anchor: Vec, swingX = 110, p: LanyardParams = LANYARD, reel = 1): LanyardState {
+export function createLanyard(anchor: Vec, swingX = 110, p: LanyardParams = LANYARD): LanyardState {
   const points: Particle[] = [];
-  const seg = p.segLen * reel;
+  const seg = p.segLen;
   for (let i = 0; i <= p.segments; i++) points.push(particle(anchor.x, anchor.y + i * seg, i === 0 ? 0 : 1));
   const clip = points[p.segments];
   const dy = Math.sqrt(Math.max(0, p.armLen * p.armLen - swingX * swingX));
@@ -61,14 +59,9 @@ export function createLanyard(anchor: Vec, swingX = 110, p: LanyardParams = LANY
     points,
     arm: particle(clip.x + swingX, clip.y + dy, p.armInvMass),
     acc: { x: 0, y: 0 },
-    reel,
     moved: Infinity,
     vel: { x: 0, y: 0 },
   };
-}
-
-export function setReel(s: LanyardState, reel: number): void {
-  s.reel = Math.min(1, Math.max(0, reel));
 }
 
 export function setAnchor(s: LanyardState, anchor: Vec): void {
@@ -130,7 +123,7 @@ export function stepLanyard(
   pin(s, drag);
   const clip = s.points[p.segments];
   for (let k = 0; k < p.iterations; k++) {
-    for (let i = 0; i < p.segments; i++) satisfy(s.points[i], s.points[i + 1], p.segLen * s.reel);
+    for (let i = 0; i < p.segments; i++) satisfy(s.points[i], s.points[i + 1], p.segLen);
     satisfy(clip, s.arm, p.armLen);
     pin(s, drag);
   }
@@ -199,18 +192,4 @@ export function entranceY(t: number, restY: number): number {
   const k = Math.min(1, Math.max(0, t / ENTRANCE.seconds));
   const eased = 1 - Math.pow(1 - k, 3);
   return k >= 1 ? restY : restY - ENTRANCE.drop * (1 - eased);
-}
-
-/**
- * Feeding out of a slit: the strap starts at `from` of its length and eases
- * out to full over `seconds`, so the card glides down out of the page rather
- * than appearing already hung.
- */
-export const REEL = { from: 0.12, seconds: 1.6 } as const;
-
-export function reelLength(t: number): number {
-  const k = Math.min(1, Math.max(0, t / REEL.seconds));
-  if (k >= 1) return 1;
-  const eased = k * k * (3 - 2 * k);
-  return REEL.from + (1 - REEL.from) * eased;
 }

@@ -1499,11 +1499,12 @@ table {
 
 /* ---------- Starter pack card (components/starter-pack) ----------
    Page-level boxes only; the card styles itself in StarterPack.module.css.
-   Desktop (from 1280px): a full-width box at the top of the page, so the card hangs in the header's top-right corner, takes no layout space, and only
-   the card takes the pointer. Below 1280px: a reserved 640px slot above the
-   footer (keep in step with FOOTER_SLOT_HEIGHT and WIDE_QUERY). */
-.starter-pack-hang,
-.starter-pack-slot {
+   Desktop only (from 1280px, keep in step with VARIANT_QUERY): a full-width
+   box at the top of the page, so the card hangs in the header's top-right
+   corner, takes no layout space, and only the card takes the pointer.
+   Tablets and phones get no card: it is decoration, and their GPUs pay too
+   much for its 3D layers. */
+.starter-pack-hang {
   -webkit-user-select: none;
   user-select: none;
 }
@@ -1523,21 +1524,8 @@ table {
   pointer-events: none;
   overflow-x: clip;
 }
-.starter-pack-slot {
-  display: none;
-  position: relative;
-  height: 640px;
-  /* The strap starts at a slit inside the slot, so only the sides need
-     clipping; a card pulled down hangs over what is below, in front of it. */
-  overflow-x: clip;
-  overflow-y: visible;
-  z-index: 38;
-}
 @media (min-width: 1280px) {
   .starter-pack-hang { display: block; }
-}
-@media (min-width: 768px) and (max-width: 1279px) {
-  .starter-pack-slot { display: block; }
 }
 /* A card thrown past the screen edge must never widen the page. */
 .site-footer {
