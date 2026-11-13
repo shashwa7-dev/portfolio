@@ -1,7 +1,7 @@
 "use client";
 
 import { CLACK_MIN_SPEED } from "@/lib/starter-pack/bubbles";
-import { getAudio } from "./audio";
+import { getAudioContext as getAudio } from "@/components/common/audioContext";
 
 /**
  * The billiard clack when two bubbles knock together: a real recording,
@@ -22,10 +22,15 @@ let buffer: AudioBuffer | null = null;
 let loading = false;
 const recent: number[] = [];
 
+/**
+ * Call from every press and release on the card. Each call is inside a user
+ * gesture, so it can wake a suspended AudioContext (iOS only lets a context
+ * start from a tap's release, not its touch-start); the first call also
+ * starts loading the clip.
+ */
 export function primeClack(): void {
-  if (buffer || loading) return;
   const audio = getAudio();
-  if (!audio) return;
+  if (!audio || buffer || loading) return;
   loading = true;
   fetch(SRC)
     .then((r) => r.arrayBuffer())

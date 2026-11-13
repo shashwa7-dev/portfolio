@@ -5,8 +5,9 @@
 # `npm run build`.
 set -euo pipefail
 html=.next/server/app/index.html
-# Copy and names that only exist inside the card's own chunk.
-pattern='SHIPS IN SPRINTS|stepLanyard|frameGravity|playBloop|start_radio'
+# Strings that survive minification and exist only in the card's chunk:
+# config copy, its asset paths, and the clack's file.
+pattern='SHIPS IN SPRINTS|start_radio|/starter-pack/logos/|/starter-pack/pods/|clack\.mp3|mascot\.webp'
 css_pattern='StarterPack-module__|sp-marker|sp-label|Sedgwick'
 hits=0
 for c in $(grep -oE '/_next/static/chunks/[^"]+\.js' "$html" | sort -u); do

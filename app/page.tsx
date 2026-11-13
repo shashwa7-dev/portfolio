@@ -14,7 +14,7 @@ import { profilePageLd } from "@/lib/seo";
 
 export default function Home() {
   return (
-    <main data-home>
+    <main>
       {/* The homepage is the entity page for this portfolio. `mainEntity`
           references the Person node emitted from the root layout by @id, so both
           resolve to one entity rather than two. */}
@@ -48,6 +48,9 @@ export default function Home() {
       <div className="starter-pack-slot">
         <StarterPackMount variant="footer" />
       </div>
+      {/* Phones: the small card, portalled into the footer's anchor beside
+          Connect (components/Footer.tsx), so only the homepage loads it. */}
+      <StarterPackMount variant="mini" />
       {/* Homepage only, deliberately: mounted here rather than in the layout so
           it never appears on a blog post or a case study. */}
       <LaunchNudge />

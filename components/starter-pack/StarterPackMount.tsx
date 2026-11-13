@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { usePathname } from "next/navigation";
+import { createPortal } from "react-dom";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import type { Variant } from "./StarterPack";
 
@@ -35,8 +35,6 @@ function useMatches(query: string): boolean {
 
 export default function StarterPackMount({ variant }: { variant: Variant }) {
   const fits = useMatches(VARIANT_QUERY[variant]);
-  // The footer is shared by every page; the card belongs to the homepage.
-  const home = usePathname() === "/";
   const [idle, setIdle] = useState(false);
 
   useEffect(() => {
@@ -55,5 +53,9 @@ export default function StarterPackMount({ variant }: { variant: Variant }) {
     };
   }, []);
 
-  return idle && fits && home ? <StarterPack variant={variant} /> : null;
+  if (!idle || !fits) return null;
+  if (variant !== "mini") return <StarterPack variant={variant} />;
+  // Phones: the shared footer only holds an empty anchor; the homepage fills it.
+  const anchor = document.getElementById("starter-pack-foot");
+  return anchor ? createPortal(<StarterPack variant="mini" />, anchor) : null;
 }

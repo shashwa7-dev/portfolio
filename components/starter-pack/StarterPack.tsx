@@ -2,70 +2,24 @@
 
 import { useLayoutEffect, useMemo, useState } from "react";
 import { formatTicketDate, starterPack, type ThemeId } from "@/lib/starter-pack/config";
+import { layout, type Variant } from "@/lib/starter-pack/layout";
 import Card from "./Card";
 import Lanyard from "./Lanyard";
 import { spLabel, spMarker } from "./fonts";
 import { useStarterPackSim } from "./useStarterPackSim";
 import s from "./StarterPack.module.css";
 
-/**
- * Where the card hangs: `hang` in the header's top-right corner (desktop),
- * `footer` in its own slot above the footer (tablets), `mini` at half size
- * beside the footer's links (phones).
- */
-export type Variant = "hang" | "footer" | "mini";
+export type { Variant } from "@/lib/starter-pack/layout";
 
-/**
- * Desktop: the card hangs in the header's top-right corner. The page box
- * (`.starter-pack-hang`) spans the full width and is 900 CSS px tall, so the
- * card can swing freely; it scales with the margin beside the hero column so
- * it never reaches the hero text.
- */
-const HANG_BOX_H = 900;
-const HANG_SCALE = { min: 0.45, max: 0.6 };
-/** CSS px kept clear between the card and the hero column. */
-const HANG_CLEARANCE = 40;
-/** CSS px from the card's right edge to the screen's right edge. */
-const HANG_EDGE = 32;
-/** The phone slot's height in CSS pixels, reserved by the server markup in app/page.tsx. */
-export const FOOTER_SLOT_HEIGHT = 640;
-const FOOTER_MAX_SCALE = 0.68;
-const CARD_W = 470;
-const GUTTER = 32;
 /** Desktop: the strap comes down from above the screen's top edge. */
 const ANCHOR_Y = -40;
 /** Elsewhere it comes out of a slit cut in the page, this many CSS px below the box's top. */
 const SLIT_TOP = 16;
-/**
- * Phones: a small card in a 150 x 300 CSS px box overlaid at the right edge of
- * the footer (`.starter-pack-foot-box`). At 0.3 it is about 141 px wide, clear
- * of the footer's left-hand text, and its strap and card end above the
- * copyright row.
- */
-const MINI_SCALE = 0.3;
-const MINI_BOX_H = 300;
 
 /** The hero column's width: `--measure` in app/globals.css (never hard-coded). */
 function measure(): number {
   const v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--measure"));
   return Number.isFinite(v) ? v : 760;
-}
-
-function layout(variant: Variant, width: number) {
-  if (variant === "hang") {
-    const margin = (width - measure()) / 2;
-    const scale = Math.min(HANG_SCALE.max, Math.max(HANG_SCALE.min, (margin - HANG_CLEARANCE) / CARD_W));
-    const anchorX = (width - HANG_EDGE) / scale - CARD_W / 2;
-    return { scale, w: width / scale, h: HANG_BOX_H / scale, anchorX };
-  }
-  if (variant === "mini") {
-    const w = width / MINI_SCALE;
-    // Right-aligned: the card's right edge meets the box's right edge.
-    return { scale: MINI_SCALE, w, h: MINI_BOX_H / MINI_SCALE, anchorX: w - CARD_W / 2 };
-  }
-  const scale = Math.min(FOOTER_MAX_SCALE, (width - GUTTER) / CARD_W);
-  const w = width / scale;
-  return { scale, w, h: FOOTER_SLOT_HEIGHT / scale, anchorX: w / 2 };
 }
 
 /**
@@ -83,7 +37,7 @@ export default function StarterPack({ variant }: { variant: Variant }) {
   const [width, setWidth] = useState<number | null>(null);
   const ready = width !== null;
 
-  const { scale, w, h, anchorX } = useMemo(() => layout(variant, width ?? 375), [variant, width]);
+  const { scale, w, h, anchorX } = useMemo(() => layout(variant, width ?? 375, measure()), [variant, width]);
   const fromSlit = variant !== "hang";
   const anchor = useMemo(
     () => ({ x: anchorX, y: fromSlit ? SLIT_TOP / scale : ANCHOR_Y }),

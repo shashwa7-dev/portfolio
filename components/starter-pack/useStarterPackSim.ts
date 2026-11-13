@@ -5,6 +5,7 @@ import { createBalls, frameGravity, poke, stepBalls, type Ball } from "@/lib/sta
 import { BUBBLE_BOX, starterPack } from "@/lib/starter-pack/config";
 import {
   breeze,
+  armAngle,
   cardPose,
   createLanyard,
   ENTRANCE,
@@ -43,9 +44,10 @@ export type SimRefs = {
 
 /**
  * Runs the lanyard and the bubbles in one requestAnimationFrame loop and
- * writes transforms straight to the DOM (never React state). The loop only
- * runs while the card is on screen and the tab is visible, and sleeps once
- * everything is at rest; any press, drag or resize wakes it.
+ * writes transforms straight to the DOM (never React state). The card never
+ * settles (a breeze keeps it dangling), so the loop runs whenever the card is
+ * on screen and the tab is visible, and stops when it is off screen, in a
+ * hidden tab, or under reduced motion. The physics steps allocate nothing.
  */
 /**
  * `dropIn`: the card falls in from above the page on first view (desktop,
@@ -73,6 +75,11 @@ export function useStarterPackSim(
   // The anchor moves on resize; the running simulation follows it without restarting.
   const anchorRef = useRef<Vec>({ x: ax, y: ay });
   const boundsRef = useRef(bounds);
+  // Read live, so a resize that changes the scale never restarts the simulation.
+  const scaleRef = useRef(scale);
+  useEffect(() => {
+    scaleRef.current = scale;
+  }, [scale]);
   useEffect(() => {
     boundsRef.current = bounds;
   }, [bounds]);
@@ -140,7 +147,7 @@ export function useStarterPackSim(
     let vrect = rootEl.getBoundingClientRect();
     let lit = { x: NaN, y: NaN };
     const light = (angle: number) => {
-      const l = lightInCard({ x: vrect.left + lanyard.arm.x * scale, y: vrect.top + lanyard.arm.y * scale }, angle);
+      const l = lightInCard({ x: vrect.left + lanyard.arm.x * scaleRef.current, y: vrect.top + lanyard.arm.y * scaleRef.current }, angle);
       if (Math.abs(l.x - lit.x) < 0.004 && Math.abs(l.y - lit.y) < 0.004) return;
       lit = l;
       tiltEl.style.setProperty("--lx", l.x.toFixed(3));
@@ -190,7 +197,7 @@ export function useStarterPackSim(
         }
         // Held cards stay where the hand puts them; otherwise the breeze keeps them dangling.
         stepLanyard(lanyard, STEP, drag, undefined, drag ? 0 : breeze(simT));
-        const hits = stepBalls(state, BOX, STEP, frameGravity(cardPose(lanyard).angle, lanyard.acc));
+        const hits = stepBalls(state, BOX, STEP, frameGravity(armAngle(lanyard), lanyard.acc));
         for (const v of hits) loudest = Math.max(loudest, v);
       }
       // One clack per frame at most: the hardest hit in it.
@@ -210,13 +217,16 @@ export function useStarterPackSim(
 
     const local = (e: PointerEvent): Vec => {
       rect = rect ?? worldEl.getBoundingClientRect();
-      return toLocal({ x: e.clientX, y: e.clientY }, rect, scale);
+      return toLocal({ x: e.clientX, y: e.clientY }, rect, scaleRef.current);
     };
 
     const onDown = (e: PointerEvent) => {
       const target = e.target as Element;
       if (target.closest("[data-ticket]")) return;
-      // The first touch unlocks sound and loads the clack; nothing sounds before it.
+      // Main button or a touch only: a right-click must not start a drag
+      // whose release goes to the context menu.
+      if (e.button !== 0) return;
+      // Every press (and release) unlocks sound; nothing sounds before the first.
       primeClack();
       const ballEl = target.closest<HTMLElement>("[data-ball]");
       e.preventDefault();
@@ -244,6 +254,7 @@ export function useStarterPackSim(
       schedule();
     };
     const onUp = () => {
+      primeClack();
       drag = null;
       rect = null;
       delete hangEl.dataset.dragging;
@@ -302,6 +313,8 @@ export function useStarterPackSim(
     hangEl.addEventListener("pointermove", onMove);
     hangEl.addEventListener("pointerup", onUp);
     hangEl.addEventListener("pointercancel", onUp);
+    // Capture can be taken away (a system gesture, a menu): always let go then.
+    hangEl.addEventListener("lostpointercapture", onUp);
     rootEl.addEventListener("pointermove", onTilt);
     rootEl.addEventListener("pointerleave", onTiltEnd);
     rootEl.addEventListener("selectstart", cancel);
@@ -319,6 +332,7 @@ export function useStarterPackSim(
       hangEl.removeEventListener("pointermove", onMove);
       hangEl.removeEventListener("pointerup", onUp);
       hangEl.removeEventListener("pointercancel", onUp);
+      hangEl.removeEventListener("lostpointercapture", onUp);
       rootEl.removeEventListener("pointermove", onTilt);
       rootEl.removeEventListener("pointerleave", onTiltEnd);
       rootEl.removeEventListener("selectstart", cancel);
@@ -328,7 +342,7 @@ export function useStarterPackSim(
       window.removeEventListener("resize", onScroll);
       reduce.removeEventListener("change", onReduce);
     };
-  }, [scale, dropIn, ready]);
+  }, [dropIn, ready]);
 
   return { root, world, hang, tilt, balls, edge, fill, stitch, clip };
 }

@@ -93,6 +93,29 @@ function satisfy(a: Particle, b: Particle, len: number): void {
  * `wind` is a sideways push on the card in px/s² (see `breeze`), so it keeps
  * dangling instead of hanging dead still.
  */
+function integrate(q: Particle, damping: number, drop: number): void {
+  const vx = (q.x - q.px) * damping;
+  const vy = (q.y - q.py) * damping;
+  q.px = q.x;
+  q.py = q.y;
+  q.x += vx;
+  q.y += vy + drop;
+}
+
+function pin(s: LanyardState, drag: Vec | null): void {
+  s.points[0].x = s.anchor.x;
+  s.points[0].y = s.anchor.y;
+  if (drag) {
+    s.arm.x = drag.x;
+    s.arm.y = drag.y;
+  }
+}
+
+/**
+ * One physics step. Allocation-free: it runs 120 times a second for as long
+ * as the card is on screen, so it reuses each particle's previous position
+ * (px, py) instead of building arrays.
+ */
 export function stepLanyard(
   s: LanyardState,
   dt: number,
@@ -100,51 +123,45 @@ export function stepLanyard(
   p: LanyardParams = LANYARD,
   wind = 0,
 ): void {
-  const all = [...s.points, s.arm];
-  const before = all.map((q) => ({ x: q.x, y: q.y }));
-  for (const q of all) {
-    if (q.invMass === 0) continue;
-    const vx = (q.x - q.px) * p.damping;
-    const vy = (q.y - q.py) * p.damping;
-    q.px = q.x;
-    q.py = q.y;
-    q.x += vx;
-    q.y += vy + p.gravity * dt * dt;
-  }
-  if (s.arm.invMass > 0) s.arm.x += wind * dt * dt;
-  const pin = () => {
-    s.points[0].x = s.anchor.x;
-    s.points[0].y = s.anchor.y;
-    if (drag) {
-      s.arm.x = drag.x;
-      s.arm.y = drag.y;
-    }
-  };
-  pin();
+  const drop = p.gravity * dt * dt;
+  for (let i = 1; i < s.points.length; i++) integrate(s.points[i], p.damping, drop);
+  integrate(s.arm, p.damping, drop);
+  s.arm.x += wind * dt * dt;
+  pin(s, drag);
   const clip = s.points[p.segments];
   for (let k = 0; k < p.iterations; k++) {
     for (let i = 0; i < p.segments; i++) satisfy(s.points[i], s.points[i + 1], p.segLen * s.reel);
     satisfy(clip, s.arm, p.armLen);
-    pin();
+    pin(s, drag);
   }
 
-  let moved = 0;
-  all.forEach((q, i) => {
-    moved = Math.max(moved, Math.hypot(q.x - before[i].x, q.y - before[i].y));
-  });
+  // px, py hold where each particle was before this step.
+  let moved = Math.hypot(s.arm.x - s.arm.px, s.arm.y - s.arm.py);
+  for (let i = 1; i < s.points.length; i++) {
+    const q = s.points[i];
+    moved = Math.max(moved, Math.hypot(q.x - q.px, q.y - q.py));
+  }
   s.moved = moved;
 
-  const vx = (s.arm.x - before[before.length - 1].x) / dt;
-  const vy = (s.arm.y - before[before.length - 1].y) / dt;
+  const vx = (s.arm.x - s.arm.px) / dt;
+  const vy = (s.arm.y - s.arm.py) / dt;
   let ax = (vx - s.vel.x) / dt;
   let ay = (vy - s.vel.y) / dt;
-  s.vel = { x: vx, y: vy };
+  s.vel.x = vx;
+  s.vel.y = vy;
   const m = Math.hypot(ax, ay);
   if (m > ACC_LIMIT) {
     ax *= ACC_LIMIT / m;
     ay *= ACC_LIMIT / m;
   }
-  s.acc = { x: s.acc.x * (1 - ACC_SMOOTH) + ax * ACC_SMOOTH, y: s.acc.y * (1 - ACC_SMOOTH) + ay * ACC_SMOOTH };
+  s.acc.x = s.acc.x * (1 - ACC_SMOOTH) + ax * ACC_SMOOTH;
+  s.acc.y = s.acc.y * (1 - ACC_SMOOTH) + ay * ACC_SMOOTH;
+}
+
+/** The card's swing angle (CSS clockwise radians) without allocating; see cardPose. */
+export function armAngle(s: LanyardState): number {
+  const clip = s.points[s.points.length - 1];
+  return Math.atan2(-(s.arm.x - clip.x), s.arm.y - clip.y);
 }
 
 /** The clip position and the card's angle (CSS clockwise radians, 0 = hanging straight). */

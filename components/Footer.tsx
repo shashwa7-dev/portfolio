@@ -3,7 +3,6 @@ import { Envelope } from "@phosphor-icons/react/ssr";
 import Container from "@/components/layout/Container";
 import Label from "@/components/layout/Label";
 import { SOCIAL_ICONS } from "@/components/common/socialIcons";
-import StarterPackMount from "@/components/starter-pack/StarterPackMount";
 import {
   footerLinks,
   socialLinks,
@@ -167,15 +166,13 @@ const Footer = () => {
           </ul>
         </div>
 
-        {/* Phones, homepage only: a small starter pack card hanging from the
-            empty cell beside Connect. The cell takes no height; the card is
-            absolutely positioned against the right edge, overlaying the empty
-            right-hand side of the rows below without touching their text, so
-            it adds no white space and nothing moves when it loads. */}
+        {/* Phones: an empty anchor beside Connect. The homepage portals its
+            small starter pack card in here (app/page.tsx); every other page
+            leaves it empty and ships no card code. The cell takes no height
+            and the box overlays the empty right side of the rows below, so
+            it adds no white space and nothing moves when the card arrives. */}
         <div className="starter-pack-foot">
-          <div className="starter-pack-foot-box">
-            <StarterPackMount variant="mini" />
-          </div>
+          <div id="starter-pack-foot" className="starter-pack-foot-box" />
         </div>
       </Container>
 

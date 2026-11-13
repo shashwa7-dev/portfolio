@@ -1539,8 +1539,8 @@ table {
 @media (min-width: 768px) and (max-width: 1279px) {
   .starter-pack-slot { display: block; }
 }
-/* Phones: a small card in the empty footer cell beside Connect, homepage
-   only (the homepage's <main> carries data-home). The cell has no height; the
+/* Phones: a small card in the empty footer cell beside Connect. Only the
+   homepage portals a card into it; elsewhere it stays empty. The cell has no height; the
    box is absolute against the cell's right edge and overlays the empty right
    side of the rows below. Keep the box in step with MINI_BOX in
    StarterPack.tsx. */
@@ -1561,7 +1561,7 @@ table {
   pointer-events: none;
 }
 @media (max-width: 767px) {
-  body:has(main[data-home]) .starter-pack-foot { display: block; }
+  .starter-pack-foot { display: block; }
 }
 /* A card thrown past the screen edge must never widen the page. */
 .site-footer {
