@@ -126,6 +126,12 @@
   --warn: #d9342b;
   --warn-bg: #fff4ef;
   --rope: #3a6df0;
+  /* Outlines and drops: deeper shades and the design system's amber 700, never black. */
+  --t1-line: #1d3d9c;
+  --t2-line: #a3203f;
+  --pop: #b45309;
+  --pop2: #b45309;
+  --badge-line: #a3203f;
 }
 /*
  * B: ink and amber, the dark side of the site's own design system: an ink
@@ -147,6 +153,12 @@
   --warn: #fcd34d;
   --warn-bg: #2a2723;
   --rope: #fcd34d;
+  /* Paper title on an amber 300 drop; amber sub-title on an amber 700 drop. */
+  --t1-line: #b45309;
+  --t2-line: #92400e;
+  --pop: #fcd34d;
+  --pop2: #b45309;
+  --badge-line: #b45309;
 }
 
 .layer {
@@ -280,9 +292,11 @@
   margin: 0;
   font: 400 56px/0.82 var(--mk);
   color: var(--t1);
-  -webkit-text-stroke: 3px var(--ink);
+  /* Outlined in a deeper shade of its own ink, with a coloured drop instead of
+     black, so the lettering pops like a sticker print. */
+  -webkit-text-stroke: 3px var(--t1-line);
   paint-order: stroke fill;
-  text-shadow: 4px 5px 0 var(--ink);
+  text-shadow: 4px 5px 0 var(--pop);
   transform: translateZ(8px) rotate(-4deg);
 }
 .subtitle {
@@ -290,6 +304,8 @@
   margin: 4px 0 0 10px;
   font-size: 36px;
   color: var(--t2);
+  -webkit-text-stroke: 3px var(--t2-line);
+  text-shadow: 3px 4px 0 var(--pop2);
 }
 
 .label {
@@ -308,11 +324,11 @@
   line-height: 0.95;
   color: var(--badge-fg);
   background: var(--badge);
-  border: 3px solid var(--ink);
+  border: 3px solid var(--badge-line);
   border-radius: 8px;
   padding: 6px 4px;
   transform: translateZ(10px) rotate(4deg);
-  box-shadow: 3px 4px 0 var(--ink);
+  box-shadow: 3px 4px 0 var(--pop);
 }
 .stamp {
   right: 36px;
