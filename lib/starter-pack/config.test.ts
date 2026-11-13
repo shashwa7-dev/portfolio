@@ -13,6 +13,7 @@ describe("starter pack config", () => {
   it("points at assets that exist", () => {
     const srcs = [
       starterPack.mascot.src,
+      starterPack.mascot.shadowSrc,
       starterPack.ticket.qr,
       ...starterPack.bubbles.map((b) => b.src),
       ...starterPack.pods.map((p) => p.art),

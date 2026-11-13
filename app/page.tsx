@@ -41,10 +41,9 @@ export default function Home() {
           that copy is a parting note for someone who has scrolled the whole
           page, so it only reads honestly from here. */}
       <Closing />
-      {/* Tablets: the same card hangs just above the footer (phones get a half
-          size one beside the footer's links, see components/Footer.tsx). The
-          slot's height is reserved here, in server markup, so nothing moves
-          when the card loads. */}
+      {/* Tablets: the same card hangs just above the footer (phones get no
+          card). The slot's height is reserved here, in server markup, so
+          nothing moves when the card loads. */}
       <div className="starter-pack-slot">
         <StarterPackMount variant="footer" />
       </div>

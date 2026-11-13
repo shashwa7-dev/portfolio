@@ -2,8 +2,10 @@ import type { PodDef } from "@/lib/starter-pack/config";
 import s from "./StarterPack.module.css";
 
 /** Card px between the blister's face (24px up) and the card. */
-// Three rings, not seven: the same depth for less than half the 3D layers.
-const WALL_STEPS = [6, 13, 21];
+// Three rings 5px apart: close enough to read as one moulded wall when the
+// card tilts, at less than half the 3D layers of the original seven (each
+// ring is a layer; five cost a measured ~25% more main-thread time).
+const WALL_STEPS = [5, 10, 15];
 
 /**
  * The blister's moulded side wall: rings of clear plastic stepping down from

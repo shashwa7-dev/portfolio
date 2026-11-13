@@ -165,7 +165,6 @@ const Footer = () => {
             })}
           </ul>
         </div>
-
       </Container>
 
       <Container className="grid grid-cols-2 gap-x-10 gap-y-9 pb-10 pt-9 md:grid-cols-4 candy:pb-8 candy:pt-7">

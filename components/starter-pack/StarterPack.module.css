@@ -57,7 +57,6 @@
    and a lower lip that sits over the strap. */
 .slitShade {
   fill: rgba(0, 0, 0, 0.07);
-  filter: blur(2px);
 }
 .slitHole {
   fill: #2a2730;
@@ -181,15 +180,18 @@
  * sheen, and a soft shadow thrown on the page behind it.
  */
 .castShadow {
-  /* A soft gradient, not a blur filter: a filter is redone every frame the card moves. */
-  inset: -24px;
-  border-radius: 40px;
-  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.22) 72%, rgba(0, 0, 0, 0));
+  /* A pre-blurred rounded rectangle (card-shadow.webp, padded 60px all round),
+     not a live blur filter, which is redone every frame the card moves. Keeps
+     the card's corners in its shadow. */
+  inset: -60px;
+  border-radius: 0;
+  background: url(/starter-pack/card-shadow.webp) center / 100% 100% no-repeat;
+  opacity: 0.22;
   transform: translateZ(-60px) translate(calc(var(--lx) * -18px), calc(var(--ly) * -40px)) scale(0.98);
 }
 /* The shadow is the one thing that adapts to the site theme. */
 :global(.dark) .castShadow {
-  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.55) 72%, rgba(0, 0, 0, 0));
+  opacity: 0.55;
 }
 .edge {
   background: var(--edge);
@@ -476,7 +478,6 @@
   height: 9px;
   border-radius: 999px;
   background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.8) 30%, rgba(255, 255, 255, 0.6) 70%, rgba(255, 255, 255, 0) 100%);
-  filter: blur(0.6px);
   transform: translateZ(1px) translate(calc((var(--lx) + 0.85) * 26px), calc((var(--ly) + 0.53) * 18px)) rotate(-14deg);
 }
 .walls i:last-of-type {
@@ -546,7 +547,11 @@
   transform: translateZ(6px);
 }
 .mascotShadow img {
-  /* mascot-shadow.webp is the silhouette pre-blurred; no live filter. */
+  /* The silhouette pre-blurred (no live filter), padded 24px of its 829px
+     height so the blur fades out instead of stopping at the image's edge. */
+  left: -11.9px;
+  bottom: -11.9px;
+  height: 433.7px;
   transform: translate(calc(var(--lx) * -16px), calc(var(--ly) * -22px));
 }
 

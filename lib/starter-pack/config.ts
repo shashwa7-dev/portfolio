@@ -32,7 +32,8 @@ export type StarterPackConfig = {
   sideLabel: string;
   shippedLabel: string;
   warning: { struck: string; rest: string; line2: string };
-  mascot: { src: string; width: number; height: number; alt: string };
+  /** `shadowSrc` is the mascot's silhouette, pre-blurred and padded; regenerate it whenever `src` changes. */
+  mascot: { src: string; shadowSrc: string; width: number; height: number; alt: string };
   bubbles: BubbleDef[];
   pods: PodDef[];
   ticket: { url: string; qr: string; tag: string; location: string };
@@ -55,6 +56,7 @@ export const starterPack: StarterPackConfig = {
   warning: { struck: "FR", rest: "AGILE!!!", line2: "SHIPS IN SPRINTS" },
   mascot: {
     src: "/starter-pack/mascot.webp",
+    shadowSrc: "/starter-pack/mascot-shadow.webp",
     width: 260,
     height: 829,
     alt: "Shashwat as a toy figure in a cap, glasses and an offcod8 T-shirt",

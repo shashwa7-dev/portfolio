@@ -144,10 +144,14 @@ export function useStarterPackSim(
     // Last values written for each bubble.
     const drawn = new Map<string, { x: number; y: number; a: number; q: number }>();
     // The strap's SVG covers only a padded box around the strap, not the whole
-    // world, so each frame repaints a strip instead of a screenful. The box
-    // moves only when the strap leaves it.
+    // world, so each frame repaints a strip instead of a screenful. The box is
+    // refitted only when the strap (or the clip and slit drawn around its
+    // ends, which reach about 26px out) comes within MARGIN of its edge; a bigger PAD
+    // refits less but repaints more area every frame, so keep it tight. It is
+    // placed with a transform; only a change of size costs a layout.
     const svgEl = edgeEl.ownerSVGElement;
     const PAD = 80;
+    const MARGIN = 30;
     let box = { x: 0, y: 0, w: 0, h: 0 };
     const fitRope = (c: Vec) => {
       if (!svgEl) return;
@@ -158,13 +162,18 @@ export function useStarterPackSim(
         if (q.x > x1) x1 = q.x;
         if (q.y > y1) y1 = q.y;
       }
-      const inside = box.w > 0 && x0 >= box.x + 20 && y0 >= box.y + 20 && x1 <= box.x + box.w - 20 && y1 <= box.y + box.h - 20;
+      const inside =
+        box.w > 0 && x0 >= box.x + MARGIN && y0 >= box.y + MARGIN && x1 <= box.x + box.w - MARGIN && y1 <= box.y + box.h - MARGIN;
       if (inside) return;
-      box = { x: x0 - PAD, y: y0 - PAD, w: x1 - x0 + PAD * 2, h: y1 - y0 + PAD * 2 };
-      svgEl.style.left = `${box.x}px`;
-      svgEl.style.top = `${box.y}px`;
-      svgEl.style.width = `${box.w}px`;
-      svgEl.style.height = `${box.h}px`;
+      const w = Math.ceil(x1 - x0 + PAD * 2);
+      const h = Math.ceil(y1 - y0 + PAD * 2);
+      if (w !== box.w || h !== box.h) {
+        svgEl.style.width = `${w}px`;
+        svgEl.style.height = `${h}px`;
+      }
+      box = { x: x0 - PAD, y: y0 - PAD, w, h };
+      // translateZ(0) keeps the strap on its own layer above the card in WebKit.
+      svgEl.style.transform = `translate(${box.x}px, ${box.y}px) translateZ(0)`;
       svgEl.setAttribute("viewBox", `${box.x} ${box.y} ${box.w} ${box.h}`);
     };
 
@@ -188,12 +197,20 @@ export function useStarterPackSim(
         if (!el) continue;
         // Most frames the bubbles sit still while the card sways: skip writes
         // that would change nothing, so the browser has nothing to redo.
-        const last = drawn.get(b.id);
-        if (last && Math.abs(last.x - b.x) < 0.05 && Math.abs(last.y - b.y) < 0.05 && Math.abs(last.a - b.angle) < 0.002 && b.squash < 0.002 && last.q < 0.002) continue;
+        let last = drawn.get(b.id);
+        if (!last) {
+          last = { x: NaN, y: NaN, a: NaN, q: 1 };
+          drawn.set(b.id, last);
+        }
+        if (Math.abs(last.x - b.x) < 0.05 && Math.abs(last.y - b.y) < 0.05 && Math.abs(last.a - b.angle) < 0.002 && b.squash < 0.002 && last.q < 0.002) continue;
         const q = b.squash * 0.22;
         el.style.transform = `translate(${b.x - b.r}px, ${b.y - b.r}px) scale(${1 + q}, ${1 - q})`;
         (el.firstElementChild as HTMLElement | null)?.style.setProperty("transform", `rotate(${b.angle}rad)`);
-        drawn.set(b.id, { x: b.x, y: b.y, a: b.angle, q: b.squash });
+        // Reuse the one record per bubble: no allocation in the frame.
+        last.x = b.x;
+        last.y = b.y;
+        last.a = b.angle;
+        last.q = b.squash;
       }
     };
 

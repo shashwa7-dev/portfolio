@@ -68,7 +68,7 @@ export default function Card({
       </div>
       <div className={`${s.z} ${s.mascotShadow}`} aria-hidden>
         {/* eslint-disable-next-line @next/next/no-img-element -- a blurred silhouette copy, decorative */}
-        <img src="/starter-pack/mascot-shadow.webp" alt="" draggable={false} loading="lazy" decoding="async" />
+        <img src={c.mascot.shadowSrc} alt="" draggable={false} loading="lazy" decoding="async" />
       </div>
       <div className={`${s.z} ${s.mascot}`}>
         {/* eslint-disable-next-line @next/next/no-img-element -- inside a 3D layer behind the plastic; already sized WebP */}
