@@ -127,28 +127,26 @@
   --warn-bg: #fff4ef;
   --rope: #3a6df0;
 }
-/* B: warm orange, halftone, soft sun rays behind the mascot. */
 /*
- * B: a three-ink print, the way real toy packaging is printed: tangerine
- * board, cream for the title and highlights, one deep navy for every label
- * and the strap. Navy sits opposite orange, so labels stay crisp without the
- * bright royal blue fighting the board.
+ * B: ink and amber, the dark side of the site's own design system: an ink
+ * board (--foreground), a paper title (--background), and the hero's amber
+ * (amber 300) for every label, the badge and the strap.
  */
-.orange {
-  --face: #f39a2e;
-  --edge: #e6cfab;
-  --edge2: #cfb185;
-  --t1: #fff4df;
-  --t2: #1e2a5e;
-  --side: #1e2a5e;
-  --side-star: #fff4df;
-  --chip: #fff4df;
-  --badge: #1e2a5e;
-  --badge-fg: #fff4df;
-  --stamp: #fff4df;
-  --warn: #1e2a5e;
-  --warn-bg: #fff4df;
-  --rope: #1e2a5e;
+.ink {
+  --face: #1e1c19;
+  --edge: #3a3631;
+  --edge2: #2a2723;
+  --t1: #fcfbf8;
+  --t2: #fcd34d;
+  --side: #fcd34d;
+  --side-star: #fcfbf8;
+  --chip: #fcd34d;
+  --badge: #fcd34d;
+  --badge-fg: #1e1c19;
+  --stamp: #fcfbf8;
+  --warn: #fcd34d;
+  --warn-bg: #2a2723;
+  --rope: #fcd34d;
 }
 
 .layer {
@@ -221,17 +219,25 @@
   -webkit-mask-image: linear-gradient(to top, #000 0, rgba(0, 0, 0, 0.6) 35%, transparent 70%);
   mask-image: linear-gradient(to top, #000 0, rgba(0, 0, 0, 0.6) 35%, transparent 70%);
 }
-.orange .rays {
+.ink .rays {
   display: block;
-  /* Softer rays, warmer toward the mascot, so they glow rather than stripe. */
   background:
-    radial-gradient(ellipse at 26% 52%, rgba(255, 214, 140, 0.55), transparent 60%),
-    repeating-conic-gradient(from 0deg at 26% 52%, rgba(255, 228, 170, 0.26) 0 8deg, transparent 8deg 20deg);
+    radial-gradient(ellipse at 26% 52%, rgba(252, 211, 77, 0.12), transparent 60%),
+    repeating-conic-gradient(from 0deg at 26% 52%, rgba(252, 211, 77, 0.07) 0 8deg, transparent 8deg 20deg);
 }
-.orange .dots {
-  background-image: radial-gradient(rgba(170, 70, 0, 0.22) 1.2px, transparent 1.6px);
+.ink .dots {
+  background-image: radial-gradient(rgba(252, 211, 77, 0.1) 1.2px, transparent 1.6px);
   -webkit-mask-image: radial-gradient(ellipse at 70% 80%, #000 10%, transparent 75%);
   mask-image: radial-gradient(ellipse at 70% 80%, #000 10%, transparent 75%);
+}
+/* An ink card on the dark site: a faint lit rim keeps its edge visible. */
+.ink .face {
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+.ink .rule {
+  border-color: rgba(252, 251, 248, 0.14);
 }
 
 /* Everything placed on the card. */
