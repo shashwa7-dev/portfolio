@@ -1539,30 +1539,8 @@ table {
 @media (min-width: 768px) and (max-width: 1279px) {
   .starter-pack-slot { display: block; }
 }
-/* Phones: a small card in the empty footer cell beside Connect. Only the
-   homepage portals a card into it; elsewhere it stays empty. The cell has no height; the
-   box is absolute against the cell's right edge and overlays the empty right
-   side of the rows below. Keep the box in step with MINI_BOX in
-   StarterPack.tsx. */
-.starter-pack-foot {
-  display: none;
-  position: relative;
-  height: 0;
-  -webkit-user-select: none;
-  user-select: none;
-}
-.starter-pack-foot-box {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 150px;
-  height: 300px;
-  z-index: 38;
-  pointer-events: none;
-}
-@media (max-width: 767px) {
-  .starter-pack-foot { display: block; }
-}
+/* Phones get no card at all: it is decoration, and on a phone its 3D layers
+   cost more than it is worth. */
 /* A card thrown past the screen edge must never widen the page. */
 .site-footer {
   overflow-x: clip;

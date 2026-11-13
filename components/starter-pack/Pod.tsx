@@ -2,7 +2,8 @@ import type { PodDef } from "@/lib/starter-pack/config";
 import s from "./StarterPack.module.css";
 
 /** Card px between the blister's face (24px up) and the card. */
-const WALL_STEPS = [3, 6, 9, 12, 15, 18, 21];
+// Three rings, not seven: the same depth for less than half the 3D layers.
+const WALL_STEPS = [6, 13, 21];
 
 /**
  * The blister's moulded side wall: rings of clear plastic stepping down from

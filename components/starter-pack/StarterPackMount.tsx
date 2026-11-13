@@ -1,7 +1,6 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { createPortal } from "react-dom";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import type { Variant } from "./StarterPack";
 
@@ -18,7 +17,6 @@ const StarterPack = dynamic(() => import("./StarterPack"), { ssr: false });
 export const VARIANT_QUERY: Record<Variant, string> = {
   hang: "(min-width: 1280px)",
   footer: "(min-width: 768px) and (max-width: 1279px)",
-  mini: "(max-width: 767px)",
 };
 
 function useMatches(query: string): boolean {
@@ -54,8 +52,5 @@ export default function StarterPackMount({ variant }: { variant: Variant }) {
   }, []);
 
   if (!idle || !fits) return null;
-  if (variant !== "mini") return <StarterPack variant={variant} />;
-  // Phones: the shared footer only holds an empty anchor; the homepage fills it.
-  const anchor = document.getElementById("starter-pack-foot");
-  return anchor ? createPortal(<StarterPack variant="mini" />, anchor) : null;
+  return <StarterPack variant={variant} />;
 }

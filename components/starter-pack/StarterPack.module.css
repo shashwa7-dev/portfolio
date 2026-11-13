@@ -38,10 +38,12 @@
 /* ---------- Lanyard ---------- */
 
 .rope {
+  /* Sized and placed every time the strap leaves its box (useStarterPackSim). */
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
   overflow: visible;
   pointer-events: none;
   z-index: 5;
@@ -179,13 +181,15 @@
  * sheen, and a soft shadow thrown on the page behind it.
  */
 .castShadow {
-  background: rgba(0, 0, 0, 0.22);
-  filter: blur(18px);
+  /* A soft gradient, not a blur filter: a filter is redone every frame the card moves. */
+  inset: -24px;
+  border-radius: 40px;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.22) 72%, rgba(0, 0, 0, 0));
   transform: translateZ(-60px) translate(calc(var(--lx) * -18px), calc(var(--ly) * -40px)) scale(0.98);
 }
 /* The shadow is the one thing that adapts to the site theme. */
 :global(.dark) .castShadow {
-  background: rgba(0, 0, 0, 0.55);
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.55) 72%, rgba(0, 0, 0, 0));
 }
 .edge {
   background: var(--edge);
@@ -542,7 +546,7 @@
   transform: translateZ(6px);
 }
 .mascotShadow img {
-  filter: brightness(0) opacity(0.3) blur(3px);
+  /* mascot-shadow.webp is the silhouette pre-blurred; no live filter. */
   transform: translate(calc(var(--lx) * -16px), calc(var(--ly) * -22px));
 }
 

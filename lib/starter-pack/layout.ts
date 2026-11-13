@@ -6,9 +6,9 @@
  *   full width; the card is pinned HANG_EDGE in from the screen's right edge
  *   and scaled so it stays HANG_CLEARANCE clear of the hero column.
  * - `footer`: tablets, its own slot above the footer.
- * - `mini`: phones, a small card overlaid at the right of the footer.
+ * Phones get no card: on a phone its 3D layers cost more than decoration is worth.
  */
-export type Variant = "hang" | "footer" | "mini";
+export type Variant = "hang" | "footer";
 
 export const CARD_W = 470;
 export const HANG_BOX_H = 900;
@@ -22,9 +22,6 @@ export const HANG_EDGE = 32;
 export const FOOTER_SLOT_HEIGHT = 640;
 const FOOTER_MAX_SCALE = 0.68;
 const GUTTER = 32;
-/** Phones: a 0.3 card in a 150 x 300 CSS px box (`.starter-pack-foot-box`). */
-const MINI_SCALE = 0.3;
-const MINI_BOX_H = 300;
 
 export function layout(variant: Variant, width: number, measure: number) {
   if (variant === "hang") {
@@ -33,11 +30,6 @@ export function layout(variant: Variant, width: number, measure: number) {
     const scale = Math.min(HANG_SCALE.max, Math.max(HANG_SCALE.min, (margin - HANG_CLEARANCE - HANG_EDGE) / CARD_W));
     const anchorX = (width - HANG_EDGE) / scale - CARD_W / 2;
     return { scale, w: width / scale, h: HANG_BOX_H / scale, anchorX };
-  }
-  if (variant === "mini") {
-    const w = width / MINI_SCALE;
-    // Right-aligned: the card's right edge meets the box's right edge.
-    return { scale: MINI_SCALE, w, h: MINI_BOX_H / MINI_SCALE, anchorX: w - CARD_W / 2 };
   }
   const scale = Math.min(FOOTER_MAX_SCALE, (width - GUTTER) / CARD_W);
   const w = width / scale;

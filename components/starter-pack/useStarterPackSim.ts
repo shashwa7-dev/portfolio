@@ -141,6 +141,33 @@ export function useStarterPackSim(
       for (let i = 0; i < 120 * 20; i++) stepBalls(state, BOX, STEP, frameGravity(0, { x: 0, y: 0 }));
     };
 
+    // Last values written for each bubble.
+    const drawn = new Map<string, { x: number; y: number; a: number; q: number }>();
+    // The strap's SVG covers only a padded box around the strap, not the whole
+    // world, so each frame repaints a strip instead of a screenful. The box
+    // moves only when the strap leaves it.
+    const svgEl = edgeEl.ownerSVGElement;
+    const PAD = 80;
+    let box = { x: 0, y: 0, w: 0, h: 0 };
+    const fitRope = (c: Vec) => {
+      if (!svgEl) return;
+      let x0 = c.x, y0 = c.y, x1 = c.x, y1 = c.y;
+      for (const q of lanyard.points) {
+        if (q.x < x0) x0 = q.x;
+        if (q.y < y0) y0 = q.y;
+        if (q.x > x1) x1 = q.x;
+        if (q.y > y1) y1 = q.y;
+      }
+      const inside = box.w > 0 && x0 >= box.x + 20 && y0 >= box.y + 20 && x1 <= box.x + box.w - 20 && y1 <= box.y + box.h - 20;
+      if (inside) return;
+      box = { x: x0 - PAD, y: y0 - PAD, w: x1 - x0 + PAD * 2, h: y1 - y0 + PAD * 2 };
+      svgEl.style.left = `${box.x}px`;
+      svgEl.style.top = `${box.y}px`;
+      svgEl.style.width = `${box.w}px`;
+      svgEl.style.height = `${box.h}px`;
+      svgEl.setAttribute("viewBox", `${box.x} ${box.y} ${box.w} ${box.h}`);
+    };
+
     const draw = () => {
       const { clip: c, angle } = cardPose(lanyard);
       hangEl.style.transform = `translate(${c.x - HOLE.x}px, ${c.y - HOLE.y}px) rotate(${angle}rad)`;
@@ -154,13 +181,19 @@ export function useStarterPackSim(
       edgeEl.setAttribute("d", d);
       fillEl.setAttribute("d", d);
       stitchEl.setAttribute("d", d);
+      fitRope(c);
       clipEl.setAttribute("transform", `translate(${c.x} ${c.y}) rotate(${(angle * 180) / Math.PI})`);
       for (const b of state) {
         const el = ballEls.get(b.id);
         if (!el) continue;
+        // Most frames the bubbles sit still while the card sways: skip writes
+        // that would change nothing, so the browser has nothing to redo.
+        const last = drawn.get(b.id);
+        if (last && Math.abs(last.x - b.x) < 0.05 && Math.abs(last.y - b.y) < 0.05 && Math.abs(last.a - b.angle) < 0.002 && b.squash < 0.002 && last.q < 0.002) continue;
         const q = b.squash * 0.22;
         el.style.transform = `translate(${b.x - b.r}px, ${b.y - b.r}px) scale(${1 + q}, ${1 - q})`;
         (el.firstElementChild as HTMLElement | null)?.style.setProperty("transform", `rotate(${b.angle}rad)`);
+        drawn.set(b.id, { x: b.x, y: b.y, a: b.angle, q: b.squash });
       }
     };
 

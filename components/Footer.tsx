@@ -166,14 +166,6 @@ const Footer = () => {
           </ul>
         </div>
 
-        {/* Phones: an empty anchor beside Connect. The homepage portals its
-            small starter pack card in here (app/page.tsx); every other page
-            leaves it empty and ships no card code. The cell takes no height
-            and the box overlays the empty right side of the rows below, so
-            it adds no white space and nothing moves when the card arrives. */}
-        <div className="starter-pack-foot">
-          <div id="starter-pack-foot" className="starter-pack-foot-box" />
-        </div>
       </Container>
 
       <Container className="grid grid-cols-2 gap-x-10 gap-y-9 pb-10 pt-9 md:grid-cols-4 candy:pb-8 candy:pt-7">
