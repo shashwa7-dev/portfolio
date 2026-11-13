@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { breeze, cardPose, createLanyard, ENTRANCE, entranceY, lanyardAtRest, LANYARD, setAnchor, stepLanyard, toLocal } from "./lanyard";
+import { breeze, cardPose, carryLanyard, createLanyard, ENTRANCE, entranceY, lanyardAtRest, LANYARD, setAnchor, stepLanyard, toLocal } from "./lanyard";
 import { STEP } from "./loop";
 
 const run = (s: ReturnType<typeof createLanyard>, n: number, drag: { x: number; y: number } | null = null) => {
@@ -71,12 +71,44 @@ describe("natural dangling", () => {
     expect(maxAngle).toBeLessThan(0.15);
   });
 
-  it("drops in from above the page and lands on its anchor", () => {
+  it("drops in from above the page and lands softly on its anchor", () => {
     expect(entranceY(0, -40)).toBeLessThan(-40 - 800);
     expect(entranceY(ENTRANCE.seconds, -40)).toBe(-40);
     expect(entranceY(ENTRANCE.seconds * 2, -40)).toBe(-40);
-    for (let t = 0; t < ENTRANCE.seconds; t += 0.05) {
-      expect(entranceY(t + 0.05, -40)).toBeGreaterThanOrEqual(entranceY(t, -40));
+    let lowest = -Infinity;
+    for (let t = 0; t <= ENTRANCE.seconds; t += 0.01) lowest = Math.max(lowest, entranceY(t, -40));
+    // One soft overshoot below the anchor, then back: a landing, not a slam.
+    expect(lowest - -40).toBeGreaterThan(10);
+    expect(lowest - -40).toBeLessThan(60);
+    // Still by the end: the hand-off to the breeze has no visible step.
+    expect(Math.abs(entranceY(ENTRANCE.seconds - 1e-6, -40) - -40)).toBeLessThan(0.5);
+  });
+
+  it("carries the rig in without stretching the strap or slamming the card", () => {
+    const restY = -40;
+    const s = createLanyard({ x: 200, y: restY - ENTRANCE.drop }, 0);
+    const strap = LANYARD.segments * LANYARD.segLen;
+    let t = 0;
+    let maxStretch = 0;
+    let maxJerk = 0;
+    let lastVy = 0;
+    for (let i = 0; i < 120 * 3; i++) {
+      t += STEP;
+      if (t <= ENTRANCE.seconds + STEP) carryLanyard(s, 0, entranceY(t, restY) - s.anchor.y, STEP);
+      stepLanyard(s, STEP, null);
+      let len = 0;
+      for (let k = 0; k < s.points.length - 1; k++) {
+        len += Math.hypot(s.points[k + 1].x - s.points[k].x, s.points[k + 1].y - s.points[k].y);
+      }
+      maxStretch = Math.max(maxStretch, Math.abs(len / strap - 1));
+      // From the second step: the first only picks up the starting speed.
+      if (i > 0) maxJerk = Math.max(maxJerk, Math.abs(s.vel.y - lastVy));
+      lastVy = s.vel.y;
     }
+    expect(s.anchor.y).toBeCloseTo(restY, 5);
+    expect(maxStretch).toBeLessThan(0.01);
+    // A gentle brake (under 12,000 px/s²): the old drop lost about 2,600 px/s in a tenth of a second.
+    expect(maxJerk).toBeLessThan(100);
+    expect(Math.abs(s.arm.y - (restY + strap + LANYARD.armLen))).toBeLessThan(1);
   });
 });
