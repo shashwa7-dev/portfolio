@@ -14,7 +14,7 @@ const POD_SPOTS: { left: number; top: number }[] = [
 
 /**
  * The card face, static. Layer order matters: the plastic is drawn in front
- * of what it holds, the 'SHIPPED' chip comes after its pod, and the lanyard
+ * of what it holds, every printed label sits under the plastic, and the lanyard
  * (in StarterPack) sits above all of it.
  */
 export default function Card({
@@ -76,10 +76,10 @@ export default function Card({
         {c.greeting}
       </div>
 
-      <BubblePod bubbles={c.bubbles} hostRef={ballsRef} />
       <div className={`${s.z} ${s.chip} ${s.label}`} aria-hidden>
-        &lsquo;{c.shippedLabel}&rsquo;
+        {c.shippedLabel}
       </div>
+      <BubblePod bubbles={c.bubbles} hostRef={ballsRef} />
       {c.pods.slice(0, POD_SPOTS.length).map((p, i) => (
         <Pod key={p.id} pod={p} left={POD_SPOTS[i].left} top={POD_SPOTS[i].top} />
       ))}

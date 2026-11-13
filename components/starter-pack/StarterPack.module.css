@@ -314,25 +314,19 @@
   font-size: 16px;
   transform: translateZ(12px) rotate(-10deg);
 }
+/*
+ * Printed labels: ESSENTIALS, HI :) and SHIPPED are all ink on the card,
+ * the same face, colour and depth (translateZ 14px, under every blister's
+ * plastic at 24px), with no box or shadow of their own.
+ */
 .speech {
-  left: 110px;
-  top: 138px;
-  background: #fff;
-  color: var(--ink);
-  border: 3px solid var(--ink);
-  border-radius: 18px;
-  padding: 3px 12px;
-  font-size: 18px;
-  transform: translateZ(44px) rotate(-3deg);
-  box-shadow: 3px 3px 0 var(--ink);
-}
-.speech::after {
-  content: "";
-  position: absolute;
-  left: 14px;
-  bottom: -11px;
-  border: 7px solid transparent;
-  border-top-color: var(--ink);
+  left: 112px;
+  top: 133px;
+  font-size: 27px;
+  letter-spacing: 1.5px;
+  color: var(--side);
+  white-space: nowrap;
+  transform: translateZ(14px) rotate(-3deg);
 }
 .side {
   left: 196px;
@@ -513,15 +507,16 @@
 }
 .chip {
   left: 236px;
-  top: 132px;
-  z-index: 5;
-  background: var(--chip);
-  border: 2px solid var(--ink);
-  padding: 2px 10px;
-  font-size: 23px;
-  color: var(--ink);
-  transform: translateZ(70px) rotate(-3deg);
-  box-shadow: 2px 3px 0 var(--ink);
+  top: 116px;
+  font-size: 27px;
+  letter-spacing: 1.5px;
+  color: var(--side);
+  white-space: nowrap;
+  transform: translateZ(14px) rotate(-3deg);
+}
+.chip::after {
+  content: " \2605";
+  color: var(--side-star);
 }
 
 /* ---------- Ticket ---------- */
