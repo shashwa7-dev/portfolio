@@ -45,3 +45,6 @@ pnpm-lock.yaml
 
 # generator font cache (scripts/render-issue-og.ts)
 /.cache/
+
+# Vice Hunt dev bundle (games/vice-hunt/README.md)
+/games/vice-hunt/dev/main.js
