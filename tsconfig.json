@@ -24,6 +24,9 @@
     "paths": {
       "@/*": [
         "./*"
+      ],
+      "@games/vice-hunt": [
+        "./games/vice-hunt/src/index.ts"
       ]
     },
     "target": "ES2017"

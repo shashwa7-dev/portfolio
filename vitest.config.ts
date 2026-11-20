@@ -6,7 +6,7 @@ export default defineConfig({
     alias: { "@": resolve(__dirname, ".") },
   },
   test: {
-    include: ["lib/**/*.test.ts"],
+    include: ["lib/**/*.test.ts", "games/**/*.test.ts"],
     environment: "node",
   },
 });
