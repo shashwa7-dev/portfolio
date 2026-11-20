@@ -2,7 +2,9 @@ export type Sound = { shot(): void; hit(): void; kill(): void; close(): void };
 
 const SHOT_LEN = 0.12;
 const THUMP_LEN = 0.15;
+// Noise and thump peak together, so each takes half of the shot's 0.35 peak.
 const SHOT_GAIN = 0.35;
+const SHOT_PART = SHOT_GAIN / 2;
 
 const silent: Sound = { shot() {}, hit() {}, kill() {}, close() {} };
 
@@ -54,9 +56,9 @@ export function createSound(muted: boolean): Sound {
       lp.type = "lowpass";
       lp.frequency.setValueAtTime(4000, t);
       lp.frequency.exponentialRampToValueAtTime(600, t + SHOT_LEN);
-      src.connect(lp).connect(envelope(c, t, SHOT_GAIN, SHOT_LEN));
+      src.connect(lp).connect(envelope(c, t, SHOT_PART, SHOT_LEN));
       src.start(t);
-      tone(c, t, 60, THUMP_LEN, SHOT_GAIN, "sine");
+      tone(c, t, 60, THUMP_LEN, SHOT_PART, "sine");
     },
     hit() {
       const c = audio();

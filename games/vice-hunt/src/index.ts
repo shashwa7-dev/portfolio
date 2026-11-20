@@ -33,7 +33,7 @@ function scoreStrip(layer: HTMLElement): (kills: Kills) => void {
     const icon = document.createElement("img");
     icon.src = svgUrl(SPRITES[k][0]);
     icon.alt = k;
-    icon.style.cssText = "width:20px;height:20px;object-fit:contain";
+    icon.style.cssText = "height:20px;width:auto";
     counts[k] = document.createElement("span");
     counts[k].textContent = "0";
     item.append(icon, counts[k]);
@@ -88,7 +88,8 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
 
   // Fires on press rather than release so rapid shots feel immediate.
   const onDown = (e: PointerEvent) => {
-    if (e.button !== 0) return;
+    // ctrl+click is a right click on macOS: it only exits, never shoots.
+    if (e.button !== 0 || e.ctrlKey) return;
     e.preventDefault();
     const { x, y } = local(e);
     gun.aim(x, y, world.width, world.height);
@@ -111,6 +112,9 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
       { duration: 120 },
     );
   };
+
+  const onEnter = () => gun.showCrosshair(true);
+  const onLeave = () => gun.showCrosshair(false);
 
   const onMenu = (e: MouseEvent) => {
     e.preventDefault();
@@ -139,6 +143,8 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
 
   layer.addEventListener("pointermove", onMove);
   layer.addEventListener("pointerdown", onDown);
+  layer.addEventListener("pointerenter", onEnter);
+  layer.addEventListener("pointerleave", onLeave);
   layer.addEventListener("contextmenu", onMenu);
   window.addEventListener("keydown", onKey);
   document.addEventListener("visibilitychange", onVisibility);
@@ -153,6 +159,8 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
       ro.disconnect();
       layer.removeEventListener("pointermove", onMove);
       layer.removeEventListener("pointerdown", onDown);
+      layer.removeEventListener("pointerenter", onEnter);
+      layer.removeEventListener("pointerleave", onLeave);
       layer.removeEventListener("contextmenu", onMenu);
       window.removeEventListener("keydown", onKey);
       document.removeEventListener("visibilitychange", onVisibility);

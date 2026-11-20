@@ -16,7 +16,11 @@ const el = (css: string, html = "") => {
   return d;
 };
 
-export type Gun = { aim(x: number, y: number, w: number, h: number): void; fire(): void };
+export type Gun = {
+  aim(x: number, y: number, w: number, h: number): void;
+  fire(): void;
+  showCrosshair(visible: boolean): void;
+};
 
 // First-person pistol at the bottom of the layer, seen from behind, plus the
 // crosshair. Both are DOM so the recoil and flash run on the compositor.
@@ -53,6 +57,9 @@ export function createGun(layer: HTMLElement): Gun {
       const lean = ((x - gx) / Math.max(w, 1)) * 40;
       const lift = Math.max(0, 1 - y / Math.max(h, 1)) * 26;
       rig.style.transform = `translateX(${gx - GUN_W / 2}px) translateY(${34 - lift}px) rotate(${lean}deg)`;
+    },
+    showCrosshair(visible) {
+      cross.style.visibility = visible ? "visible" : "hidden";
     },
     fire() {
       kick.animate([{ transform: REST }, { transform: KICK, offset: 0.25 }, { transform: REST }], {
