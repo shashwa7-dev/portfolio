@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import IndiaFlag from "@/components/common/IndiaFlag";
 import { location } from "@/lib/siteLinks";
+import { GTA6_ENABLED } from "@/lib/gta6";
+import { useGtaMode } from "@/components/gta6/useGtaMode";
 
 function format() {
   return new Intl.DateTimeFormat("en-US", {
@@ -31,6 +33,8 @@ function format() {
  */
 export default function LocalTime() {
   const [time, setTime] = useState<string | null>(null);
+  // Vice City mode moves him to Vice City, on screen only.
+  const vice = useGtaMode();
 
   useEffect(() => {
     setTime(format());
@@ -65,7 +69,7 @@ export default function LocalTime() {
             it and as three letters to everyone else, so the full name goes to
             assistive tech rather than being spelled out on screen. */}
         <span className="sr-only">{location.name}. </span>
-        <span aria-hidden>{location.code}</span>
+        <span aria-hidden>{GTA6_ENABLED && vice ? "Vice City" : location.code}</span>
       </span>
       <span aria-hidden>·</span>
       <span className={`tabular-nums ${time ? "" : "invisible"}`}>

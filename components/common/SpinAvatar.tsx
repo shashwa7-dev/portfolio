@@ -1,6 +1,10 @@
 "use client";
 
 import { useEffect, useRef, type ComponentProps, type ReactNode } from "react";
+import { Star } from "@phosphor-icons/react/ssr";
+import { GTA6_ENABLED } from "@/lib/gta6";
+import { gtaMode } from "@/lib/gta6/store";
+import { starsFor } from "@/lib/gta6/stars";
 import {
   audioNow,
   loadSample,
@@ -50,6 +54,14 @@ import {
  * through a gain node (so the fade works on iOS), and plays and pauses it
  * once at zero gain, which is what unlocks sound for a later play() that
  * does not come straight from a gesture in Safari.
+ *
+ * With `GTA6_ENABLED` there is no clip and no voice at all: the same 2.5
+ * seconds of fast spinning fill a five-star wanted meter over the photo, one
+ * star per half second, and the fifth turns Vice City mode on (once per fast
+ * streak, so leaving the mode mid-spin does not throw you straight back in).
+ * The meter empties whenever the spin drops below speed. The first flick
+ * starts loading the YouTube API, inside the gesture, so the mode's track can
+ * play with sound.
  *
  * The physics runs in a rAF loop and writes the transform straight to the
  * element, not through React state, so a spin never re-renders the hero.
@@ -108,6 +120,8 @@ export default function SpinAvatar({ photo, children, onClick, ref, ...rest }: P
     else if (ref) ref.current = el;
   };
   const spinner = useRef<HTMLSpanElement>(null);
+  const meter = useRef<HTMLSpanElement>(null);
+  const primedYouTube = useRef(false);
   const video = useRef<HTMLVideoElement>(null);
   const clip = useRef({
     primed: false,
@@ -219,7 +233,17 @@ export default function SpinAvatar({ photo, children, onClick, ref, ...rest }: P
       else if (c.scold === "spent") c.scold = "ready";
     }, fade * 1000);
   }
-  const state = useRef({ angle: 0, speed: 0, frame: 0, last: 0, captured: false, clicked: false, fastFor: 0 });
+  const state = useRef({ angle: 0, speed: 0, frame: 0, last: 0, captured: false, clicked: false, fastFor: 0, stars: 0 });
+
+  /** The wanted meter, written straight to the element like the transform. */
+  function setStars(stars: number) {
+    const s = state.current;
+    if (stars === s.stars) return;
+    const filled = stars === 5 && s.stars < 5;
+    s.stars = stars;
+    if (meter.current) meter.current.dataset.stars = String(stars);
+    if (filled && !gtaMode.get()) gtaMode.set(true);
+  }
 
   function step(dt: number) {
     const s = state.current;
@@ -248,7 +272,8 @@ export default function SpinAvatar({ photo, children, onClick, ref, ...rest }: P
     let dt = Math.min(Math.max((now - s.last) / 1000, 0), 1 / 20);
     s.last = now;
     s.fastFor = Math.abs(s.speed) >= SONG_SPEED ? s.fastFor + dt : 0;
-    if (s.fastFor >= SONG_AFTER) playClip();
+    if (GTA6_ENABLED) setStars(starsFor(s.fastFor, SONG_AFTER));
+    else if (s.fastFor >= SONG_AFTER) playClip();
     while (dt > 0) {
       step(Math.min(dt, STEP));
       dt -= STEP;
@@ -256,7 +281,8 @@ export default function SpinAvatar({ photo, children, onClick, ref, ...rest }: P
 
     if (s.captured && Math.abs(offUpright(s.angle)) < 0.3 * RAD && Math.abs(s.speed) < RAD) {
       Object.assign(s, { angle: 0, speed: 0, frame: 0, captured: false, clicked: false, fastFor: 0 });
-      stopClip();
+      if (GTA6_ENABLED) setStars(0);
+      else stopClip();
       if (spinner.current) spinner.current.style.transform = "";
       return;
     }
@@ -271,8 +297,15 @@ export default function SpinAvatar({ photo, children, onClick, ref, ...rest }: P
     s.captured = trapped(s.angle, s.speed);
     s.clicked = false;
     playSpinSound("flick");
-    primeClip();
-    noteSpam();
+    if (GTA6_ENABLED) {
+      if (!primedYouTube.current) {
+        primedYouTube.current = true;
+        void import("@/components/common/youtube").then((m) => m.primeYouTube());
+      }
+    } else {
+      primeClip();
+      noteSpam();
+    }
     if (!s.frame) {
       s.last = performance.now();
       s.frame = requestAnimationFrame(tick);
@@ -322,19 +355,34 @@ export default function SpinAvatar({ photo, children, onClick, ref, ...rest }: P
     >
       <span ref={spinner} className="relative block will-change-transform">
         {photo}
-        <video
-          ref={video}
-          aria-hidden
-          tabIndex={-1}
-          playsInline
-          preload="none"
-          onEnded={stopClip}
-          className="spin-clip pointer-events-none absolute inset-0 h-full w-full rounded-full object-cover"
-        >
-          <source src="/video/spin-me-round.webm" type="video/webm" />
-          <source src="/video/spin-me-round.mp4" type="video/mp4" />
-        </video>
+        {!GTA6_ENABLED && (
+          <video
+            ref={video}
+            aria-hidden
+            tabIndex={-1}
+            playsInline
+            preload="none"
+            onEnded={stopClip}
+            className="spin-clip pointer-events-none absolute inset-0 h-full w-full rounded-full object-cover"
+          >
+            <source src="/video/spin-me-round.webm" type="video/webm" />
+            <source src="/video/spin-me-round.mp4" type="video/mp4" />
+          </video>
+        )}
       </span>
+      {GTA6_ENABLED && (
+        // Outside the turning span, so the stars stay level over the photo.
+        <span
+          ref={meter}
+          aria-hidden
+          data-stars="0"
+          className="wanted-meter pointer-events-none absolute bottom-full left-1/2 mb-[0.12em] -translate-x-1/2 gap-[0.06em] text-foreground"
+        >
+          {[0, 1, 2, 3, 4].map((i) => (
+            <Star key={i} weight="fill" className="h-[0.3em] w-[0.3em]" />
+          ))}
+        </span>
+      )}
       {children}
     </button>
   );

@@ -3,6 +3,8 @@ import { Envelope } from "@phosphor-icons/react/ssr";
 import Container from "@/components/layout/Container";
 import Label from "@/components/layout/Label";
 import { SOCIAL_ICONS } from "@/components/common/socialIcons";
+import { FooterPalm } from "@/components/gta6/lazy";
+import { GTA6_ENABLED } from "@/lib/gta6";
 import {
   footerLinks,
   socialLinks,
@@ -194,6 +196,8 @@ const Footer = () => {
           <span className="mr-auto">
             &copy; {new Date().getFullYear()} Shashwat Tripathi
           </span>
+          {/* Vice City mode's quiet door, for anyone who never finds the spin. */}
+          {GTA6_ENABLED && <FooterPalm />}
           <a
             href="https://github.com/shashwa7-dev/portfolio/blob/master/LICENSE"
             target="_blank"

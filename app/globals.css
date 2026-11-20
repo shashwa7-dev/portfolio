@@ -465,6 +465,9 @@
      and symmetric so it reads as a dissolve, not a cut; the clip's sound fades
      over the same time (read from the computed transition). */
   --duration-spin-clip: 700ms;
+  /* The GTA 6 mode's hero art fading in and out (components/gta6); the track
+     fades over the same time (read from the computed value). */
+  --duration-gta-fade: 700ms;
   --duration-glyph-wave: 1100ms;
   --duration-live-pulse: 1800ms;
   --duration-live-ring: 280ms;
@@ -866,6 +869,16 @@ table {
   .status-ring { animation: status-ring-turn var(--duration-status-ring) linear infinite; }
   .spin-clip { opacity: 0; transition: opacity var(--duration-spin-clip) var(--ease-spin-clip); }
   .spin-clip[data-on] { opacity: 1; }
+  /* The GTA 6 wanted meter over the spinning photo (SpinAvatar): written as
+     data-stars straight from the spin loop. Shown only while it is filling,
+     with the mode still off; the full row then lives in the mode's cluster. */
+  .wanted-meter { display: none; }
+  html:not([data-mod="gta6"]) .wanted-meter:is([data-stars="1"], [data-stars="2"], [data-stars="3"], [data-stars="4"]) { display: flex; }
+  .wanted-meter > * { opacity: 0.25; }
+  .wanted-meter[data-stars="1"] > :nth-child(-n + 1),
+  .wanted-meter[data-stars="2"] > :nth-child(-n + 2),
+  .wanted-meter[data-stars="3"] > :nth-child(-n + 3),
+  .wanted-meter[data-stars="4"] > :nth-child(-n + 4) { opacity: 1; }
 }
 @keyframes status-ring-turn { to { transform: rotate(1turn); } }
 @keyframes glyph-wave { 0%, 100% { opacity: 0.2; } 40% { opacity: 1; } }
