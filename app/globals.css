@@ -878,9 +878,11 @@ table {
   .spin-clip[data-on] { opacity: 1; }
   /* The GTA 6 wanted meter over the spinning photo (SpinAvatar): written as
      data-stars straight from the spin loop. Shown only while it is filling,
-     with the mode still off; the full row then lives in the mode's cluster. */
+     with the mode still off (no data-mod on the root; the bare attribute keeps
+     the mode's own name out of the homepage CSS); the full row then lives in
+     the mode's cluster. */
   .wanted-meter { display: none; }
-  html:not([data-mod="gta6"]) .wanted-meter:is([data-stars="1"], [data-stars="2"], [data-stars="3"], [data-stars="4"]) { display: flex; }
+  html:not([data-mod]) .wanted-meter:is([data-stars="1"], [data-stars="2"], [data-stars="3"], [data-stars="4"]) { display: flex; }
   .wanted-meter > * { opacity: 0.25; }
   .wanted-meter[data-stars="1"] > :nth-child(-n + 1),
   .wanted-meter[data-stars="2"] > :nth-child(-n + 2),
