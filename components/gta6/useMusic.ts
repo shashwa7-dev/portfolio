@@ -22,139 +22,198 @@ function fadeMs(): number {
   return raw.endsWith("ms") ? n : n * 1000;
 }
 
+/** Where the track's state goes: the component that wants it right now. */
+type Listener = { blocked(on: boolean): void; playing(on: boolean): void; ended(): void };
+
+/** One hidden player and everything about it. */
+type Session = {
+  host: HTMLDivElement;
+  player: YouTubePlayer | null;
+  /** Wanted: false while it fades out to be destroyed. */
+  active: boolean;
+  /** Torn down for good; late callbacks are ignored. */
+  dead: boolean;
+  failed: boolean;
+  playing: boolean;
+  volume: number;
+  ramp: number;
+  refused: number;
+  listen: Listener;
+};
+
+/**
+ * The only session. Module-level rather than a ref, so there is never more
+ * than one player, even if the mode turns back on (or remounts) while the
+ * last one is still fading out: that one is picked up again instead.
+ */
+let session: Session | null = null;
+
+/** Steps the volume to `to` over the fade time, then runs `done`. Cancels
+ *  any fade already under way, from wherever the volume has got to. */
+function fadeTo(s: Session, to: number, done?: () => void) {
+  window.clearInterval(s.ramp);
+  const from = s.volume;
+  let step = 0;
+  s.ramp = window.setInterval(() => {
+    step += 1;
+    s.volume = from + ((to - from) * step) / FADE_STEPS;
+    s.player?.setVolume(s.volume);
+    if (step < FADE_STEPS) return;
+    window.clearInterval(s.ramp);
+    done?.();
+  }, fadeMs() / FADE_STEPS);
+}
+
+/** Asks for playback and starts the refusal clock. */
+function play(s: Session) {
+  s.player?.play();
+  window.clearTimeout(s.refused);
+  s.refused = window.setTimeout(() => s.listen.blocked(true), REFUSED_AFTER);
+}
+
+function kill(s: Session) {
+  s.dead = true;
+  window.clearInterval(s.ramp);
+  window.clearTimeout(s.refused);
+  s.player?.destroy();
+  s.host.remove();
+  if (session === s) session = null;
+}
+
+function build(listen: Listener): Session {
+  const host = document.createElement("div");
+  host.setAttribute("aria-hidden", "true");
+  Object.assign(host.style, {
+    position: "fixed",
+    left: "-10px",
+    top: "-10px",
+    width: "1px",
+    height: "1px",
+    overflow: "hidden",
+    pointerEvents: "none",
+  });
+  document.body.appendChild(host);
+  const s: Session = {
+    host,
+    player: null,
+    active: true,
+    dead: false,
+    failed: false,
+    playing: false,
+    volume: 0,
+    ramp: 0,
+    refused: 0,
+    listen,
+  };
+
+  void import("@/components/common/youtube").then(async (m) => {
+    await m.primeYouTube();
+    if (s.dead) return;
+    // Turned off while the API loaded: nothing to fade, just go.
+    if (!s.active) return kill(s);
+    s.player = m.createPlayer(
+      host,
+      { videoId: TRACK_ID, title: "Vice City mode" },
+      {
+        onReady() {
+          if (s.active && !s.dead) play(s);
+        },
+        onPlaying() {
+          // Never fade back up over a fade out that has begun.
+          if (!s.active || s.dead) return;
+          window.clearTimeout(s.refused);
+          s.playing = true;
+          s.listen.blocked(false);
+          s.listen.playing(true);
+          fadeTo(s, VOLUME);
+        },
+        onEnded() {
+          if (s.active && !s.dead) s.listen.ended();
+        },
+        onError() {
+          if (s.dead) return;
+          window.clearTimeout(s.refused);
+          s.failed = true;
+          s.listen.blocked(true);
+        },
+      },
+    );
+  });
+  return s;
+}
+
 /**
  * The Vice City track, while `active`.
  *
  * A hidden YouTube player (off-screen, 1x1) is built when the mode turns on,
  * starts playing on ready, and fades up from silence to `VOLUME` once it is
- * really playing. Turning off fades it back to silence, then destroys it.
- * `onEnded` runs when the track finishes.
+ * really playing. Turning off fades it back to silence, then destroys it;
+ * turning on again during that fade keeps the same player and fades it back
+ * up. `onEnded` runs when the track finishes.
  *
  * Under automation (`navigator.webdriver`) no player is ever made: test runs
  * stay silent.
  *
- * `blocked` is true when playback failed or was refused; `retry()` is for a
- * play button, so it runs inside the visitor's click.
+ * `playing` is true from the first moment it really plays. `blocked` is true
+ * when playback failed or was refused; `retry()` is for a play button, so it
+ * runs inside the visitor's click.
  */
-export function useMusic(active: boolean, onEnded: () => void): { blocked: boolean; retry(): void } {
+export function useMusic(
+  active: boolean,
+  onEnded: () => void,
+): { playing: boolean; blocked: boolean; retry(): void } {
   const [blocked, setBlocked] = useState(false);
+  const [playing, setPlaying] = useState(() => session?.playing ?? false);
   const [attempt, setAttempt] = useState(0);
   const ended = useRef(onEnded);
   useEffect(() => {
     ended.current = onEnded;
   });
-  // The live player and whether it errored, for retry().
-  const live = useRef<{ player: YouTubePlayer | null; failed: boolean; refused: number }>({
-    player: null,
-    failed: false,
-    refused: 0,
-  });
 
   useEffect(() => {
     if (!active || navigator.webdriver) return;
-    let cancelled = false;
-    let player: YouTubePlayer | null = null;
-    let volume = 0;
-    let ramp = 0;
-    const l = live.current;
-    l.failed = false;
-
-    const host = document.createElement("div");
-    host.setAttribute("aria-hidden", "true");
-    Object.assign(host.style, {
-      position: "fixed",
-      left: "-10px",
-      top: "-10px",
-      width: "1px",
-      height: "1px",
-      overflow: "hidden",
-      pointerEvents: "none",
-    });
-    document.body.appendChild(host);
-
-    /** Steps the volume to `to` over the fade time, then runs `done`. */
-    const fadeTo = (to: number, done?: () => void) => {
-      window.clearInterval(ramp);
-      const from = volume;
-      const every = fadeMs() / FADE_STEPS;
-      let step = 0;
-      ramp = window.setInterval(() => {
-        step += 1;
-        volume = from + ((to - from) * step) / FADE_STEPS;
-        player?.setVolume(volume);
-        if (step < FADE_STEPS) return;
-        window.clearInterval(ramp);
-        done?.();
-      }, every);
+    const listen: Listener = {
+      blocked: setBlocked,
+      playing: setPlaying,
+      ended: () => ended.current(),
     };
-
-    void import("@/components/common/youtube").then(async (m) => {
-      await m.primeYouTube();
-      if (cancelled) return;
-      player = m.createPlayer(
-        host,
-        { videoId: TRACK_ID, title: "Vice City mode" },
-        {
-          onReady() {
-            if (cancelled) return;
-            player?.play();
-            window.clearTimeout(l.refused);
-            l.refused = window.setTimeout(() => setBlocked(true), REFUSED_AFTER);
-          },
-          onPlaying() {
-            // Never fade back up over a fade out that has begun.
-            if (cancelled) return;
-            window.clearTimeout(l.refused);
-            setBlocked(false);
-            fadeTo(VOLUME);
-          },
-          onEnded() {
-            if (!cancelled) ended.current();
-          },
-          onError() {
-            if (cancelled) return;
-            window.clearTimeout(l.refused);
-            l.failed = true;
-            setBlocked(true);
-          },
-        },
-      );
-      l.player = player;
-    });
+    let s = session;
+    if (s && !s.failed) {
+      // Still fading out from a moment ago: take it back.
+      s.active = true;
+      s.listen = listen;
+      if (s.playing) fadeTo(s, VOLUME);
+      else if (s.player) play(s);
+      else window.clearInterval(s.ramp);
+    } else {
+      if (s) kill(s);
+      s = build(listen);
+      session = s;
+    }
+    const mine = s;
 
     return () => {
-      cancelled = true;
-      window.clearTimeout(l.refused);
-      l.player = null;
+      mine.active = false;
+      window.clearTimeout(mine.refused);
       setBlocked(false);
-      const p = player;
-      if (!p) {
-        window.clearInterval(ramp);
-        host.remove();
-        return;
-      }
+      if (mine.dead) return;
+      // No player yet: `build` lets it go once the API arrives.
+      if (!mine.player) return;
       // Fade out from wherever the volume is, then let the player go.
-      fadeTo(0, () => {
-        p.destroy();
-        host.remove();
-      });
+      fadeTo(mine, 0, () => kill(mine));
     };
   }, [active, attempt]);
 
   return {
+    playing,
     blocked,
     retry() {
-      const l = live.current;
+      const s = session;
       setBlocked(false);
       // A refused player can simply be asked again, now inside a click; one
-      // that errored is rebuilt.
-      if (l.player && !l.failed) {
-        l.player.play();
-        window.clearTimeout(l.refused);
-        l.refused = window.setTimeout(() => setBlocked(true), REFUSED_AFTER);
-      } else {
-        setAttempt((n) => n + 1);
-      }
+      // that errored is thrown away and rebuilt.
+      if (s && s.player && !s.failed) play(s);
+      else setAttempt((n) => n + 1);
     },
   };
 }

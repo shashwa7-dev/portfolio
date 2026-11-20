@@ -12,9 +12,17 @@
  * The backdrop rules are not scoped to `data-mod`: the attribute goes the
  * moment the mode turns off, and the art still has its fade out to play.
  *
- * Wallpapers: seven on one 35 s cycle, each up for 5 s and staggered 5 s
- * apart, fading over the first and last second of its turn, so each fade out
- * is the next one's fade in. Under reduced motion only the first shows.
+ * The fade is one transition, in and out, with no keyframes: turning the
+ * mode back on mid fade out reverses from wherever the opacity has got to,
+ * and leaving mid fade in does the same. The fade in on mount comes from
+ * `@starting-style` (a browser without it shows the art at once).
+ *
+ * Wallpapers: seven on one cycle (`--duration-gta-wall-cycle`, 35 s), each up
+ * for one turn (`--duration-gta-wall-turn`, 5 s) and staggered a turn apart,
+ * fading over the first and last second of its turn, so each fade out is the
+ * next one's fade in. The keyframe stops assume those two values (1 s of
+ * 35 s is 2.857%); change them together. Under reduced motion only the first
+ * shows.
  */
 export const MOD_CSS = `
 html[data-mod="gta6"] {
@@ -36,19 +44,14 @@ html[data-mod="gta6"] .hero-live { color: hsl(var(--gta-live)); }
 html[data-mod="gta6"] .hero-live-dot { background-color: hsl(var(--gta-live)); }
 html[data-mod="gta6"] .starter-pack-hang { display: none; }
 
-.gta-fade { animation: gta-in var(--duration-gta-fade) var(--ease-out); }
-.gta-fade[data-leaving] {
-  opacity: 0;
-  transition: opacity var(--duration-gta-fade) var(--ease-out);
-}
-@keyframes gta-in { from { opacity: 0; } }
+.gta-fade { transition: opacity var(--duration-gta-fade) var(--ease-out); }
+@starting-style { .gta-fade { opacity: 0; } }
+.gta-fade[data-leaving] { opacity: 0; }
 
 .gta-wall {
-  --gta-wall-cycle: 35s;
-  --gta-wall-turn: 5s;
   opacity: 0;
-  animation: gta-wall var(--gta-wall-cycle) linear infinite;
-  animation-delay: calc(var(--i) * var(--gta-wall-turn));
+  animation: gta-wall var(--duration-gta-wall-cycle) linear infinite;
+  animation-delay: calc(var(--i) * var(--duration-gta-wall-turn));
 }
 @keyframes gta-wall {
   0% { opacity: 0; }

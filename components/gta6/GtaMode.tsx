@@ -131,9 +131,12 @@ export default function GtaMode({ leaving, onGone }: Props) {
                   play
                 </button>
               ) : (
-                <span>
-                  <span aria-hidden>♪ </span>now playing
-                </span>
+                // Nothing until the track is really playing.
+                music.playing && (
+                  <span>
+                    <span aria-hidden>♪ </span>now playing
+                  </span>
+                )
               )}
               <button
                 type="button"

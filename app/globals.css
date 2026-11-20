@@ -468,6 +468,11 @@
   /* The GTA 6 mode's hero art fading in and out (components/gta6); the track
      fades over the same time (read from the computed value). */
   --duration-gta-fade: 700ms;
+  /* The GTA 6 hero's wallpaper slideshow: seven images on one cycle, each up
+     for one turn (components/gta6/modStyles.ts, whose keyframe stops assume
+     these two values). Ambient, so far outside the UI budget on purpose. */
+  --duration-gta-wall-cycle: 35s;
+  --duration-gta-wall-turn: 5s;
   --duration-glyph-wave: 1100ms;
   --duration-live-pulse: 1800ms;
   --duration-live-ring: 280ms;
