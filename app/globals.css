@@ -473,6 +473,8 @@
      these two values). Ambient, so far outside the UI budget on purpose. */
   --duration-gta-wall-cycle: 35s;
   --duration-gta-wall-turn: 5s;
+  /* One turn of the ring round Vice Hunt's pistol while the game loads. */
+  --duration-gta-loader: 900ms;
   --duration-glyph-wave: 1100ms;
   --duration-live-pulse: 1800ms;
   --duration-live-ring: 280ms;

@@ -7,6 +7,8 @@ import { gtaMode } from "@/lib/gta6/store";
 import { MOD_CSS } from "@/components/gta6/modStyles";
 import { useMusic } from "@/components/gta6/useMusic";
 import { HoleSinkContext, MAX_HOLES, holeMask, type HoleSink } from "@/components/gta6/holes";
+import HuntControl from "@/components/gta6/HuntControl";
+import { VICE_HUNT_ENABLED } from "@/lib/gta6";
 
 const WALLPAPERS = ["01", "02", "03", "04", "05", "06", "07"];
 const STARS = [0, 1, 2, 3, 4];
@@ -33,7 +35,8 @@ type Props = {
  * the right where the art is, then a fade at the bottom so the hero melts
  * into the next section. On top, in the header's top padding at the right
  * of the measure: a small cluster with the full wanted row, the track's
- * state and Exit. Vice Hunt's pistol joins the cluster (`data-gta-cluster`).
+ * state and Exit, led by Vice Hunt's pistol (`HuntControl`) when the game is
+ * on (`data-gta-cluster`).
  *
  * The veil takes bullet holes through `HoleSinkContext`, written straight to
  * its mask, never through React state, so a shot never re-renders the hero.
@@ -46,7 +49,29 @@ export default function GtaMode({ leaving, onGone }: Props) {
     gone.current = onGone;
   });
 
-  const music = useMusic(!leaving, () => gtaMode.set(false));
+  // The running Vice Hunt game's exit, if one is running.
+  const stopGame = useRef<(() => void) | null>(null);
+  // The track ended mid game: the game keeps running, and the mode turns
+  // off when it ends.
+  const endedInGame = useRef(false);
+
+  const music = useMusic(!leaving, () => {
+    if (stopGame.current) endedInGame.current = true;
+    else gtaMode.set(false);
+  });
+
+  const gameStopped = () => {
+    if (!endedInGame.current) return;
+    endedInGame.current = false;
+    gtaMode.set(false);
+  };
+
+  // The mode turning off (Exit, the palm) or going away ends a game first,
+  // so the page never stays locked under a vanished hero.
+  useEffect(() => {
+    if (leaving) stopGame.current?.();
+  }, [leaving]);
+  useEffect(() => () => stopGame.current?.(), []);
 
   // Fade out, then leave. Turning back on mid-fade cancels it.
   useEffect(() => {
@@ -116,6 +141,9 @@ export default function GtaMode({ leaving, onGone }: Props) {
               data-leaving={leavingAttr}
               className="gta-fade pointer-events-auto absolute right-0 top-0 flex h-6 items-center gap-2.5 rounded-full border border-border bg-background/85 px-2.5 font-label text-2xs uppercase tracking-label text-muted-foreground backdrop-blur-sm"
             >
+              {VICE_HUNT_ENABLED && (
+                <HuntControl stopRef={stopGame} onStopped={gameStopped} leaving={leaving} />
+              )}
               <span role="img" aria-label="Wanted: five stars" className="flex gap-0.5 text-accent">
                 {STARS.map((n) => (
                   <Star key={n} aria-hidden weight="fill" className="h-2.5 w-2.5" />
@@ -140,7 +168,10 @@ export default function GtaMode({ leaving, onGone }: Props) {
               )}
               <button
                 type="button"
-                onClick={() => gtaMode.set(false)}
+                onClick={() => {
+                  stopGame.current?.();
+                  gtaMode.set(false);
+                }}
                 className="inline-flex items-center gap-1 uppercase transition-colors duration-fast ease-out hover:text-foreground"
               >
                 <X aria-hidden weight="bold" className="h-2.5 w-2.5" />
