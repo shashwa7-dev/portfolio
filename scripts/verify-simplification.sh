@@ -89,6 +89,14 @@ absent C21 "PageBand gone"               components/layout/PageBand.tsx
 absent C21 "Band gone"                   components/layout/Band.tsx
 absent C21 "BandLabel gone"              components/layout/BandLabel.tsx
 count C22 "Diwali flag defined once"      1 grep -rEoh "export const DIWALI_ENABLED = (true|false);" lib/diwali.ts
+count C23 "GTA6 flag defined once"        1 grep -rEoh "export const GTA6_ENABLED = (true|false);" lib/gta6.ts
+count C24 "Vice Hunt flag defined once"   1 grep -rEoh "export const VICE_HUNT_ENABLED = (true|false);" lib/gta6.ts
+if grep -q "DIWALI_ENABLED = true" lib/diwali.ts && grep -q "GTA6_ENABLED = true" lib/gta6.ts; then
+  FAILED=1
+  printf '  \033[31mFAIL\033[0m  C25  Diwali and GTA6 not both on\n'
+else
+  printf '  \033[32mPASS\033[0m  C25  Diwali and GTA6 not both on\n'
+fi
 
 echo ""
 if [ "$FAILED" = 0 ]; then
