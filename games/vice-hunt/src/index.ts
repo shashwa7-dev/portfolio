@@ -15,15 +15,19 @@ export type HuntOptions = {
   onShot?(x: number, y: number, hit: Kind | null): void; // CSS px relative to host
   onExit?(): void;
   muted?: boolean;
+  /** Where the score strip starts: CSS px from the host's left edge, so a
+   *  host can line it up with its own content. Default 12. */
+  scoreInset?: number;
 };
 export type Hunt = { destroy(): void };
 
 const SCORE_ORDER: Kind[] = ["rabbit", "iguana", "flamingo", "bigfoot"];
 
-function scoreStrip(layer: HTMLElement): (kills: Kills) => void {
+function scoreStrip(layer: HTMLElement, left: number): (kills: Kills) => void {
   const strip = document.createElement("div");
   strip.style.cssText =
-    "position:absolute;left:12px;bottom:10px;z-index:2;display:flex;gap:12px;align-items:center;" +
+    `position:absolute;left:${left}px;bottom:10px;` +
+    "z-index:2;display:flex;gap:12px;align-items:center;" +
     "padding:4px 10px;border-radius:999px;background:rgba(0,0,0,.45);color:#fff;pointer-events:none;" +
     "font:600 13px/1 system-ui,-apple-system,'Segoe UI',sans-serif;font-variant-numeric:tabular-nums";
   const counts = {} as Record<Kind, HTMLSpanElement>;
@@ -56,7 +60,7 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
   layer.append(canvas);
   const ctx = canvas.getContext("2d")!;
   const gun = createGun(layer);
-  const showKills = scoreStrip(layer);
+  const showKills = scoreStrip(layer, options.scoreInset ?? 12);
   host.append(layer);
 
   const scene = createScene();

@@ -67,6 +67,14 @@ export default function HuntControl({ stopRef, onStopped, leaving }: Props) {
     const m = game.current;
     const header = button.current?.closest("header");
     if (!m || !header || stopRef.current) return;
+    // The cluster's parent fills the hero's reading column, so its left edge
+    // is where the hero text starts; the score strip lines up with it rather
+    // than sitting under the dock at the viewport's edge. Read once: the
+    // page is locked while playing, and a resize mid game only shifts it.
+    const column = button.current?.closest("[data-gta-cluster]")?.parentElement;
+    const scoreInset = column
+      ? Math.round(column.getBoundingClientRect().left - header.getBoundingClientRect().left)
+      : undefined;
 
     window.scrollTo({ top: 0, behavior: "instant" });
     const html = document.documentElement;
@@ -94,6 +102,7 @@ export default function HuntControl({ stopRef, onStopped, leaving }: Props) {
       onShot: (x, y) => holes.add(x, y),
       onExit: exit,
       muted: false,
+      scoreInset,
     });
     setPlaying(true);
   };

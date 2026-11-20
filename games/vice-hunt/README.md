@@ -7,7 +7,8 @@ A tiny canvas hunting game (rabbits, iguanas, flamingos and a rare Bigfoot) in i
 The public entry is `src/index.ts`:
 
 - `preloadHunt()` decodes the sprite frames and the gun once per page; later calls share the promise.
-- `startHunt(host, { onKills, onShot, onExit, muted })` adds one full-size layer to `host` (give the host `position: relative` or similar) and returns `{ destroy() }`. `onShot` gets CSS px relative to `host`. Esc or right click calls `onExit`; the host then calls `destroy()`, which is safe to call twice.
+- `startHunt(host, { onKills, onShot, onExit, muted, scoreInset })` adds one full-size layer to `host` (give the host `position: relative` or similar) and returns `{ destroy() }`. `onShot` gets CSS px relative to `host`. Esc or right click calls `onExit`; the host then calls `destroy()`, which is safe to call twice.
+- `scoreInset` places the score strip (bottom left) that many CSS px from the host's left edge, so a host can line it up with its own content column. Default 12.
 - Sound is synthesised with Web Audio and is silent when `muted` is set or `navigator.webdriver` is true.
 
 Modules: `render.ts` (canvas: animals, poofs, holes), `gun.ts` (first-person gun and crosshair, DOM), `cracks.ts` (seeded crack paths), `sound.ts`, `sprites.ts` (art decoding). The pure simulation lives in `src/world.ts` and has no DOM access:
