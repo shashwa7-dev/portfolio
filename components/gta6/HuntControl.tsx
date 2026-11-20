@@ -5,6 +5,7 @@ import { Crosshair } from "@phosphor-icons/react/ssr";
 import { useHoleSink } from "@/components/gta6/holes";
 
 type HuntModule = typeof import("@games/vice-hunt");
+type Hunt = import("@games/vice-hunt").Hunt;
 
 type Props = {
   /** Filled with the running game's exit while one runs, so `GtaMode` can end
@@ -35,7 +36,6 @@ export default function HuntControl({ stopRef, onStopped, leaving }: Props) {
   const holes = useHoleSink();
   const [coarse] = useState(coarsePointer);
   const [status, setStatus] = useState<"loading" | "ready" | "failed">("loading");
-  const [playing, setPlaying] = useState(false);
   const game = useRef<HuntModule | null>(null);
   const button = useRef<HTMLButtonElement>(null);
   const stopped = useRef(onStopped);
@@ -86,25 +86,35 @@ export default function HuntControl({ stopRef, onStopped, leaving }: Props) {
     host.setAttribute("data-vice-hunt", "");
     header.append(host);
 
+    const unlock = () => {
+      host.remove();
+      html.style.overflow = overflow;
+    };
+    let hunt: Hunt;
     const exit = () => {
       // Esc and an outside stop can both arrive; only the first ends it.
       if (stopRef.current !== exit) return;
       stopRef.current = null;
       hunt.destroy();
-      host.remove();
-      html.style.overflow = overflow;
+      unlock();
       holes.clear();
-      setPlaying(false);
       stopped.current();
     };
+    try {
+      hunt = m.startHunt(host, {
+        onShot: (x, y) => holes.add(x, y),
+        onExit: exit,
+        muted: false,
+        scoreInset,
+      });
+    } catch {
+      // A game that cannot start must not leave the page locked; the pistol
+      // stays usable for another try.
+      unlock();
+      return;
+    }
+    // Set only once the game exists, so `exit` never meets a missing `hunt`.
     stopRef.current = exit;
-    const hunt = m.startHunt(host, {
-      onShot: (x, y) => holes.add(x, y),
-      onExit: exit,
-      muted: false,
-      scoreInset,
-    });
-    setPlaying(true);
   };
 
   const loading = status === "loading";
@@ -119,7 +129,6 @@ export default function HuntControl({ stopRef, onStopped, leaving }: Props) {
       title={title}
       aria-label={title}
       aria-busy={loading || undefined}
-      aria-pressed={playing}
       className="relative grid h-5 w-5 place-items-center rounded-full transition-colors duration-fast ease-out hover:text-foreground disabled:opacity-60 disabled:hover:text-muted-foreground"
     >
       <Crosshair aria-hidden weight="bold" className="h-4 w-4" />
