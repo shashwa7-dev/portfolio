@@ -67,7 +67,7 @@ Plus, in the mod stylesheet: the hero name ("Shashwat") takes the accent; the "O
 
 The hero (the `<header>` in `components/About.tsx`) gets a full-bleed backdrop behind its content:
 
-- Seven wallpapers in `public/gta6/wallpapers/01.webp` to `07.webp` (official GTA VI art: rooftop no logo, sunset car, dock no logo, Jack of Hearts, boat, Ocean View, plus the owner's bulldog still), crossfading every 5 s, `object-fit: cover`.
+- Thirteen wallpapers in `public/gta6/wallpapers/01.webp` to `13.webp` (the owner's chosen official GTA VI art, replaced 2026-11-20), crossfading every 5 s on a 65 s cycle, `object-fit: cover`.
 - A veil in the page background colour, a left-to-right gradient: about 85% opaque behind the text on the left, 70% in the middle, 20% at the right edge, with `backdrop-filter: blur(1.5px)`.
 - A bottom fade into the page background so the hero melts into the next section.
 - Overlays: one small control cluster at the top right of the hero's measure (inside the header's top padding): the five-star row, the pistol button (when the game is enabled), "now playing" and Exit.

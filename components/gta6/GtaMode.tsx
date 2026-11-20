@@ -10,7 +10,7 @@ import { HoleSinkContext, MAX_HOLES, holeMask, type HoleSink } from "@/component
 import HuntControl from "@/components/gta6/HuntControl";
 import { VICE_HUNT_ENABLED } from "@/lib/gta6";
 
-const WALLPAPERS = ["01", "02", "03", "04", "05", "06", "07"];
+const WALLPAPERS = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13"];
 const STARS = [0, 1, 2, 3, 4];
 
 /** The fade time from the element's computed transition (`--duration-gta-fade`). */

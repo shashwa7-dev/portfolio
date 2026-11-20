@@ -17,11 +17,11 @@
  * and leaving mid fade in does the same. The fade in on mount comes from
  * `@starting-style` (a browser without it shows the art at once).
  *
- * Wallpapers: seven on one cycle (`--duration-gta-wall-cycle`, 35 s), each up
+ * Wallpapers: thirteen on one cycle (`--duration-gta-wall-cycle`, 65 s), each up
  * for one turn (`--duration-gta-wall-turn`, 5 s) and staggered a turn apart,
  * fading over the first and last second of its turn, so each fade out is the
  * next one's fade in. The keyframe stops assume those two values (1 s of
- * 35 s is 2.857%); change them together. Under reduced motion only the first
+ * 65 s is 1.538%); change them together. Under reduced motion only the first
  * shows.
  */
 export const MOD_CSS = `
@@ -55,9 +55,9 @@ html[data-mod="gta6"] .starter-pack-hang { display: none; }
 }
 @keyframes gta-wall {
   0% { opacity: 0; }
-  2.857% { opacity: 1; }
-  14.286% { opacity: 1; }
-  17.143% { opacity: 0; }
+  1.538% { opacity: 1; }
+  7.692% { opacity: 1; }
+  9.231% { opacity: 0; }
   100% { opacity: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
