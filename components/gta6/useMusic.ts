@@ -73,6 +73,7 @@ function play(s: Session) {
 
 function kill(s: Session) {
   s.dead = true;
+  s.playing = false;
   window.clearInterval(s.ramp);
   window.clearTimeout(s.refused);
   s.player?.destroy();
@@ -105,6 +106,8 @@ function build(listen: Listener): Session {
     refused: 0,
     listen,
   };
+  // A fresh player (the retry path included) has not played yet.
+  listen.playing(false);
 
   void import("@/components/common/youtube").then(async (m) => {
     await m.primeYouTube();
@@ -119,10 +122,13 @@ function build(listen: Listener): Session {
           if (s.active && !s.dead) play(s);
         },
         onPlaying() {
-          // Never fade back up over a fade out that has begun.
-          if (!s.active || s.dead) return;
-          window.clearTimeout(s.refused);
+          if (s.dead) return;
+          // Recorded even while fading out, so taking the session back
+          // knows it only needs a fade up, not another play().
           s.playing = true;
+          // Never fade back up over a fade out that has begun.
+          if (!s.active) return;
+          window.clearTimeout(s.refused);
           s.listen.blocked(false);
           s.listen.playing(true);
           fadeTo(s, VOLUME);
@@ -182,9 +188,16 @@ export function useMusic(
       // Still fading out from a moment ago: take it back.
       s.active = true;
       s.listen = listen;
-      if (s.playing) fadeTo(s, VOLUME);
-      else if (s.player) play(s);
-      else window.clearInterval(s.ramp);
+      // Always stop the fade out first, or it would destroy the player
+      // under the mode a moment from now.
+      window.clearInterval(s.ramp);
+      if (s.playing) {
+        listen.playing(true);
+        fadeTo(s, VOLUME);
+      } else if (s.player) {
+        // Asked to play but not playing yet: ask again; onPlaying fades up.
+        play(s);
+      }
     } else {
       if (s) kill(s);
       s = build(listen);
