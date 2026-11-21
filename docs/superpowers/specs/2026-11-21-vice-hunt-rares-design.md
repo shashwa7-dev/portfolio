@@ -168,6 +168,8 @@ type GameEvent =
   | { type: "penalty"; kind: Kind; points: number; x: number; y: number }
   | { type: "damage"; hearts: number; source: Kind; x: number; y: number }
   | { type: "rare"; kind: Kind; event: "appeared" | "met" }
+  | { type: "escaped"; kind: Kind; x: number; y: number }              // the merman's window lapsed ("TOO SLOW")
+  | { type: "callout"; text: "PFFT!" | "SPLAT!" | "HSSSS!" | "ANGRY!"; x: number; y: number } // words the app pops; the package draws no text
   | { type: "wasted" };
 ```
 
