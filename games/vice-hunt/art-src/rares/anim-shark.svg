@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 115 166">
+  <!-- far leg, stepping back -->
+  <g class="lf" stroke="#2b2234" stroke-width="2" stroke-linejoin="round">
+    <path d="M50 110 C49 124 45 136 39 146 L49 150 C55 139 59 126 61 112 Z" fill="#6c869b"/>
+    <path d="M32 148 C32 144 38 143 48 146 L56 150 C58 154 56 158 50 158 L32 158 C28 158 28 151 32 148 Z" fill="#e6e9ee"/>
+    <path d="M28 155 L58 155 L58 159 L28 159 Z" fill="#f49ea3"/>
+  </g>
+  <!-- tail fin, trailing behind at the bottom -->
+  <g class="tail"><path d="M44 104 C34 112 22 120 12 132 C26 130 38 124 48 116 Z" fill="#7f9bb0" stroke="#2b2234" stroke-width="2" stroke-linejoin="round"/></g>
+  <!-- dorsal fin, on the back -->
+  <path d="M38 52 C26 46 14 42 4 44 C12 54 22 64 36 70 Z" fill="#7f9bb0" stroke="#2b2234" stroke-width="2" stroke-linejoin="round"/>
+  <!-- far pectoral fin -->
+  <g class="af"><path d="M38 74 C30 80 24 88 20 98 C30 94 38 88 42 82 Z" fill="#6c869b" stroke="#2b2234" stroke-width="2" stroke-linejoin="round"/></g>
+  <!-- body, nose up -->
+  <path d="M70 4 C86 14 93 40 91 70 C89 92 83 108 74 116 L46 116 C38 104 34 86 36 64 C38 36 52 14 70 4 Z" fill="#8fabbf" stroke="#2b2234" stroke-width="2" stroke-linejoin="round"/>
+  <!-- belly, the front -->
+  <path d="M82 30 C89 48 90 72 87 92 C85 104 80 112 74 116 L66 116 C73 100 79 70 82 30 Z" fill="#eef2f4"/>
+  <path d="M82 30 C79 70 73 100 66 116" fill="none" stroke="#2b2234" stroke-width="1.4"/>
+  <!-- back shading -->
+  <path d="M48 28 C42 46 40 70 44 96" fill="none" stroke="#7f9bb0" stroke-width="5" stroke-linecap="round"/>
+  <!-- gills -->
+  <path d="M60 50 Q66 46 72 50 M60 57 Q66 53 72 57 M60 64 Q66 60 72 64" fill="none" stroke="#2b2234" stroke-width="1.8" stroke-linecap="round"/>
+  <!-- mouth with teeth, grinning up at the sky -->
+  <path d="M66 30 C74 38 84 40 90 34" fill="#3a2f3f" stroke="#2b2234" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M69 32 l3 -3 l2 5 l3 -4 l2 5 l3 -4 l2 4 l3 -4 l2 3" fill="#fff" stroke="#2b2234" stroke-width="1" stroke-linejoin="round"/>
+  <!-- eye with a cool brow -->
+  <circle cx="72" cy="18" r="3.8" fill="#fff" stroke="#2b2234" stroke-width="1.6"/>
+  <circle cx="73" cy="17.5" r="2.1" fill="#2b2234"/>
+  <path d="M65 12 L78 10" stroke="#2b2234" stroke-width="2.4" stroke-linecap="round"/>
+  <!-- near pectoral fin, swinging like an arm -->
+  <g class="an"><path d="M86 74 C96 80 104 88 108 98 C98 96 90 90 84 84 Z" fill="#7f9bb0" stroke="#2b2234" stroke-width="2" stroke-linejoin="round"/></g>
+  <!-- near leg, stepping forward -->
+  <g class="ln" stroke="#2b2234" stroke-width="2" stroke-linejoin="round">
+    <path d="M64 112 C66 126 70 136 76 146 L86 142 C80 132 77 122 76 112 Z" fill="#8fabbf"/>
+    <path d="M70 144 C70 140 78 138 88 140 L100 144 C104 146 104 154 98 154 L72 154 C68 154 68 148 70 144 Z" fill="#fff"/>
+    <path d="M68 151 L104 151 L104 155 L68 155 Z" fill="#5ad1d6"/>
+    <path d="M78 144 Q86 146 94 144" fill="none" stroke="#f49ea3" stroke-width="2" stroke-linecap="round"/>
+  </g>
+</svg>

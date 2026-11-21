@@ -2,7 +2,7 @@
 
 Date: 2026-11-21. Owner: Shashwat. Builds on `docs/superpowers/specs/2026-11-20-gta6-mod-design.md` (revisions 1 to 3), which stays the authority for everything this document does not change.
 
-Motion prototype (the reference for every animation below): `.superpowers/brainstorm/92060-1795271962/content/motion-v24.html`, with its art in the same folder (`anim-*.svg`, `sp-*.svg`). Open it through the brainstorm server or straight from disk (the SVGs are inlined in the page). It is throwaway code: copy the feel, not the code.
+Motion prototype (the reference for every animation below): `docs/superpowers/reference/vice-hunt-rares-motion.html` (open it straight from disk; its art is inlined and its backdrop is `vice-hunt-rares-bg.png` beside it). It is throwaway code: copy the feel and the numbers, not the code. The owner-approved art is in `games/vice-hunt/art-src/rares/` (`sp-*.svg` are the finished drawings; `anim-*.svg` are the same drawings with their moving parts grouped, plus the tiger's face and paw and the pile). Art file names below refer to that folder.
 
 ## Why
 

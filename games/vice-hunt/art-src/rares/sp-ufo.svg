@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="168" height="110" viewBox="0 0 140 92">
+  <!-- tractor beam glow -->
+  <path d="M52 62 L36 92 L104 92 L88 62 Z" fill="#5ad1d6" opacity=".22"/>
+  <!-- glass dome -->
+  <path d="M42 40 C42 16 98 16 98 40 Z" fill="#cdf4ff" stroke="#2b2234" stroke-width="2" stroke-linejoin="round"/>
+  <!-- alien pilot -->
+  <ellipse cx="70" cy="30" rx="9" ry="10" fill="#8ee06a" stroke="#2b2234" stroke-width="1.8"/>
+  <path d="M64 22 L60 12 M76 22 L80 12" stroke="#2b2234" stroke-width="1.6" stroke-linecap="round"/>
+  <circle cx="60" cy="11" r="2.4" fill="#f49ea3" stroke="#2b2234" stroke-width="1.2"/>
+  <circle cx="80" cy="11" r="2.4" fill="#f49ea3" stroke="#2b2234" stroke-width="1.2"/>
+  <ellipse cx="66" cy="29" rx="2.8" ry="3.8" fill="#2b2234"/>
+  <ellipse cx="74" cy="29" rx="2.8" ry="3.8" fill="#2b2234"/>
+  <circle cx="66.8" cy="27.6" r=".9" fill="#fff"/><circle cx="74.8" cy="27.6" r=".9" fill="#fff"/>
+  <path d="M67 35 Q70 37 73 35" fill="none" stroke="#2b2234" stroke-width="1.2" stroke-linecap="round"/>
+  <!-- dome shine -->
+  <path d="M50 34 C50 26 56 20 64 19" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".8"/>
+  <!-- saucer -->
+  <path d="M6 48 C6 38 40 34 70 34 C100 34 134 38 134 48 C134 58 100 62 70 62 C40 62 6 58 6 48 Z" fill="#b9c2d0" stroke="#2b2234" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M10 46 C30 40 110 40 130 46" fill="none" stroke="#e6ebf2" stroke-width="3" stroke-linecap="round"/>
+  <path d="M10 52 C40 58 100 58 130 52" fill="none" stroke="#8d97a8" stroke-width="2"/>
+  <!-- rim lights -->
+  <circle cx="22" cy="50" r="3.4" fill="#f49ea3" stroke="#2b2234" stroke-width="1.2"/>
+  <circle cx="46" cy="54" r="3.4" fill="#5ad1d6" stroke="#2b2234" stroke-width="1.2"/>
+  <circle cx="70" cy="55" r="3.4" fill="#f7c46c" stroke="#2b2234" stroke-width="1.2"/>
+  <circle cx="94" cy="54" r="3.4" fill="#5ad1d6" stroke="#2b2234" stroke-width="1.2"/>
+  <circle cx="118" cy="50" r="3.4" fill="#f49ea3" stroke="#2b2234" stroke-width="1.2"/>
+  <!-- underside -->
+  <path d="M48 61 C52 68 88 68 92 61" fill="#8d97a8" stroke="#2b2234" stroke-width="2" stroke-linejoin="round"/>
+</svg>

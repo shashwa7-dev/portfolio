@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 170">
+  <!-- ears -->
+  <path d="M40 46 L30 8 L68 30 Z" fill="#f08a3c" stroke="#2b2234" stroke-width="2.4" stroke-linejoin="round"/>
+  <path d="M42 38 L37 18 L56 30 Z" fill="#2b2234"/>
+  <path d="M132 30 L170 8 L160 46 Z" fill="#f08a3c" stroke="#2b2234" stroke-width="2.4" stroke-linejoin="round"/>
+  <path d="M144 30 L163 18 L158 38 Z" fill="#2b2234"/>
+  <!-- head -->
+  <path d="M100 22 C146 22 172 52 170 92 C168 130 138 156 100 156 C62 156 32 130 30 92 C28 52 54 22 100 22 Z" fill="#f08a3c" stroke="#2b2234" stroke-width="2.4"/>
+  <!-- cheek ruff -->
+  <path d="M34 104 L18 112 L36 118 L22 130 L44 130 M166 104 L182 112 L164 118 L178 130 L156 130" fill="#fbe9d2" stroke="#2b2234" stroke-width="2" stroke-linejoin="round"/>
+  <!-- stripes -->
+  <path d="M100 26 L96 44 L104 44 Z M82 28 L84 46 M118 28 L116 46" fill="#2b2234" stroke="#2b2234" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M36 74 L54 80 M34 90 L52 92 M164 74 L146 80 M166 90 L148 92" stroke="#2b2234" stroke-width="3.4" stroke-linecap="round"/>
+  <!-- angry brows -->
+  <path d="M54 58 L86 70 M146 58 L114 70" stroke="#2b2234" stroke-width="5" stroke-linecap="round"/>
+  <!-- eyes, narrowed -->
+  <path d="M58 72 Q72 66 86 76 Q72 84 58 72 Z" fill="#f7e36c" stroke="#2b2234" stroke-width="2"/>
+  <path d="M142 72 Q128 66 114 76 Q128 84 142 72 Z" fill="#f7e36c" stroke="#2b2234" stroke-width="2"/>
+  <ellipse cx="74" cy="75" rx="2" ry="4.5" fill="#2b2234"/>
+  <ellipse cx="126" cy="75" rx="2" ry="4.5" fill="#2b2234"/>
+  <!-- muzzle -->
+  <path d="M64 104 C64 90 82 86 100 92 C118 86 136 90 136 104 C136 124 120 140 100 140 C80 140 64 124 64 104 Z" fill="#fbe9d2" stroke="#2b2234" stroke-width="2"/>
+  <!-- nose -->
+  <path d="M90 90 L110 90 L100 102 Z" fill="#e98a9a" stroke="#2b2234" stroke-width="2" stroke-linejoin="round"/>
+  <!-- hissing mouth with fangs -->
+  <path d="M76 110 Q100 102 124 110 Q122 134 100 136 Q78 134 76 110 Z" fill="#7a2335" stroke="#2b2234" stroke-width="2.2" stroke-linejoin="round"/>
+  <path d="M84 120 Q100 128 116 120 Q110 132 100 133 Q90 132 84 120 Z" fill="#e98a9a"/>
+  <path d="M82 110 L86 123 L90 109 Z M118 110 L114 123 L110 109 Z" fill="#fff" stroke="#2b2234" stroke-width="1.4" stroke-linejoin="round"/>
+  <!-- whiskers -->
+  <path d="M66 108 L30 100 M66 114 L28 116 M134 108 L170 100 M134 114 L172 116" stroke="#2b2234" stroke-width="1.4" stroke-linecap="round"/>
+</svg>
