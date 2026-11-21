@@ -198,3 +198,13 @@ The playlist lives in `components/gta6/track.ts` (`PLAYLIST`, entries of `{ id, 
 
 ### Final-review fixes folded in
 Palm homepage-only and mode-off on navigation; focus returns to the avatar button (or the palm) after Exit, Exit named "Exit Vice City mode"; the YouTube script rejects after a timeout so a blocked API never hangs; `check-gta6-bundle.sh` fails on zero stylesheets; flag-off contract wording in CLAUDE.md is "no mode markup or lazy GTA chunks".
+
+## Revision 3 (2026-11-21): layouts chosen by the owner
+
+Overrides revision 2 where they conflict. Mockups: `.superpowers/brainstorm/55516-1795237094/content/` (`radio-card.html` design A, `headers2.html` M1 and L1, `score.html` S2).
+
+- **Radio card:** design A (cover fills the left 62% and fades into a dark glass panel; eyebrow "VICE FM · n / 31" with an equaliser; title and artist; prev, round play/pause, next, mute, list; a pink-to-teal progress line). The list shows the play order: entry 1 (the main theme) first, the other 30 shuffled per session.
+- **Hero corner (mode on, not playing): M1.** One slim dark pill: a spinning vinyl with the current cover (stops spinning when paused and under reduced motion), the track as "Title · Artist" (ellipsis), play/pause, a pink round revolver button (starts the game; loading ring until ready), and ✕ (exit). Clicking the vinyl opens the full radio card (design A) as a popover under the pill. The star meter, the old cluster and the separate "now playing" tag go away.
+- **Game HUD: L1, classic GTA corners.** Top left: a small icon-only time switch (☀ 🌅 🌙, plus Auto). Top right: the wanted stars and the score (S2). Bottom left: a small radio (cover, "VICE FM", title · artist, prev, play/pause, next, mute; the list opens upward). Bottom right: the six-round ammo cylinder. Bottom centre: a faint "ESC EXIT · R RELOAD". Nothing in the middle of the screen.
+- **Score: S2.** A big glowing score number with "SCORE" under it, and four small glass chips (icon and count) for rabbit, iguana, flamingo and Bigfoot; the latest kill's chip glows pink briefly. Points: rabbit 100, iguana 150, flamingo 200, Bigfoot 1000; a DOUBLE adds 50% to that kill and a TRIPLE or more adds 100%. The results card shows the score first, then the per-animal counts, accuracy and best streak.
+- **No glass-break effect:** shots leave no holes or cracks (in the game canvas or anywhere else). Keep the muzzle flash, recoil, hit flash and death animations.
