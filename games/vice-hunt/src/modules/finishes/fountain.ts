@@ -1,7 +1,6 @@
 // The merman's finish: he drops under, then the sea shoots up a fountain of
 // 26 small fish that fan out, arc over and dive back in, each with a little
 // splash. Gentle: he sinks, and a few fish fade in and out above the water.
-import { SEA_LINE } from "../../config";
 import {
   type Particle,
   type Ring,
@@ -46,7 +45,7 @@ export type FountainState = Body & {
 
 function start(c: Animal, world: World, rng: Rng): FountainState {
   const b = bodyOf(c, world);
-  const sea = SEA_LINE * world.height;
+  const sea = world.sea;
   const cx = b.x + b.w / 2;
   const s: FountainState = {
     ...b,

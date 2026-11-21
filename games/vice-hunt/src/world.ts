@@ -7,7 +7,7 @@ import {
   SPAWN_INTERVAL,
   STREAK_WINDOW,
 } from "./config";
-import { CREATURES, KINDS, type Creature, isRare, kindsWhere, penaltyFor, streaks, type Kind } from "./creatures";
+import { CREATURES, KINDS, type Creature, isEnabled, isRare, kindsWhere, penaltyFor, streaks, type Kind } from "./creatures";
 import type { GameEvent } from "./events";
 import { FINISHES, HIT_REACTIONS, MOVES } from "./modules";
 import { createGlass, type Glass } from "./fx/glass";
@@ -45,6 +45,7 @@ export type World = {
   finishing: Finishing[]; // finished animals playing out their finish
   threats: Threatening[]; // attacks on the player in progress (the tiger's claw, Bigfoot's throws)
   glass: Glass; // scratches and splats on the screen
+  sea: number; // the water line, px: the host's (its scene's sea), else SEA_LINE of the height
   kills: Kills;
   nextId: number;
   streak: number; // kills in a row, each within STREAK_WINDOW of the last
@@ -69,7 +70,7 @@ export function emptyKills(): Kills {
 }
 
 const table: Record<Kind, Creature> = CREATURES;
-const RARES = KINDS.filter(isRare);
+const RARES = KINDS.filter((k) => isRare(k) && isEnabled(k));
 // Hostile rares (Bigfoot) may share the screen with one other rare.
 const sharesScreen = (k: Kind) => table[k].role === "hostile";
 
@@ -87,16 +88,17 @@ function restingY(world: World, a: Animal, topFraction: number): number {
     case "ground":
       return GROUND_LINE * world.height - a.h;
     case "sea":
-      return SEA_LINE * world.height - a.h * SURFACE_OUT; // fully up
+      return world.sea - a.h * SURFACE_OUT; // fully up
   }
 }
 
 const centre = (a: Animal) => ({ x: a.x + a.w / 2, y: a.y + a.h / 2 });
 
-export function createWorld(width: number, height: number, rng: Rng): World {
+export function createWorld(width: number, height: number, rng: Rng, sea = SEA_LINE * height): World {
   return {
     width,
     height,
+    sea,
     time: 0,
     nextSpawn: between(rng, SPAWN_INTERVAL),
     animals: [],
@@ -132,15 +134,19 @@ export function damage(world: World, hearts: number, source: Kind, x: number, y:
   }
 }
 
-// Commons by weight; rares roll on their own (spawnRares).
+// Enabled commons by weight; rares roll on their own (spawnRares).
 function pickKind(rng: Rng): Kind {
-  let r = rng();
-  for (const k of kindsWhere("prey")) {
-    const spawn = CREATURES[k].spawn;
-    r -= "weight" in spawn ? spawn.weight : 0;
+  const commons = kindsWhere("prey").filter(isEnabled);
+  const weight = (k: Kind) => {
+    const sp = CREATURES[k].spawn;
+    return "weight" in sp ? sp.weight : 0;
+  };
+  let r = rng() * commons.reduce((sum, k) => sum + weight(k), 0);
+  for (const k of commons) {
+    r -= weight(k);
     if (r < 0) return k;
   }
-  return "rabbit";
+  return commons[commons.length - 1] ?? "rabbit";
 }
 
 export function spawn(world: World, rng: Rng, kind?: Kind): Animal {
@@ -244,7 +250,7 @@ function inBox(world: World, a: Animal, x: number, y: number): boolean {
   const iy = a.h * HIT_INSET;
   if (x < a.x + ix || x > a.x + a.w - ix || y < a.y + iy || y > a.y + a.h - iy) return false;
   // Only the part above the water is hittable.
-  return table[a.kind].lane !== "sea" || y < SEA_LINE * world.height;
+  return table[a.kind].lane !== "sea" || y < world.sea;
 }
 
 // Front-most first: the list's end is drawn last, so it is on top.
@@ -320,15 +326,16 @@ function registerHit(world: World, a: Animal): boolean {
   return finished;
 }
 
-export function resize(world: World, width: number, height: number): void {
+export function resize(world: World, width: number, height: number, sea = SEA_LINE * height): void {
   const rx = width / world.width;
   const oldHeight = world.height;
   for (const a of world.animals) {
     const rest = a.y - bob(a, world);
     a.x *= rx;
     a.vx *= rx;
-    a.y = restingY({ ...world, height }, a, rest / oldHeight) + bob(a, world);
+    a.y = restingY({ ...world, height, sea }, a, rest / oldHeight) + bob(a, world);
   }
   world.width = width;
   world.height = height;
+  world.sea = sea;
 }

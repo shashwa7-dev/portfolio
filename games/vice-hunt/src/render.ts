@@ -74,6 +74,12 @@ function drawAnimal(ctx: CanvasRenderingContext2D, scene: Scene, world: World, a
   const move = MOVES[cfg.move];
   move.draw?.(ctx, a, world);
   ctx.save();
+  if (cfg.lane === "sea") {
+    // Only what is above the water shows.
+    ctx.beginPath();
+    ctx.rect(0, 0, world.width, world.sea);
+    ctx.clip();
+  }
   const react = HIT_REACTIONS[cfg.hit];
   enterSprite(ctx, a.x, a.y, a.w, a.vx < 0 ? -1 : 1);
   const jolt = a.reaction != null ? react.pose?.(a.reaction) : undefined;

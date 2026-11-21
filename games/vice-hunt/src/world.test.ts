@@ -227,7 +227,7 @@ const quiet = () => {
 // A merman fully up out of the water.
 const surfaced = (world: World, a: Animal) => {
   a.surface = { phase: "up", t: 0, cycle: 0, from: 0 };
-  a.y = SEA_LINE * world.height - a.h * 0.78;
+  a.y = world.sea - a.h * 0.78;
 };
 const run = (world: World, rng: () => number, seconds: number) => {
   for (let i = 0; i < Math.round(seconds / DT); i++) step(world, DT, rng);
@@ -425,6 +425,38 @@ describe("world rules", () => {
     expect(a.y).toBeCloseTo(SEA_LINE * 800 - a.h * 0.78);
     run(world, rng, 0.1);
     expect(a.y).toBeCloseTo(SEA_LINE * 800 - a.h * 0.78);
+  });
+
+  it("the merman follows the host's water line, through a resize", () => {
+    const rng = mulberry32(1);
+    const world = createWorld(1000, 400, rng, 250);
+    world.nextSpawn = Infinity;
+    const a = spawn(world, rng, "merman");
+    surfaced(world, a);
+    expect(a.y).toBeCloseTo(250 - a.h * 0.78);
+    expect(shoot(world, a.x + a.w / 2, 260).hit).toBeNull(); // under the water
+    resize(world, 1200, 500, 300);
+    expect(world.sea).toBe(300);
+    expect(a.y).toBeCloseTo(300 - a.h * 0.78);
+  });
+
+  it("a disabled creature never spawns on its own", () => {
+    expect(CREATURES.tiger.enabled).toBe(false);
+    const rng = mulberry32(3);
+    const world = createWorld(1000, 400, rng);
+    const seen = new Set<Kind>();
+    for (let i = 0; i < 60 * 60 * 20; i++) {
+      step(world, DT, rng);
+      for (const x of world.animals) seen.add(x.kind);
+      world.animals = world.animals.filter((x) => !isRare(x.kind)); // let the next rare roll
+    }
+    expect(seen.has("tiger")).toBe(false);
+    for (const k of KINDS) if (CREATURES[k].enabled) expect(seen.has(k), k).toBe(true);
+  });
+
+  it("an explicit spawn still makes a disabled creature (dev page, tests)", () => {
+    const { rng, world } = make();
+    expect(spawn(world, rng, "tiger").kind).toBe("tiger");
   });
 
   it("the merman surfaces, dives and leaves after three cycles", () => {

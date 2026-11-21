@@ -1,6 +1,6 @@
 // Movement modules: pure functions of the animal's age (and the merman's
 // surface state), so the lane's resting y can be recovered by subtracting y.
-import { IGUANA_PAUSE, SEA_LINE } from "../config";
+import { IGUANA_PAUSE } from "../config";
 import type { Rng } from "../rng";
 import { sinkOffset } from "../surface";
 import type { Animal, World } from "../world";
@@ -77,7 +77,7 @@ function drawBeam(ctx: CanvasRenderingContext2D, a: Animal, world: World): void 
   const pulse = 1 + 0.08 * Math.sin(a.age * 12);
   const cx = a.x + a.w / 2;
   const top = a.y + a.h * 0.8;
-  const bottom = Math.max(top + 10, SEA_LINE * world.height);
+  const bottom = Math.max(top + 10, world.sea);
   const half = a.w * 0.5 * pulse;
   ctx.save();
   ctx.globalAlpha = 0.22 * fade;

@@ -1,7 +1,7 @@
 import { RELOAD_TIME, createAmmo, fire, startReload, tick } from "./ammo";
 import { SPRITES } from "./art/sprites";
 import { createGun } from "./gun";
-import { MAX_DT } from "./config";
+import { MAX_DT, SEA_LINE } from "./config";
 import { drawGlass, shakeOffset, stepGlass } from "./fx/glass";
 import { stepFinishing, stepThreats, THREATS } from "./modules";
 import { addPuff, createScene, drawScene, stepScene } from "./render";
@@ -14,7 +14,7 @@ import { createWorld, drain, resize, shoot, spawn, step } from "./world";
 
 export type { Kills } from "./types";
 export type { Kind } from "./creatures";
-export { KINDS, isRare, kindsWhere, pointsFor, penaltyFor } from "./creatures";
+export { KINDS, isEnabled, isRare, kindsWhere, pointsFor, penaltyFor } from "./creatures";
 export type { Effect, SfxUrls } from "./sound";
 export { ROUNDS } from "./ammo";
 export { preloadHunt } from "./sprites";
@@ -48,6 +48,10 @@ export type HuntOptions = {
   /** Recorded effects by URL; any left out (or failing to load) are
    *  synthesised. Same silent rules either way. */
   sfx?: SfxUrls;
+  /** Where the host's scene has its water line, px from the top, for a
+   *  layer of this size (the merman surfaces there; the UFO and fish splash
+   *  there). Asked again on every resize. Default: 0.69 of the height. */
+  seaLine?(width: number, height: number): number;
   /** Dev pages: creatures to spawn at the start. */
   spawn?: Kind[];
   /** Dev pages: kinds to shoot down (one hit a frame, once fully on screen)
@@ -122,7 +126,10 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
 
   const scene = createScene();
   let dpr = 1;
-  const world = createWorld(Math.max(1, layer.clientWidth), Math.max(1, layer.clientHeight), rng);
+  const seaAt = (w: number, h: number) => options.seaLine?.(w, h) ?? SEA_LINE * h;
+  const startW = Math.max(1, layer.clientWidth);
+  const startH = Math.max(1, layer.clientHeight);
+  const world = createWorld(startW, startH, rng, seaAt(startW, startH));
 
   const fit = () => {
     const w = Math.max(1, layer.clientWidth);
@@ -130,7 +137,7 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
     dpr = window.devicePixelRatio || 1;
     canvas.width = glassCanvas.width = Math.round(w * dpr);
     canvas.height = glassCanvas.height = Math.round(h * dpr);
-    if (w !== world.width || h !== world.height) resize(world, w, h);
+    if (w !== world.width || h !== world.height) resize(world, w, h, seaAt(w, h));
   };
   fit();
   for (const k of options.spawn ?? []) spawn(world, rng, k);

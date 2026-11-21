@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { Kind } from "@games/vice-hunt";
 import BeachScene from "@/components/gta6/scene/BeachScene";
+import { beachSeaLine } from "@/lib/gta6/sea";
 import Entry from "@/components/gta6/game/Entry";
 import Hud, { type TimeChoice } from "@/components/gta6/game/Hud";
 import Results from "@/components/gta6/game/Results";
@@ -131,6 +132,7 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
       hunt = game.startHunt(host.current, {
         muted: false,
         showScore: false,
+        seaLine: beachSeaLine,
         onShot: (_x, _y, hit) => setTally((t) => (hit ? recordHit(recordShot(t), hit) : recordShot(t))),
         onKill: (kind, x, y, streak) => {
           setTally((t) => recordKill(t, kind, streak, scoreFor(game.pointsFor(kind), streak)));

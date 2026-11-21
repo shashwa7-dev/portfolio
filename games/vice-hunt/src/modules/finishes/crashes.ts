@@ -3,7 +3,6 @@
 // out (the dome is empty from then on) and drifts down under a pink
 // parachute, swaying, into the water with a small splash.
 // Gentle: the saucer fades down into the sea; the alien drifts, no sway.
-import { SEA_LINE } from "../../config";
 import {
   type Particle,
   type Ring,
@@ -81,7 +80,7 @@ function start(c: Animal, world: World, rng: Rng): CrashState {
     ...b,
     W: world.width,
     H: world.height,
-    sea: SEA_LINE * world.height,
+    sea: world.sea,
     k: b.w / PROTO_UFO,
     x0: b.x,
     y0: b.y,

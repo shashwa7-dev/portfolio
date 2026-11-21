@@ -29,10 +29,11 @@ Modules: `render.ts` (canvas: animals, finishing entries, poofs), `gun.ts` (firs
 - `createWorld(width, height, rng)`, `step(world, dt, rng)`, `shoot(world, x, y, rng)` (returns `{ hit, finished }`), `resize(world, width, height)`, `emptyKills()`
 - The world pushes typed events (`GameEvent` in `src/events.ts`: hits, kills, penalties, damage, rares, the merman's escape, callouts, WASTED) onto `world.events`; the host takes them each frame with `drain(world)`.
 - `damage(world, hearts, source, x, y)` takes hearts (from 3, clamped at 0); at 0 the world is `wasted`, and `step` and `shoot` do nothing.
-- Hit rules: each animal counts `hits` against its rolled total `hp`. Cow and tiger hits give penalties and break the streak; Bigfoot's first hit provokes him. Rares roll a per-second chance while their kind is not alive (one rare on screen at a time, Bigfoot aside, never Bigfoot in the first 30 s). The merman lives on the sea lane (`SEA_LINE`), surfacing in place (`src/surface.ts`); only his part above the water is hittable.
+- Hit rules: each animal counts `hits` against its rolled total `hp`. Cow and tiger hits give penalties and break the streak; Bigfoot's first hit provokes him. Rares roll a per-second chance while their kind is not alive (one rare on screen at a time, Bigfoot aside, never Bigfoot in the first 30 s). The merman lives on the sea lane at `world.sea`, the host's water line (the `seaLine(width, height)` option, asked again on every resize; the app passes `beachSeaLine` from `lib/gta6/sea.ts`, which follows BeachScene's cover-scaled art; default `SEA_LINE` of the height). He surfaces in place (`src/surface.ts`), is clipped at the water line, and only his part above it is hittable.
 - `world.streak` is the current kill streak (`STREAK_WINDOW` in `config.ts`).
 - `spawn(world, rng, kind?)` is exported for tests; production spawning calls it without `kind`.
 - Every creature (lane, speed, hits, size, spawn, points) is one record in `src/creatures.ts`; timings live in `src/config.ts`.
+- Each creature has `enabled`. A disabled one never spawns on its own (commons share out the remaining weight; rares skip their roll), but an explicit `spawn(world, rng, kind)` (the dev page's `?spawn=`) still makes it. The tiger is off for now.
 
 ## Flags
 
