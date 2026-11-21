@@ -255,7 +255,7 @@ function inBox(world: World, a: Animal, x: number, y: number): boolean {
 }
 
 // Front-most first: the list's end is drawn last, so it is on top.
-export function shoot(world: World, x: number, y: number, rng: Rng = Math.random): { hit: Animal | null; finished: boolean } {
+export function shoot(world: World, x: number, y: number, rng: Rng): { hit: Animal | null; finished: boolean } {
   if (world.wasted) return { hit: null, finished: false };
   for (let i = world.animals.length - 1; i >= 0; i--) {
     const a = world.animals[i];

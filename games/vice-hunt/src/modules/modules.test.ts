@@ -1,10 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { MAX_DT } from "../config";
 import { CREATURES, KINDS } from "../creatures";
 import { DEATHS } from "../death";
 import { mulberry32 } from "../rng";
 import { createWorld, shoot, spawn } from "../world";
-import { FINISHES, HIT_REACTIONS, MOVES, THREATS, stepFinishing } from "./index";
+import { FINISHES, HIT_REACTIONS, MOVES, THREATS, resolveFinish, stepFinishing } from "./index";
 
 describe("registries", () => {
   it("every FinishId, MoveId, HitReactionId and ThreatId used in CREATURES has a module", () => {
@@ -59,5 +59,34 @@ describe("stepFinishing", () => {
     expect(world.finishing).toHaveLength(1);
     for (let i = 0; i < 2; i++) stepFinishing(world, 0.05, false);
     expect(world.finishing).toHaveLength(0);
+  });
+});
+
+describe("reduced motion", () => {
+  it("step and draw both use the variant module", () => {
+    const mk = () => ({
+      start: () => ({}),
+      step: vi.fn(),
+      done: () => false,
+      draw: vi.fn(),
+    });
+    const base = { ...mk(), reduced: "deflates" as const };
+    const variant = mk();
+    const saved = { crashes: FINISHES.crashes, deflates: FINISHES.deflates };
+    FINISHES.crashes = base;
+    FINISHES.deflates = variant;
+    try {
+      const world = finishedRabbit();
+      world.finishing[0].id = "crashes";
+      stepFinishing(world, 0.02, true);
+      resolveFinish("crashes", true).draw({} as never, {}, {} as never, {} as never);
+      expect(variant.step).toHaveBeenCalledTimes(1);
+      expect(variant.draw).toHaveBeenCalledTimes(1);
+      expect(base.step).not.toHaveBeenCalled();
+      expect(base.draw).not.toHaveBeenCalled();
+      expect(resolveFinish("crashes", false)).toBe(base);
+    } finally {
+      Object.assign(FINISHES, saved);
+    }
   });
 });

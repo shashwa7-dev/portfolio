@@ -51,13 +51,18 @@ export const FINISHES: Record<FinishId, FinishModule<any>> = {
   jet: fade,
 };
 
+// The one place `reduced` is resolved: step and draw both use it.
+export function resolveFinish(id: FinishId, reduced: boolean): FinishModule<any> {
+  const base = FINISHES[id];
+  return reduced && base.reduced ? FINISHES[base.reduced] : base;
+}
+
 // Steps every finishing entry by at most MAX_DT, pushes their events, drops
 // the done ones. Under reduced motion a module's `reduced` variant steps.
 export function stepFinishing(world: World, dt: number, reduced: boolean): void {
   const d = Math.min(dt, MAX_DT);
   world.finishing = world.finishing.filter((f) => {
-    const base = FINISHES[f.id];
-    const mod = reduced && base.reduced ? FINISHES[base.reduced] : base;
+    const mod = resolveFinish(f.id, reduced);
     mod.step(f.state, d, world.events);
     return !mod.done(f.state);
   });

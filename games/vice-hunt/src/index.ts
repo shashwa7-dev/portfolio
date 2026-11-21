@@ -214,7 +214,7 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
       options.onBigfoot?.(big);
     }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    drawScene(ctx, scene, world, loadedArt());
+    drawScene(ctx, scene, world, loadedArt(), reducedMotion);
     raf = requestAnimationFrame(frame);
   };
   const onVisibility = () => {

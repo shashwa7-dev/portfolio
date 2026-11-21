@@ -152,7 +152,7 @@ interface FinishModule<S> {
   start(c: Animal, world: World, rng: Rng): S;  // pure
   step(s: S, dt: number, out: GameEvent[]): void; // pure, world time only; pushes events
   done(s: S): boolean;
-  draw(ctx: CanvasRenderingContext2D, s: S, art: Art): void; // no module state
+  draw(ctx: CanvasRenderingContext2D, s: S, art: Art, scratch: HTMLCanvasElement): void; // no module state; `scratch` is the scene's offscreen canvas for the white hit flash
   reduced?: FinishId;                              // the gentle version to use under reduced motion
 }
 ```

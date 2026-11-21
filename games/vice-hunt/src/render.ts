@@ -1,5 +1,5 @@
 import { DEATHS, deathPose, newPose, type Puff } from "./death";
-import { FINISHES } from "./modules";
+import { resolveFinish } from "./modules";
 import { drawSprite, enterSprite, frameOf } from "./modules/draw";
 import type { Rng } from "./rng";
 import type { Art } from "./sprites";
@@ -120,10 +120,11 @@ export function drawScene(
   scene: Scene,
   world: World,
   art: Art | null,
+  reduced: boolean,
 ): void {
   ctx.clearRect(0, 0, world.width, world.height);
   if (art) {
-    for (const f of world.finishing) FINISHES[f.id].draw(ctx, f.state, art, scene.scratch);
+    for (const f of world.finishing) resolveFinish(f.id, reduced).draw(ctx, f.state, art, scene.scratch);
     for (const a of world.animals) drawAnimal(ctx, scene, art, a);
   }
   for (const p of scene.poofs) drawPoof(ctx, p);

@@ -3,10 +3,11 @@ import { MAX_ALIVE, MAX_DT, SEA_LINE } from "./config";
 import { CREATURES, KINDS, isRare, pointsFor } from "./creatures";
 import type { GameEvent } from "./events";
 import { mulberry32 } from "./rng";
-import { type Animal, type World, createWorld, damage, drain, resize, shoot, spawn, step } from "./world";
+import { type Animal, type World, createWorld, damage, drain, resize, shoot as shootWith, spawn, step } from "./world";
 import type { Kind } from "./types";
 
 const DT = 1 / 60;
+const shoot = (world: World, x: number, y: number) => shootWith(world, x, y, mulberry32(7));
 const make = () => {
   const rng = mulberry32(1);
   return { rng, world: createWorld(1000, 400, rng) };
