@@ -505,6 +505,13 @@
   --duration-gta-vinyl: 6s;
   --duration-gta-score: 300ms;
   --duration-gta-chip-glow: 1s;
+  /* The footer palm (components/gta6/FooterPalm.module.css): one hover sway,
+     the slow idle sway while the mode is on (ambient, outside the UI budget on
+     purpose), and the pop a click plays before it acts (FooterPalm.tsx waits
+     for it, reading this value). */
+  --duration-gta-palm-sway: 900ms;
+  --duration-gta-palm-idle: 4s;
+  --duration-gta-palm-pop: 250ms;
   --duration-glyph-wave: 1100ms;
   --duration-live-pulse: 1800ms;
   --duration-live-ring: 280ms;
@@ -513,6 +520,8 @@
   --duration-backdrop-step: 20ms;
   --duration-backdrop-fill: 240ms;
   --ease-spin-clip: cubic-bezier(0.45, 0, 0.55, 1);
+  /* The footer palm's sways: a soft ease in and out, like a frond in wind. */
+  --ease-gta-palm-sway: cubic-bezier(0.45, 0, 0.55, 1);
   --duration-goggles-on: 420ms;
   --duration-goggles-off: 240ms;
   --duration-goggles-glint: 650ms;

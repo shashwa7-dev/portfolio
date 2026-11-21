@@ -5,6 +5,7 @@ import { Star } from "@phosphor-icons/react/ssr";
 import { GTA6_ENABLED } from "@/lib/gta6";
 import { gtaMode } from "@/lib/gta6/store";
 import { starsFor } from "@/lib/gta6/stars";
+import { isGtaDesktop } from "@/components/gta6/useDesktop";
 import {
   audioNow,
   loadSample,
@@ -61,7 +62,8 @@ import {
  * streak, so leaving the mode mid-spin does not throw you straight back in).
  * The meter empties whenever the spin drops below speed. The first flick
  * starts loading the YouTube API, inside the gesture, so the mode's track can
- * play with sound.
+ * play with sound. The mode is desktop only (`isGtaDesktop`): on phones and
+ * tablets the photo just spins, with no meter and no mode.
  *
  * The physics runs in a rAF loop and writes the transform straight to the
  * element, not through React state, so a spin never re-renders the hero.
@@ -233,7 +235,7 @@ export default function SpinAvatar({ photo, children, onClick, ref, ...rest }: P
       else if (c.scold === "spent") c.scold = "ready";
     }, fade * 1000);
   }
-  const state = useRef({ angle: 0, speed: 0, frame: 0, last: 0, captured: false, clicked: false, fastFor: 0, stars: 0 });
+  const state = useRef({ angle: 0, speed: 0, frame: 0, last: 0, captured: false, clicked: false, fastFor: 0, stars: 0, gta: false });
 
   /** The wanted meter, written straight to the element like the transform. */
   function setStars(stars: number) {
@@ -272,7 +274,7 @@ export default function SpinAvatar({ photo, children, onClick, ref, ...rest }: P
     let dt = Math.min(Math.max((now - s.last) / 1000, 0), 1 / 20);
     s.last = now;
     s.fastFor = Math.abs(s.speed) >= SONG_SPEED ? s.fastFor + dt : 0;
-    if (GTA6_ENABLED) setStars(starsFor(s.fastFor, SONG_AFTER));
+    if (GTA6_ENABLED) setStars(s.gta ? starsFor(s.fastFor, SONG_AFTER) : 0);
     else if (s.fastFor >= SONG_AFTER) playClip();
     while (dt > 0) {
       step(Math.min(dt, STEP));
@@ -298,7 +300,8 @@ export default function SpinAvatar({ photo, children, onClick, ref, ...rest }: P
     s.clicked = false;
     playSpinSound("flick");
     if (GTA6_ENABLED) {
-      if (!primedYouTube.current) {
+      s.gta = isGtaDesktop();
+      if (s.gta && !primedYouTube.current) {
         primedYouTube.current = true;
         void import("@/components/common/youtube").then((m) => m.primeYouTube());
       }
@@ -346,6 +349,7 @@ export default function SpinAvatar({ photo, children, onClick, ref, ...rest }: P
       type="button"
       aria-label="Spin the photo"
       aria-keyshortcuts="F"
+      data-spin-avatar=""
       {...rest}
       ref={setButton}
       onClick={(e) => {
