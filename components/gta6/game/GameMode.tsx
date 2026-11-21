@@ -8,8 +8,8 @@ import Entry from "@/components/gta6/game/Entry";
 import Hud, { type TimeChoice } from "@/components/gta6/game/Hud";
 import Results from "@/components/gta6/game/Results";
 import { timeOfDay } from "@/lib/gta6/timeOfDay";
-import { callout, emptyTally, killLabel, recordKill, recordShot } from "@/lib/gta6/streak";
-import { totalScore } from "@/lib/gta6/score";
+import { callout, emptyTally, killLabel, recordHit, recordKill, recordShot } from "@/lib/gta6/streak";
+import { scoreFor, totalScore } from "@/lib/gta6/score";
 import s from "@/components/gta6/game/game.module.css";
 
 type HuntModule = typeof import("@games/vice-hunt");
@@ -67,7 +67,7 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
   const [phase, setPhase] = useState<Phase>("entry");
   // Bumped by Play again, so the game effect starts a fresh one.
   const [round, setRound] = useState(0);
-  const [tally, setTally] = useState(emptyTally);
+  const [tally, setTally] = useState(() => emptyTally(game.KINDS));
   const [ammo, setAmmo] = useState({ rounds: game.ROUNDS, reloading: false });
   const [pops, setPops] = useState<Pop[]>([]);
   const [shout, setShout] = useState<{ id: number; text: string } | null>(null);
@@ -131,9 +131,9 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
       hunt = game.startHunt(host.current, {
         muted: false,
         showScore: false,
-        onShot: (_x, _y, hit) => setTally((t) => recordShot(t, hit !== null)),
+        onShot: (_x, _y, hit) => setTally((t) => (hit ? recordHit(recordShot(t), hit) : recordShot(t))),
         onKill: (kind, x, y, streak) => {
-          setTally((t) => recordKill(t, kind, streak));
+          setTally((t) => recordKill(t, kind, streak, scoreFor(game.pointsFor(kind), streak)));
           const id = ++nextId.current;
           setPops((p) => [...p, { id, x, y, label: killLabel(kind) }]);
           const text = callout(streak);
@@ -172,7 +172,7 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
   const latest = last ? { kind: last.kind, count: tally.log.length } : null;
 
   const playAgain = () => {
-    setTally(emptyTally());
+    setTally(emptyTally(game.KINDS));
     setAmmo({ rounds: game.ROUNDS, reloading: false });
     setPops([]);
     setShout(null);
@@ -260,7 +260,7 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
       {phase === "entry" && <Entry onDone={() => setPhase("play")} />}
 
       {phase === "results" && (
-        <Results tally={tally} icons={icons} onAgain={playAgain} onBack={() => close.current()} />
+        <Results tally={tally} icons={icons} pointsFor={game.pointsFor} onAgain={playAgain} onBack={() => close.current()} />
       )}
     </div>,
     document.body,

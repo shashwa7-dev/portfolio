@@ -1,43 +1,38 @@
 import { describe, expect, it } from "vitest";
-import { POINTS, scoreFor, totalScore } from "./score";
-import { emptyTally, recordKill } from "./streak";
+import { scoreFor, totalScore } from "./score";
+import { emptyTally, recordKill, recordPenalty } from "./streak";
 
 describe("scoreFor", () => {
-  it("gives each animal its points for a lone kill", () => {
-    expect(POINTS).toEqual({ rabbit: 100, iguana: 150, flamingo: 200, bigfoot: 1000, cow: 0, tiger: 0, shark: 0, merman: 0, ufo: 0 });
-    expect(scoreFor("rabbit", 1)).toBe(100);
-    expect(scoreFor("iguana", 1)).toBe(150);
-    expect(scoreFor("flamingo", 1)).toBe(200);
-    expect(scoreFor("bigfoot", 1)).toBe(1000);
+  it("is the base for a lone kill", () => {
+    expect(scoreFor(100, 1)).toBe(100);
+    expect(scoreFor(100, 0)).toBe(100);
   });
   it("adds 50% for a double", () => {
-    expect(scoreFor("rabbit", 2)).toBe(150);
-    expect(scoreFor("iguana", 2)).toBe(225);
-    expect(scoreFor("flamingo", 2)).toBe(300);
-    expect(scoreFor("bigfoot", 2)).toBe(1500);
+    expect(scoreFor(100, 2)).toBe(150);
+    expect(scoreFor(150, 2)).toBe(225);
   });
   it("doubles a triple or more", () => {
-    expect(scoreFor("rabbit", 3)).toBe(200);
-    expect(scoreFor("iguana", 3)).toBe(300);
-    expect(scoreFor("flamingo", 5)).toBe(400);
-    expect(scoreFor("bigfoot", 9)).toBe(2000);
-  });
-  it("treats a streak of 0 like a lone kill", () => {
-    expect(scoreFor("iguana", 0)).toBe(150);
+    expect(scoreFor(100, 3)).toBe(200);
+    expect(scoreFor(3000, 5)).toBe(6000);
   });
 });
 
 describe("totalScore", () => {
-  it("is 0 for an empty tally", () => {
-    expect(totalScore(emptyTally())).toBe(0);
+  const e = (...points: number[]) => ({ entries: points.map((p) => ({ kind: "cow" as const, points: p })) });
+  it("is 0 with no entries", () => {
+    expect(totalScore(e())).toBe(0);
+    expect(totalScore(emptyTally(["rabbit"]))).toBe(0);
   });
-  it("sums every kill at its own streak", () => {
-    let t = emptyTally();
-    t = recordKill(t, "rabbit", 1); // 100
-    t = recordKill(t, "iguana", 2); // 225
-    t = recordKill(t, "flamingo", 3); // 400
-    t = recordKill(t, "rabbit", 4); // 200
-    t = recordKill(t, "bigfoot", 1); // 1000
-    expect(totalScore(t)).toBe(1925);
+  it("clamps at zero at every step", () => {
+    expect(totalScore(e(600, -500))).toBe(100);
+    expect(totalScore(e(-500, 600))).toBe(600);
+    expect(totalScore(e(200, -500, 600))).toBe(600);
+  });
+  it("folds kills and penalties from a tally", () => {
+    let t = emptyTally(["rabbit", "cow"]);
+    t = recordKill(t, "rabbit", 2, scoreFor(100, 2)); // 150
+    t = recordPenalty(t, "cow", -500); // clamped to 0
+    t = recordKill(t, "rabbit", 1, scoreFor(100, 1)); // 100
+    expect(totalScore(t)).toBe(100);
   });
 });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { accuracy, callout, emptyTally, killLabel, recordKill, recordShot } from "./streak";
+import { accuracy, callout, emptyTally, hitCount, killLabel, recordHit, recordKill, recordPenalty, recordShot } from "./streak";
 
 describe("callout", () => {
   it("says nothing for a lone kill", () => {
@@ -32,29 +32,48 @@ describe("killLabel", () => {
   });
 });
 
+const ALL = ["rabbit", "iguana", "flamingo", "cow", "tiger", "shark", "merman", "ufo", "bigfoot"] as const;
+const zeros = Object.fromEntries(ALL.map((k) => [k, 0]));
+
 describe("tally", () => {
-  it("counts shots, hits, kills and the best streak", () => {
-    let t = emptyTally();
-    t = recordShot(t, true);
-    t = recordKill(t, "rabbit", 1);
-    t = recordShot(t, false);
-    t = recordShot(t, true);
-    t = recordKill(t, "iguana", 1);
-    t = recordShot(t, true);
-    t = recordKill(t, "rabbit", 2);
-    t = recordShot(t, true);
-    t = recordKill(t, "flamingo", 3);
-    t = recordShot(t, true);
-    t = recordKill(t, "rabbit", 1);
-    expect(t.shots).toBe(6);
-    expect(t.hits).toBe(5);
-    expect(t.kills).toEqual({ rabbit: 3, iguana: 1, flamingo: 1, cow: 0, tiger: 0, shark: 0, merman: 0, ufo: 0, bigfoot: 0 });
+  it("starts with every kind at zero", () => {
+    const t = emptyTally(ALL);
+    expect(t.hits).toEqual(zeros);
+    expect(t.kills).toEqual(zeros);
+    expect(t.met).toEqual([]);
+    expect(t.entries).toEqual([]);
+  });
+  it("counts shots, kills, the best streak and the log", () => {
+    let t = emptyTally(ALL);
+    t = recordShot(t);
+    t = recordKill(t, "rabbit", 1, 100);
+    t = recordShot(t);
+    t = recordKill(t, "rabbit", 3, 200);
+    expect(t.shots).toBe(2);
+    expect(t.kills).toEqual({ ...zeros, rabbit: 2 });
     expect(t.bestStreak).toBe(3);
+    expect(t.log).toEqual([{ kind: "rabbit", streak: 1 }, { kind: "rabbit", streak: 3 }]);
+    expect(t.entries).toEqual([{ kind: "rabbit", points: 100 }, { kind: "rabbit", points: 200 }]);
+  });
+  it("counts hits per kind and records a kind as met once", () => {
+    let t = emptyTally(ALL);
+    t = recordHit(t, "cow");
+    t = recordHit(t, "cow");
+    expect(t.hits.cow).toBe(2);
+    expect(t.met).toEqual(["cow"]);
+    expect(hitCount(t)).toBe(2);
+  });
+  it("a penalty adds a negative entry and no kill", () => {
+    const t = recordPenalty(emptyTally(ALL), "cow", -500);
+    expect(t.kills.cow).toBe(0);
+    expect(t.entries).toEqual([{ kind: "cow", points: -500 }]);
   });
   it("does not change the tally it was given", () => {
-    const t = emptyTally();
-    recordShot(t, true);
-    recordKill(t, "bigfoot", 1);
-    expect(t).toEqual(emptyTally());
+    const t = emptyTally(ALL);
+    recordShot(t);
+    recordHit(t, "cow");
+    recordKill(t, "bigfoot", 1, 1000);
+    recordPenalty(t, "cow", -500);
+    expect(t).toEqual(emptyTally(ALL));
   });
 });

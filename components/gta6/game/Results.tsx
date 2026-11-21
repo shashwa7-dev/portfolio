@@ -2,14 +2,16 @@
 
 import { useEffect, useId, useRef } from "react";
 import type { Kind } from "@games/vice-hunt";
-import { accuracy, type Tally } from "@/lib/gta6/streak";
-import { POINTS, totalScore } from "@/lib/gta6/score";
+import { accuracy, hitCount, type Tally } from "@/lib/gta6/streak";
+import { totalScore } from "@/lib/gta6/score";
 import { KINDS } from "@/components/gta6/game/Hud";
 import s from "@/components/gta6/game/game.module.css";
 
 type Props = {
   tally: Tally;
   icons: Record<Kind, string>;
+  /** A kind's lone-kill points (the game package's `pointsFor`). */
+  pointsFor(kind: Kind): number;
   onAgain(): void;
   onBack(): void;
 };
@@ -23,7 +25,7 @@ type Props = {
  * backdrop, the card's text) keeps focus where it is, so focus is never
  * stranded outside the two buttons.
  */
-export default function Results({ tally, icons, onAgain, onBack }: Props) {
+export default function Results({ tally, icons, pointsFor, onAgain, onBack }: Props) {
   const title = useId();
   const again = useRef<HTMLButtonElement>(null);
   const back = useRef<HTMLButtonElement>(null);
@@ -69,7 +71,7 @@ export default function Results({ tally, icons, onAgain, onBack }: Props) {
         <p className={`${s.points} ${s.mono}`}>
           {[KINDS.slice(0, 2), KINDS.slice(2)].map((pair) => (
             <span key={pair[0].kind}>
-              {pair.map(({ kind }) => `${kind.toUpperCase()} ${POINTS[kind]}`).join(" · ")}
+              {pair.map(({ kind }) => `${kind.toUpperCase()} ${pointsFor(kind)}`).join(" · ")}
             </span>
           ))}
           <span>DOUBLE +50% · TRIPLE +100%</span>
@@ -86,7 +88,7 @@ export default function Results({ tally, icons, onAgain, onBack }: Props) {
             </div>
           ))}
           <dt data-rule="">Accuracy</dt>
-          <dd data-rule="" className={s.display}>{accuracy(tally.hits, tally.shots)}%</dd>
+          <dd data-rule="" className={s.display}>{accuracy(hitCount(tally), tally.shots)}%</dd>
           <dt>Best streak</dt>
           <dd className={s.display}>{tally.bestStreak}</dd>
         </dl>

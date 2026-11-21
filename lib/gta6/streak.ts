@@ -18,27 +18,58 @@ export function killLabel(kind: Kind): string {
   return kind.toUpperCase();
 }
 
-/** One kill, at the streak it was made on (what its points depend on). */
+/** One kill, at the streak it was made on. */
 export type Kill = { kind: Kind; streak: number };
 
+/** One scoring event: signed points, already streak-weighted. */
+export type Entry = { kind: Kind; points: number };
+
 /** One hunt's numbers, for the HUD and the results card. `log` is every kill
- *  in order, so the score can weigh each by its streak and the HUD can light
- *  the latest one's chip. */
-export type Tally = { shots: number; hits: number; kills: Kills; bestStreak: number; log: readonly Kill[] };
+ *  in order (the HUD lights the latest chip); `entries` is every kill and
+ *  penalty in order, which the score folds. `met` lists kinds hit at least once. */
+export type Tally = {
+  shots: number;
+  hits: Record<Kind, number>;
+  kills: Kills;
+  met: readonly Kind[];
+  bestStreak: number;
+  log: readonly Kill[];
+  entries: readonly Entry[];
+};
 
-export function emptyTally(): Tally {
-  return { shots: 0, hits: 0, kills: { rabbit: 0, iguana: 0, flamingo: 0, cow: 0, tiger: 0, shark: 0, merman: 0, ufo: 0, bigfoot: 0 }, bestStreak: 0, log: [] };
+function zeros(kinds: readonly Kind[]): Record<Kind, number> {
+  return Object.fromEntries(kinds.map((k) => [k, 0])) as Record<Kind, number>;
 }
 
-export function recordShot(t: Tally, hit: boolean): Tally {
-  return { ...t, shots: t.shots + 1, hits: t.hits + (hit ? 1 : 0) };
+export function emptyTally(kinds: readonly Kind[]): Tally {
+  return { shots: 0, hits: zeros(kinds), kills: zeros(kinds), met: [], bestStreak: 0, log: [], entries: [] };
 }
 
-export function recordKill(t: Tally, kind: Kind, streak: number): Tally {
+export function recordShot(t: Tally): Tally {
+  return { ...t, shots: t.shots + 1 };
+}
+
+export function recordHit(t: Tally, kind: Kind): Tally {
+  return { ...t, hits: { ...t.hits, [kind]: t.hits[kind] + 1 }, met: t.met.includes(kind) ? t.met : [...t.met, kind] };
+}
+
+/** Total hits across every kind. */
+export function hitCount(t: Pick<Tally, "hits">): number {
+  return Object.values(t.hits).reduce((a, b) => a + b, 0);
+}
+
+/** `points` is the kill's `scoreFor(base, streak)`. */
+export function recordKill(t: Tally, kind: Kind, streak: number, points: number): Tally {
   return {
     ...t,
     kills: { ...t.kills, [kind]: t.kills[kind] + 1 },
     bestStreak: Math.max(t.bestStreak, streak),
     log: [...t.log, { kind, streak }],
+    entries: [...t.entries, { kind, points }],
   };
+}
+
+/** `points` is negative; a penalty is not a kill. */
+export function recordPenalty(t: Tally, kind: Kind, points: number): Tally {
+  return { ...t, entries: [...t.entries, { kind, points }] };
 }
