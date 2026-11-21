@@ -9,7 +9,7 @@ export type Lane = "sky" | "ground" | "sea";
 export type HitRule = { hits: readonly [number, number]; within?: number };
 export type Spawn = { weight: number } | { perMinute: number; after?: number };
 
-export type MoveId = "hop" | "dash" | "bob" | "swoop" | "walk" | "surface" | "hover";
+export type MoveId = "hop" | "dash" | "glide" | "float" | "swoop" | "strut" | "surface" | "hover" | "stomp";
 export type HitReactionId = "none" | "flinch" | "garland";
 export type FinishId = "falls" | "deflates" | "pounces" | "rocket" | "fountain" | "crashes" | "jet";
 export type ThreatId = "claw-swipe" | "throw";
@@ -55,11 +55,11 @@ export const CREATURES = {
   },
   flamingo: {
     role: "prey", lane: "sky", size: [104, 55], speed: [0.12, 0.18], spawn: { weight: 0.27 },
-    rule: { hits: [1, 1] }, move: "bob", hit: "none", finish: "falls", points: 200,
+    rule: { hits: [1, 1] }, move: "glide", hit: "none", finish: "falls", points: 200,
   },
   cow: {
     role: "protected", lane: "sky", size: [118, 83], speed: [0.05, 0.065], spawn: { perMinute: 0.4 },
-    rule: { hits: [2, 2] }, move: "bob", hit: "garland", finish: "deflates", penalty: { perHit: -500 },
+    rule: { hits: [2, 2] }, move: "float", hit: "garland", finish: "deflates", penalty: { perHit: -500 },
   },
   tiger: {
     role: "protected", lane: "sky", size: [136, 75], speed: [0.16, 0.19], spawn: { perMinute: 0.4 },
@@ -68,7 +68,7 @@ export const CREATURES = {
   },
   shark: {
     role: "trophy", lane: "ground", size: [84, 121], speed: [0.07, 0.08], spawn: { perMinute: 0.4 },
-    rule: { hits: [3, 3] }, move: "walk", hit: "flinch", finish: "rocket", points: 600,
+    rule: { hits: [3, 3] }, move: "strut", hit: "flinch", finish: "rocket", points: 600,
   },
   merman: {
     // He surfaces rather than travels (see the world's sea-lane movement).
@@ -81,7 +81,7 @@ export const CREATURES = {
   },
   bigfoot: {
     role: "hostile", lane: "ground", size: [109, 153], speed: [0.05, 0.075], spawn: { perMinute: 0.22, after: 30 },
-    rule: { hits: [20, 20] }, move: "walk", hit: "flinch", finish: "jet", points: 3000,
+    rule: { hits: [20, 20] }, move: "stomp", hit: "flinch", finish: "jet", points: 3000,
     threat: { kind: "throws", perHit: 0.5, max: 1.5, every: 1.5, attack: "throw", provokedBy: "first-hit" },
     boss: { bar: true },
   },

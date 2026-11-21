@@ -48,7 +48,7 @@ describe("creature registry", () => {
   it("invalid role combinations do not type-check", () => {
     const base = {
       lane: "ground", size: [1, 1], speed: [1, 1], spawn: { weight: 1 }, rule: { hits: [1, 1] },
-      move: "walk", hit: "none", finish: "falls",
+      move: "strut", hit: "none", finish: "falls",
     } as const;
     // @ts-expect-error a prey has no threat
     const prey: Prey = { ...base, role: "prey", points: 1, threat: { kind: "retaliates", damage: 1, attack: "claw-swipe" } };

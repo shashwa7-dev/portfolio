@@ -5,7 +5,6 @@ export type Art = {
   sprites: Record<Kind, readonly [HTMLImageElement, HTMLImageElement]>;
 };
 
-
 let art: Art | null = null;
 let pending: Promise<void> | null = null;
 
