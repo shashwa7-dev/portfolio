@@ -161,3 +161,40 @@ For the game: a local package reached by a path alias and dynamic import (chosen
 ## Left to the builder
 
 Exact z-order inside the hero, crack drawing details, poof particles, sound envelope numbers, the rabbit-pair rule. Keep within the anti-goals.
+
+## Revision 2 (2026-11-21): game mode revamp
+
+Approved by the owner in the visual companion (game-mode-layout A, radio R1, beach scene v14). This section overrides anything above it that conflicts.
+
+### Platform
+The whole GTA 6 mode is desktop only: viewport at least 1024px wide and a fine pointer (`(min-width: 1024px) and (pointer: fine)`). Elsewhere the spin trigger and footer palm do nothing GTA-related and the site is exactly as without the flag.
+
+### Footer palm and navigation
+The palm renders only on the homepage (`usePathname() === "/"`). Leaving the homepage turns the mode off (unmount cleanup sets the store false).
+
+### Hero while the mode is on (not playing)
+As before (wallpaper slideshow, veil, accents, cluster), plus: the background dot-matrix brand mark (`BrandBackdrop` and `BrandBackdropFill`) is hidden. Wallpapers load lazily: `01` eagerly, the rest after the first has loaded; under reduced motion only `01` is rendered.
+
+### Game mode (after picking up the revolver)
+A full-viewport overlay (`position: fixed; inset: 0`, above everything), not inside the hero. While it is open: page scroll locked, the dock, chat bubble, starter pack card and command palette shortcut are hidden or inert (`inert` on the page root), the cursor is the crosshair.
+
+- **Scene, back to front, all static (no mouse parallax):** sky, clouds, sea (CraftPix "Free Beach 2D Backgrounds", scene 3 layers, `public/gta6/beach/`), sailboat (small, far, bobbing and drifting across the bay), Golden Gate-style bridge across the full width (`bridge.svg`) with fog rolling under it and random cars crossing both ways, the billboard (behind the bridge, turned about 28 degrees on its Y axis to face the bridge, faint fogged stand, three lamps washing its face, the 13-wallpaper crossfade on it), sand and props (`props.webp`: the beach bar with an LED string, surfboards, two umbrellas, lounger, two palms on the edges leaning toward each other), two lamp posts set back on the sand behind the props. The reference is `.superpowers/sdd/2026-11-20-gta6-mod/scene-reference.html` (v14); match it.
+- **Time of day:** morning (6:00 to 17:00), evening (17:00 to 20:00), night (20:00 to 6:00) from the visitor's clock, with a HUD switch (Morning, Evening, Night, Auto). Morning: natural colours, lights off. Evening: purple-pink-orange sky, blue water with an orange sun shimmer (never green), billboard lamps, bar LEDs, lamp posts and car lights on. Night: dark-blue sky, moon and stars, the scene dimmed, every light on, red tower lights and deck lights on the bridge. Changes fade over about 1.2 s. The pure function `timeOfDay(hour)` lives in `lib/gta6/timeOfDay.ts` and is tested.
+- **HUD (layout A):** radio top left; time switch top centre; wanted stars and kill counts (big numbers with each animal's icon and name) top right; six-round cylinder ammo bottom right; "Esc exit" bottom centre.
+- **Revolver:** first person, no hands (`games/vice-hunt/src/art/revolver.svg`), replacing the pistol art. Six rounds; after the sixth shot it reloads automatically with a cylinder spin (about 1 s, no firing meanwhile); R reloads early.
+- **Pick-up button:** a revolver icon (placeholder drawn from the revolver art until the owner's Figma icons arrive), loading ring until the game is ready.
+- **Drama (controller's choice from the approved extras):** cinematic entry (letterbox bars, a short push-in, the "VICE HUNT" title for about 1.5 s, then the HUD slides in); "+1 RABBIT" style pop-ups at each kill and "DOUBLE!" or "TRIPLE!" for kills within 1.5 s of each other; the Bigfoot event (red edge pulse, "BIGFOOT SPOTTED" banner, music dips); a results card on Esc (kills per animal, accuracy, best streak, Play again, Back to site). No film grain.
+- **Balance:** about 40% slower than revision 1: rabbit 0.33 to 0.45, iguana 0.15 to 0.36 (with its pauses), flamingo 0.12 to 0.18, bigfoot 0.05 to 0.075 hero widths per second. One hit kills a rabbit, iguana or flamingo; Bigfoot takes 3. Each animal has its own death animation (rabbit flips and lands on its back, iguana flips and slides with twitching legs, flamingo spirals down with feathers, Bigfoot staggers and topples backwards with a dust puff), drawn from the existing sprites with transforms only.
+- **Esc:** ignored while a dialog has focus or the event was already handled.
+
+### Radio
+Replaces the single track. The playlist is the owner's 30 YouTube ids, in order, starting with `IeqQ-UWgxuY`, looping. Compact glass card: cover thumbnail (`i.ytimg.com/vi/<id>/mqdefault.jpg`), title (from the player's own `getVideoData().title` once loaded, else "Track N"), previous, play/pause, next, mute, and a list button that drops down all tracks. The mode no longer ends when a track ends; the next one plays. If the YouTube API never loads (blocked), the card says "Radio unavailable" and the mode continues silently. The hidden player is at least 200x200 (off-screen, `opacity: 0`).
+
+### Sound
+Short recorded effects, CC0 (or equivalent free licence, credited in `public/gta6/sfx/CREDITS.md`), as `.mp3` in `public/gta6/sfx/`, loaded only when the game opens: revolver shot, cylinder spin plus click (reload), dry click (empty), hit thud, a short kill cue, a low entry stinger, and a soft ocean-waves loop under the music. Mixed quietly under the radio. Silent under `navigator.webdriver` and when the visitor mutes the radio. The owner may swap any file by ear later.
+
+### Ids (playlist, in order)
+IeqQ-UWgxuY 9RN2aNH0BKU 2FRnfzphm8s 7ySjFIG3s48 7oEceZdFZlk 8DSBy4G4IeA 2-V8kYT1pvE Wp6UBRv9rug dBrRBZy8OTs tfdwcqfuxwA 1Vf4mMCpNY0 QtXby3twMmI QcMEmuPFlwM s86K-p089R8 FLTchCiC0T0 SDTZ7iX4vTQ 0Z8eMHVwFDw CxM-apTyHiQ _K6MoWuAXjQ b6ZnjrvRu6Y Gft_kG9cfJg Ny8aOB9iP3A r3Pr1_v7hsw h4UqMyldS7Q cEGMmEvGe7c EwdsnGfrd-k p3j2NYZ8FKs _JZom_gVfuw md4ujXhHzLs rzRqEWJYwX4
+
+### Final-review fixes folded in
+Palm homepage-only and mode-off on navigation; focus returns to the avatar button (or the palm) after Exit, Exit named "Exit Vice City mode"; the YouTube script rejects after a timeout so a blocked API never hangs; `check-gta6-bundle.sh` fails on zero stylesheets; flag-off contract wording in CLAUDE.md is "no mode markup or lazy GTA chunks".
