@@ -475,6 +475,16 @@
   --duration-gta-wall-turn: 5s;
   /* One turn of the ring round Vice Hunt's pistol while the game loads. */
   --duration-gta-loader: 900ms;
+  /* Vice Hunt's beach scene (components/gta6/scene): a change of time of day
+     fades every light and tint over this; the rest are its ambient loops, far
+     outside the UI budget on purpose. Fog bands drift over multiples of the
+     base, so they never line up. */
+  --duration-gta-time-fade: 1200ms;
+  --duration-gta-fog: 38s;
+  --duration-gta-boat: 70s;
+  --duration-gta-boat-bob: 3200ms;
+  --duration-gta-blink: 2s;
+  --duration-gta-twinkle: 3s;
   --duration-glyph-wave: 1100ms;
   --duration-live-pulse: 1800ms;
   --duration-live-ring: 280ms;
