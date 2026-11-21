@@ -7,7 +7,7 @@ import { createSound, type SfxUrls } from "./sound";
 import { loadedArt, preloadHunt, svgUrl } from "./sprites";
 import type { Kind } from "./creatures";
 import type { Kills } from "./types";
-import { createWorld, resize, shoot, step } from "./world";
+import { createWorld, drain, resize, shoot, step } from "./world";
 
 export type { Kills } from "./types";
 export type { Kind } from "./creatures";
@@ -143,11 +143,11 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
       sound.empty(); // reloading: dry click, no shot
       return;
     }
-    const { hit, killed } = shoot(world, x, y);
+    const { hit, finished } = shoot(world, x, y);
     gun.fire();
     sound.shot();
     const hb = host.getBoundingClientRect();
-    if (killed && hit) {
+    if (finished && hit) {
       addCorpse(scene, world, hit, rng);
       sound.kill();
       showKills(world.kills);
@@ -203,6 +203,7 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
     const dt = last === null ? 0 : (now - last) / 1000;
     last = now;
     step(world, dt, rng);
+    drain(world); // the events become callbacks in a later task; drop them so they do not pile up
     stepScene(scene, Math.min(dt, 0.05));
     if (tick(ammo, dt)) reportAmmo();
     const big = world.animals.some((a) => a.kind === "bigfoot");

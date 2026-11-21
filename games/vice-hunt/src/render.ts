@@ -157,9 +157,11 @@ function drawSprite(
 }
 
 function drawAnimal(ctx: CanvasRenderingContext2D, scene: Scene, art: Art, a: Animal, dpr: number): void {
+  const frames = art.sprites[a.kind];
+  if (!frames) return; // no decoded art for this kind: skip rather than crash
   ctx.save();
   enterSprite(ctx, a.x, a.y, a.w, a.vx < 0 ? -1 : 1);
-  drawSprite(ctx, scene, art.sprites[a.kind][frameOf(a)], a.w, a.h, a.flash, dpr);
+  drawSprite(ctx, scene, frames[frameOf(a)], a.w, a.h, a.flash, dpr);
   ctx.restore();
 
   if (a.kind === "bigfoot") {
@@ -169,13 +171,14 @@ function drawAnimal(ctx: CanvasRenderingContext2D, scene: Scene, art: Art, a: An
     ctx.fillStyle = "rgba(0,0,0,.55)";
     ctx.fillRect(bx - 1, by - 1, bw + 2, 7);
     ctx.fillStyle = "#ff3d5a";
-    ctx.fillRect(bx, by, bw * Math.max(0, a.hp / a.maxHp), 5);
+    ctx.fillRect(bx, by, bw * Math.max(0, (a.hp - a.hits) / a.hp), 5);
   }
 }
 
 function drawCorpse(ctx: CanvasRenderingContext2D, scene: Scene, art: Art, c: Corpse, dpr: number): void {
+  const frames = art.sprites[c.kind];
   const p: Pose = deathPose(c.kind, c.age, c.fall, pose);
-  if (p.alpha <= 0) return;
+  if (!frames || p.alpha <= 0) return;
   ctx.save();
   ctx.globalAlpha = p.alpha;
   enterSprite(ctx, c.x, c.y, c.w, c.dir);
@@ -185,7 +188,7 @@ function drawCorpse(ctx: CanvasRenderingContext2D, scene: Scene, art: Art, c: Co
   ctx.rotate(p.rot);
   ctx.scale(1, p.sy);
   ctx.translate(-ox, -oy);
-  drawSprite(ctx, scene, art.sprites[c.kind][p.frame < 0 ? c.frame : (p.frame as 0 | 1)], c.w, c.h, c.flash, dpr);
+  drawSprite(ctx, scene, frames[p.frame < 0 ? c.frame : (p.frame as 0 | 1)], c.w, c.h, c.flash, dpr);
   ctx.restore();
 }
 

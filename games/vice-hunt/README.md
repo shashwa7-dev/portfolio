@@ -26,7 +26,10 @@ The public entry is `src/index.ts`:
 
 Modules: `render.ts` (canvas: animals, corpses, poofs), `gun.ts` (first-person revolver and crosshair, DOM), `sound.ts`, `sprites.ts` (art decoding). Pure and tested: `ammo.ts` (`createAmmo`, `fire`, `startReload`, `tick`), `death.ts` (`deathPose(kind, age, fall, out)`, `DEATHS`). The pure simulation lives in `src/world.ts` and has no DOM access:
 
-- `createWorld(width, height, rng)`, `step(world, dt, rng)`, `shoot(world, x, y)`, `resize(world, width, height)`, `emptyKills()`
+- `createWorld(width, height, rng)`, `step(world, dt, rng)`, `shoot(world, x, y)` (returns `{ hit, finished }`), `resize(world, width, height)`, `emptyKills()`
+- The world pushes typed events (`GameEvent` in `src/events.ts`: hits, kills, penalties, damage, rares, the merman's escape, callouts, WASTED) onto `world.events`; the host takes them each frame with `drain(world)`.
+- `damage(world, hearts, source, x, y)` takes hearts (from 3, clamped at 0); at 0 the world is `wasted`, and `step` and `shoot` do nothing.
+- Hit rules: each animal counts `hits` against its rolled total `hp`. Cow and tiger hits give penalties and break the streak; Bigfoot's first hit provokes him. Rares roll a per-second chance while their kind is not alive (one rare on screen at a time, Bigfoot aside, never Bigfoot in the first 30 s). The merman lives on the sea lane (`SEA_LINE`), surfacing in place (`src/surface.ts`); only his part above the water is hittable.
 - `world.streak` is the current kill streak (`STREAK_WINDOW` in `config.ts`).
 - `spawn(world, rng, kind?)` is exported for tests; production spawning calls it without `kind`.
 - Every creature (lane, speed, hits, size, spawn, points) is one record in `src/creatures.ts`; timings live in `src/config.ts`.

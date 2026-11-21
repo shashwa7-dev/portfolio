@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { MAX_ALIVE, MAX_DT } from "./config";
-import { CREATURES, KINDS } from "./creatures";
+import { MAX_ALIVE, MAX_DT, SEA_LINE } from "./config";
+import { CREATURES, KINDS, isRare, pointsFor } from "./creatures";
+import type { GameEvent } from "./events";
 import { mulberry32 } from "./rng";
-import { createWorld, resize, shoot, spawn, step } from "./world";
+import { type Animal, type World, createWorld, damage, drain, resize, shoot, spawn, step } from "./world";
 import type { Kind } from "./types";
 
 const DT = 1 / 60;
@@ -18,11 +19,12 @@ describe("world", () => {
     expect(world.animals.length).toBeGreaterThan(0);
   });
 
-  it("never more than 6 alive over 120 s", () => {
+  it("never more than 6 commons alive over 120 s (rares come on top)", () => {
     const { rng, world } = make();
     for (let i = 0; i < 120 * 60; i++) {
       step(world, DT, rng);
-      expect(world.animals.length).toBeLessThanOrEqual(MAX_ALIVE);
+      expect(world.animals.filter((a) => !isRare(a.kind)).length).toBeLessThanOrEqual(MAX_ALIVE);
+      expect(world.animals.length).toBeLessThanOrEqual(MAX_ALIVE + 2);
     }
   });
 
@@ -33,7 +35,7 @@ describe("world", () => {
       for (let i = 0; i < 600 * 60; i++) {
         step(world, DT, rng);
         const bigs = world.animals.filter((a) => a.kind === "bigfoot").length;
-        if (world.time < 30) expect(bigs).toBe(0); // rares are not rolled yet (a later task)
+        if (world.time < 30) expect(bigs).toBe(0);
         expect(bigs).toBeLessThanOrEqual(1);
       }
     }
@@ -44,7 +46,7 @@ describe("world", () => {
     const seen = Object.fromEntries(KINDS.map((k) => [k, new Set<number>()])) as Record<Kind, Set<number>>;
     for (let i = 0; i < 2000; i++) {
       for (const k of Object.keys(seen) as Kind[]) {
-        seen[k].add(spawn(world, rng, k).maxHp);
+        seen[k].add(spawn(world, rng, k).hp);
       }
       world.animals = [];
     }
@@ -87,7 +89,7 @@ describe("world", () => {
 
   it("shoot misses empty space", () => {
     const { world } = make();
-    expect(shoot(world, 500, 200)).toEqual({ hit: null, killed: false });
+    expect(shoot(world, 500, 200)).toEqual({ hit: null, finished: false });
   });
 
   it("one shot kills a rabbit, an iguana or a flamingo", () => {
@@ -95,7 +97,7 @@ describe("world", () => {
       const { rng, world } = make();
       const a = spawn(world, rng, k);
       a.x = 400;
-      expect(shoot(world, a.x + a.w / 2, a.y + a.h / 2)).toEqual({ hit: a, killed: true });
+      expect(shoot(world, a.x + a.w / 2, a.y + a.h / 2)).toEqual({ hit: a, finished: true });
       expect(world.kills[k]).toBe(1);
     }
   });
@@ -106,8 +108,8 @@ describe("world", () => {
     a.x = 400;
     const cx = () => a.x + a.w / 2;
     const cy = a.y + a.h / 2;
-    for (let i = 0; i < 19; i++) expect(shoot(world, cx(), cy).killed).toBe(false);
-    expect(shoot(world, cx(), cy).killed).toBe(true);
+    for (let i = 0; i < 19; i++) expect(shoot(world, cx(), cy).finished).toBe(false);
+    expect(shoot(world, cx(), cy).finished).toBe(true);
     expect(world.kills.bigfoot).toBe(1);
     expect(world.animals).not.toContain(a);
   });
@@ -118,7 +120,7 @@ describe("world", () => {
     const killOne = () => {
       const a = spawn(world, rng, "rabbit");
       a.x = 400;
-      expect(shoot(world, a.x + a.w / 2, a.y + a.h / 2).killed).toBe(true);
+      expect(shoot(world, a.x + a.w / 2, a.y + a.h / 2).finished).toBe(true);
       return world.streak;
     };
     expect(world.streak).toBe(0);
@@ -152,11 +154,11 @@ describe("world", () => {
     const a = spawn(world, rng, "bigfoot");
     a.x = 400;
     const dir = Math.sign(a.vx);
-    const { hit, killed } = shoot(world, a.x + a.w / 2, a.y + a.h / 2);
+    const { hit, finished } = shoot(world, a.x + a.w / 2, a.y + a.h / 2);
     expect(hit).toBe(a);
-    expect(killed).toBe(false);
+    expect(finished).toBe(false);
     expect(a.flash).toBe(0.12);
-    expect(a.hp).toBe(19);
+    expect(a.hits).toBe(1);
     expect(a.x).toBe(400 - 6 * dir);
   });
 
@@ -209,5 +211,229 @@ describe("world", () => {
       }
     }
     expect(paused).toBe(true);
+  });
+});
+
+// Shoots an animal's centre (or `fy` of the way down its box).
+const hitAt = (world: World, a: Animal, fy = 0.5) => shoot(world, a.x + a.w / 2, a.y + a.h * fy);
+const ofType = <T extends GameEvent["type"]>(events: GameEvent[], type: T) =>
+  events.filter((e): e is Extract<GameEvent, { type: T }> => e.type === type);
+const quiet = () => {
+  const { rng, world } = make();
+  world.nextSpawn = Infinity;
+  return { rng, world };
+};
+// A merman fully up out of the water.
+const surfaced = (world: World, a: Animal) => {
+  a.surface = { phase: "up", t: 0, cycle: 0, from: 0 };
+  a.y = SEA_LINE * world.height - a.h * 0.78;
+};
+const run = (world: World, rng: () => number, seconds: number) => {
+  for (let i = 0; i < Math.round(seconds / DT); i++) step(world, DT, rng);
+};
+
+describe("world rules", () => {
+  it("cow two hits emit two penalty events of -500 and no kill event", () => {
+    const { rng, world } = quiet();
+    const a = spawn(world, rng, "cow");
+    a.x = 400;
+    expect(hitAt(world, a).finished).toBe(false);
+    expect(hitAt(world, a).finished).toBe(true);
+    const events = drain(world);
+    expect(ofType(events, "penalty").map((e) => e.points)).toEqual([-500, -500]);
+    expect(ofType(events, "kill")).toEqual([]);
+    expect(world.kills.cow).toBe(0);
+  });
+
+  it("a cow hit resets the streak", () => {
+    const { rng, world } = quiet();
+    const killRabbit = () => {
+      const r = spawn(world, rng, "rabbit");
+      r.x = 100;
+      expect(hitAt(world, r).finished).toBe(true);
+    };
+    killRabbit();
+    world.time += 1;
+    killRabbit();
+    expect(world.streak).toBe(2);
+    const cow = spawn(world, rng, "cow");
+    cow.x = 600;
+    hitAt(world, cow);
+    expect(world.streak).toBe(0);
+    expect(world.lastKill).toBe(-Infinity);
+    world.time += 0.5;
+    killRabbit();
+    expect(world.streak).toBe(1);
+    expect(ofType(drain(world), "kill").map((e) => e.streak)).toEqual([1, 2, 1]);
+  });
+
+  it("tiger: hits 1 and 2 emit hit events n=1,of=3 and n=2,of=3; hit 3 emits penalty -250 and no kill", () => {
+    const { rng, world } = quiet();
+    const a = spawn(world, rng, "tiger");
+    a.x = 400;
+    hitAt(world, a);
+    hitAt(world, a);
+    let events = drain(world);
+    expect(ofType(events, "hit").map(({ n, of }) => ({ n, of }))).toEqual([
+      { n: 1, of: 3 },
+      { n: 2, of: 3 },
+    ]);
+    expect(ofType(events, "penalty")).toEqual([]);
+    expect(hitAt(world, a).finished).toBe(true);
+    events = drain(world);
+    expect(ofType(events, "penalty").map((e) => e.points)).toEqual([-250]);
+    expect(ofType(events, "kill")).toEqual([]);
+  });
+
+  it('ufo spawned with rng giving 7 takes 7 hits; hit events have no "of"', () => {
+    const { world } = quiet();
+    const a = spawn(world, () => 0.99, "ufo");
+    a.x = 400;
+    for (let i = 0; i < 6; i++) expect(hitAt(world, a).finished).toBe(false);
+    expect(hitAt(world, a).finished).toBe(true);
+    const hits = ofType(drain(world), "hit");
+    expect(hits.map((e) => e.n)).toEqual([1, 2, 3, 4, 5, 6, 7]);
+    for (const e of hits) expect("of" in e).toBe(false);
+  });
+
+  it("merman: three hits within 1.1 s finish him (kill event, 600 base)", () => {
+    const { rng, world } = quiet();
+    const a = spawn(world, rng, "merman");
+    surfaced(world, a);
+    expect(hitAt(world, a, 0.2).finished).toBe(false);
+    run(world, rng, 0.3);
+    expect(hitAt(world, a, 0.2).finished).toBe(false);
+    run(world, rng, 0.3);
+    expect(hitAt(world, a, 0.2).finished).toBe(true);
+    const kills = ofType(drain(world), "kill");
+    expect(kills.map((e) => e.kind)).toEqual(["merman"]);
+    expect(pointsFor("merman")).toBe(600);
+  });
+
+  it("merman: second hit after 1.2 s does not finish; an escaped event follows when the window lapses", () => {
+    const { rng, world } = quiet();
+    const a = spawn(world, rng, "merman");
+    surfaced(world, a);
+    hitAt(world, a, 0.2);
+    expect(a.surface?.phase).toBe("duck");
+    run(world, rng, 1.2);
+    expect(hitAt(world, a, 0.2).finished).toBe(false);
+    const events = drain(world);
+    expect(ofType(events, "escaped").map((e) => e.kind)).toEqual(["merman"]);
+    expect(a.hits).toBe(0);
+  });
+
+  it("a flamingo in front of the cow takes the shot", () => {
+    const { rng, world } = quiet();
+    const f = spawn(world, rng, "flamingo");
+    const c = spawn(world, rng, "cow");
+    f.x = c.x = 400;
+    f.y = c.y = 60;
+    expect(shoot(world, 450, 85).hit?.kind).toBe("flamingo");
+  });
+
+  it("a shot at the water over a ducking merman misses", () => {
+    const { rng, world } = quiet();
+    const a = spawn(world, rng, "merman");
+    surfaced(world, a);
+    hitAt(world, a, 0.2);
+    drain(world);
+    run(world, rng, 0.5);
+    const y = SEA_LINE * world.height + 10;
+    expect(y).toBeGreaterThan(a.y + a.h * 0.15);
+    expect(y).toBeLessThan(a.y + a.h * 0.85);
+    expect(shoot(world, a.x + a.w / 2, y)).toEqual({ hit: null, finished: false });
+    expect(drain(world)).toEqual([]);
+  });
+
+  it("first hit on bigfoot sets provoked and emits rare met", () => {
+    const { rng, world } = quiet();
+    const a = spawn(world, rng, "bigfoot");
+    a.x = 400;
+    expect(ofType(drain(world), "rare")).toEqual([{ type: "rare", kind: "bigfoot", event: "appeared" }]);
+    expect(a.provoked).toBe(false);
+    hitAt(world, a);
+    expect(a.provoked).toBe(true);
+    expect(world.met.has("bigfoot")).toBe(true);
+    hitAt(world, a);
+    const events = drain(world);
+    expect(ofType(events, "rare")).toEqual([{ type: "rare", kind: "bigfoot", event: "met" }]);
+    expect(ofType(events, "callout").map((e) => e.text)).toEqual(["ANGRY!"]);
+    expect(ofType(events, "hit").every((e) => !("of" in e))).toBe(true);
+  });
+
+  it("damage clamps at 0 and emits wasted once", () => {
+    const { world } = quiet();
+    expect(world.hearts).toBe(3);
+    damage(world, 1.5, "tiger", 0, 0);
+    expect(world.hearts).toBe(1.5);
+    damage(world, 1.5, "tiger", 0, 0);
+    expect(world.hearts).toBe(0);
+    expect(world.wasted).toBe(true);
+    damage(world, 1.5, "tiger", 0, 0);
+    expect(world.hearts).toBe(0);
+    const events = drain(world);
+    expect(ofType(events, "damage").map((e) => e.hearts)).toEqual([1.5, 0]);
+    expect(ofType(events, "wasted")).toHaveLength(1);
+  });
+
+  it("wasted freezes the world", () => {
+    const { rng, world } = quiet();
+    const a = spawn(world, rng, "rabbit");
+    a.x = 400;
+    damage(world, 3, "bigfoot", 0, 0);
+    drain(world);
+    const t = world.time;
+    const x = a.x;
+    step(world, DT, rng);
+    expect(world.time).toBe(t);
+    expect(a.x).toBe(x);
+    expect(hitAt(world, a)).toEqual({ hit: null, finished: false });
+    expect(drain(world)).toEqual([]);
+  });
+
+  it("rares respect one-at-a-time and bigfoot's 30 s floor", () => {
+    const zero = () => 0;
+    const world = createWorld(1000, 400, zero);
+    world.nextSpawn = Infinity;
+    spawn(world, zero, "shark");
+    for (let i = 0; i < 29.9 * 60; i++) {
+      step(world, DT, zero);
+      expect(world.animals.some((a) => a.kind === "bigfoot")).toBe(false);
+      const rares = world.animals.filter((a) => isRare(a.kind) && a.kind !== "bigfoot");
+      expect(rares.length).toBeLessThanOrEqual(1);
+      if (world.animals.some((a) => a.kind === "shark")) {
+        expect(world.animals.some((a) => a.kind === "cow")).toBe(false);
+      }
+    }
+    expect(ofType(drain(world), "rare").length).toBeGreaterThan(1); // others came once the shark left
+    run(world, zero, 0.2);
+    expect(world.animals.filter((a) => a.kind === "bigfoot")).toHaveLength(1);
+    run(world, zero, 1);
+    expect(world.animals.filter((a) => a.kind === "bigfoot")).toHaveLength(1);
+  });
+
+  it("resize keeps the merman on the sea line", () => {
+    const { rng, world } = quiet();
+    const a = spawn(world, rng, "merman");
+    expect(a.x).toBeGreaterThanOrEqual(0.15 * 1000);
+    expect(a.x).toBeLessThanOrEqual(0.7 * 1000);
+    expect(a.vx).toBe(0);
+    surfaced(world, a);
+    resize(world, 500, 800);
+    expect(a.y).toBeCloseTo(SEA_LINE * 800 - a.h * 0.78);
+    run(world, rng, 0.1);
+    expect(a.y).toBeCloseTo(SEA_LINE * 800 - a.h * 0.78);
+  });
+
+  it("the merman surfaces, dives and leaves after three cycles", () => {
+    const { rng, world } = quiet();
+    const a = spawn(world, rng, "merman");
+    expect(a.y).toBeGreaterThan(SEA_LINE * world.height); // starts under water
+    run(world, rng, 1.2 + 0.55 + 0.1);
+    expect(a.surface?.phase).toBe("up");
+    expect(a.y).toBeCloseTo(SEA_LINE * world.height - a.h * 0.78);
+    run(world, rng, 3 * 4.8);
+    expect(world.animals).not.toContain(a);
   });
 });
