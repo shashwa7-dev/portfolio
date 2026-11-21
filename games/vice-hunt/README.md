@@ -6,14 +6,26 @@ A tiny canvas hunting game (rabbits, iguanas, flamingos and a rare Bigfoot) in i
 
 The public entry is `src/index.ts`:
 
-- `preloadHunt()` decodes the sprite frames and the gun once per page; later calls share the promise.
-- `startHunt(host, { onKills, onShot, onExit, muted, scoreInset })` adds one full-size layer to `host` (give the host `position: relative` or similar) and returns `{ destroy() }`. `onShot` gets CSS px relative to `host`. Esc or right click calls `onExit`; the host then calls `destroy()`, which is safe to call twice.
-- `scoreInset` places the score strip (bottom left) that many CSS px from the host's left edge, so a host can line it up with its own content column. Default 12.
-- Sound is synthesised with Web Audio and is silent when `muted` is set or `navigator.webdriver` is true.
+- `preloadHunt()` decodes the sprite frames once per page; later calls share the promise.
+- `startHunt(host, options)` adds one full-size layer to `host` (give the host `position: relative` or similar) and returns `{ destroy() }`. Every option is optional:
+  - `onShot(x, y, hit)`: every shot that fires, in CSS px relative to `host`.
+  - `onKills(kills)`: the running kill counts after each kill.
+  - `onKill(kind, x, y, streak)`: each kill at the animal's centre (CSS px relative to `host`); `streak` counts kills each within 1.5 s of the one before, 1 for a lone kill.
+  - `onAmmo(rounds, reloading)`: once at the start and on every change.
+  - `onExit()`: Esc or right click. Esc is ignored when the event was already handled (`defaultPrevented`) or comes from inside a `[role="dialog"]`. The host then calls `destroy()`, which is safe to call twice.
+  - `muted`, `sfx` (see Sound), `showScore` (default true; false hides the package's score strip for a host with its own HUD), `scoreInset` (the strip's CSS px from the host's left edge, default 12).
+- The gun is a six-round revolver (`art/revolver.ts`, built from `art/revolver.svg`). After the sixth shot it reloads on its own (1 s, the cylinder spins, clicks meanwhile only dry-fire); R reloads early.
+- Balance (spec revision 2): one hit kills a rabbit, iguana or flamingo, Bigfoot takes 3. A kill removes the animal from the world at once; the renderer plays its death animation (`death.ts`) from a short-lived corpse list.
+- Reduced motion: no screen shake, and the recoil is a small translate.
 
-Modules: `render.ts` (canvas: animals, poofs, holes), `gun.ts` (first-person gun and crosshair, DOM), `cracks.ts` (seeded crack paths), `sound.ts`, `sprites.ts` (art decoding). The pure simulation lives in `src/world.ts` and has no DOM access:
+## Sound
+
+`createSound(muted, sfx)` plays the recorded file given for an effect (`sfx: { shot, reload, empty, hit, kill }`, each a URL, all optional) once it has loaded, and synthesises the effect with Web Audio otherwise. It is silent, and fetches nothing, when `muted` is set or `navigator.webdriver` is true. This package ships no audio files; the host passes the URLs.
+
+Modules: `render.ts` (canvas: animals, corpses, poofs, holes), `gun.ts` (first-person revolver and crosshair, DOM), `cracks.ts` (seeded crack paths), `sound.ts`, `sprites.ts` (art decoding). Pure and tested: `ammo.ts` (`createAmmo`, `fire`, `startReload`, `tick`), `death.ts` (`deathPose(kind, age, fall, out)`, `DEATHS`). The pure simulation lives in `src/world.ts` and has no DOM access:
 
 - `createWorld(width, height, rng)`, `step(world, dt, rng)`, `shoot(world, x, y)`, `resize(world, width, height)`, `emptyKills()`
+- `world.streak` is the current kill streak (`STREAK_WINDOW` in `config.ts`).
 - `spawn(world, rng, kind?)` is exported for tests; production spawning calls it without `kind`.
 - All speeds, hit counts and sizes live in `src/config.ts`.
 

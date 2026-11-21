@@ -50,10 +50,17 @@ describe("world", () => {
       }
       world.animals = [];
     }
-    expect([...seen.rabbit].sort()).toEqual([1, 2]);
-    expect([...seen.iguana]).toEqual([3]);
-    expect([...seen.flamingo].sort()).toEqual([2, 3]);
-    expect([...seen.bigfoot].sort()).toEqual([7, 8]);
+    expect([...seen.rabbit]).toEqual([1]);
+    expect([...seen.iguana]).toEqual([1]);
+    expect([...seen.flamingo]).toEqual([1]);
+    expect([...seen.bigfoot]).toEqual([3]);
+  });
+
+  it("speed ranges match the spec", () => {
+    expect(ANIMALS.rabbit.speed).toEqual([0.33, 0.45]);
+    expect(ANIMALS.iguana.speed).toEqual([0.15, 0.36]);
+    expect(ANIMALS.flamingo.speed).toEqual([0.12, 0.18]);
+    expect(ANIMALS.bigfoot.speed).toEqual([0.05, 0.075]);
   });
 
   it("speeds stay within the configured ranges", () => {
@@ -85,17 +92,52 @@ describe("world", () => {
     expect(shoot(world, 500, 200)).toEqual({ hit: null, killed: false });
   });
 
-  it("shooting an iguana three times kills it once", () => {
+  it("one shot kills a rabbit, an iguana or a flamingo", () => {
+    for (const k of ["rabbit", "iguana", "flamingo"] as Kind[]) {
+      const { rng, world } = make();
+      const a = spawn(world, rng, k);
+      a.x = 400;
+      expect(shoot(world, a.x + a.w / 2, a.y + a.h / 2)).toEqual({ hit: a, killed: true });
+      expect(world.kills[k]).toBe(1);
+    }
+  });
+
+  it("shooting a bigfoot three times kills it once", () => {
     const { rng, world } = make();
-    const a = spawn(world, rng, "iguana");
+    const a = spawn(world, rng, "bigfoot");
     a.x = 400;
     const cx = () => a.x + a.w / 2;
     const cy = a.y + a.h / 2;
     expect(shoot(world, cx(), cy).killed).toBe(false);
     expect(shoot(world, cx(), cy).killed).toBe(false);
     expect(shoot(world, cx(), cy).killed).toBe(true);
-    expect(world.kills.iguana).toBe(1);
+    expect(world.kills.bigfoot).toBe(1);
     expect(world.animals).not.toContain(a);
+  });
+
+  it("streak counts kills within 1.5 s of the previous one", () => {
+    const { rng, world } = make();
+    world.nextSpawn = Infinity;
+    const killOne = () => {
+      const a = spawn(world, rng, "rabbit");
+      a.x = 400;
+      expect(shoot(world, a.x + a.w / 2, a.y + a.h / 2).killed).toBe(true);
+      return world.streak;
+    };
+    expect(world.streak).toBe(0);
+    expect(killOne()).toBe(1);
+    world.time += 1.5;
+    expect(killOne()).toBe(2);
+    world.time += 1.0;
+    expect(killOne()).toBe(3);
+    world.time += 1.51;
+    expect(killOne()).toBe(1);
+    // A non-lethal hit or a miss leaves the streak alone.
+    const b = spawn(world, rng, "bigfoot");
+    b.x = 400;
+    shoot(world, b.x + b.w / 2, b.y + b.h / 2);
+    shoot(world, 5, 5);
+    expect(world.streak).toBe(1);
   });
 
   it("hit boxes are inset and the later animal wins", () => {
@@ -110,7 +152,7 @@ describe("world", () => {
 
   it("a non-lethal hit flashes and knocks back", () => {
     const { rng, world } = make();
-    const a = spawn(world, rng, "iguana");
+    const a = spawn(world, rng, "bigfoot");
     a.x = 400;
     const dir = Math.sign(a.vx);
     const { hit, killed } = shoot(world, a.x + a.w / 2, a.y + a.h / 2);

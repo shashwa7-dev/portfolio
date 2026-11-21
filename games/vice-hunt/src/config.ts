@@ -13,11 +13,11 @@ export const ANIMALS: Record<
     weight: number;
   }
 > = {
-  rabbit: { lane: "ground", speed: [0.55, 0.75], hits: [1, 2], size: [70, 48], weight: 0.4 },
-  iguana: { lane: "ground", speed: [0.25, 0.6], hits: [3, 3], size: [100, 33], weight: 0.33 },
-  flamingo: { lane: "top", speed: [0.2, 0.3], hits: [2, 3], size: [104, 55], weight: 0.27 },
+  rabbit: { lane: "ground", speed: [0.33, 0.45], hits: [1, 1], size: [70, 48], weight: 0.4 },
+  iguana: { lane: "ground", speed: [0.15, 0.36], hits: [1, 1], size: [100, 33], weight: 0.33 },
+  flamingo: { lane: "top", speed: [0.12, 0.18], hits: [1, 1], size: [104, 55], weight: 0.27 },
   // Bigfoot is rolled separately (BIGFOOT_CHANCE), so its weight is unused.
-  bigfoot: { lane: "ground", speed: [0.08, 0.12], hits: [7, 8], size: [84, 118], weight: 0 },
+  bigfoot: { lane: "ground", speed: [0.05, 0.075], hits: [3, 3], size: [84, 118], weight: 0 },
 };
 
 export const SPAWN_INTERVAL: [number, number] = [0.9, 1.6];
@@ -27,3 +27,5 @@ export const BIGFOOT_AFTER = 8;
 export const IGUANA_PAUSE: [number, number] = [0.2, 0.8];
 export const MAX_DT = 0.05;
 export const MAX_HOLES = 12;
+// Seconds between kills that still count as one streak (DOUBLE!, TRIPLE!).
+export const STREAK_WINDOW = 1.5;

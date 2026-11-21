@@ -1,4 +1,13 @@
-import { ANIMALS, BIGFOOT_AFTER, BIGFOOT_CHANCE, IGUANA_PAUSE, MAX_ALIVE, MAX_DT, SPAWN_INTERVAL } from "./config";
+import {
+  ANIMALS,
+  BIGFOOT_AFTER,
+  BIGFOOT_CHANCE,
+  IGUANA_PAUSE,
+  MAX_ALIVE,
+  MAX_DT,
+  SPAWN_INTERVAL,
+  STREAK_WINDOW,
+} from "./config";
 import type { Rng } from "./rng";
 import type { Kills, Kind } from "./types";
 
@@ -25,10 +34,12 @@ export type World = {
   animals: Animal[];
   kills: Kills;
   nextId: number;
+  streak: number; // kills in a row, each within STREAK_WINDOW of the last
+  lastKill: number; // world.time of the last kill
 };
 
 const TOP_BAND: [number, number] = [0.12, 0.3];
-const GROUND_LINE = 0.94;
+export const GROUND_LINE = 0.94;
 const HIT_INSET = 0.15;
 const FLASH = 0.12;
 const KNOCKBACK = 6;
@@ -66,6 +77,8 @@ export function createWorld(width: number, height: number, rng: Rng): World {
     animals: [],
     kills: emptyKills(),
     nextId: 1,
+    streak: 0,
+    lastKill: -Infinity,
   };
 }
 
@@ -149,6 +162,8 @@ export function shoot(world: World, x: number, y: number): { hit: Animal | null;
     if (killed) {
       world.animals.splice(i, 1);
       world.kills[a.kind] += 1;
+      world.streak = world.time - world.lastKill <= STREAK_WINDOW ? world.streak + 1 : 1;
+      world.lastKill = world.time;
     }
     return { hit: a, killed };
   }

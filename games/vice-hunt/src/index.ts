@@ -1,13 +1,16 @@
+import { RELOAD_TIME, createAmmo, fire, startReload, tick } from "./ammo";
 import { SPRITES } from "./art/sprites";
 import { createGun } from "./gun";
-import { addHole, addPoof, createScene, drawScene, stepScene } from "./render";
+import { addCorpse, addHole, createScene, drawScene, stepScene } from "./render";
 import { mulberry32 } from "./rng";
-import { createSound } from "./sound";
+import { createSound, type SfxUrls } from "./sound";
 import { loadedArt, preloadHunt, svgUrl } from "./sprites";
 import type { Kills, Kind } from "./types";
 import { createWorld, resize, shoot, step } from "./world";
 
 export type { Kills, Kind } from "./types";
+export type { Effect, SfxUrls } from "./sound";
+export { ROUNDS } from "./ammo";
 export { preloadHunt } from "./sprites";
 
 export type HuntOptions = {
@@ -18,10 +21,35 @@ export type HuntOptions = {
   /** Where the score strip starts: CSS px from the host's left edge, so a
    *  host can line it up with its own content. Default 12. */
   scoreInset?: number;
+  /** Show the package's own score strip. Default true; a host with its own
+   *  kill counts sets false. */
+  showScore?: boolean;
+  /** Each kill, at the animal's centre in CSS px relative to host. `streak`
+   *  counts kills each within 1.5 s of the one before (1 for a lone kill). */
+  onKill?(kind: Kind, x: number, y: number, streak: number): void;
+  /** Rounds left (0 to 6) and whether a reload is running: once at the start
+   *  and on every change. */
+  onAmmo?(rounds: number, reloading: boolean): void;
+  /** Recorded effects by URL; any left out (or failing to load) are
+   *  synthesised. Same silent rules either way. */
+  sfx?: SfxUrls;
 };
 export type Hunt = { destroy(): void };
 
 const SCORE_ORDER: Kind[] = ["rabbit", "iguana", "flamingo", "bigfoot"];
+
+// Escape belongs to a dialog that has focus, or to whoever handled it first.
+function escapeIsOurs(e: KeyboardEvent): boolean {
+  if (e.defaultPrevented) return false;
+  const t = e.target;
+  return !(t instanceof Element && t.closest('[role="dialog"]'));
+}
+
+// R is a key press meant for something else when it was handled or typed.
+function typing(e: KeyboardEvent): boolean {
+  const t = e.target;
+  return e.defaultPrevented || (t instanceof Element && !!t.closest("input,textarea,select,[contenteditable]"));
+}
 
 function scoreStrip(layer: HTMLElement, left: number): (kills: Kills) => void {
   const strip = document.createElement("div");
@@ -49,7 +77,10 @@ function scoreStrip(layer: HTMLElement, left: number): (kills: Kills) => void {
 
 export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
   const rng = mulberry32(Date.now() >>> 0);
-  const sound = createSound(!!options.muted);
+  const sound = createSound(!!options.muted, options.sfx);
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const ammo = createAmmo();
+  const reportAmmo = () => options.onAmmo?.(ammo.rounds, ammo.reloading);
   void preloadHunt().catch(() => {}); // animals appear once the art is decoded
 
   const layer = document.createElement("div");
@@ -59,8 +90,8 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
   canvas.style.cssText = "position:absolute;inset:0;width:100%;height:100%;pointer-events:none";
   layer.append(canvas);
   const ctx = canvas.getContext("2d")!;
-  const gun = createGun(layer);
-  const showKills = scoreStrip(layer, options.scoreInset ?? 12);
+  const gun = createGun(layer, reducedMotion);
+  const showKills = options.showScore === false ? () => {} : scoreStrip(layer, options.scoreInset ?? 12);
   host.append(layer);
 
   const scene = createScene();
@@ -97,24 +128,44 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
     e.preventDefault();
     const { x, y } = local(e);
     gun.aim(x, y, world.width, world.height);
+    if (!fire(ammo)) {
+      sound.empty(); // reloading: dry click, no shot
+      return;
+    }
     const { hit, killed } = shoot(world, x, y);
     addHole(scene, x, y, rng);
     gun.fire();
     sound.shot();
+    const hb = host.getBoundingClientRect();
     if (killed && hit) {
-      addPoof(scene, hit, rng);
+      addCorpse(scene, world, hit, rng);
       sound.kill();
       showKills(world.kills);
       options.onKills?.({ ...world.kills });
+      const lb = layer.getBoundingClientRect();
+      options.onKill?.(
+        hit.kind,
+        lb.left - hb.left + hit.x + hit.w / 2,
+        lb.top - hb.top + hit.y + hit.h / 2,
+        world.streak,
+      );
     } else if (hit) {
       sound.hit();
     }
-    const hb = host.getBoundingClientRect();
     options.onShot?.(e.clientX - hb.left, e.clientY - hb.top, hit ? hit.kind : null);
-    layer.animate(
-      [{ transform: "translate(2px,-1px)" }, { transform: "translate(-2px,1px)" }, { transform: "none" }],
-      { duration: 120 },
-    );
+    if (!reducedMotion) {
+      layer.animate(
+        [{ transform: "translate(2px,-1px)" }, { transform: "translate(-2px,1px)" }, { transform: "none" }],
+        { duration: 120 },
+      );
+    }
+    if (ammo.reloading) beginReload(); // that was the sixth
+    reportAmmo();
+  };
+
+  const beginReload = () => {
+    gun.reload(RELOAD_TIME * 1000);
+    sound.reload();
   };
 
   const onEnter = () => gun.showCrosshair(true);
@@ -125,7 +176,14 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
     options.onExit?.();
   };
   const onKey = (e: KeyboardEvent) => {
-    if (e.key === "Escape") options.onExit?.();
+    if (e.key === "Escape") {
+      if (escapeIsOurs(e)) options.onExit?.();
+    } else if ((e.key === "r" || e.key === "R") && !e.metaKey && !e.ctrlKey && !e.altKey && !typing(e)) {
+      if (startReload(ammo)) {
+        beginReload();
+        reportAmmo();
+      }
+    }
   };
 
   let raf = 0;
@@ -135,6 +193,7 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
     last = now;
     step(world, dt, rng);
     stepScene(scene, Math.min(dt, 0.05));
+    if (tick(ammo, dt)) reportAmmo();
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     drawScene(ctx, scene, world, loadedArt(), dpr);
     raf = requestAnimationFrame(frame);
@@ -153,6 +212,7 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
   window.addEventListener("keydown", onKey);
   document.addEventListener("visibilitychange", onVisibility);
   onVisibility();
+  reportAmmo();
 
   let destroyed = false;
   return {
