@@ -1,0 +1,502 @@
+/*
+ * Vice Hunt's full-screen game mode (GameMode.tsx and its parts), after the
+ * approved HUD mockup (.superpowers/sdd/2026-11-20-gta6-mod/hud-reference.html,
+ * layout A). No film grain.
+ *
+ * `data-phase` on the overlay drives the cinematic: "entry" (letterbox bars
+ * in, the scene pushes in under a dim, the title slams), then "play" (bars
+ * out, scene back to full, the HUD slides in from the edges), then
+ * "results" (the card over a blurred, paused scene). Everything is a
+ * transition keyed on that attribute, so a phase change mid-way reverses
+ * from wherever it got to.
+ *
+ * Stacking inside the overlay: scene (0), vignette (1), the game's layer
+ * (2), red edge (3), pop-ups (4), HUD (5), banner (6), bars and title (7),
+ * results (8).
+ */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  overflow: hidden;
+  isolation: isolate;
+  background: #000;
+  color: #fff;
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.display {
+  font-family: Anton, Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.03em;
+}
+
+.mono {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  letter-spacing: 0.08em;
+}
+
+.glass {
+  background: rgba(14, 12, 22, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 0.75rem;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+/* The scene: pushed in and dimmed for the entry, back to full for play. */
+.stage {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  transition:
+    transform var(--duration-gta-fade) var(--ease-out),
+    filter var(--duration-gta-fade) var(--ease-out);
+}
+.overlay[data-phase="entry"] .stage {
+  transform: scale(1.08);
+  filter: brightness(0.55) saturate(1.2);
+  transition-duration: var(--duration-gta-entry);
+}
+@starting-style {
+  .overlay[data-phase="entry"] .stage {
+    transform: scale(1);
+    filter: brightness(0.15) saturate(1.2);
+  }
+}
+.overlay[data-phase="results"] .stage {
+  filter: blur(3px) brightness(0.5);
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  box-shadow: inset 0 0 140px 30px rgba(0, 0, 0, 0.55);
+}
+
+.host {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+/* Bigfoot: the screen's edges pulse red while he is on. */
+.edge {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0;
+  box-shadow: inset 0 0 110px 22px rgba(220, 30, 60, 0.6);
+  transition: opacity var(--duration-gta-fade) var(--ease-out);
+}
+.edge[data-on] {
+  opacity: 1;
+  animation: edge-pulse var(--duration-gta-edge-pulse) ease-in-out infinite alternate;
+}
+@keyframes edge-pulse {
+  from { opacity: 1; }
+  to { opacity: 0.35; }
+}
+
+/* Kill pop-ups and streak callouts. */
+.pops {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+.pop {
+  position: absolute;
+  font-size: 1.75rem;
+  line-height: 1;
+  text-align: center;
+  text-shadow: 0 2px 0 #000;
+  animation: pop-rise var(--duration-gta-pop) var(--ease-out) forwards;
+}
+.pop em {
+  display: block;
+  margin-top: 0.15rem;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #7fd6cf;
+}
+@keyframes pop-rise {
+  0% { opacity: 0; transform: translate(-50%, -40%) scale(0.6); }
+  18% { opacity: 1; transform: translate(-50%, -100%) scale(1.1); }
+  30% { transform: translate(-50%, -110%) scale(1); }
+  75% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -190%) scale(1); }
+}
+.callout {
+  position: absolute;
+  left: 50%;
+  top: 22%;
+  font-size: 4rem;
+  line-height: 1;
+  color: #f49ea3;
+  text-shadow: 0 4px 0 #000, 0 0 24px rgba(244, 158, 163, 0.6);
+  animation: callout-slam var(--duration-gta-callout) var(--ease-out) forwards;
+}
+@keyframes callout-slam {
+  0% { opacity: 0; transform: translateX(-50%) rotate(-3deg) scale(1.8); }
+  15% { opacity: 1; transform: translateX(-50%) rotate(-3deg) scale(1); }
+  75% { opacity: 1; transform: translateX(-50%) rotate(-3deg) scale(1); }
+  100% { opacity: 0; transform: translateX(-50%) rotate(-3deg) scale(0.9); }
+}
+
+/* HUD, layout A. Each piece waits off its own edge until play. */
+.hud {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+.hud > * {
+  position: absolute;
+  transition: transform var(--duration-gta-hud-in) var(--ease-out);
+}
+.radio { top: 1.5rem; left: 1.5rem; transform: translateX(calc(-100% - 2rem)); }
+.time { top: 1.5rem; left: 50%; transform: translate(-50%, calc(-100% - 2rem)); }
+.kills { top: 1.25rem; right: 1.75rem; transform: translateX(calc(100% + 2rem)); }
+.ammo { bottom: 1.75rem; right: 1.75rem; transform: translateX(calc(100% + 2rem)); }
+.hint { bottom: 1.75rem; left: 50%; transform: translate(-50%, calc(100% + 2rem)); }
+.hud[data-in] .radio,
+.hud[data-in] .kills,
+.hud[data-in] .ammo { transform: none; }
+.hud[data-in] .time,
+.hud[data-in] .hint { transform: translateX(-50%); }
+
+.radio {
+  pointer-events: auto;
+}
+
+.time {
+  pointer-events: auto;
+  display: flex;
+  gap: 0.125rem;
+  padding: 0.25rem;
+  border-radius: 999px;
+}
+.time button {
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
+}
+.time button:hover { color: #fff; }
+.time button[aria-pressed="true"] {
+  background: #f49ea3;
+  color: #1a1727;
+}
+.time button:focus-visible {
+  outline: 2px solid #f49ea3;
+  outline-offset: 2px;
+}
+
+.kills {
+  text-align: right;
+  text-shadow: 0 2px 0 #000;
+}
+.stars {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.2rem;
+  margin-bottom: 0.25rem;
+  color: #f49ea3;
+  filter: drop-shadow(0 1px 0 #000);
+}
+.stars svg { width: 1.125rem; height: 1.125rem; }
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  font-size: 2.25rem;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.row small {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #d8cfe6;
+}
+.row img {
+  height: 1.875rem;
+  width: 2.75rem;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.6));
+}
+.row b {
+  min-width: 1.4em;
+  font-weight: 400;
+}
+
+.ammo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.9rem 0.5rem 0.6rem;
+}
+.cylinder {
+  position: relative;
+  width: 2.75rem;
+  height: 2.75rem;
+}
+.cylinder[data-reloading] {
+  animation: cylinder-spin var(--duration-gta-loader) linear infinite;
+}
+@keyframes cylinder-spin {
+  to { transform: rotate(360deg); }
+}
+.cylinder i {
+  position: absolute;
+  width: 0.75rem;
+  height: 0.75rem;
+  margin: -0.375rem;
+  border-radius: 50%;
+  border: 1px solid #000;
+  background: #e7c46a;
+  box-shadow: inset 0 -2px 0 #9a7a2a;
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+.cylinder i[data-empty] {
+  background: #1b1a20;
+  box-shadow: none;
+}
+.count {
+  font-size: 1.75rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.count span {
+  font-size: 1rem;
+  opacity: 0.5;
+}
+
+.hint {
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  white-space: nowrap;
+}
+
+/* Bigfoot's banner: sweeps in, holds, sweeps out. */
+.banner {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 40%;
+  z-index: 6;
+  pointer-events: none;
+  padding: 0.75rem 0;
+  text-align: center;
+  background: linear-gradient(90deg, transparent, rgba(160, 20, 40, 0.85) 20%, rgba(160, 20, 40, 0.85) 80%, transparent);
+  animation: banner-sweep var(--duration-gta-banner) var(--ease-out) forwards;
+}
+.banner b {
+  display: block;
+  font-size: 3rem;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-shadow: 0 3px 0 #000;
+}
+.banner small {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.75rem;
+  opacity: 0.85;
+}
+@keyframes banner-sweep {
+  0% { opacity: 0; transform: translateX(-60%); }
+  14% { opacity: 1; transform: none; }
+  82% { opacity: 1; transform: none; }
+  100% { opacity: 0; transform: translateX(60%); }
+}
+
+/* Letterbox bars: in for the entry, out for play. */
+.bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 7;
+  height: 11%;
+  background: #000;
+  pointer-events: none;
+  transition: transform var(--duration-gta-hud-in) var(--ease-out);
+}
+.barTop { top: 0; transform: translateY(-100%); }
+.barBottom { bottom: 0; transform: translateY(100%); }
+.overlay[data-phase="entry"] .bar { transform: none; }
+@starting-style {
+  .overlay[data-phase="entry"] .barTop { transform: translateY(-100%); }
+  .overlay[data-phase="entry"] .barBottom { transform: translateY(100%); }
+}
+
+.title {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  pointer-events: none;
+  animation: title-slam var(--duration-gta-entry) var(--ease-out) forwards;
+}
+.title h1 {
+  margin: 0;
+  font-size: 7rem;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-shadow: 0 6px 0 #000, 0 0 40px rgba(244, 158, 163, 0.7);
+}
+.title h1 span { color: #f49ea3; }
+.title p {
+  margin: 0.75rem 0 0;
+  font-size: 0.8125rem;
+  letter-spacing: 0.4em;
+  color: #e8e0f0;
+}
+@keyframes title-slam {
+  0% { opacity: 0; transform: scale(1.7); }
+  14% { opacity: 1; transform: scale(1); }
+  22% { transform: scale(1.03); }
+  30% { transform: scale(1); }
+  82% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.96); }
+}
+
+/* Results. */
+.results {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.35);
+  animation: fade-in var(--duration-gta-hud-in) var(--ease-out);
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+}
+.card {
+  width: min(24rem, calc(100% - 2rem));
+  padding: 1.75rem 2rem 1.5rem;
+  text-align: center;
+  outline: none;
+  animation: card-in var(--duration-gta-hud-in) var(--ease-out);
+}
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(1.5rem) scale(0.96); }
+}
+.card .sub {
+  font-size: 0.6875rem;
+  color: #f49ea3;
+}
+.card h2 {
+  margin: 0.25rem 0 0;
+  font-size: 3rem;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-shadow: 0 3px 0 #000;
+}
+.table {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.45rem 0;
+  max-width: 16rem;
+  margin: 1.25rem auto 1.5rem;
+  text-align: left;
+  font-size: 0.9375rem;
+}
+.table dt {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #e8e0f0;
+}
+.table dt img {
+  width: 1.75rem;
+  height: 1.25rem;
+  object-fit: contain;
+}
+.table dd {
+  margin: 0;
+  padding-left: 1.5rem;
+  text-align: right;
+  font-size: 1.375rem;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.table [data-rule] {
+  margin-top: 0.3rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+}
+.buttons button {
+  padding: 0.55rem 1.1rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
+}
+.buttons button:hover { border-color: rgba(255, 255, 255, 0.6); }
+.buttons button:focus-visible { outline: 2px solid #f49ea3; outline-offset: 2px; }
+.buttons .primary {
+  background: #f49ea3;
+  border-color: #f49ea3;
+  color: #1a1727;
+}
+.buttons .primary:hover { background: #f7b6ba; border-color: #f7b6ba; }
+
+/* The radio's place until the radio card arrives. */
+.radioSlot {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.6875rem;
+  color: #f49ea3;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage,
+  .overlay[data-phase="entry"] .stage { transform: none; transition-duration: var(--duration-fast); }
+  .hud > *,
+  .bar { transition-duration: 0s; }
+  .edge[data-on] { animation: none; }
+  .cylinder[data-reloading] { animation: none; opacity: 0.5; }
+  /* Kept as plain fades so their ends still fire and clear them. */
+  .pop,
+  .callout,
+  .banner,
+  .title { animation-name: fade-out; }
+  .pop { transform: translate(-50%, -100%); }
+  .callout { transform: translateX(-50%) rotate(-3deg); }
+}
+@keyframes fade-out {
+  0%, 70% { opacity: 1; }
+  100% { opacity: 0; }
+}

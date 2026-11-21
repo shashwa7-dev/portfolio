@@ -485,6 +485,16 @@
   --duration-gta-boat-bob: 3200ms;
   --duration-gta-blink: 2s;
   --duration-gta-twinkle: 3s;
+  /* Vice Hunt's full-screen game mode (components/gta6/game): the cinematic
+     entry (letterbox, push-in, title) runs for one entry, then the HUD slides
+     in; a kill's pop-up and a streak callout rise and fade; the Bigfoot banner
+     sweeps across once while the screen edges pulse red. */
+  --duration-gta-entry: 1500ms;
+  --duration-gta-hud-in: 500ms;
+  --duration-gta-pop: 900ms;
+  --duration-gta-callout: 1100ms;
+  --duration-gta-banner: 2600ms;
+  --duration-gta-edge-pulse: 1200ms;
   --duration-glyph-wave: 1100ms;
   --duration-live-pulse: 1800ms;
   --duration-live-ring: 280ms;

@@ -6,6 +6,8 @@ import { TRACK_ID } from "@/components/gta6/track";
 
 /** The track's volume once faded in (YouTube's 0 to 100 scale). */
 const VOLUME = 60;
+/** The volume while the game asks the music to step back (Bigfoot). */
+const DUCKED = 25;
 /** Volume steps per fade. */
 const FADE_STEPS = 20;
 /** No "playing" this long after play() means the browser refused it (Safari
@@ -36,6 +38,8 @@ type Session = {
   failed: boolean;
   playing: boolean;
   volume: number;
+  /** Ducked under the game's Bigfoot event. */
+  duck: boolean;
   ramp: number;
   refused: number;
   listen: Listener;
@@ -62,6 +66,11 @@ function fadeTo(s: Session, to: number, done?: () => void) {
     window.clearInterval(s.ramp);
     done?.();
   }, fadeMs() / FADE_STEPS);
+}
+
+/** Where the volume rests while playing: full, or ducked. */
+function level(s: Session): number {
+  return s.duck ? DUCKED : VOLUME;
 }
 
 /** Asks for playback and starts the refusal clock. */
@@ -102,6 +111,7 @@ function build(listen: Listener): Session {
     failed: false,
     playing: false,
     volume: 0,
+    duck: false,
     ramp: 0,
     refused: 0,
     listen,
@@ -131,7 +141,7 @@ function build(listen: Listener): Session {
           window.clearTimeout(s.refused);
           s.listen.blocked(false);
           s.listen.playing(true);
-          fadeTo(s, VOLUME);
+          fadeTo(s, level(s));
         },
         onEnded() {
           if (s.active && !s.dead) s.listen.ended();
@@ -160,6 +170,9 @@ function build(listen: Listener): Session {
  * Under automation (`navigator.webdriver`) no player is ever made: test runs
  * stay silent.
  *
+ * `setDuck(true)` steps the volume down to `DUCKED` (the game's Bigfoot
+ * event) and `setDuck(false)` back up, over the same fade.
+ *
  * `playing` is true from the first moment it really plays. `blocked` is true
  * when playback failed or was refused; `retry()` is for a play button, so it
  * runs inside the visitor's click.
@@ -167,7 +180,7 @@ function build(listen: Listener): Session {
 export function useMusic(
   active: boolean,
   onEnded: () => void,
-): { playing: boolean; blocked: boolean; retry(): void } {
+): { playing: boolean; blocked: boolean; retry(): void; setDuck(on: boolean): void } {
   const [blocked, setBlocked] = useState(false);
   const [playing, setPlaying] = useState(() => session?.playing ?? false);
   const [attempt, setAttempt] = useState(0);
@@ -193,7 +206,7 @@ export function useMusic(
       window.clearInterval(s.ramp);
       if (s.playing) {
         listen.playing(true);
-        fadeTo(s, VOLUME);
+        fadeTo(s, level(s));
       } else if (s.player) {
         // Asked to play but not playing yet: ask again; onPlaying fades up.
         play(s);
@@ -227,6 +240,14 @@ export function useMusic(
       // that errored is thrown away and rebuilt.
       if (s && s.player && !s.failed) play(s);
       else setAttempt((n) => n + 1);
+    },
+    setDuck(on) {
+      const s = session;
+      if (!s || s.dead || s.duck === on) return;
+      s.duck = on;
+      // Only a wanted, playing track moves now; one still loading picks the
+      // level up when it starts, and a fade out is left to finish.
+      if (s.active && s.playing) fadeTo(s, level(s));
     },
   };
 }

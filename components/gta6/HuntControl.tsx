@@ -1,20 +1,20 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Crosshair } from "@phosphor-icons/react/ssr";
-import { useHoleSink } from "@/components/gta6/holes";
+import GameMode from "@/components/gta6/game/GameMode";
 
 type HuntModule = typeof import("@games/vice-hunt");
-type Hunt = import("@games/vice-hunt").Hunt;
 
 type Props = {
-  /** Filled with the running game's exit while one runs, so `GtaMode` can end
-   *  it first when the mode turns off (Exit, the palm, or unmounting). */
+  /** Filled with a close for the open game while one is open, so `GtaMode`
+   *  can end it first when the mode turns off (Exit, the palm, or unmounting). */
   stopRef: React.RefObject<(() => void) | null>;
-  /** Runs after a game has fully ended (Esc, right click, or `stopRef`). */
+  /** Runs after the game has fully closed (Back to site, or `stopRef`). */
   onStopped(): void;
   /** The mode is fading out: no new game. */
   leaving: boolean;
+  /** Bigfoot is on (true) or gone (false), for the music to dip under him. */
+  onBigfoot(active: boolean): void;
 };
 
 /** Touch has no pointer to aim with, so the game is not offered there. */
@@ -23,21 +23,46 @@ function coarsePointer(): boolean {
 }
 
 /**
- * Vice Hunt's pistol in the mode's control cluster.
+ * The pick-up revolver, a side view drawn small. A placeholder until the
+ * owner's own icon set arrives.
+ */
+function RevolverIcon() {
+  return (
+    <svg aria-hidden viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor">
+      {/* barrel, frame and cylinder, then the grip angled down and back */}
+      <path d="M7 6.2h14.6a.9.9 0 0 1 .9.9v1.3a.6.6 0 0 1-.6.6H13.2v1.6a1.7 1.7 0 0 1-1.7 1.7H10l-.7 1.3a1 1 0 0 1-.9.5h-.5l-2 5.4a1 1 0 0 1-.9.6H2.7a.6.6 0 0 1-.6-.8l2.5-6.6c.2-.4.3-.9.3-1.3V8.2a2 2 0 0 1 2-2Z" />
+      {/* hammer */}
+      <path d="M5.6 6.4 4.4 4.6h1.7l1.3 1.6Z" />
+      {/* trigger guard */}
+      <path
+        d="M8.6 12.7c-.1 1.5.8 2.5 2.3 2.5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+/**
+ * Vice Hunt's revolver in the mode's control cluster.
  *
  * The game package is fetched and its sprites decoded in the background as
  * soon as the mode is on; until then the button is disabled under a spinning
- * ring. A click scrolls to the top, locks the page, and starts the game on a
- * layer over the whole hero `<header>` (z-30, under the cluster's z-40, so
- * Exit stays clickable). That layer sits on the same box as the veil, so the
- * game's host-relative shot points are the veil's coordinates as they are.
+ * ring. A click opens the full-screen game mode (`GameMode`), portalled over
+ * the whole page; Back to site closes it and puts focus back on this button.
  */
-export default function HuntControl({ stopRef, onStopped, leaving }: Props) {
-  const holes = useHoleSink();
+export default function HuntControl({ stopRef, onStopped, leaving, onBigfoot }: Props) {
   const [coarse] = useState(coarsePointer);
-  const [status, setStatus] = useState<"loading" | "ready" | "failed">("loading");
-  const game = useRef<HuntModule | null>(null);
+  const [game, setGame] = useState<HuntModule | null>(null);
+  const [failed, setFailed] = useState(false);
+  const [open, setOpen] = useState(false);
   const button = useRef<HTMLButtonElement>(null);
+  // Set by Back to site, the one close that hands focus back here (the mode
+  // turning off takes this button away with it).
+  const returnFocus = useRef(false);
+  const wasOpen = useRef(false);
   const stopped = useRef(onStopped);
   useEffect(() => {
     stopped.current = onStopped;
@@ -49,95 +74,76 @@ export default function HuntControl({ stopRef, onStopped, leaving }: Props) {
     import("@games/vice-hunt")
       .then(async (m) => {
         await m.preloadHunt();
-        if (!live) return;
-        game.current = m;
-        setStatus("ready");
+        if (live) setGame(m);
       })
       .catch(() => {
-        if (live) setStatus("failed");
+        if (live) setFailed(true);
       });
     return () => {
       live = false;
     };
   }, [coarse]);
 
-  if (coarse) return null;
-
-  const start = () => {
-    const m = game.current;
-    const header = button.current?.closest("header");
-    if (!m || !header || stopRef.current) return;
-    // The cluster's parent fills the hero's reading column, so its left edge
-    // is where the hero text starts; the score strip lines up with it rather
-    // than sitting under the dock at the viewport's edge. Read once: the
-    // page is locked while playing, and a resize mid game only shifts it.
-    const column = button.current?.closest("[data-gta-cluster]")?.parentElement;
-    const scoreInset = column
-      ? Math.round(column.getBoundingClientRect().left - header.getBoundingClientRect().left)
-      : undefined;
-
-    window.scrollTo({ top: 0, behavior: "instant" });
-    const html = document.documentElement;
-    const overflow = html.style.overflow;
-    html.style.overflow = "hidden";
-
-    const host = document.createElement("div");
-    host.className = "absolute inset-0 z-30";
-    host.setAttribute("data-vice-hunt", "");
-    header.append(host);
-
-    const unlock = () => {
-      host.remove();
-      html.style.overflow = overflow;
-    };
-    let hunt: Hunt;
-    const exit = () => {
-      // Esc and an outside stop can both arrive; only the first ends it.
-      if (stopRef.current !== exit) return;
+  // While open, `GtaMode` can close it from outside.
+  useEffect(() => {
+    if (!open) return;
+    stopRef.current = () => setOpen(false);
+    return () => {
       stopRef.current = null;
-      hunt.destroy();
-      unlock();
-      holes.clear();
-      stopped.current();
     };
-    try {
-      hunt = m.startHunt(host, {
-        onShot: (x, y) => holes.add(x, y),
-        onExit: exit,
-        muted: false,
-        scoreInset,
-      });
-    } catch {
-      // A game that cannot start must not leave the page locked; the pistol
-      // stays usable for another try.
-      unlock();
+  }, [open, stopRef]);
+
+  // After a close. `GameMode`'s own cleanup (page un-inerted, scroll
+  // unlocked) has already run by now, so the button can take focus.
+  useEffect(() => {
+    if (open) {
+      wasOpen.current = true;
       return;
     }
-    // Set only once the game exists, so `exit` never meets a missing `hunt`.
-    stopRef.current = exit;
-  };
+    if (!wasOpen.current) return;
+    wasOpen.current = false;
+    if (returnFocus.current) {
+      returnFocus.current = false;
+      button.current?.focus();
+    }
+    stopped.current();
+  }, [open]);
 
-  const loading = status === "loading";
-  const title = loading ? "Loading the game" : status === "failed" ? "Game failed to load" : "Grab the gun";
+  if (coarse) return null;
+
+  const loading = !game && !failed;
+  const title = loading ? "Loading the game" : failed ? "Game failed to load" : "Pick up the revolver";
 
   return (
-    <button
-      ref={button}
-      type="button"
-      onClick={start}
-      disabled={status !== "ready" || leaving}
-      title={title}
-      aria-label={title}
-      aria-busy={loading || undefined}
-      className="relative grid h-5 w-5 place-items-center rounded-full transition-colors duration-fast ease-out hover:text-foreground disabled:opacity-60 disabled:hover:text-muted-foreground"
-    >
-      <Crosshair aria-hidden weight="bold" className="h-4 w-4" />
-      {loading && (
-        <span
-          aria-hidden
-          className="absolute inset-0 animate-[spin_var(--duration-gta-loader)_linear_infinite] rounded-full border-2 border-current/20 border-t-current"
+    <>
+      <button
+        ref={button}
+        type="button"
+        onClick={() => setOpen(true)}
+        disabled={!game || leaving || open}
+        title={title}
+        aria-label={title}
+        aria-busy={loading || undefined}
+        className="relative grid h-5 w-5 place-items-center rounded-full transition-colors duration-fast ease-out hover:text-foreground disabled:opacity-60 disabled:hover:text-muted-foreground"
+      >
+        <RevolverIcon />
+        {loading && (
+          <span
+            aria-hidden
+            className="absolute inset-0 animate-[spin_var(--duration-gta-loader)_linear_infinite] rounded-full border-2 border-current/20 border-t-current"
+          />
+        )}
+      </button>
+      {open && game && (
+        <GameMode
+          game={game}
+          onBigfoot={onBigfoot}
+          onClose={() => {
+            returnFocus.current = true;
+            setOpen(false);
+          }}
         />
       )}
-    </button>
+    </>
   );
 }

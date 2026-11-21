@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Star, Play, X } from "@phosphor-icons/react/ssr";
 import Container from "@/components/layout/Container";
 import { gtaMode } from "@/lib/gta6/store";
 import { MOD_CSS } from "@/components/gta6/modStyles";
 import { useMusic } from "@/components/gta6/useMusic";
-import { HoleSinkContext, MAX_HOLES, holeMask, type HoleSink } from "@/components/gta6/holes";
 import HuntControl from "@/components/gta6/HuntControl";
 import { VICE_HUNT_ENABLED } from "@/lib/gta6";
 
@@ -35,15 +34,11 @@ type Props = {
  * the right where the art is, then a fade at the bottom so the hero melts
  * into the next section. On top, in the header's top padding at the right
  * of the measure: a small cluster with the full wanted row, the track's
- * state and Exit, led by Vice Hunt's pistol (`HuntControl`) when the game is
- * on (`data-gta-cluster`).
- *
- * The veil takes bullet holes through `HoleSinkContext`, written straight to
- * its mask, never through React state, so a shot never re-renders the hero.
+ * state and Exit, led by Vice Hunt's revolver (`HuntControl`, which opens
+ * the full-screen game) when the game is on (`data-gta-cluster`).
  */
 export default function GtaMode({ leaving, onGone }: Props) {
   const backdrop = useRef<HTMLDivElement>(null);
-  const veil = useRef<HTMLDivElement>(null);
   const gone = useRef(onGone);
   useEffect(() => {
     gone.current = onGone;
@@ -80,34 +75,10 @@ export default function GtaMode({ leaving, onGone }: Props) {
     return () => window.clearTimeout(t);
   }, [leaving]);
 
-  const holes = useMemo<HoleSink>(() => {
-    const points: [number, number][] = [];
-    const paint = () => {
-      const el = veil.current;
-      if (!el) return;
-      const mask = points.length ? holeMask(points) : "";
-      el.style.maskImage = mask;
-      el.style.setProperty("-webkit-mask-image", mask);
-      el.style.maskComposite = points.length ? "intersect" : "";
-      el.style.setProperty("-webkit-mask-composite", points.length ? "source-in" : "");
-    };
-    return {
-      add(x, y) {
-        points.push([Math.round(x), Math.round(y)]);
-        if (points.length > MAX_HOLES) points.shift();
-        paint();
-      },
-      clear() {
-        points.length = 0;
-        paint();
-      },
-    };
-  }, []);
-
   const leavingAttr = leaving ? "" : undefined;
 
   return (
-    <HoleSinkContext.Provider value={holes}>
+    <>
       <style>{MOD_CSS}</style>
 
       <div
@@ -129,7 +100,7 @@ export default function GtaMode({ leaving, onGone }: Props) {
             />
           ))}
         </div>
-        <div ref={veil} className="gta-veil absolute inset-0" />
+        <div className="gta-veil absolute inset-0" />
         <div className="absolute inset-x-0 bottom-0 h-16 bg-[linear-gradient(transparent,hsl(var(--background)))]" />
       </div>
 
@@ -142,7 +113,12 @@ export default function GtaMode({ leaving, onGone }: Props) {
               className="gta-fade pointer-events-auto absolute right-0 top-0 flex h-6 items-center gap-2.5 rounded-full border border-border bg-background/85 px-2.5 font-label text-2xs uppercase tracking-label text-muted-foreground backdrop-blur-sm"
             >
               {VICE_HUNT_ENABLED && (
-                <HuntControl stopRef={stopGame} onStopped={gameStopped} leaving={leaving} />
+                <HuntControl
+                  stopRef={stopGame}
+                  onStopped={gameStopped}
+                  leaving={leaving}
+                  onBigfoot={music.setDuck}
+                />
               )}
               <span role="img" aria-label="Wanted: five stars" className="flex gap-0.5 text-accent">
                 {STARS.map((n) => (
@@ -181,6 +157,6 @@ export default function GtaMode({ leaving, onGone }: Props) {
           </div>
         </Container>
       </div>
-    </HoleSinkContext.Provider>
+    </>
   );
 }

@@ -13,6 +13,11 @@ export type { Effect, SfxUrls } from "./sound";
 export { ROUNDS } from "./ammo";
 export { preloadHunt } from "./sprites";
 
+/** An animal's first sprite frame as an image URL, for a host's own HUD. */
+export function iconUrl(kind: Kind): string {
+  return svgUrl(SPRITES[kind][0]);
+}
+
 export type HuntOptions = {
   onKills?(kills: Kills): void;
   onShot?(x: number, y: number, hit: Kind | null): void; // CSS px relative to host
@@ -30,6 +35,9 @@ export type HuntOptions = {
   /** Rounds left (0 to 6) and whether a reload is running: once at the start
    *  and on every change. */
   onAmmo?(rounds: number, reloading: boolean): void;
+  /** Bigfoot came on (true) or is gone again (false), killed or off the far
+   *  edge, so a host can stage his entrance. */
+  onBigfoot?(present: boolean): void;
   /** Recorded effects by URL; any left out (or failing to load) are
    *  synthesised. Same silent rules either way. */
   sfx?: SfxUrls;
@@ -188,12 +196,18 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
 
   let raf = 0;
   let last: number | null = null;
+  let bigfoot = false;
   const frame = (now: number) => {
     const dt = last === null ? 0 : (now - last) / 1000;
     last = now;
     step(world, dt, rng);
     stepScene(scene, Math.min(dt, 0.05));
     if (tick(ammo, dt)) reportAmmo();
+    const big = world.animals.some((a) => a.kind === "bigfoot");
+    if (big !== bigfoot) {
+      bigfoot = big;
+      options.onBigfoot?.(big);
+    }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     drawScene(ctx, scene, world, loadedArt(), dpr);
     raf = requestAnimationFrame(frame);

@@ -336,7 +336,7 @@ const S7Bot = () => {
   }, [currentMessageIndex, isOpen]);
 
   return (
-    <div className="fixed bottom-4 right-4 max-md:bottom-[4.5rem] -md:right-2.5 z-50">
+    <div data-chat-bubble="" className="fixed bottom-4 right-4 max-md:bottom-[4.5rem] -md:right-2.5 z-50">
       {/* Notification bubble */}
       <AnimatePresence>
         {!isOpen && showNotification && (

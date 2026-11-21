@@ -7,11 +7,13 @@ A tiny canvas hunting game (rabbits, iguanas, flamingos and a rare Bigfoot) in i
 The public entry is `src/index.ts`:
 
 - `preloadHunt()` decodes the sprite frames once per page; later calls share the promise.
+- `iconUrl(kind)` is an animal's first sprite frame as a data URL, for a host's own HUD.
 - `startHunt(host, options)` adds one full-size layer to `host` (give the host `position: relative` or similar) and returns `{ destroy() }`. Every option is optional:
   - `onShot(x, y, hit)`: every shot that fires, in CSS px relative to `host`.
   - `onKills(kills)`: the running kill counts after each kill.
   - `onKill(kind, x, y, streak)`: each kill at the animal's centre (CSS px relative to `host`); `streak` counts kills each within 1.5 s of the one before, 1 for a lone kill.
   - `onAmmo(rounds, reloading)`: once at the start and on every change.
+  - `onBigfoot(present)`: true when Bigfoot comes on, false once he is gone (killed or off the far edge).
   - `onExit()`: Esc or right click. Esc is ignored when the event was already handled (`defaultPrevented`) or comes from inside a `[role="dialog"]`. The host then calls `destroy()`, which is safe to call twice.
   - `muted`, `sfx` (see Sound), `showScore` (default true; false hides the package's score strip for a host with its own HUD), `scoreInset` (the strip's CSS px from the host's left edge, default 12).
 - The gun is a six-round revolver (`art/revolver.ts`, built from `art/revolver.svg`). After the sixth shot it reloads on its own (1 s, the cylinder spins, clicks meanwhile only dry-fire); R reloads early.
