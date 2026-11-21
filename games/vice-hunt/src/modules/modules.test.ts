@@ -52,9 +52,9 @@ describe("stepFinishing", () => {
 
   it("the generic fade finish ends after 0.6 s", () => {
     const world = finishedRabbit();
-    const fake = { kind: "cow", x: 0, y: 0, w: 1, h: 1, vx: 1, pause: 0, age: 0, flash: 0 };
-    world.finishing[0].id = "deflates";
-    world.finishing[0].state = FINISHES.deflates.start(fake as never, world, mulberry32(1));
+    const fake = { kind: "bigfoot", x: 0, y: 0, w: 1, h: 1, vx: 1, pause: 0, age: 0, flash: 0 };
+    world.finishing[0].id = "jet"; // still the generic fade until Task 9
+    world.finishing[0].state = FINISHES.jet.start(fake as never, world, mulberry32(1));
     for (let i = 0; i < 11; i++) stepFinishing(world, 0.05, false);
     expect(world.finishing).toHaveLength(1);
     for (let i = 0; i < 2; i++) stepFinishing(world, 0.05, false);

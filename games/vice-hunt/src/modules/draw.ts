@@ -83,3 +83,36 @@ export function drawSprite(
     ctx.drawImage(whiteSilhouette(scratch, img, Math.ceil(w * dpr), Math.ceil(h * dpr)), 0, 0, w, h);
   }
 }
+
+// A sprite box placed at (x, y) (its top-left before any transform), turned
+// by `rot` radians and scaled about the pivot (fractions of the box), mirrored
+// for leftward travel. Used by the finishes that fly, spin and squash.
+export type Place = {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  dir: 1 | -1;
+  rot?: number;
+  sx?: number;
+  sy?: number;
+  px?: number;
+  py?: number;
+  alpha?: number;
+  flash?: number;
+};
+
+export function drawPlaced(ctx: CanvasRenderingContext2D, scratch: HTMLCanvasElement, img: HTMLImageElement, p: Place): void {
+  const alpha = p.alpha ?? 1;
+  if (alpha <= 0) return;
+  const ox = p.w * (p.px ?? 0.5);
+  const oy = p.h * (p.py ?? 0.5);
+  ctx.save();
+  ctx.globalAlpha *= alpha;
+  ctx.translate(p.x + ox, p.y + oy);
+  if (p.rot) ctx.rotate(p.rot);
+  ctx.scale((p.sx ?? 1) * p.dir, p.sy ?? 1);
+  ctx.translate(p.dir > 0 ? -ox : ox - p.w, -oy); // the box stays where it was, mirrored in place
+  drawSprite(ctx, scratch, img, p.w, p.h, p.flash ?? 0);
+  ctx.restore();
+}

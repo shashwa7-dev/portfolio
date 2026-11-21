@@ -48,6 +48,9 @@ export type HuntOptions = {
   sfx?: SfxUrls;
   /** Dev pages: creatures to spawn at the start. */
   spawn?: Kind[];
+  /** Dev pages: kinds to shoot down (one hit a frame, once fully on screen)
+   *  so a finish can be watched. Bypasses the gun. */
+  finish?: Kind[];
 };
 export type Hunt = { destroy(): void };
 
@@ -201,6 +204,17 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
     }
   };
 
+  // Dev pages only (`options.finish`): one hit a frame on each named kind,
+  // once it is wholly on screen.
+  const devLeft = new Set(options.finish ?? []);
+  const devFinish = () => {
+    if (devLeft.size === 0) return;
+    for (const a of [...world.animals]) {
+      if (!devLeft.has(a.kind) || a.x < 0 || a.x + a.w > world.width) continue;
+      if (shoot(world, a.x + a.w / 2, a.y + a.h * 0.3, rng).finished) devLeft.delete(a.kind);
+    }
+  };
+
   let raf = 0;
   let last: number | null = null;
   let bigfoot = false;
@@ -208,6 +222,7 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
     const dt = last === null ? 0 : (now - last) / 1000;
     last = now;
     step(world, dt, rng);
+    devFinish();
     stepFinishing(world, dt, reducedMotion);
     drain(world); // the events become callbacks in a later task; drop them so they do not pile up
     stepScene(scene, Math.min(dt, 0.05));

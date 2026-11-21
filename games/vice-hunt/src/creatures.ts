@@ -11,7 +11,10 @@ export type Spawn = { weight: number } | { perMinute: number; after?: number };
 
 export type MoveId = "hop" | "dash" | "glide" | "float" | "swoop" | "strut" | "surface" | "hover" | "stomp";
 export type HitReactionId = "none" | "flinch" | "garland";
-export type FinishId = "falls" | "deflates" | "pounces" | "rocket" | "fountain" | "crashes" | "jet";
+export type FinishId =
+  | "falls" | "deflates" | "pounces" | "rocket" | "fountain" | "crashes" | "jet"
+  // The gentle versions used under reduced motion (a module's `reduced`).
+  | "deflates-gentle" | "rocket-gentle" | "fountain-gentle" | "crashes-gentle";
 export type ThreatId = "claw-swipe" | "throw";
 
 export type Retaliates = { kind: "retaliates"; damage: number; attack: ThreatId };
