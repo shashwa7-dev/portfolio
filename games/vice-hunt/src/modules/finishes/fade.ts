@@ -15,7 +15,7 @@ export const fade: FinishModule<Body> = {
   draw(ctx, s, art, scratch) {
     const frames = art.sprites[s.kind];
     const alpha = 1 - Math.min(1, s.age / FADE_TIME);
-    if (!frames || alpha <= 0) return;
+    if (alpha <= 0) return;
     ctx.save();
     ctx.globalAlpha = alpha;
     enterSprite(ctx, s.x, s.y, s.w, s.dir);

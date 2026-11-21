@@ -80,7 +80,6 @@ export function stepScene(scene: Scene, dt: number): void {
 
 function drawAnimal(ctx: CanvasRenderingContext2D, scene: Scene, art: Art, a: Animal): void {
   const frames = art.sprites[a.kind];
-  if (!frames) return; // no decoded art for this kind: skip rather than crash
   ctx.save();
   enterSprite(ctx, a.x, a.y, a.w, a.vx < 0 ? -1 : 1);
   drawSprite(ctx, scene.scratch, frames[frameOf(a)], a.w, a.h, a.flash);

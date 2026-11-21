@@ -14,7 +14,7 @@ export const falls: FinishModule<Body> = {
   draw(ctx, s, art, scratch) {
     const frames = art.sprites[s.kind];
     const p = deathPose(s.kind, s.age, s.fall, newPose());
-    if (!frames || p.alpha <= 0) return;
+    if (p.alpha <= 0) return;
     ctx.save();
     ctx.globalAlpha = p.alpha;
     enterSprite(ctx, s.x, s.y, s.w, s.dir);

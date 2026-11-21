@@ -17,7 +17,8 @@ export type { Effect, SfxUrls } from "./sound";
 export { ROUNDS } from "./ammo";
 export { preloadHunt } from "./sprites";
 
-/** An animal's first sprite frame as an image URL, for a host's own HUD. */
+/** Any creature's first sprite frame as an image URL, for a host's own HUD
+ *  (every kind has art, the rares included). */
 export function iconUrl(kind: Kind): string {
   return svgUrl(SPRITES[kind][0]);
 }
