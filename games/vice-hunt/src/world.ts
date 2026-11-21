@@ -1,15 +1,13 @@
 import {
-  ANIMALS,
-  BIGFOOT_AFTER,
-  BIGFOOT_CHANCE,
   IGUANA_PAUSE,
   MAX_ALIVE,
   MAX_DT,
   SPAWN_INTERVAL,
   STREAK_WINDOW,
 } from "./config";
+import { CREATURES, KINDS, kindsWhere, type Kind } from "./creatures";
 import type { Rng } from "./rng";
-import type { Kills, Kind } from "./types";
+import type { Kills } from "./types";
 
 export type Animal = {
   id: number;
@@ -47,13 +45,12 @@ const FLAMINGO_BOB = 10;
 const RABBIT_HOP = 14;
 // Per-second chance a dashing iguana stops, giving irregular dash lengths.
 const IGUANA_STOP_RATE = 1.2;
-const KINDS: Kind[] = ["rabbit", "iguana", "flamingo"];
 
-const between = (rng: Rng, [lo, hi]: [number, number]) => lo + rng() * (hi - lo);
-const intBetween = (rng: Rng, [lo, hi]: [number, number]) => lo + Math.floor(rng() * (hi - lo + 1));
+const between = (rng: Rng, [lo, hi]: readonly [number, number]) => lo + rng() * (hi - lo);
+const intBetween = (rng: Rng, [lo, hi]: readonly [number, number]) => lo + Math.floor(rng() * (hi - lo + 1));
 
 export function emptyKills(): Kills {
-  return { rabbit: 0, iguana: 0, flamingo: 0, bigfoot: 0 };
+  return Object.fromEntries(KINDS.map((k) => [k, 0])) as Kills;
 }
 
 // Vertical offset from the lane's resting y, a pure function of age so the
@@ -65,7 +62,7 @@ function bob(kind: Kind, age: number): number {
 }
 
 function restingY(world: World, a: Animal, topFraction: number): number {
-  return ANIMALS[a.kind].lane === "top" ? topFraction * world.height : GROUND_LINE * world.height - a.h;
+  return CREATURES[a.kind].lane === "sky" ? topFraction * world.height : GROUND_LINE * world.height - a.h;
 }
 
 export function createWorld(width: number, height: number, rng: Rng): World {
@@ -82,23 +79,23 @@ export function createWorld(width: number, height: number, rng: Rng): World {
   };
 }
 
-function pickKind(world: World, rng: Rng): Kind {
-  const bigfootAlive = world.animals.some((a) => a.kind === "bigfoot");
-  if (world.time >= BIGFOOT_AFTER && !bigfootAlive && rng() < BIGFOOT_CHANCE) return "bigfoot";
+// Commons by weight; rares join in Task 3.
+function pickKind(rng: Rng): Kind {
   let r = rng();
-  for (const k of KINDS) {
-    r -= ANIMALS[k].weight;
+  for (const k of kindsWhere("prey")) {
+    const spawn = CREATURES[k].spawn;
+    r -= "weight" in spawn ? spawn.weight : 0;
     if (r < 0) return k;
   }
   return "rabbit";
 }
 
 export function spawn(world: World, rng: Rng, kind?: Kind): Animal {
-  const k = kind ?? pickKind(world, rng);
-  const cfg = ANIMALS[k];
+  const k = kind ?? pickKind(rng);
+  const cfg = CREATURES[k];
   const [w, h] = cfg.size;
   const dir = rng() < 0.5 ? -1 : 1;
-  const hp = intBetween(rng, cfg.hits);
+  const hp = intBetween(rng, cfg.rule.hits);
   const a: Animal = {
     id: world.nextId++,
     kind: k,

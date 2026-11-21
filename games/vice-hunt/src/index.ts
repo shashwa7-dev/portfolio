@@ -5,10 +5,13 @@ import { addCorpse, createScene, drawScene, stepScene } from "./render";
 import { mulberry32 } from "./rng";
 import { createSound, type SfxUrls } from "./sound";
 import { loadedArt, preloadHunt, svgUrl } from "./sprites";
-import type { Kills, Kind } from "./types";
+import type { Kind } from "./creatures";
+import type { Kills } from "./types";
 import { createWorld, resize, shoot, step } from "./world";
 
-export type { Kills, Kind } from "./types";
+export type { Kills } from "./types";
+export type { Kind } from "./creatures";
+export { KINDS, isRare, kindsWhere, pointsFor, penaltyFor } from "./creatures";
 export type { Effect, SfxUrls } from "./sound";
 export { ROUNDS } from "./ammo";
 export { preloadHunt } from "./sprites";

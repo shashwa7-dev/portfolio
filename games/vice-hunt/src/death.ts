@@ -27,6 +27,12 @@ export const DEATHS: Record<Kind, { duration: number; puff: Puff }> = {
   iguana: { duration: 0.8, puff: { at: 0, style: "dust", count: 5, life: 0.35 } },
   flamingo: { duration: 1.1, puff: { at: 0, style: "feather", count: 7, life: 1.1 } },
   bigfoot: { duration: 1.4, puff: { at: 0.8, style: "dust", count: 12, life: 0.5 } },
+  // Placeholders: the rares get their own finishes in later tasks.
+  cow: { duration: 1.1, puff: { at: 0, style: "feather", count: 7, life: 1.1 } },
+  tiger: { duration: 1.1, puff: { at: 0, style: "feather", count: 7, life: 1.1 } },
+  shark: { duration: 0.8, puff: { at: 0, style: "dust", count: 5, life: 0.35 } },
+  merman: { duration: 0.8, puff: { at: 0, style: "dust", count: 5, life: 0.35 } },
+  ufo: { duration: 0.8, puff: { at: 0, style: "dust", count: 5, life: 0.35 } },
 };
 
 const RABBIT = { air: 0.45, hop: 36, drift: 20, bounce: 6, bounceTime: 0.15, fadeFrom: 0.55 };

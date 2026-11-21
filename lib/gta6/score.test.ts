@@ -4,7 +4,7 @@ import { emptyTally, recordKill } from "./streak";
 
 describe("scoreFor", () => {
   it("gives each animal its points for a lone kill", () => {
-    expect(POINTS).toEqual({ rabbit: 100, iguana: 150, flamingo: 200, bigfoot: 1000 });
+    expect(POINTS).toEqual({ rabbit: 100, iguana: 150, flamingo: 200, bigfoot: 1000, cow: 0, tiger: 0, shark: 0, merman: 0, ufo: 0 });
     expect(scoreFor("rabbit", 1)).toBe(100);
     expect(scoreFor("iguana", 1)).toBe(150);
     expect(scoreFor("flamingo", 1)).toBe(200);

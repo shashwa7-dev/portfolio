@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { ANIMALS, MAX_ALIVE, MAX_DT } from "./config";
+import { MAX_ALIVE, MAX_DT } from "./config";
+import { CREATURES, KINDS } from "./creatures";
 import { mulberry32 } from "./rng";
 import { createWorld, resize, shoot, spawn, step } from "./world";
 import type { Kind } from "./types";
@@ -25,25 +26,22 @@ describe("world", () => {
     }
   });
 
-  it("no bigfoot before 8 s; never two alive at once", () => {
-    let seen = false;
+  it("no bigfoot before 30 s; never two alive at once", () => {
     for (let seed = 1; seed <= 5; seed++) {
       const rng = mulberry32(seed);
       const world = createWorld(1000, 400, rng);
       for (let i = 0; i < 600 * 60; i++) {
         step(world, DT, rng);
         const bigs = world.animals.filter((a) => a.kind === "bigfoot").length;
-        if (world.time < 8) expect(bigs).toBe(0);
+        if (world.time < 30) expect(bigs).toBe(0); // rares are not rolled yet (a later task)
         expect(bigs).toBeLessThanOrEqual(1);
-        if (bigs) seen = true;
       }
     }
-    expect(seen).toBe(true);
   });
 
   it("hit counts per kind", () => {
     const { rng, world } = make();
-    const seen: Record<Kind, Set<number>> = { rabbit: new Set(), iguana: new Set(), flamingo: new Set(), bigfoot: new Set() };
+    const seen = Object.fromEntries(KINDS.map((k) => [k, new Set<number>()])) as Record<Kind, Set<number>>;
     for (let i = 0; i < 2000; i++) {
       for (const k of Object.keys(seen) as Kind[]) {
         seen[k].add(spawn(world, rng, k).maxHp);
@@ -53,24 +51,24 @@ describe("world", () => {
     expect([...seen.rabbit]).toEqual([1]);
     expect([...seen.iguana]).toEqual([1]);
     expect([...seen.flamingo]).toEqual([1]);
-    expect([...seen.bigfoot]).toEqual([3]);
+    expect([...seen.bigfoot]).toEqual([20]);
   });
 
   it("speed ranges match the spec", () => {
-    expect(ANIMALS.rabbit.speed).toEqual([0.33, 0.45]);
-    expect(ANIMALS.iguana.speed).toEqual([0.15, 0.36]);
-    expect(ANIMALS.flamingo.speed).toEqual([0.12, 0.18]);
-    expect(ANIMALS.bigfoot.speed).toEqual([0.05, 0.075]);
+    expect(CREATURES.rabbit.speed).toEqual([0.33, 0.45]);
+    expect(CREATURES.iguana.speed).toEqual([0.15, 0.36]);
+    expect(CREATURES.flamingo.speed).toEqual([0.12, 0.18]);
+    expect(CREATURES.bigfoot.speed).toEqual([0.05, 0.075]);
   });
 
   it("speeds stay within the configured ranges", () => {
     const { rng, world } = make();
     for (let i = 0; i < 500; i++) {
-      for (const k of Object.keys(ANIMALS) as Kind[]) {
+      for (const k of KINDS) {
         const a = spawn(world, rng, k);
         const s = Math.abs(a.vx) / world.width;
-        expect(s).toBeGreaterThanOrEqual(ANIMALS[k].speed[0]);
-        expect(s).toBeLessThanOrEqual(ANIMALS[k].speed[1]);
+        expect(s).toBeGreaterThanOrEqual(CREATURES[k].speed[0]);
+        expect(s).toBeLessThanOrEqual(CREATURES[k].speed[1]);
       }
       world.animals = [];
     }
@@ -102,14 +100,13 @@ describe("world", () => {
     }
   });
 
-  it("shooting a bigfoot three times kills it once", () => {
+  it("shooting a bigfoot twenty times kills it once", () => {
     const { rng, world } = make();
     const a = spawn(world, rng, "bigfoot");
     a.x = 400;
     const cx = () => a.x + a.w / 2;
     const cy = a.y + a.h / 2;
-    expect(shoot(world, cx(), cy).killed).toBe(false);
-    expect(shoot(world, cx(), cy).killed).toBe(false);
+    for (let i = 0; i < 19; i++) expect(shoot(world, cx(), cy).killed).toBe(false);
     expect(shoot(world, cx(), cy).killed).toBe(true);
     expect(world.kills.bigfoot).toBe(1);
     expect(world.animals).not.toContain(a);
@@ -159,7 +156,7 @@ describe("world", () => {
     expect(hit).toBe(a);
     expect(killed).toBe(false);
     expect(a.flash).toBe(0.12);
-    expect(a.hp).toBe(2);
+    expect(a.hp).toBe(19);
     expect(a.x).toBe(400 - 6 * dir);
   });
 

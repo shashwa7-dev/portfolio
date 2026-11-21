@@ -29,7 +29,7 @@ Modules: `render.ts` (canvas: animals, corpses, poofs), `gun.ts` (first-person r
 - `createWorld(width, height, rng)`, `step(world, dt, rng)`, `shoot(world, x, y)`, `resize(world, width, height)`, `emptyKills()`
 - `world.streak` is the current kill streak (`STREAK_WINDOW` in `config.ts`).
 - `spawn(world, rng, kind?)` is exported for tests; production spawning calls it without `kind`.
-- All speeds, hit counts and sizes live in `src/config.ts`.
+- Every creature (lane, speed, hits, size, spawn, points) is one record in `src/creatures.ts`; timings live in `src/config.ts`.
 
 ## Flags
 

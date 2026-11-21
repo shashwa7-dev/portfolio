@@ -48,7 +48,7 @@ describe("tally", () => {
     t = recordKill(t, "rabbit", 1);
     expect(t.shots).toBe(6);
     expect(t.hits).toBe(5);
-    expect(t.kills).toEqual({ rabbit: 3, iguana: 1, flamingo: 1, bigfoot: 0 });
+    expect(t.kills).toEqual({ rabbit: 3, iguana: 1, flamingo: 1, cow: 0, tiger: 0, shark: 0, merman: 0, ufo: 0, bigfoot: 0 });
     expect(t.bestStreak).toBe(3);
   });
   it("does not change the tally it was given", () => {

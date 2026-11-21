@@ -1,11 +1,10 @@
 import { SPRITES } from "./art/sprites";
-import type { Kind } from "./types";
+import { KINDS, type Kind } from "./creatures";
 
 export type Art = {
   sprites: Record<Kind, readonly [HTMLImageElement, HTMLImageElement]>;
 };
 
-const KINDS: Kind[] = ["rabbit", "iguana", "flamingo", "bigfoot"];
 
 let art: Art | null = null;
 let pending: Promise<void> | null = null;

@@ -2,7 +2,7 @@ import type { Kind } from "@games/vice-hunt";
 import type { Tally } from "@/lib/gta6/streak";
 
 /** Each animal's points for a lone kill (spec, revision 3). */
-export const POINTS: Record<Kind, number> = { rabbit: 100, iguana: 150, flamingo: 200, bigfoot: 1000 };
+export const POINTS: Record<Kind, number> = { rabbit: 100, iguana: 150, flamingo: 200, bigfoot: 1000, cow: 0, tiger: 0, shark: 0, merman: 0, ufo: 0 };
 
 /** One kill's points at its streak (the game's count of kills each within
  *  1.5 s of the one before): a DOUBLE adds 50%, a TRIPLE or more adds 100%. */

@@ -27,7 +27,7 @@ export type Kill = { kind: Kind; streak: number };
 export type Tally = { shots: number; hits: number; kills: Kills; bestStreak: number; log: readonly Kill[] };
 
 export function emptyTally(): Tally {
-  return { shots: 0, hits: 0, kills: { rabbit: 0, iguana: 0, flamingo: 0, bigfoot: 0 }, bestStreak: 0, log: [] };
+  return { shots: 0, hits: 0, kills: { rabbit: 0, iguana: 0, flamingo: 0, cow: 0, tiger: 0, shark: 0, merman: 0, ufo: 0, bigfoot: 0 }, bestStreak: 0, log: [] };
 }
 
 export function recordShot(t: Tally, hit: boolean): Tally {
