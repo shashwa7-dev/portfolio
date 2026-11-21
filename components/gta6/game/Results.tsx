@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef } from "react";
 import type { Kind } from "@games/vice-hunt";
 import { accuracy, type Tally } from "@/lib/gta6/streak";
-import { totalScore } from "@/lib/gta6/score";
+import { POINTS, totalScore } from "@/lib/gta6/score";
 import { KINDS } from "@/components/gta6/game/Hud";
 import s from "@/components/gta6/game/game.module.css";
 
@@ -15,8 +15,9 @@ type Props = {
 };
 
 /**
- * The card Esc brings up: the score first, then kills per animal, accuracy
- * (hits over shots) and the best streak, then Play again or Back to site.
+ * The card Esc brings up: the score first with the points table under it,
+ * then kills per animal, accuracy (hits over shots) and the best streak,
+ * then Play again or Back to site.
  * A modal dialog: focus lands on Play again, Tab stays between its two
  * buttons, Esc goes back to the site.
  */
@@ -57,6 +58,15 @@ export default function Results({ tally, icons, onAgain, onBack }: Props) {
           {totalScore(tally).toLocaleString("en-US")}
           <small className={s.mono}>SCORE</small>
         </div>
+        {/* Two animals a line, so no line breaks mid pair. */}
+        <p className={`${s.points} ${s.mono}`}>
+          {[KINDS.slice(0, 2), KINDS.slice(2)].map((pair) => (
+            <span key={pair[0].kind}>
+              {pair.map(({ kind }) => `${kind.toUpperCase()} ${POINTS[kind]}`).join(" · ")}
+            </span>
+          ))}
+          <span>DOUBLE +50% · TRIPLE +100%</span>
+        </p>
         <dl className={s.table}>
           {KINDS.map(({ kind, name }) => (
             <div key={kind} className="contents">

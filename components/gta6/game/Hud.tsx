@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { Clock, Moon, Star, Sun, SunHorizon } from "@phosphor-icons/react/ssr";
 import type { Kills, Kind } from "@games/vice-hunt";
 import type { TimeOfDay } from "@/lib/gta6/timeOfDay";
-import { POINTS } from "@/lib/gta6/score";
 import Radio from "@/components/gta6/Radio";
 import s from "@/components/gta6/game/game.module.css";
 
@@ -25,7 +24,6 @@ export const KINDS: { kind: Kind; name: string }[] = [
 ];
 
 const STARS = [0, 1, 2, 3, 4];
-const LEGEND = KINDS.map(({ kind }) => `${kind.toUpperCase()} ${POINTS[kind]}`).join(" · ");
 
 /** Chamber centres round the cylinder, in percent of its box, from the top. */
 function chambers(n: number) {
@@ -142,7 +140,6 @@ export default function Hud({ shown, kills, score, latest, rounds, capacity, rel
             );
           })}
         </div>
-        <div aria-hidden className={`${s.legend} ${s.mono}`}>{LEGEND}</div>
       </div>
 
       <div className={s.radio}>

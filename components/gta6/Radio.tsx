@@ -83,7 +83,7 @@ function PlayPause({ r, className }: { r: RadioState; className?: string }) {
   );
 }
 
-/** The two looks: the full card (design A, the hero pill's popover) and the
+/** Two sizes of card A: the full one (the hero pill's popover) and the
  *  compact one in the game's HUD, bottom left. Same state. */
 type Variant = "card" | "compact";
 
@@ -97,9 +97,10 @@ type Variant = "card" | "compact";
  * play/pause, next, mute and the list button. A progress line along the
  * bottom edge reads the player once a second while it plays.
  *
- * `compact` (the HUD, layout L1): a small cover, "VICE FM", "Title · Artist"
- * and the same five buttons in a row. Its list opens upward, since it sits
- * at the bottom of the screen. It is the live region while it is mounted.
+ * `compact` (the HUD, layout L1, bottom left): the same card A, smaller
+ * (about 300x96, the cover over the left 45%). Its list opens upward, since
+ * it sits at the bottom of the screen. It is the live region while it is
+ * mounted.
  *
  * The list shows the tracks in this session's play order (a listbox:
  * arrows, Home and End move, Enter or a click plays, Esc or a click outside
@@ -140,18 +141,18 @@ export default function Radio({ variant }: { variant: Variant }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  // The progress line (card only): read once a second while playing; it
+  // The progress line: read once a second while playing; it
   // holds where it got to while paused, and a reading belongs to its track,
   // so next or prev while paused starts the line again from 0 (as does no
   // player, under automation).
   const [progress, setProgress] = useState({ position: -1, value: 0 });
   useEffect(() => {
-    if (compact || !r.playing) return;
+    if (!r.playing) return;
     const read = () => setProgress({ position: r.position, value: radioProgress() });
     read();
     const t = window.setInterval(read, PROGRESS_EVERY);
     return () => window.clearInterval(t);
-  }, [compact, r.playing, r.position]);
+  }, [r.playing, r.position]);
   const shownProgress = progress.position === r.position ? progress.value : 0;
 
   const rootClass = compact ? `${s.root} ${s.compact}` : s.root;
@@ -201,11 +202,11 @@ export default function Radio({ variant }: { variant: Variant }) {
       <button type="button" aria-label="Previous track" title="Previous track" onClick={radio.prev}>
         <SkipBack aria-hidden weight="fill" />
       </button>
-      <PlayPause r={r} className={compact ? undefined : s.big} />
+      <PlayPause r={r} className={s.big} />
       <button type="button" aria-label="Next track" title="Next track" onClick={radio.next}>
         <SkipForward aria-hidden weight="fill" />
       </button>
-      {!compact && <span className={s.spacer} />}
+      <span className={s.spacer} />
       <button
         type="button"
         aria-label={r.muted ? "Unmute" : "Mute"}
@@ -247,20 +248,6 @@ export default function Radio({ variant }: { variant: Variant }) {
         close();
       }}
     >
-      {compact ? (
-        <div className={s.mini}>
-          {/* eslint-disable-next-line @next/next/no-img-element -- a YouTube cover thumbnail; next/image adds nothing here */}
-          <img src={cover(id)} alt="" loading="lazy" decoding="async" />
-          <div className={s.miniBody}>
-            <div className={`${s.eyebrow} ${s.mono}`}>VICE FM</div>
-            <div data-radio-title="" aria-live="polite" title={label} className={s.line}>
-              {title}
-              {artist && <span> · {artist}</span>}
-            </div>
-            {controls}
-          </div>
-        </div>
-      ) : (
         <div className={s.card}>
           {/* eslint-disable-next-line @next/next/no-img-element -- a YouTube cover thumbnail; next/image adds nothing here */}
           <img src={cover(id)} alt="" loading="lazy" decoding="async" className={s.cover} />
@@ -276,8 +263,9 @@ export default function Radio({ variant }: { variant: Variant }) {
                 VICE FM · {r.position + 1} / {r.order.length}
               </span>
             </div>
-            {/* Not a live region: the hero pill beside it announces. */}
-            <div data-radio-title="" title={label}>
+            {/* The HUD's copy is the live region; the hero card is not, since
+                the pill beside it announces. */}
+            <div data-radio-title="" aria-live={compact ? "polite" : undefined} title={label}>
               <div className={s.title}>{title}</div>
               {artist && <div className={s.artist}>{artist}</div>}
             </div>
@@ -287,7 +275,6 @@ export default function Radio({ variant }: { variant: Variant }) {
             <i style={{ transform: `scaleX(${shownProgress})` }} />
           </div>
         </div>
-      )}
 
       {open && (
         <div className={s.list}>

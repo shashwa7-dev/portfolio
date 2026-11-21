@@ -6,8 +6,8 @@
  * sit on the right, a progress line runs along the bottom edge. The list
  * drops down below in the same dark glass.
  *
- * The compact HUD radio (headers2.html, L1's `.mini`) and the hero pill
- * (headers2.html, M1) are at the end.
+ * The compact HUD radio (the same card, smaller, owner's call after L1) and
+ * the hero pill (headers2.html, M1) are at the end.
  */
 
 .root {
@@ -273,60 +273,49 @@
   color: #a59fc3;
 }
 
-/* The compact HUD radio, bottom left: a small cover, the station, the
-   track on one line and the buttons in a row. Its list opens upward. */
+/* The compact HUD radio, bottom left: card A at about 300x96, the cover
+   over the left 45% fading into the dark glass. Its list opens upward. */
 .compact {
-  width: auto;
-  max-width: 17.5rem;
+  width: 300px;
 }
-.mini {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 6px 10px 6px 6px;
+.compact .card {
+  height: 96px;
   border-radius: 12px;
-  background: rgba(21, 18, 33, 0.78);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(21, 18, 33, 0.92);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 }
-.mini > img {
-  flex: none;
-  width: 58px;
-  height: 40px;
-  border-radius: 8px;
-  object-fit: cover;
+.compact .cover { width: 45%; }
+.compact .fade {
+  background: linear-gradient(
+    90deg,
+    rgba(21, 18, 33, 0) 0%,
+    rgba(21, 18, 33, 0.25) 22%,
+    rgba(21, 18, 33, 0.85) 40%,
+    #151221 50%
+  );
 }
-.miniBody {
-  min-width: 0;
+.compact .body {
+  width: 60%;
+  padding: 9px 10px 8px 0;
 }
 .compact .eyebrow { font-size: 8.5px; letter-spacing: 1.4px; }
-.line {
-  margin-top: 1px;
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.line span,
-.pillTrack span {
-  font-weight: 500;
-  color: #d8cfe6;
-}
-.compact .controls { margin-top: 4px; }
-.compact .controls button {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-}
+.compact .title { margin-top: 4px; font-size: 13px; }
+.compact .artist { font-size: 10.5px; }
+.compact .controls { gap: 3px; }
+.compact .controls button { width: 21px; height: 21px; border-radius: 6px; }
 .compact .controls button svg { width: 10px; height: 10px; }
+.compact .controls .big { width: 24px; height: 24px; border-radius: 50%; }
 .compact .list {
   top: auto;
   bottom: calc(100% + 8px);
   right: auto;
   width: 340px;
+}
+
+.pillTrack span {
+  font-weight: 500;
+  color: #d8cfe6;
 }
 
 /* The hero pill (M1): slim dark glass, round buttons. `.extras` holds the
