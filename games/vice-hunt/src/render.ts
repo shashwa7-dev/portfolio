@@ -2,6 +2,7 @@ import { DEATHS, deathPose, newPose, type Puff } from "./death";
 import { CREATURES } from "./creatures";
 import { HIT_REACTIONS, MOVES, resolveFinish } from "./modules";
 import { drawSprite, enterSprite } from "./modules/draw";
+import { drawParticles, emit, stepParticles, type Particle } from "./fx/particles";
 import type { Rng } from "./rng";
 import type { Art } from "./sprites";
 import { GROUND_LINE } from "./config";
@@ -10,11 +11,8 @@ import type { Animal, World } from "./world";
 const FEATHERS = ["#f7b6cc", "#e8789f", "#fbd3e0"];
 const DUST = ["#d9cbb3", "#bfae92", "#ece2d0"];
 
-type Particle = { x: number; y: number; vx: number; vy: number; spin: number; size: number; color: string; feather: boolean };
-// A puff of feathers or dust; it waits `delay` seconds before it shows.
-type Poof = { age: number; delay: number; life: number; parts: Particle[] };
 export type Scene = {
-  poofs: Poof[];
+  poofs: Particle[]; // feathers and dust from the `falls` finish
   scratch: HTMLCanvasElement; // offscreen copy for white hit flashes
 };
 
@@ -25,27 +23,32 @@ export const createScene = (): Scene => ({
   scratch: document.createElement("canvas"),
 });
 
+// A puff of feathers or dust; it waits `puff.at` seconds before it shows.
 function addPoof(scene: Scene, x: number, y: number, puff: Puff, ground: boolean, rng: Rng): void {
   const feather = puff.style === "feather";
   const colors = feather ? FEATHERS : DUST;
-  const parts: Particle[] = [];
   for (let i = 0; i < puff.count; i++) {
     const ang = rng() * Math.PI * 2;
     const speed = 40 + rng() * 90;
     // Dust kicked up from the ground only goes up and out.
     const vy = ground ? -Math.abs(Math.sin(ang)) * speed * 0.6 - 10 : Math.sin(ang) * speed - (feather ? 20 : 30);
-    parts.push({
+    const spin = (rng() - 0.5) * 12;
+    emit(scene.poofs, {
+      kind: "dot",
       x,
       y,
       vx: Math.cos(ang) * speed,
       vy,
-      spin: (rng() - 0.5) * 12,
+      spin: feather ? spin || 0.01 : 0, // a spinning dot is a feather
       size: feather ? 5 + rng() * 4 : 4 + rng() * 6,
       color: colors[Math.floor(rng() * colors.length)],
-      feather,
+      life: puff.life,
+      delay: puff.at,
+      drag: 3, // both slow down
+      g: feather ? 60 : 10, // feathers drift down, dust hangs
+      grow: feather ? 1 : 2,
     });
   }
-  scene.poofs.push({ age: 0, delay: puff.at, life: puff.life, parts });
 }
 
 // Schedules the feathers or dust of `a`'s `falls` finish (the world has just
@@ -62,21 +65,7 @@ export function addPuff(scene: Scene, world: World, a: Animal, rng: Rng): void {
 }
 
 export function stepScene(scene: Scene, dt: number): void {
-  for (const p of scene.poofs) {
-    if (p.delay > 0) {
-      p.delay -= dt;
-      continue;
-    }
-    p.age += dt;
-    for (const q of p.parts) {
-      q.x += q.vx * dt;
-      q.y += q.vy * dt;
-      // Feathers drift down and slow; dust slows and hangs.
-      q.vx *= 1 - 3 * dt;
-      q.vy = q.vy * (1 - 3 * dt) + (q.feather ? 60 : 10) * dt;
-    }
-  }
-  scene.poofs = scene.poofs.filter((p) => p.age < p.life);
+  stepParticles(scene.poofs, dt, 0);
 }
 
 function drawAnimal(ctx: CanvasRenderingContext2D, scene: Scene, world: World, art: Art, a: Animal): void {
@@ -110,23 +99,6 @@ function drawAnimal(ctx: CanvasRenderingContext2D, scene: Scene, world: World, a
   }
 }
 
-function drawPoof(ctx: CanvasRenderingContext2D, p: Poof): void {
-  if (p.delay > 0) return;
-  const k = p.age / p.life;
-  ctx.globalAlpha = Math.max(0, 1 - k);
-  for (const q of p.parts) {
-    ctx.fillStyle = q.color;
-    ctx.beginPath();
-    if (q.feather) {
-      ctx.ellipse(q.x, q.y, q.size, q.size * 0.35, q.spin * p.age, 0, Math.PI * 2);
-    } else {
-      ctx.arc(q.x, q.y, q.size * (1 + k), 0, Math.PI * 2);
-    }
-    ctx.fill();
-  }
-  ctx.globalAlpha = 1;
-}
-
 // Draws one frame in CSS px; the caller has already scaled ctx by dpr.
 export function drawScene(
   ctx: CanvasRenderingContext2D,
@@ -140,5 +112,5 @@ export function drawScene(
     for (const f of world.finishing) resolveFinish(f.id, reduced).draw(ctx, f.state, art, scene.scratch);
     for (const a of world.animals) drawAnimal(ctx, scene, world, art, a);
   }
-  for (const p of scene.poofs) drawPoof(ctx, p);
+  drawParticles(ctx, scene.poofs);
 }

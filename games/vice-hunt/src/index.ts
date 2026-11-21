@@ -211,7 +211,9 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
     if (devLeft.size === 0) return;
     for (const a of [...world.animals]) {
       if (!devLeft.has(a.kind) || a.x < 0 || a.x + a.w > world.width) continue;
-      if (shoot(world, a.x + a.w / 2, a.y + a.h * 0.3, rng).finished) devLeft.delete(a.kind);
+      if (!shoot(world, a.x + a.w / 2, a.y + a.h * 0.3, rng).finished) continue;
+      devLeft.delete(a.kind);
+      if (CREATURES[a.kind].finish === "falls") addPuff(scene, world, a, rng);
     }
   };
 
