@@ -5,6 +5,16 @@ import { createPortal } from "react-dom";
 import type { Kind } from "@games/vice-hunt";
 import BeachScene from "@/components/gta6/scene/BeachScene";
 import { beachSeaLine } from "@/lib/gta6/sea";
+
+/** Development only: `?spawn=merman,cow` puts those creatures on screen at
+ *  the start and brings each back after it goes. Ignored in production. */
+function devSpawn(kinds: readonly string[]): { spawn?: Kind[]; keep?: Kind[] } {
+  if (process.env.NODE_ENV === "production") return {};
+  const wanted = (new URLSearchParams(window.location.search).get("spawn") ?? "")
+    .split(",")
+    .filter((k): k is Kind => kinds.includes(k));
+  return wanted.length ? { spawn: wanted, keep: wanted } : {};
+}
 import Entry from "@/components/gta6/game/Entry";
 import Hud, { type TimeChoice } from "@/components/gta6/game/Hud";
 import Results from "@/components/gta6/game/Results";
@@ -133,6 +143,7 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
         muted: false,
         showScore: false,
         seaLine: beachSeaLine,
+        ...devSpawn(game.KINDS),
         onShot: (_x, _y, hit) => setTally((t) => (hit ? recordHit(recordShot(t), hit) : recordShot(t))),
         onKill: (kind, x, y, streak) => {
           setTally((t) => recordKill(t, kind, streak, scoreFor(game.pointsFor(kind), streak)));

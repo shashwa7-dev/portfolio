@@ -33,7 +33,7 @@ Modules: `render.ts` (canvas: animals, finishing entries, poofs), `gun.ts` (firs
 - `world.streak` is the current kill streak (`STREAK_WINDOW` in `config.ts`).
 - `spawn(world, rng, kind?)` is exported for tests; production spawning calls it without `kind`.
 - Every creature (lane, speed, hits, size, spawn, points) is one record in `src/creatures.ts`; timings live in `src/config.ts`.
-- Each creature has `enabled`. A disabled one never spawns on its own (commons share out the remaining weight; rares skip their roll), but an explicit `spawn(world, rng, kind)` (the dev page's `?spawn=`) still makes it. The tiger is off for now.
+- Each creature has `enabled`. A disabled one never spawns on its own (commons share out the remaining weight; rares skip their roll), but an explicit `spawn(world, rng, kind)` (the dev page's `?spawn=`) still makes it. The tiger is off for now. In the app, `npm run dev` with `?spawn=merman,cow` puts those kinds on screen and brings each back 1.5 s after it goes (the `spawn` and `keep` options; ignored in production builds).
 
 ## Flags
 

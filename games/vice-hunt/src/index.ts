@@ -54,6 +54,9 @@ export type HuntOptions = {
   seaLine?(width: number, height: number): number;
   /** Dev pages: creatures to spawn at the start. */
   spawn?: Kind[];
+  /** Dev pages: kinds kept on screen; each comes back 1.5 s after the last
+   *  one of its kind has gone (shot down or walked off). */
+  keep?: Kind[];
   /** Dev pages: kinds to shoot down (one hit a frame, once fully on screen)
    *  so a finish can be watched. Bypasses the gun. */
   finish?: Kind[];
@@ -222,6 +225,25 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
   // Dev pages only (`options.finish`): one hit a frame on each named kind,
   // once it is wholly on screen.
   const devLeft = new Set(options.finish ?? []);
+  // Dev pages only (`options.keep`): bring a kind back once it is gone.
+  const devGone = new Map<Kind, number>();
+  const devKeep = (dt: number) => {
+    if (world.wasted) return;
+    for (const k of options.keep ?? []) {
+      const here = world.animals.some((a) => a.kind === k) || world.finishing.some((f) => f.kind === k);
+      if (here) {
+        devGone.delete(k);
+        continue;
+      }
+      const t = (devGone.get(k) ?? 0) + Math.min(dt, MAX_DT);
+      if (t < 1.5) devGone.set(k, t);
+      else {
+        devGone.delete(k);
+        spawn(world, rng, k);
+      }
+    }
+  };
+
   const devFinish = () => {
     if (devLeft.size === 0) return;
     for (const a of [...world.animals]) {
@@ -240,6 +262,7 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
     last = now;
     step(world, dt, rng);
     devFinish();
+    devKeep(dt);
     stepFinishing(world, dt, reducedMotion, rng);
     stepThreats(world, dt, rng);
     stepGlass(world.glass, Math.min(dt, MAX_DT));
