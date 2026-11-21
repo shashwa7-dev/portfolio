@@ -26,6 +26,5 @@ export const BIGFOOT_CHANCE = 0.06;
 export const BIGFOOT_AFTER = 8;
 export const IGUANA_PAUSE: [number, number] = [0.2, 0.8];
 export const MAX_DT = 0.05;
-export const MAX_HOLES = 12;
 // Seconds between kills that still count as one streak (DOUBLE!, TRIPLE!).
 export const STREAK_WINDOW = 1.5;

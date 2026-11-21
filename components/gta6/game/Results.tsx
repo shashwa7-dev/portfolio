@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef } from "react";
 import type { Kind } from "@games/vice-hunt";
 import { accuracy, type Tally } from "@/lib/gta6/streak";
+import { totalScore } from "@/lib/gta6/score";
 import { KINDS } from "@/components/gta6/game/Hud";
 import s from "@/components/gta6/game/game.module.css";
 
@@ -14,10 +15,10 @@ type Props = {
 };
 
 /**
- * The card Esc brings up: kills per animal, accuracy (hits over shots) and
- * the best streak, then Play again or Back to site. A modal dialog: focus
- * lands on Play again, Tab stays between its two buttons, Esc goes back to
- * the site.
+ * The card Esc brings up: the score first, then kills per animal, accuracy
+ * (hits over shots) and the best streak, then Play again or Back to site.
+ * A modal dialog: focus lands on Play again, Tab stays between its two
+ * buttons, Esc goes back to the site.
  */
 export default function Results({ tally, icons, onAgain, onBack }: Props) {
   const title = useId();
@@ -52,6 +53,10 @@ export default function Results({ tally, icons, onAgain, onBack }: Props) {
         <h2 id={title} className={s.display}>
           HUNT OVER
         </h2>
+        <div data-score="" className={`${s.finalScore} ${s.display}`}>
+          {totalScore(tally).toLocaleString("en-US")}
+          <small className={s.mono}>SCORE</small>
+        </div>
         <dl className={s.table}>
           {KINDS.map(({ kind, name }) => (
             <div key={kind} className="contents">

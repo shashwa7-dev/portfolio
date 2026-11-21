@@ -9,7 +9,7 @@ The public entry is `src/index.ts`:
 - `preloadHunt()` decodes the sprite frames once per page; later calls share the promise.
 - `iconUrl(kind)` is an animal's first sprite frame as a data URL, for a host's own HUD.
 - `startHunt(host, options)` adds one full-size layer to `host` (give the host `position: relative` or similar) and returns `{ destroy() }`. Every option is optional:
-  - `onShot(x, y, hit)`: every shot that fires, in CSS px relative to `host`.
+  - `onShot(x, y, hit)`: every shot that fires, in CSS px relative to `host`. Shots leave no mark on the screen (no bullet holes or cracks, spec revision 3): muzzle flash, recoil, the hit flash and the death animations are the only feedback.
   - `onKills(kills)`: the running kill counts after each kill.
   - `onKill(kind, x, y, streak)`: each kill at the animal's centre (CSS px relative to `host`); `streak` counts kills each within 1.5 s of the one before, 1 for a lone kill.
   - `onAmmo(rounds, reloading)`: once at the start and on every change.
@@ -24,7 +24,7 @@ The public entry is `src/index.ts`:
 
 `createSound(muted, sfx)` plays the recorded file given for an effect (`sfx: { shot, reload, empty, hit, kill }`, each a URL, all optional) once it has loaded, and synthesises the effect with Web Audio otherwise. It is silent, and fetches nothing, when `muted` is set or `navigator.webdriver` is true. This package ships no audio files; the host passes the URLs.
 
-Modules: `render.ts` (canvas: animals, corpses, poofs, holes), `gun.ts` (first-person revolver and crosshair, DOM), `cracks.ts` (seeded crack paths), `sound.ts`, `sprites.ts` (art decoding). Pure and tested: `ammo.ts` (`createAmmo`, `fire`, `startReload`, `tick`), `death.ts` (`deathPose(kind, age, fall, out)`, `DEATHS`). The pure simulation lives in `src/world.ts` and has no DOM access:
+Modules: `render.ts` (canvas: animals, corpses, poofs), `gun.ts` (first-person revolver and crosshair, DOM), `sound.ts`, `sprites.ts` (art decoding). Pure and tested: `ammo.ts` (`createAmmo`, `fire`, `startReload`, `tick`), `death.ts` (`deathPose(kind, age, fall, out)`, `DEATHS`). The pure simulation lives in `src/world.ts` and has no DOM access:
 
 - `createWorld(width, height, rng)`, `step(world, dt, rng)`, `shoot(world, x, y)`, `resize(world, width, height)`, `emptyKills()`
 - `world.streak` is the current kill streak (`STREAK_WINDOW` in `config.ts`).

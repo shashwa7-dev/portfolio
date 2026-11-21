@@ -250,7 +250,9 @@ export function createRadio(deps: RadioDeps) {
         onEnded() {
           if (!s.active || s.dead) return;
           s.playing = false;
-          update({ position: step(1) });
+          // Not playing while the next one buffers: the equaliser and the
+          // progress line wait for its onPlaying.
+          update({ position: step(1), playing: false });
           sync(s, false);
         },
         onError() {
@@ -261,7 +263,7 @@ export function createRadio(deps: RadioDeps) {
           // One track that cannot play (removed, not embeddable) is
           // skipped; a whole lap of them means the player is no good.
           if (s.active && s.errors < ids.length) {
-            update({ position: step(1) });
+            update({ position: step(1), playing: false });
             return sync(s, false);
           }
           s.failed = true;
@@ -298,6 +300,20 @@ export function createRadio(deps: RadioDeps) {
     if (!s) return;
     s.errors = 0;
     sync(s, true);
+  }
+
+  /**
+   * For the play button while `blocked`, so it runs inside the visitor's
+   * click. A refused player is asked again; one that failed is thrown away
+   * and rebuilt, on the same track.
+   */
+  function retry() {
+    const s = session;
+    update({ blocked: false, paused: false });
+    if (!s || s.dead || !s.active) return;
+    if (!s.failed) return sync(s, true);
+    kill(s);
+    session = build();
   }
 
   return {
@@ -361,8 +377,9 @@ export function createRadio(deps: RadioDeps) {
 
     /** Picks the track at `position` in the order (the list): it plays.
      *  Picking the one already playing does nothing; picking it while paused
-     *  resumes it. */
+     *  resumes it, and while blocked retries it (inside the visitor's click). */
     select(position: number) {
+      if (position === state.position && state.blocked) return retry();
       if (position === state.position && !state.paused) return;
       update({ paused: false });
       go(position);
@@ -384,19 +401,7 @@ export function createRadio(deps: RadioDeps) {
       else session?.player?.unMute();
     },
 
-    /**
-     * For the play button while `blocked`, so it runs inside the visitor's
-     * click. A refused player is asked again; one that failed is thrown away
-     * and rebuilt, on the same track.
-     */
-    retry() {
-      const s = session;
-      update({ blocked: false, paused: false });
-      if (!s || s.dead || !s.active) return;
-      if (!s.failed) return sync(s, true);
-      kill(s);
-      session = build();
-    },
+    retry,
 
     /** Steps the volume down to `DUCKED` (Bigfoot) or back up, over a fade. */
     setDuck(on: boolean) {

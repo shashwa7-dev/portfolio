@@ -1,7 +1,7 @@
 import { RELOAD_TIME, createAmmo, fire, startReload, tick } from "./ammo";
 import { SPRITES } from "./art/sprites";
 import { createGun } from "./gun";
-import { addCorpse, addHole, createScene, drawScene, stepScene } from "./render";
+import { addCorpse, createScene, drawScene, stepScene } from "./render";
 import { mulberry32 } from "./rng";
 import { createSound, type SfxUrls } from "./sound";
 import { loadedArt, preloadHunt, svgUrl } from "./sprites";
@@ -141,7 +141,6 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
       return;
     }
     const { hit, killed } = shoot(world, x, y);
-    addHole(scene, x, y, rng);
     gun.fire();
     sound.shot();
     const hb = host.getBoundingClientRect();

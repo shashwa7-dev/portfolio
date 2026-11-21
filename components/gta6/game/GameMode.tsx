@@ -9,6 +9,7 @@ import Hud, { type TimeChoice } from "@/components/gta6/game/Hud";
 import Results from "@/components/gta6/game/Results";
 import { timeOfDay } from "@/lib/gta6/timeOfDay";
 import { callout, emptyTally, killLabel, recordKill, recordShot } from "@/lib/gta6/streak";
+import { totalScore } from "@/lib/gta6/score";
 import s from "@/components/gta6/game/game.module.css";
 
 type HuntModule = typeof import("@games/vice-hunt");
@@ -56,8 +57,9 @@ type Props = {
  * or right click brings up the results card. Play again starts a fresh
  * game at zero with no entry; Back to site closes.
  *
- * Kills, accuracy and streaks are counted here from the game's callbacks
- * (`lib/gta6/streak.ts`); the game's own score strip is off.
+ * Kills, the score, accuracy and streaks are counted here from the game's
+ * callbacks (`lib/gta6/streak.ts`, `lib/gta6/score.ts`); the game's own
+ * score strip is off.
  */
 export default function GameMode({ game, onClose, onBigfoot }: Props) {
   const overlay = useRef<HTMLDivElement>(null);
@@ -166,6 +168,9 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
     return () => duck.current(false);
   }, [bigfoot]);
 
+  const last = tally.log[tally.log.length - 1];
+  const latest = last ? { kind: last.kind, count: tally.log.length } : null;
+
   const playAgain = () => {
     setTally(emptyTally());
     setAmmo({ rounds: game.ROUNDS, reloading: false });
@@ -228,6 +233,8 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
       <Hud
         shown={phase !== "entry"}
         kills={tally.kills}
+        score={totalScore(tally)}
+        latest={latest}
         rounds={ammo.rounds}
         capacity={game.ROUNDS}
         reloading={phase === "play" && ammo.reloading}

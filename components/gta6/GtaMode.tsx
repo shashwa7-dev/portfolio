@@ -1,17 +1,15 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Star, X } from "@phosphor-icons/react/ssr";
-import Container from "@/components/layout/Container";
+import { X } from "@phosphor-icons/react/ssr";
 import { gtaMode } from "@/lib/gta6/store";
 import { MOD_CSS } from "@/components/gta6/modStyles";
 import { useMusic } from "@/components/gta6/useMusic";
 import HuntControl from "@/components/gta6/HuntControl";
-import Radio from "@/components/gta6/Radio";
+import { RadioPill } from "@/components/gta6/Radio";
 import { VICE_HUNT_ENABLED } from "@/lib/gta6";
 
 const WALLPAPERS = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13"];
-const STARS = [0, 1, 2, 3, 4];
 
 /** The fade time from the element's computed transition (`--duration-gta-fade`). */
 function fadeMs(el: HTMLElement | null): number {
@@ -33,11 +31,11 @@ type Props = {
  * Behind the content: the wallpaper slideshow under a frosted veil in the
  * page's own paper colour, heavy on the left where the text is and thin on
  * the right where the art is, then a fade at the bottom so the hero melts
- * into the next section. On top, in the header's top padding at the right
- * of the measure: a small cluster with the full wanted row and Exit, with
- * the Vice FM card (`Radio`; the same card moves to the game's HUD) below
- * it, led by Vice Hunt's revolver (`HuntControl`, which opens the
- * full-screen game) when the game is on (`data-gta-cluster`).
+ * into the next section. On top, in the hero's top right corner over the
+ * art (clear of the text), one slim pill (M1, `data-gta-cluster`): Vice FM's vinyl,
+ * track and play/pause (`RadioPill`; the vinyl opens the full radio card),
+ * then Vice Hunt's pink revolver (`HuntControl`, which opens the full-screen
+ * game) when the game is on, and the exit.
  */
 export default function GtaMode({ leaving, onGone }: Props) {
   const backdrop = useRef<HTMLDivElement>(null);
@@ -96,44 +94,33 @@ export default function GtaMode({ leaving, onGone }: Props) {
         <div className="absolute inset-x-0 bottom-0 h-16 bg-[linear-gradient(transparent,hsl(var(--background)))]" />
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 top-2 z-40">
-        <Container width="reading">
-          <div className="relative">
-            <div
-              data-gta-cluster
-              data-leaving={leavingAttr}
-              className="gta-fade pointer-events-auto absolute right-0 top-0 flex h-6 items-center gap-2.5 rounded-full border border-border bg-background/85 px-2.5 font-label text-2xs uppercase tracking-label text-muted-foreground backdrop-blur-sm"
-            >
-              {VICE_HUNT_ENABLED && (
-                <HuntControl
-                  stopRef={stopGame}
-                  leaving={leaving}
-                  onBigfoot={music.setDuck}
-                />
-              )}
-              <span role="img" aria-label="Wanted: five stars" className="flex gap-0.5 text-accent">
-                {STARS.map((n) => (
-                  <Star key={n} aria-hidden weight="fill" className="h-2.5 w-2.5" />
-                ))}
-              </span>
-              <button
-                type="button"
-                onClick={() => {
-                  stopGame.current?.();
-                  gtaMode.set(false);
-                }}
-                className="inline-flex items-center gap-1 uppercase transition-colors duration-fast ease-out hover:text-foreground"
-              >
-                <X aria-hidden weight="bold" className="h-2.5 w-2.5" />
-                Exit
-              </button>
-            </div>
-            {/* Vice FM, under the cluster (or beside the measure on wide screens). */}
-            <div data-leaving={leavingAttr} className="gta-fade pointer-events-auto">
-              <Radio place="hero" />
-            </div>
-          </div>
-        </Container>
+      <div
+        data-gta-cluster
+        data-leaving={leavingAttr}
+        role="group"
+        aria-label="Vice City controls"
+        className="gta-fade absolute right-6 top-3 z-40"
+      >
+        <RadioPill>
+          {VICE_HUNT_ENABLED && (
+            <HuntControl
+              stopRef={stopGame}
+              leaving={leaving}
+              onBigfoot={music.setDuck}
+            />
+          )}
+          <button
+            type="button"
+            aria-label="Exit Vice City mode"
+            title="Exit"
+            onClick={() => {
+              stopGame.current?.();
+              gtaMode.set(false);
+            }}
+          >
+            <X aria-hidden weight="bold" />
+          </button>
+        </RadioPill>
       </div>
     </>
   );

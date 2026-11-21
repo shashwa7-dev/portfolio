@@ -1,5 +1,3 @@
-import { MAX_HOLES } from "./config";
-import { crackPath } from "./cracks";
 import { DEATHS, deathPose, newPose, type Pose, type Puff } from "./death";
 import type { Rng } from "./rng";
 import type { Art } from "./sprites";
@@ -11,7 +9,6 @@ const BIGFOOT_FRAME_TIME = 0.3;
 const FEATHERS = ["#f7b6cc", "#e8789f", "#fbd3e0"];
 const DUST = ["#d9cbb3", "#bfae92", "#ece2d0"];
 
-type Hole = { x: number; y: number; cracks: Path2D };
 type Particle = { x: number; y: number; vx: number; vy: number; spin: number; size: number; color: string; feather: boolean };
 // A puff of feathers or dust; it waits `delay` seconds before it shows.
 type Poof = { age: number; delay: number; life: number; parts: Particle[] };
@@ -30,7 +27,6 @@ type Corpse = {
 };
 
 export type Scene = {
-  holes: Hole[];
   poofs: Poof[];
   corpses: Corpse[];
   scratch: HTMLCanvasElement; // offscreen copy for white hit flashes
@@ -39,16 +35,10 @@ export type Scene = {
 const pose = newPose(); // scratch pose, reused every frame
 
 export const createScene = (): Scene => ({
-  holes: [],
   poofs: [],
   corpses: [],
   scratch: document.createElement("canvas"),
 });
-
-export function addHole(scene: Scene, x: number, y: number, rng: Rng): void {
-  scene.holes.push({ x, y, cracks: new Path2D(crackPath(x, y, rng)) });
-  if (scene.holes.length > MAX_HOLES) scene.holes.shift();
-}
 
 function addPoof(scene: Scene, x: number, y: number, puff: Puff, ground: boolean, rng: Rng): void {
   const feather = puff.style === "feather";
@@ -216,34 +206,6 @@ function drawPoof(ctx: CanvasRenderingContext2D, p: Poof): void {
   ctx.globalAlpha = 1;
 }
 
-function drawHole(ctx: CanvasRenderingContext2D, h: Hole): void {
-  ctx.lineCap = "round";
-  ctx.save();
-  ctx.translate(0.6, 0.8);
-  ctx.strokeStyle = "rgba(0,0,0,.35)";
-  ctx.lineWidth = 1.6;
-  ctx.stroke(h.cracks);
-  ctx.restore();
-  ctx.strokeStyle = "rgba(255,255,255,.85)";
-  ctx.lineWidth = 0.9;
-  ctx.stroke(h.cracks);
-
-  const circle = (x: number, y: number, r: number, fill: string, stroke?: string, lw = 1) => {
-    ctx.beginPath();
-    ctx.arc(x, y, r, 0, Math.PI * 2);
-    ctx.fillStyle = fill;
-    ctx.fill();
-    if (stroke) {
-      ctx.strokeStyle = stroke;
-      ctx.lineWidth = lw;
-      ctx.stroke();
-    }
-  };
-  circle(h.x, h.y, 9, "rgba(255,255,255,.18)", "rgba(255,255,255,.6)");
-  circle(h.x, h.y, 4.2, "#0b0a0a", "rgba(255,255,255,.9)", 1.1);
-  circle(h.x - 1, h.y - 1, 1.4, "rgba(255,255,255,.35)");
-}
-
 // Draws one frame in CSS px; the caller has already scaled ctx by dpr.
 export function drawScene(
   ctx: CanvasRenderingContext2D,
@@ -258,5 +220,4 @@ export function drawScene(
     for (const a of world.animals) drawAnimal(ctx, scene, art, a, dpr);
   }
   for (const p of scene.poofs) drawPoof(ctx, p);
-  for (const h of scene.holes) drawHole(ctx, h);
 }

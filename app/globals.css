@@ -499,6 +499,12 @@
      swing, and the progress line's glide between its 1 s readings. */
   --duration-gta-eq: 900ms;
   --duration-gta-progress: 1s;
+  /* One turn of the hero pill's vinyl (ambient, so far outside the UI budget
+     on purpose); the HUD score counting up to a new total, read by Hud.tsx;
+     the latest kill's chip glowing pink, then fading back. */
+  --duration-gta-vinyl: 6s;
+  --duration-gta-score: 300ms;
+  --duration-gta-chip-glow: 1s;
   --duration-glyph-wave: 1100ms;
   --duration-live-pulse: 1800ms;
   --duration-live-ring: 280ms;

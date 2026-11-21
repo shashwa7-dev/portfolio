@@ -8,7 +8,8 @@ export function stepTrack(index: number, delta: number, length: number): number 
   return (((index + delta) % length) + length) % length;
 }
 
-/** The player's own title once known, else "Track N" (counted from one). */
+/** The playlist entry's title (`components/gta6/track.ts`), else "Track N"
+ *  (counted from one) for an entry with none. */
 export function trackTitle(index: number, title?: string): string {
   return title?.trim() || `Track ${index + 1}`;
 }

@@ -18,11 +18,16 @@ export function killLabel(kind: Kind): string {
   return kind.toUpperCase();
 }
 
-/** One hunt's numbers, for the results card. */
-export type Tally = { shots: number; hits: number; kills: Kills; bestStreak: number };
+/** One kill, at the streak it was made on (what its points depend on). */
+export type Kill = { kind: Kind; streak: number };
+
+/** One hunt's numbers, for the HUD and the results card. `log` is every kill
+ *  in order, so the score can weigh each by its streak and the HUD can light
+ *  the latest one's chip. */
+export type Tally = { shots: number; hits: number; kills: Kills; bestStreak: number; log: readonly Kill[] };
 
 export function emptyTally(): Tally {
-  return { shots: 0, hits: 0, kills: { rabbit: 0, iguana: 0, flamingo: 0, bigfoot: 0 }, bestStreak: 0 };
+  return { shots: 0, hits: 0, kills: { rabbit: 0, iguana: 0, flamingo: 0, bigfoot: 0 }, bestStreak: 0, log: [] };
 }
 
 export function recordShot(t: Tally, hit: boolean): Tally {
@@ -34,5 +39,6 @@ export function recordKill(t: Tally, kind: Kind, streak: number): Tally {
     ...t,
     kills: { ...t.kills, [kind]: t.kills[kind] + 1 },
     bestStreak: Math.max(t.bestStreak, streak),
+    log: [...t.log, { kind, streak }],
   };
 }

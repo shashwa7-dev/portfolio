@@ -26,7 +26,7 @@ function coarsePointer(): boolean {
  */
 function RevolverIcon() {
   return (
-    <svg aria-hidden viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor">
+    <svg aria-hidden viewBox="0 0 24 24" fill="currentColor">
       {/* barrel, frame and cylinder, then the grip angled down and back */}
       <path d="M7 6.2h14.6a.9.9 0 0 1 .9.9v1.3a.6.6 0 0 1-.6.6H13.2v1.6a1.7 1.7 0 0 1-1.7 1.7H10l-.7 1.3a1 1 0 0 1-.9.5h-.5l-2 5.4a1 1 0 0 1-.9.6H2.7a.6.6 0 0 1-.6-.8l2.5-6.6c.2-.4.3-.9.3-1.3V8.2a2 2 0 0 1 2-2Z" />
       {/* hammer */}
@@ -44,7 +44,7 @@ function RevolverIcon() {
 }
 
 /**
- * Vice Hunt's revolver in the mode's control cluster.
+ * Vice Hunt's revolver, the pink round button in the mode's hero pill.
  *
  * The game package is fetched and its sprites decoded in the background as
  * soon as the mode is on; until then the button is disabled under a spinning
@@ -117,13 +117,14 @@ export default function HuntControl({ stopRef, leaving, onBigfoot }: Props) {
         title={title}
         aria-label={title}
         aria-busy={loading || undefined}
-        className="relative grid h-5 w-5 place-items-center rounded-full transition-colors duration-fast ease-out hover:text-foreground disabled:opacity-60 disabled:hover:text-muted-foreground"
+        // The pink round button in the hero pill (styled by RadioPill).
+        data-tone="pink"
       >
         <RevolverIcon />
         {loading && (
           <span
             aria-hidden
-            className="absolute inset-0 animate-[spin_var(--duration-gta-loader)_linear_infinite] rounded-full border-2 border-current/20 border-t-current"
+            className="absolute -inset-0.5 animate-[spin_var(--duration-gta-loader)_linear_infinite] rounded-full border-2 border-white/25 border-t-white"
           />
         )}
       </button>

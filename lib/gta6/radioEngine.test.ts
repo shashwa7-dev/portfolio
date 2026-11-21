@@ -174,4 +174,32 @@ describe("radio engine", () => {
     h().onReady();
     expect(radio.progress()).toBe(0.25);
   });
+  it("is not playing while the next track buffers after an end or a skipped error", async () => {
+    const { radio, h } = setup();
+    radio.start();
+    await settle();
+    h().onReady();
+    h().onPlaying();
+    expect(radio.getState().playing).toBe(true);
+    h().onEnded();
+    expect(radio.getState().playing).toBe(false);
+    h().onPlaying();
+    expect(radio.getState().playing).toBe(true);
+    h().onError(150);
+    expect(radio.getState().playing).toBe(false);
+  });
+
+  it("retries when the current track is picked while blocked", async () => {
+    const { radio, fake, h } = setup();
+    radio.start();
+    await settle();
+    h().onReady();
+    // Refused: no onPlaying.
+    await vi.advanceTimersByTimeAsync(REFUSED_AFTER + 100);
+    expect(radio.getState().blocked).toBe(true);
+    const plays = fake.calls.filter((c) => c === "play").length;
+    radio.select(0);
+    expect(radio.getState().blocked).toBe(false);
+    expect(fake.calls.filter((c) => c === "play").length).toBe(plays + 1);
+  });
 });

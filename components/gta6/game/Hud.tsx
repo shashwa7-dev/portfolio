@@ -1,18 +1,20 @@
 "use client";
 
-import { Star } from "@phosphor-icons/react/ssr";
+import { useEffect, useRef, useState } from "react";
+import { Clock, Moon, Star, Sun, SunHorizon } from "@phosphor-icons/react/ssr";
 import type { Kills, Kind } from "@games/vice-hunt";
 import type { TimeOfDay } from "@/lib/gta6/timeOfDay";
+import { POINTS } from "@/lib/gta6/score";
 import Radio from "@/components/gta6/Radio";
 import s from "@/components/gta6/game/game.module.css";
 
 export type TimeChoice = TimeOfDay | "auto";
 
-const TIMES: { value: TimeChoice; label: string }[] = [
-  { value: "morning", label: "Morning" },
-  { value: "evening", label: "Evening" },
-  { value: "night", label: "Night" },
-  { value: "auto", label: "Auto" },
+const TIMES: { value: TimeChoice; label: string; Icon: typeof Sun }[] = [
+  { value: "morning", label: "Morning", Icon: Sun },
+  { value: "evening", label: "Evening", Icon: SunHorizon },
+  { value: "night", label: "Night", Icon: Moon },
+  { value: "auto", label: "Auto (your local time)", Icon: Clock },
 ];
 
 export const KINDS: { kind: Kind; name: string }[] = [
@@ -23,6 +25,8 @@ export const KINDS: { kind: Kind; name: string }[] = [
 ];
 
 const STARS = [0, 1, 2, 3, 4];
+const LEGEND = KINDS.map(({ kind }) => `${kind.toUpperCase()} ${POINTS[kind]}`).join(" · ");
+
 /** Chamber centres round the cylinder, in percent of its box, from the top. */
 function chambers(n: number) {
   return Array.from({ length: n }, (_, i) => {
@@ -31,10 +35,47 @@ function chambers(n: number) {
   });
 }
 
+/** A duration token in ms, from the root's computed style. */
+function tokenMs(name: string): number {
+  const raw = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const n = parseFloat(raw);
+  if (!Number.isFinite(n)) return 0;
+  return raw.endsWith("ms") ? n : n * 1000;
+}
+
+/**
+ * `target`, counted up to over `--duration-gta-score` whenever it rises; a
+ * drop (Play again) and reduced motion show it at once.
+ */
+function useCountUp(target: number): number {
+  const [shown, setShown] = useState(target);
+  const at = useRef(target);
+  useEffect(() => {
+    const from = at.current;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const ms = target > from && !reduced ? tokenMs("--duration-gta-score") : 0;
+    const t0 = performance.now();
+    let raf = 0;
+    const tick = (now: number) => {
+      const k = ms > 0 ? Math.min(1, (now - t0) / ms) : 1;
+      at.current = Math.round(from + (target - from) * k);
+      setShown(at.current);
+      if (k < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target]);
+  return shown;
+}
+
 type Props = {
   /** Slid in from the edges (play and results); out of view for the entry. */
   shown: boolean;
   kills: Kills;
+  score: number;
+  /** The latest kill and how many kills there have been, so the same animal
+   *  killed again still lights its chip afresh. */
+  latest: { kind: Kind; count: number } | null;
   rounds: number;
   /** The revolver's chambers (the package's `ROUNDS`). */
   capacity: number;
@@ -45,40 +86,67 @@ type Props = {
 };
 
 /**
- * Layout A: radio top left, time switch top centre, the wanted stars and big
- * kill counts top right, the six-round cylinder bottom right and the key
- * hint bottom centre. Only the radio and the switch take the pointer; the
- * rest lets shots through to the game.
+ * Layout L1, classic GTA corners (spec, revision 3). Top left: the icon-only
+ * time switch. Top right: the wanted stars and the score (S2: a big glowing
+ * number, then a glass chip per animal; the latest kill's chip glows pink
+ * for a moment). Bottom left: the compact radio. Bottom right: the six-round
+ * cylinder. Bottom centre: a faint key hint. The middle of the screen stays
+ * clear. Only the switch and the radio take the pointer; the rest lets shots
+ * through to the game.
  */
-export default function Hud({ shown, kills, rounds, capacity, reloading, time, onTime, icons }: Props) {
+export default function Hud({ shown, kills, score, latest, rounds, capacity, reloading, time, onTime, icons }: Props) {
+  const counted = useCountUp(score);
   return (
     <div className={s.hud} data-in={shown ? "" : undefined}>
-      <div className={s.radio}>
-        <Radio place="hud" />
-      </div>
-
-      <div role="group" aria-label="Time of day" className={`${s.time} ${s.glass} ${s.mono}`}>
-        {TIMES.map((t) => (
-          <button key={t.value} type="button" aria-pressed={time === t.value} onClick={() => onTime(t.value)}>
-            {t.label}
+      <div role="group" aria-label="Time of day" className={`${s.time} ${s.glass}`}>
+        {TIMES.map(({ value, label, Icon }) => (
+          <button
+            key={value}
+            type="button"
+            aria-label={label}
+            title={label}
+            aria-pressed={time === value}
+            onClick={() => onTime(value)}
+          >
+            <Icon aria-hidden weight={time === value ? "fill" : "bold"} />
           </button>
         ))}
       </div>
 
-      <div className={`${s.kills} ${s.display}`}>
+      <div className={s.score}>
         <div role="img" aria-label="Wanted: five stars" className={s.stars}>
           {STARS.map((n) => (
             <Star key={n} aria-hidden weight="fill" />
           ))}
         </div>
-        {KINDS.map(({ kind, name }) => (
-          <div key={kind} className={s.row}>
-            <small>{name.toUpperCase()}</small>
-            {/* eslint-disable-next-line @next/next/no-img-element -- a sprite data URL from the game package */}
-            <img src={icons[kind]} alt="" />
-            <b aria-label={`${name}: ${kills[kind]}`}>{kills[kind]}</b>
-          </div>
-        ))}
+        <div data-score={score} className={`${s.total} ${s.display}`}>
+          {/* The count-up is for the eye; a reader gets the total once. */}
+          <span aria-hidden>{counted.toLocaleString("en-US")}</span>
+          <span className="sr-only">Score: {score.toLocaleString("en-US")}</span>
+          <small aria-hidden className={s.mono}>SCORE</small>
+        </div>
+        <div className={`${s.chips} ${s.display}`}>
+          {KINDS.map(({ kind, name }) => {
+            const hot = latest?.kind === kind;
+            return (
+              <span
+                // A new key restarts the glow on every kill.
+                key={hot ? `${kind}-${latest.count}` : kind}
+                className={`${s.chip} ${s.glass}`}
+                data-hot={hot ? "" : undefined}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element -- a sprite data URL from the game package */}
+                <img src={icons[kind]} alt="" />
+                <b aria-label={`${name}: ${kills[kind]}`}>{kills[kind]}</b>
+              </span>
+            );
+          })}
+        </div>
+        <div aria-hidden className={`${s.legend} ${s.mono}`}>{LEGEND}</div>
+      </div>
+
+      <div className={s.radio}>
+        <Radio variant="compact" />
       </div>
 
       <div
@@ -97,7 +165,7 @@ export default function Hud({ shown, kills, rounds, capacity, reloading, time, o
         </span>
       </div>
 
-      <div className={`${s.hint} ${s.glass} ${s.mono}`}>ESC EXIT · R RELOAD</div>
+      <div className={`${s.hint} ${s.mono}`}>ESC EXIT · R RELOAD</div>
     </div>
   );
 }
