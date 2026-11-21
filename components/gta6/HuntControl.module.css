@@ -1,0 +1,33 @@
+/* Vice Hunt's revolver: the pink round button in the hero pill (M1). */
+.revolver {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #f49ea3;
+  color: #151221;
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+.revolver:hover:not(:disabled) { background: #f7b6ba; }
+.revolver:disabled { cursor: default; opacity: 0.7; }
+.revolver:focus-visible {
+  outline: 2px solid #f49ea3;
+  outline-offset: 2px;
+}
+.revolver svg { width: 16px; height: 16px; }
+
+/* The ring that turns while the game loads. */
+.loading {
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-top-color: #fff;
+  animation: spin var(--duration-gta-loader) linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

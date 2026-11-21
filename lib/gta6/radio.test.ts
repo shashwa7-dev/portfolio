@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { playOrder, stepTrack, trackTitle } from "./radio";
+import { playOrder, shownProgress, stepTrack, trackTitle } from "./radio";
 
 describe("stepTrack", () => {
   it("moves forward and back by one", () => {
@@ -67,5 +67,15 @@ describe("playOrder", () => {
     expect(playOrder(0)).toEqual([]);
     expect(playOrder(1)).toEqual([0]);
     expect(playOrder(2)).toEqual([0, 1]);
+  });
+});
+
+describe("shownProgress", () => {
+  it("shows a reading taken on the current track", () => {
+    expect(shownProgress({ position: 4, value: 0.6 }, 4)).toBe(0.6);
+  });
+  it("shows 0 for a reading from another track", () => {
+    expect(shownProgress({ position: 4, value: 0.6 }, 5)).toBe(0);
+    expect(shownProgress({ position: -1, value: 0.3 }, 0)).toBe(0);
   });
 });

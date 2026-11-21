@@ -533,6 +533,12 @@
   .bar { transition-duration: 0s; }
   .edge[data-on] { animation: none; }
   .cylinder[data-reloading] { animation: none; opacity: 0.5; }
+  /* The latest kill's chip keeps its pink, without the fade. */
+  .chip[data-hot] {
+    animation: none;
+    background-color: rgba(244, 158, 163, 0.3);
+    border-color: rgba(244, 158, 163, 0.7);
+  }
   /* Kept as plain fades so their ends still fire and clear them. */
   .pop,
   .callout,

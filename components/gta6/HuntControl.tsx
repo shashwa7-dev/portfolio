@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import GameMode from "@/components/gta6/game/GameMode";
+import s from "@/components/gta6/HuntControl.module.css";
 
 type HuntModule = typeof import("@games/vice-hunt");
 
@@ -117,15 +118,12 @@ export default function HuntControl({ stopRef, leaving, onBigfoot }: Props) {
         title={title}
         aria-label={title}
         aria-busy={loading || undefined}
-        // The pink round button in the hero pill (styled by RadioPill).
-        data-tone="pink"
+        data-revolver=""
+        className={s.revolver}
       >
         <RevolverIcon />
         {loading && (
-          <span
-            aria-hidden
-            className="absolute -inset-0.5 animate-[spin_var(--duration-gta-loader)_linear_infinite] rounded-full border-2 border-white/25 border-t-white"
-          />
+          <span aria-hidden className={s.loading} />
         )}
       </button>
       {open && game && (

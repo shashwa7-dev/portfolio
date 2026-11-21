@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { X } from "@phosphor-icons/react/ssr";
 import { gtaMode } from "@/lib/gta6/store";
 import { MOD_CSS } from "@/components/gta6/modStyles";
 import { useMusic } from "@/components/gta6/useMusic";
 import HuntControl from "@/components/gta6/HuntControl";
-import { RadioPill } from "@/components/gta6/Radio";
+import RadioPill from "@/components/gta6/RadioPill";
 import { VICE_HUNT_ENABLED } from "@/lib/gta6";
 
 const WALLPAPERS = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13"];
@@ -35,7 +34,7 @@ type Props = {
  * art (clear of the text), one slim pill (M1, `data-gta-cluster`): Vice FM's vinyl,
  * track and play/pause (`RadioPill`; the vinyl opens the full radio card),
  * then Vice Hunt's pink revolver (`HuntControl`, which opens the full-screen
- * game) when the game is on, and the exit.
+ * game) when the game is on, and the exit (the pill's own ✕).
  */
 export default function GtaMode({ leaving, onGone }: Props) {
   const backdrop = useRef<HTMLDivElement>(null);
@@ -101,7 +100,12 @@ export default function GtaMode({ leaving, onGone }: Props) {
         aria-label="Vice City controls"
         className="gta-fade absolute right-6 top-3 z-40"
       >
-        <RadioPill>
+        <RadioPill
+          onExit={() => {
+            stopGame.current?.();
+            gtaMode.set(false);
+          }}
+        >
           {VICE_HUNT_ENABLED && (
             <HuntControl
               stopRef={stopGame}
@@ -109,17 +113,6 @@ export default function GtaMode({ leaving, onGone }: Props) {
               onBigfoot={music.setDuck}
             />
           )}
-          <button
-            type="button"
-            aria-label="Exit Vice City mode"
-            title="Exit"
-            onClick={() => {
-              stopGame.current?.();
-              gtaMode.set(false);
-            }}
-          >
-            <X aria-hidden weight="bold" />
-          </button>
         </RadioPill>
       </div>
     </>

@@ -29,3 +29,13 @@ export function playOrder(length: number, random: () => number = Math.random): n
   }
   return order;
 }
+
+/** A progress reading (0 to 1) taken while the radio was at `position`. */
+export type ProgressReading = { position: number; value: number };
+
+/** What the progress line shows at `position`: a reading belongs to the
+ *  track it was taken on, so one from another track shows as 0 until the
+ *  next reading arrives. */
+export function shownProgress(reading: ProgressReading, position: number): number {
+  return reading.position === position ? reading.value : 0;
+}
