@@ -23,12 +23,15 @@ const KIND_ORDER: Kind[] = ["rabbit", "iguana", "flamingo", "bigfoot"];
 const PAGE_CSS = `html[data-vice-hunt-playing] :is(.dock-wrap, .dock-scrim, .starter-pack-hang, [data-chat-bubble]) { display: none !important; }`;
 
 /** The keys the game (Esc, R) and the overlay's own buttons (Tab, Enter,
- *  Space) use. Every other key stops at the window, so the page's shortcuts
+ *  Space) use, plus the radio's track list (arrows, Home, End) while focus
+ *  is in it. Every other key stops at the window, so the page's shortcuts
  *  (the command palette, g-navigation, the theme key, the spinner's F) stay
  *  asleep while the hunt is open: `inert` stops focus and clicks, not
  *  window key listeners. */
+const LIST_KEYS = new Set(["ArrowUp", "ArrowDown", "Home", "End"]);
 function overlayKey(e: KeyboardEvent): boolean {
   if (e.key === "Escape" || e.key === "Tab" || e.key === "Enter" || e.key === " ") return true;
+  if (LIST_KEYS.has(e.key)) return e.target instanceof Element && !!e.target.closest('[role="listbox"]');
   return (e.key === "r" || e.key === "R") && !e.metaKey && !e.ctrlKey && !e.altKey;
 }
 
@@ -181,8 +184,9 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
       aria-label="Vice Hunt"
       tabIndex={-1}
       onKeyDown={(e) => {
-        // Nothing to shoot yet: Esc during the entry goes straight back.
-        if (phase === "entry" && e.key === "Escape") close.current();
+        // Nothing to shoot yet: Esc during the entry goes straight back
+        // (unless something inside, the radio's list, already took it).
+        if (phase === "entry" && e.key === "Escape" && !e.defaultPrevented) close.current();
       }}
       className={s.overlay}
     >

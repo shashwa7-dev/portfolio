@@ -3,7 +3,7 @@
 import { Star } from "@phosphor-icons/react/ssr";
 import type { Kills, Kind } from "@games/vice-hunt";
 import type { TimeOfDay } from "@/lib/gta6/timeOfDay";
-import RadioSlot from "@/components/gta6/game/RadioSlot";
+import Radio from "@/components/gta6/Radio";
 import s from "@/components/gta6/game/game.module.css";
 
 export type TimeChoice = TimeOfDay | "auto";
@@ -54,7 +54,7 @@ export default function Hud({ shown, kills, rounds, capacity, reloading, time, o
   return (
     <div className={s.hud} data-in={shown ? "" : undefined}>
       <div className={s.radio}>
-        <RadioSlot />
+        <Radio place="hud" />
       </div>
 
       <div role="group" aria-label="Time of day" className={`${s.time} ${s.glass} ${s.mono}`}>

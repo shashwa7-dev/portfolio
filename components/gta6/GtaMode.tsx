@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Star, Play, X } from "@phosphor-icons/react/ssr";
+import { Star, X } from "@phosphor-icons/react/ssr";
 import Container from "@/components/layout/Container";
 import { gtaMode } from "@/lib/gta6/store";
 import { MOD_CSS } from "@/components/gta6/modStyles";
 import { useMusic } from "@/components/gta6/useMusic";
 import HuntControl from "@/components/gta6/HuntControl";
+import Radio from "@/components/gta6/Radio";
 import { VICE_HUNT_ENABLED } from "@/lib/gta6";
 
 const WALLPAPERS = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13"];
@@ -33,9 +34,10 @@ type Props = {
  * page's own paper colour, heavy on the left where the text is and thin on
  * the right where the art is, then a fade at the bottom so the hero melts
  * into the next section. On top, in the header's top padding at the right
- * of the measure: a small cluster with the full wanted row, the track's
- * state and Exit, led by Vice Hunt's revolver (`HuntControl`, which opens
- * the full-screen game) when the game is on (`data-gta-cluster`).
+ * of the measure: a small cluster with the full wanted row, the Vice FM
+ * radio (`Radio`, one row here; the same card moves to the game's HUD) and
+ * Exit, led by Vice Hunt's revolver (`HuntControl`, which opens the
+ * full-screen game) when the game is on (`data-gta-cluster`).
  */
 export default function GtaMode({ leaving, onGone }: Props) {
   const backdrop = useRef<HTMLDivElement>(null);
@@ -46,20 +48,10 @@ export default function GtaMode({ leaving, onGone }: Props) {
 
   // The running Vice Hunt game's exit, if one is running.
   const stopGame = useRef<(() => void) | null>(null);
-  // The track ended mid game: the game keeps running, and the mode turns
-  // off when it ends.
-  const endedInGame = useRef(false);
 
-  const music = useMusic(!leaving, () => {
-    if (stopGame.current) endedInGame.current = true;
-    else gtaMode.set(false);
-  });
-
-  const gameStopped = () => {
-    if (!endedInGame.current) return;
-    endedInGame.current = false;
-    gtaMode.set(false);
-  };
+  // The radio plays for as long as the mode is on; a track ending only moves
+  // it to the next.
+  const music = useMusic(!leaving);
 
   // The mode turning off (Exit, the palm) or going away ends a game first,
   // so the page never stays locked under a vanished hero.
@@ -115,7 +107,6 @@ export default function GtaMode({ leaving, onGone }: Props) {
               {VICE_HUNT_ENABLED && (
                 <HuntControl
                   stopRef={stopGame}
-                  onStopped={gameStopped}
                   leaving={leaving}
                   onBigfoot={music.setDuck}
                 />
@@ -125,23 +116,7 @@ export default function GtaMode({ leaving, onGone }: Props) {
                   <Star key={n} aria-hidden weight="fill" className="h-2.5 w-2.5" />
                 ))}
               </span>
-              {music.blocked ? (
-                <button
-                  type="button"
-                  onClick={music.retry}
-                  className="inline-flex items-center gap-1 uppercase transition-colors duration-fast ease-out hover:text-foreground"
-                >
-                  <Play aria-hidden weight="fill" className="h-2.5 w-2.5" />
-                  play
-                </button>
-              ) : (
-                // Nothing until the track is really playing.
-                music.playing && (
-                  <span>
-                    <span aria-hidden>♪ </span>now playing
-                  </span>
-                )
-              )}
+              <Radio place="hero" />
               <button
                 type="button"
                 onClick={() => {

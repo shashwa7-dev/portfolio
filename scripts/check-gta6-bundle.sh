@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Fails if the homepage's initial JS or CSS carries the GTA 6 mode or Vice Hunt.
-#   (no argument)  flags on: the mode, its music id, wallpapers, the game and
+#   (no argument)  flags on: the mode, its playlist, wallpapers, the game and
 #                  the mod styles must stay lazy.
 #   --off          flags off: no GTA 6 code or markup at all may reach the
 #                  homepage.
@@ -8,7 +8,7 @@
 # as a failure, so a broken build cannot pass silently.
 set -euo pipefail
 html=.next/server/app/index.html
-pattern='aonTwBM1AZM|/gta6/wallpapers|startHunt|preloadHunt|vice-hunt'
+pattern='IeqQ-UWgxuY|/gta6/wallpapers|startHunt|preloadHunt|vice-hunt'
 css_pattern='data-mod="gta6"|data-mod=gta6'
 if [ "${1:-}" = "--off" ]; then
   pattern="$pattern|Vice City mode|hero-live-dot|data-gta-cluster"

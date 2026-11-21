@@ -1,18 +1,21 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import type { YouTubePlayer } from "@/components/common/youtube";
-import { TRACK_ID } from "@/components/gta6/track";
+import { PLAYLIST } from "@/components/gta6/track";
+import { stepTrack } from "@/lib/gta6/radio";
 
-/** The track's volume once faded in (YouTube's 0 to 100 scale). */
+/** The radio's volume once faded in (YouTube's 0 to 100 scale). */
 const VOLUME = 60;
 /** The volume while the game asks the music to step back (Bigfoot). */
 const DUCKED = 25;
 /** Volume steps per fade. */
 const FADE_STEPS = 20;
-/** No "playing" this long after play() means the browser refused it (Safari
- *  without a fresh gesture), so the tag turns into a play button. */
+/** No "playing" this long after asking for it means the browser refused it
+ *  (Safari without a fresh gesture), so the play button turns into a retry. */
 const REFUSED_AFTER = 4000; // ms
+/** The YouTube API not here by then means it is blocked: "Radio unavailable". */
+const LOAD_TIMEOUT = 8000; // ms
 
 /** The fade time, read from the token so music and art fade together. */
 function fadeMs(): number {
@@ -24,25 +27,72 @@ function fadeMs(): number {
   return raw.endsWith("ms") ? n : n * 1000;
 }
 
-/** Where the track's state goes: the component that wants it right now. */
-type Listener = { blocked(on: boolean): void; playing(on: boolean): void; ended(): void };
+/** What the radio card shows. Shared by every card (hero and HUD), so moving
+ *  between them keeps the track and its position. */
+export type RadioState = {
+  /** The track, an index into `PLAYLIST`. */
+  index: number;
+  /** The visitor paused it. */
+  paused: boolean;
+  muted: boolean;
+  /** Really playing right now. */
+  playing: boolean;
+  /** Playback was refused or failed: the play button retries. */
+  blocked: boolean;
+  /** The YouTube API never loaded: the card says so and nothing plays. */
+  unavailable: boolean;
+  /** Titles learned from the player, by video id (kept for the page's life). */
+  titles: Readonly<Record<string, string>>;
+};
+
+const FRESH: Omit<RadioState, "titles"> = {
+  index: 0,
+  paused: false,
+  muted: false,
+  playing: false,
+  blocked: false,
+  unavailable: false,
+};
+
+let state: RadioState = { ...FRESH, titles: {} };
+const SERVER_STATE = state;
+const subscribers = new Set<() => void>();
+
+function update(patch: Partial<RadioState>) {
+  state = { ...state, ...patch };
+  for (const fn of subscribers) fn();
+}
+
+function subscribe(fn: () => void) {
+  subscribers.add(fn);
+  return () => {
+    subscribers.delete(fn);
+  };
+}
 
 /** One hidden player and everything about it. */
 type Session = {
   host: HTMLDivElement;
   player: YouTubePlayer | null;
+  /** The player can take commands. */
+  ready: boolean;
+  /** The video id last handed to the player. */
+  loaded: string;
   /** Wanted: false while it fades out to be destroyed. */
   active: boolean;
   /** Torn down for good; late callbacks are ignored. */
   dead: boolean;
+  /** Every track errored: only a rebuild can help. */
   failed: boolean;
+  /** Really playing (recorded even while fading out). */
   playing: boolean;
+  /** Errors in a row; a track that cannot play is skipped, up to a lap. */
+  errors: number;
   volume: number;
   /** Ducked under the game's Bigfoot event. */
   duck: boolean;
   ramp: number;
   refused: number;
-  listen: Listener;
 };
 
 /**
@@ -73,11 +123,33 @@ function level(s: Session): number {
   return s.duck ? DUCKED : VOLUME;
 }
 
-/** Asks for playback and starts the refusal clock. */
-function play(s: Session) {
-  s.player?.play();
+/** Records the loaded video's title, if the player knows it yet. */
+function learnTitle(s: Session) {
+  const data = s.player?.videoData();
+  if (!data || state.titles[data.videoId] === data.title) return;
+  update({ titles: { ...state.titles, [data.videoId]: data.title } });
+}
+
+/**
+ * Brings the player in line with the radio's state: the right track, playing
+ * or paused. A track change while paused is only cued. Asking to play starts
+ * the refusal clock; `onPlaying` stops it.
+ */
+function sync(s: Session) {
+  const player = s.player;
+  if (!player || !s.ready || s.failed || !s.active) return;
+  const id = PLAYLIST[state.index];
   window.clearTimeout(s.refused);
-  s.refused = window.setTimeout(() => s.listen.blocked(true), REFUSED_AFTER);
+  if (state.paused) {
+    if (s.loaded !== id) player.cueVideo(id);
+    else player.pause();
+    s.loaded = id;
+    return;
+  }
+  if (s.loaded !== id) player.loadVideo(id);
+  else player.play();
+  s.loaded = id;
+  s.refused = window.setTimeout(() => update({ blocked: true }), REFUSED_AFTER);
 }
 
 function kill(s: Session) {
@@ -87,160 +159,229 @@ function kill(s: Session) {
   window.clearTimeout(s.refused);
   s.player?.destroy();
   s.host.remove();
-  if (session === s) session = null;
+  if (session === s) {
+    session = null;
+    update({ playing: false });
+  }
 }
 
-function build(listen: Listener): Session {
+function build(): Session {
   const host = document.createElement("div");
   host.setAttribute("aria-hidden", "true");
+  // YouTube wants a player of at least 200x200; it is simply never seen.
   Object.assign(host.style, {
     position: "fixed",
-    left: "-10px",
-    top: "-10px",
-    width: "1px",
-    height: "1px",
+    left: "-400px",
+    top: "0",
+    width: "200px",
+    height: "200px",
     overflow: "hidden",
+    opacity: "0",
     pointerEvents: "none",
   });
   document.body.appendChild(host);
   const s: Session = {
     host,
     player: null,
+    ready: false,
+    loaded: PLAYLIST[state.index],
     active: true,
     dead: false,
     failed: false,
     playing: false,
+    errors: 0,
     volume: 0,
     duck: false,
     ramp: 0,
     refused: 0,
-    listen,
   };
   // A fresh player (the retry path included) has not played yet.
-  listen.playing(false);
+  update({ playing: false, blocked: false, unavailable: false });
 
-  void import("@/components/common/youtube").then(async (m) => {
-    await m.primeYouTube();
-    if (s.dead) return;
-    // Turned off while the API loaded: nothing to fade, just go.
-    if (!s.active) return kill(s);
-    s.player = m.createPlayer(
-      host,
-      { videoId: TRACK_ID, title: "Vice City mode" },
-      {
-        onReady() {
-          if (s.active && !s.dead) play(s);
+  import("@/components/common/youtube")
+    .then(async (m) => {
+      await m.primeYouTube(LOAD_TIMEOUT);
+      if (s.dead) return;
+      // Turned off while the API loaded: nothing to fade, just go.
+      if (!s.active) return kill(s);
+      s.player = m.createPlayer(
+        host,
+        { videoId: s.loaded, title: "Vice FM" },
+        {
+          onReady() {
+            if (s.dead) return;
+            s.ready = true;
+            if (state.muted) s.player?.mute();
+            learnTitle(s);
+            if (s.loaded !== PLAYLIST[state.index] || !state.paused) sync(s);
+          },
+          onPlaying() {
+            if (s.dead) return;
+            s.errors = 0;
+            learnTitle(s);
+            // A backstop: paused while it was getting there.
+            if (s.active && state.paused) return s.player?.pause();
+            // Recorded even while fading out, so taking the session back
+            // knows it only needs a fade up, not another play().
+            s.playing = true;
+            // Never fade back up over a fade out that has begun.
+            if (!s.active) return;
+            window.clearTimeout(s.refused);
+            update({ blocked: false, playing: true });
+            fadeTo(s, level(s));
+          },
+          onCued() {
+            if (!s.dead) learnTitle(s);
+          },
+          onEnded() {
+            if (!s.active || s.dead) return;
+            update({ index: stepTrack(state.index, 1, PLAYLIST.length) });
+            sync(s);
+          },
+          onError() {
+            if (s.dead) return;
+            window.clearTimeout(s.refused);
+            s.errors += 1;
+            // One track that cannot play (removed, not embeddable) is
+            // skipped; a whole lap of them means the player is no good.
+            if (s.active && s.errors < PLAYLIST.length) {
+              update({ index: stepTrack(state.index, 1, PLAYLIST.length) });
+              return sync(s);
+            }
+            s.failed = true;
+            s.playing = false;
+            update({ blocked: true, playing: false });
+          },
         },
-        onPlaying() {
-          if (s.dead) return;
-          // Recorded even while fading out, so taking the session back
-          // knows it only needs a fade up, not another play().
-          s.playing = true;
-          // Never fade back up over a fade out that has begun.
-          if (!s.active) return;
-          window.clearTimeout(s.refused);
-          s.listen.blocked(false);
-          s.listen.playing(true);
-          fadeTo(s, level(s));
-        },
-        onEnded() {
-          if (s.active && !s.dead) s.listen.ended();
-        },
-        onError() {
-          if (s.dead) return;
-          window.clearTimeout(s.refused);
-          s.failed = true;
-          s.listen.blocked(true);
-        },
-      },
-    );
-  });
+      );
+      const frame = host.querySelector("iframe");
+      if (frame) Object.assign(frame.style, { width: "100%", height: "100%", border: "0" });
+    })
+    .catch(() => {
+      // The API (or its loader chunk) never came: no player, no errors.
+      if (s.dead) return;
+      const wanted = s.active;
+      kill(s);
+      if (wanted) update({ unavailable: true });
+    });
   return s;
 }
 
+/** The mode turned on: the radio starts from the top and plays. */
+function start() {
+  if (navigator.webdriver) {
+    // Silent under automation: the card's state still works, with no player.
+    update({ ...FRESH });
+    return;
+  }
+  const s = session;
+  if (s && !s.failed) {
+    // Still fading out from a moment ago: take it back, track and all.
+    s.active = true;
+    // Always stop the fade out first, or it would destroy the player
+    // under the mode a moment from now.
+    window.clearInterval(s.ramp);
+    update({ paused: false });
+    if (s.playing) {
+      update({ playing: true });
+      fadeTo(s, level(s));
+    } else {
+      // Asked to play but not playing yet: ask again; onPlaying fades up.
+      sync(s);
+    }
+    return;
+  }
+  if (s) kill(s);
+  update({ ...FRESH });
+  session = build();
+}
+
+/** The mode turned off: fade out from wherever the volume is, then go. */
+function stop() {
+  const s = session;
+  if (!s) return;
+  s.active = false;
+  window.clearTimeout(s.refused);
+  update({ blocked: false });
+  if (s.dead) return;
+  // No player yet: `build` lets it go once the API arrives.
+  if (!s.player) return;
+  fadeTo(s, 0, () => kill(s));
+}
+
+/** Moves to track `index` and plays it (or cues it, while paused). */
+function go(index: number, play: boolean) {
+  update({ index, ...(play ? { paused: false } : {}) });
+  const s = session;
+  if (!s) return;
+  s.errors = 0;
+  sync(s);
+}
+
+/** The radio's controls, safe to call with no player (automation, blocked). */
+export const radio = {
+  next: () => go(stepTrack(state.index, 1, PLAYLIST.length), false),
+  prev: () => go(stepTrack(state.index, -1, PLAYLIST.length), false),
+  /** Picks a track from the list: it plays. */
+  select: (index: number) => go(index, true),
+  togglePause() {
+    const paused = !state.paused;
+    update({ paused, ...(paused ? { playing: false } : {}) });
+    const s = session;
+    if (!s) return;
+    if (paused) s.playing = false;
+    sync(s);
+  },
+  toggleMute() {
+    const muted = !state.muted;
+    update({ muted });
+    if (muted) session?.player?.mute();
+    else session?.player?.unMute();
+  },
+  /**
+   * For the play button while `blocked`, so it runs inside the visitor's
+   * click. A refused player is simply asked again; one that failed is thrown
+   * away and rebuilt, on the same track.
+   */
+  retry() {
+    const s = session;
+    update({ blocked: false, paused: false });
+    if (!s || s.dead || !s.active) return;
+    if (!s.failed) return sync(s);
+    kill(s);
+    session = build();
+  },
+};
+
+/** The radio's state, for the cards. */
+export function useRadio(): RadioState {
+  return useSyncExternalStore(subscribe, () => state, () => SERVER_STATE);
+}
+
 /**
- * The Vice City track, while `active`.
+ * Vice FM, while `active`: the 30-track playlist on one hidden YouTube
+ * player (off-screen, 200x200, invisible), starting from the first track.
  *
- * A hidden YouTube player (off-screen, 1x1) is built when the mode turns on,
- * starts playing on ready, and fades up from silence to `VOLUME` once it is
- * really playing. Turning off fades it back to silence, then destroys it;
- * turning on again during that fade keeps the same player and fades it back
- * up. `onEnded` runs when the track finishes.
+ * The player is built when the mode turns on, plays on ready, and fades up
+ * from silence to `VOLUME` once it is really playing. When a track ends the
+ * next one plays, wrapping round to the first. Turning off fades it back to
+ * silence, then destroys it; turning on again during that fade keeps the
+ * same player (and track) and fades it back up.
  *
  * Under automation (`navigator.webdriver`) no player is ever made: test runs
- * stay silent.
+ * stay silent, while the card's controls still move its state.
  *
  * `setDuck(true)` steps the volume down to `DUCKED` (the game's Bigfoot
  * event) and `setDuck(false)` back up, over the same fade.
- *
- * `playing` is true from the first moment it really plays. `blocked` is true
- * when playback failed or was refused; `retry()` is for a play button, so it
- * runs inside the visitor's click.
  */
-export function useMusic(
-  active: boolean,
-  onEnded: () => void,
-): { playing: boolean; blocked: boolean; retry(): void; setDuck(on: boolean): void } {
-  const [blocked, setBlocked] = useState(false);
-  const [playing, setPlaying] = useState(() => session?.playing ?? false);
-  const [attempt, setAttempt] = useState(0);
-  const ended = useRef(onEnded);
+export function useMusic(active: boolean): { setDuck(on: boolean): void } {
   useEffect(() => {
-    ended.current = onEnded;
-  });
-
-  useEffect(() => {
-    if (!active || navigator.webdriver) return;
-    const listen: Listener = {
-      blocked: setBlocked,
-      playing: setPlaying,
-      ended: () => ended.current(),
-    };
-    let s = session;
-    if (s && !s.failed) {
-      // Still fading out from a moment ago: take it back.
-      s.active = true;
-      s.listen = listen;
-      // Always stop the fade out first, or it would destroy the player
-      // under the mode a moment from now.
-      window.clearInterval(s.ramp);
-      if (s.playing) {
-        listen.playing(true);
-        fadeTo(s, level(s));
-      } else if (s.player) {
-        // Asked to play but not playing yet: ask again; onPlaying fades up.
-        play(s);
-      }
-    } else {
-      if (s) kill(s);
-      s = build(listen);
-      session = s;
-    }
-    const mine = s;
-
-    return () => {
-      mine.active = false;
-      window.clearTimeout(mine.refused);
-      setBlocked(false);
-      if (mine.dead) return;
-      // No player yet: `build` lets it go once the API arrives.
-      if (!mine.player) return;
-      // Fade out from wherever the volume is, then let the player go.
-      fadeTo(mine, 0, () => kill(mine));
-    };
-  }, [active, attempt]);
+    if (!active) return;
+    start();
+    return stop;
+  }, [active]);
 
   return {
-    playing,
-    blocked,
-    retry() {
-      const s = session;
-      setBlocked(false);
-      // A refused player can simply be asked again, now inside a click; one
-      // that errored is thrown away and rebuilt.
-      if (s && s.player && !s.failed) play(s);
-      else setAttempt((n) => n + 1);
-    },
     setDuck(on) {
       const s = session;
       if (!s || s.dead || s.duck === on) return;

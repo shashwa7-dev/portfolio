@@ -4,8 +4,13 @@
  * `primeYouTube()` is called early (a click, say), so the API is (usually) ready by
  * the time a player is wanted. It injects the script tag once, chains any `onYouTubeIframeAPIReady`
  * someone else already set, and resolves once `window.YT.Player` exists. Every
- * call returns the same promise. On the server it resolves at once and does
+ * call shares the same load. On the server it resolves at once and does
  * nothing.
+ *
+ * `primeYouTube(timeoutMs)` rejects instead if the API has not arrived by
+ * then (a blocker, say), so a caller never waits forever. Without a timeout
+ * it waits as long as it takes (the Diwali show). A late arrival still
+ * completes the shared load for the next call.
  */
 
 /** The slice of the IFrame API this file uses. */
@@ -14,6 +19,11 @@ type YTPlayer = {
   pauseVideo(): void;
   getCurrentTime(): number;
   setVolume(volume: number): void;
+  loadVideoById(id: string): void;
+  cueVideoById(id: string): void;
+  getVideoData(): { video_id?: string; title?: string } | undefined;
+  mute(): void;
+  unMute(): void;
   destroy(): void;
 };
 
@@ -32,7 +42,7 @@ declare global {
   interface Window {
     YT?: {
       Player?: YTPlayerCtor;
-      PlayerState?: { ENDED: number; PLAYING: number };
+      PlayerState?: { ENDED: number; PLAYING: number; CUED: number };
     };
     onYouTubeIframeAPIReady?: () => void;
   }
@@ -42,8 +52,7 @@ const API_SRC = "https://www.youtube.com/iframe_api";
 
 let ready: Promise<void> | null = null;
 
-export function primeYouTube(): Promise<void> {
-  if (typeof window === "undefined") return Promise.resolve();
+function load(): Promise<void> {
   if (ready) return ready;
   ready = new Promise<void>((resolve) => {
     if (window.YT?.Player) {
@@ -65,9 +74,26 @@ export function primeYouTube(): Promise<void> {
   return ready;
 }
 
+export function primeYouTube(timeoutMs?: number): Promise<void> {
+  if (typeof window === "undefined") return Promise.resolve();
+  const loaded = load();
+  if (timeoutMs === undefined) return loaded;
+  return new Promise<void>((resolve, reject) => {
+    const timer = window.setTimeout(
+      () => reject(new Error("The YouTube API did not load")),
+      timeoutMs,
+    );
+    void loaded.then(() => {
+      window.clearTimeout(timer);
+      resolve();
+    });
+  });
+}
+
 /** YouTube's player states, in case `YT.PlayerState` is missing. */
 const ENDED = 0;
 const PLAYING = 1;
+const CUED = 5;
 
 export type YouTubePlayer = {
   play(): void;
@@ -75,6 +101,14 @@ export type YouTubePlayer = {
   currentTime(): number;
   /** The volume, 0 to 100. */
   setVolume(volume: number): void;
+  /** Switches to another video and plays it. */
+  loadVideo(id: string): void;
+  /** Switches to another video without playing it. */
+  cueVideo(id: string): void;
+  /** The loaded video's id and title (YouTube's `getVideoData`), once known. */
+  videoData(): { videoId: string; title: string } | null;
+  mute(): void;
+  unMute(): void;
   destroy(): void;
 };
 
@@ -99,6 +133,8 @@ export function createPlayer(
     onPlaying(): void;
     onEnded(): void;
     onError(code: number): void;
+    /** A video was cued (`cueVideo`): its data can be read, nothing plays. */
+    onCued?(): void;
   },
 ): YouTubePlayer {
   const params = new URLSearchParams({
@@ -142,6 +178,7 @@ export function createPlayer(
             if (destroyed) return;
             if (e.data === (states?.PLAYING ?? PLAYING)) handlers.onPlaying();
             if (e.data === (states?.ENDED ?? ENDED)) handlers.onEnded();
+            if (e.data === (states?.CUED ?? CUED)) handlers.onCued?.();
           },
           onError: (e) => {
             if (!destroyed) handlers.onError(e.data);
@@ -165,6 +202,18 @@ export function createPlayer(
   return {
     play: () => call((p) => p.playVideo()),
     pause: () => call((p) => p.pauseVideo()),
+    loadVideo: (id) => call((p) => p.loadVideoById(id)),
+    cueVideo: (id) => call((p) => p.cueVideoById(id)),
+    mute: () => call((p) => p.mute()),
+    unMute: () => call((p) => p.unMute()),
+    videoData() {
+      let data: { videoId: string; title: string } | null = null;
+      call((p) => {
+        const d = p.getVideoData();
+        if (d?.video_id && d.title) data = { videoId: d.video_id, title: d.title };
+      });
+      return data;
+    },
     setVolume: (volume) =>
       call((p) => p.setVolume(Math.max(0, Math.min(100, Math.round(volume))))),
     currentTime() {

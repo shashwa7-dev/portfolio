@@ -9,8 +9,6 @@ type Props = {
   /** Filled with a close for the open game while one is open, so `GtaMode`
    *  can end it first when the mode turns off (Exit, the palm, or unmounting). */
   stopRef: React.RefObject<(() => void) | null>;
-  /** Runs after the game has fully closed (Back to site, or `stopRef`). */
-  onStopped(): void;
   /** The mode is fading out: no new game. */
   leaving: boolean;
   /** Bigfoot is on (true) or gone (false), for the music to dip under him. */
@@ -53,7 +51,7 @@ function RevolverIcon() {
  * ring. A click opens the full-screen game mode (`GameMode`), portalled over
  * the whole page; Back to site closes it and puts focus back on this button.
  */
-export default function HuntControl({ stopRef, onStopped, leaving, onBigfoot }: Props) {
+export default function HuntControl({ stopRef, leaving, onBigfoot }: Props) {
   const [coarse] = useState(coarsePointer);
   const [game, setGame] = useState<HuntModule | null>(null);
   const [failed, setFailed] = useState(false);
@@ -63,10 +61,6 @@ export default function HuntControl({ stopRef, onStopped, leaving, onBigfoot }: 
   // turning off takes this button away with it).
   const returnFocus = useRef(false);
   const wasOpen = useRef(false);
-  const stopped = useRef(onStopped);
-  useEffect(() => {
-    stopped.current = onStopped;
-  });
 
   useEffect(() => {
     if (coarse) return;
@@ -106,7 +100,6 @@ export default function HuntControl({ stopRef, onStopped, leaving, onBigfoot }: 
       returnFocus.current = false;
       button.current?.focus();
     }
-    stopped.current();
   }, [open]);
 
   if (coarse) return null;
