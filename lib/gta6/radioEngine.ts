@@ -326,6 +326,10 @@ export function createRadio(deps: RadioDeps) {
       const length = p.duration();
       return length > 0 ? Math.min(1, Math.max(0, p.currentTime() / length)) : 0;
     },
+    /** Seconds played of the current track (0 with no player). */
+    elapsed(): number {
+      return session?.player?.currentTime() ?? 0;
+    },
     subscribe(fn: () => void) {
       subscribers.add(fn);
       return () => {

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { TimeOfDay } from "@/lib/gta6/timeOfDay";
 import { startTraffic } from "@/components/gta6/scene/traffic";
+import { useCountUp } from "@/components/gta6/game/useCountUp";
 import s from "@/components/gta6/scene/scene.module.css";
 
 const WALLPAPERS = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13"];
@@ -25,20 +26,27 @@ const LAMP_POSTS = [
   { left: "62%", bottom: "25%" },
 ];
 
-type Props = { time: TimeOfDay };
+type Props = {
+  time: TimeOfDay;
+  /** The game's score, in the billboard's bottom-left corner;
+   *  none (the entry) leaves the slideshow alone. */
+  score?: number;
+};
 
 /**
  * Vice Hunt's beach, the game's backdrop (spec, revision 2): sky, clouds,
  * moon and stars, the sea with an evening sun shimmer, a sailboat, the
  * bridge with fog, cars and lights, the billboard behind it showing the
- * wallpaper slideshow, the sand and props, two lamp posts and the bar's LED
+ * wallpaper slideshow (and the score in its bottom-left corner once play
+ * starts), the sand and props, two lamp posts and the bar's LED
  * string. Static apart from its ambient loops; `time` picks the look, and a
  * change fades over `--duration-gta-time-fade`. Decoration only.
  *
  * Reached only through the lazy GTA chunk: never import it from a server
  * component.
  */
-export default function BeachScene({ time }: Props) {
+export default function BeachScene({ time, score }: Props) {
+  const counted = useCountUp(score ?? 0);
   const lane = useRef<HTMLDivElement>(null);
   const firstWall = useRef<HTMLImageElement>(null);
   // The other twelve wallpapers, mounted once the first has loaded, or
@@ -127,6 +135,12 @@ export default function BeachScene({ time }: Props) {
           <span className={s.tag}>VI</span>
           <div className={s.dim} />
           <div className={s.wash} />
+          {score !== undefined && (
+            <div className={s.scoreBoard}>
+              <b>{counted.toLocaleString("en-US")}</b>
+              <small>SCORE</small>
+            </div>
+          )}
         </div>
         <div className={s.legs}>
           <i>

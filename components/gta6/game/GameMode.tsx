@@ -199,7 +199,10 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
     >
       <style>{PAGE_CSS}</style>
       <div className={s.stage}>
-        <BeachScene time={timeChoice === "auto" ? autoTime : timeChoice} />
+        <BeachScene
+          time={timeChoice === "auto" ? autoTime : timeChoice}
+          score={phase === "entry" ? undefined : totalScore(tally)}
+        />
       </div>
       <div aria-hidden className={s.vignette} />
       <div ref={host} className={s.host} />

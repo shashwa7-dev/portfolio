@@ -39,3 +39,10 @@ export type ProgressReading = { position: number; value: number };
 export function shownProgress(reading: ProgressReading, position: number): number {
   return reading.position === position ? reading.value : 0;
 }
+
+/** Seconds played as "m:ss" (the HUD radio's elapsed time); no reading
+ *  (negative, NaN) shows "0:00". */
+export function clock(seconds: number): string {
+  const s = Number.isFinite(seconds) && seconds > 0 ? Math.floor(seconds) : 0;
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+}

@@ -67,6 +67,9 @@ export const radio = {
 /** How far through the current track it is, 0 to 1 (polled by the card). */
 export const radioProgress = engine.progress;
 
+/** Seconds played of the current track (polled by the HUD radio). */
+export const radioElapsed = engine.elapsed;
+
 /** The radio's state, for the cards. */
 export function useRadio(): RadioState {
   return useSyncExternalStore(engine.subscribe, engine.getState, engine.getState);

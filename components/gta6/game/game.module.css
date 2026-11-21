@@ -181,19 +181,122 @@
   position: absolute;
   transition: transform var(--duration-gta-hud-in) var(--ease-out);
 }
-.time { top: 1.25rem; left: 1.5rem; transform: translateY(calc(-100% - 2rem)); }
-.score { top: 1.25rem; right: 1.75rem; transform: translateX(calc(100% + 2rem)); }
-.radio { bottom: 1.5rem; left: 1.5rem; transform: translateX(calc(-100% - 2rem)); }
+/* The header: one row, spread edge to edge, slid down from the top. */
+.top {
+  top: 1.25rem;
+  left: 1.5rem;
+  right: 1.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  transform: translateY(calc(-100% - 2rem));
+}
+.corner { display: flex; align-items: center; gap: 0.5rem; }
 .ammo { bottom: 1.5rem; right: 1.75rem; transform: translateX(calc(100% + 2rem)); }
 .hint { bottom: 1.85rem; left: 50%; transform: translate(-50%, calc(100% + 2rem)); }
-.hud[data-in] .time,
-.hud[data-in] .score,
-.hud[data-in] .radio,
+.hud[data-in] .top,
 .hud[data-in] .ammo { transform: none; }
 .hud[data-in] .hint { transform: translateX(-50%); }
 
+/* The radio, beside the time switch: the minimised controller in the same
+   glass pill (disc, play/pause, track, elapsed, mute); the full card drops
+   below it while hovered or pinned (HudRadio). */
 .radio {
+  position: relative;
   pointer-events: auto;
+  display: flex;
+  align-items: center;
+  padding: 0.1875rem;
+  border-radius: 999px;
+  color: #fff;
+}
+.disc {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+}
+.disc img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+/* The centre hole. */
+.disc::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 34%;
+  height: 34%;
+  border-radius: 50%;
+  background: #151221;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25);
+}
+.disc[data-spin] img {
+  animation: disc var(--duration-gta-vinyl) linear infinite;
+}
+@keyframes disc {
+  to { transform: rotate(360deg); }
+}
+.discOff { cursor: default; color: #d8cfe6; }
+.discOff::after { content: none; }
+.discOff svg { width: 0.875rem; height: 0.875rem; }
+.disc:focus-visible,
+.miniButton:focus-visible {
+  outline: 2px solid #f49ea3;
+  outline-offset: 2px;
+}
+
+.mini {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0 0.25rem 0 0.5rem;
+}
+.radioCard {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1;
+  padding-top: 0.5rem;
+}
+.miniButton {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+.miniButton:hover { background: rgba(255, 255, 255, 0.22); }
+.miniButton svg { width: 0.6875rem; height: 0.6875rem; }
+.miniTrack {
+  max-width: 11rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.miniTrack span { font-weight: 500; color: #d8cfe6; }
+.miniTime {
+  flex: none;
+  font-size: 0.6875rem;
+  color: #d8cfe6;
+  font-variant-numeric: tabular-nums;
 }
 
 /* The time switch: icons only, the chosen one on white. */
@@ -225,9 +328,12 @@
   outline-offset: 2px;
 }
 
-/* Score, S2: stars, a big glowing number, then a chip per animal. */
+/* The header's right: a chip per animal, then the wanted stars. The score
+   number is on the billboard (scene.module.css). */
 .score {
-  text-align: right;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 .stars {
   display: flex;
@@ -237,26 +343,10 @@
   filter: drop-shadow(0 1px 0 #000);
 }
 .stars svg { width: 1rem; height: 1rem; }
-.total {
-  margin-top: 0.25rem;
-  font-size: 3rem;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-  text-shadow: 0 3px 0 #000, 0 0 18px rgba(244, 158, 163, 0.45);
-}
-.total small {
-  display: block;
-  margin-top: 0.15rem;
-  font-size: 0.625rem;
-  letter-spacing: 0.2em;
-  color: #f49ea3;
-  text-shadow: none;
-}
 .chips {
   display: flex;
   justify-content: flex-end;
   gap: 0.375rem;
-  margin-top: 0.5rem;
 }
 .chip {
   display: flex;
@@ -543,6 +633,7 @@
   .overlay[data-phase="entry"] .stage { transform: none; transition-duration: var(--duration-fast); }
   .hud > *,
   .bar { transition-duration: 0s; }
+  .disc[data-spin] img { animation: none; }
   .edge[data-on] { animation: none; }
   .cylinder[data-reloading] { animation: none; opacity: 0.5; }
   /* The latest kill's chip keeps its pink, without the fade. */

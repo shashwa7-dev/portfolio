@@ -6,8 +6,8 @@
  * sit on the right, a progress line runs along the bottom edge. The list
  * drops down below in the same dark glass.
  *
- * The compact HUD radio (the same card, smaller, owner's call after L1) is
- * at the end. The hero pill has its own module (RadioPill.module.css).
+ * The hero pill has its own module (RadioPill.module.css), and the game's
+ * HUD disc lives in game/game.module.css.
  */
 
 .root {
@@ -271,46 +271,6 @@
 .names span {
   font-size: 10.5px;
   color: #a59fc3;
-}
-
-/* The compact HUD radio, bottom left: card A at about 300x96, the cover
-   over the left 45% fading into the dark glass. Its list opens upward. */
-.compact {
-  width: 300px;
-}
-.compact .card {
-  height: 96px;
-  border-radius: 12px;
-  background: rgba(21, 18, 33, 0.92);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-}
-.compact .cover { width: 45%; }
-.compact .fade {
-  background: linear-gradient(
-    90deg,
-    rgba(21, 18, 33, 0) 0%,
-    rgba(21, 18, 33, 0.25) 22%,
-    rgba(21, 18, 33, 0.85) 40%,
-    #151221 50%
-  );
-}
-.compact .body {
-  width: 60%;
-  padding: 9px 10px 8px 0;
-}
-.compact .eyebrow { font-size: 8.5px; letter-spacing: 1.4px; }
-.compact .title { margin-top: 4px; font-size: 13px; }
-.compact .artist { font-size: 10.5px; }
-.compact .controls { gap: 3px; }
-.compact .controls button { width: 21px; height: 21px; border-radius: 6px; }
-.compact .controls button svg { width: 10px; height: 10px; }
-.compact .controls .big { width: 24px; height: 24px; border-radius: 50%; }
-.compact .list {
-  top: auto;
-  bottom: calc(100% + 8px);
-  right: auto;
-  width: 340px;
 }
 
 @media (prefers-reduced-motion: reduce) {

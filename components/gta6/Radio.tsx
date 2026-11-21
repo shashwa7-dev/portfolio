@@ -11,7 +11,7 @@ import {
 } from "@phosphor-icons/react/ssr";
 import { PLAYLIST } from "@/components/gta6/track";
 import { radio, radioProgress, useRadio } from "@/components/gta6/useMusic";
-import { cover, countHud, names, nowPlaying, PlayPause } from "@/components/gta6/radioParts";
+import { cover, names, nowPlaying, PlayPause } from "@/components/gta6/radioParts";
 import { shownProgress, type ProgressReading } from "@/lib/gta6/radio";
 import s from "@/components/gta6/Radio.module.css";
 
@@ -29,24 +29,16 @@ function focusOption(ul: HTMLUListElement | null, index: number) {
     ul.scrollTop = li.offsetTop + li.offsetHeight - ul.clientHeight;
 }
 
-/** Two sizes of card A: the full one (the hero pill's popover) and the
- *  compact one in the game's HUD, bottom left. Same state. */
-type Variant = "card" | "compact";
-
 /**
  * Vice FM. Its state lives in the music session (`useRadio`), so every copy
- * shows the same track and the track carries across.
+ * shows the same track and the track carries across. This is the hero
+ * pill's popover; the game's HUD has its own disc (`game/HudRadio.tsx`).
  *
  * `card` (design A): the cover fills the left and fades into the dark card;
  * on the right, the station line ("VICE FM · n / 31", with an equaliser that
  * moves only while playing), the title, the artist, then previous,
  * play/pause, next, mute and the list button. A progress line along the
  * bottom edge reads the player once a second while it plays.
- *
- * `compact` (the HUD, layout L1, bottom left): the same card A, smaller
- * (about 300x96, the cover over the left 45%). Its list opens upward, since
- * it sits at the bottom of the screen. It is the live region while it is
- * mounted.
  *
  * The list shows the tracks in this session's play order (a listbox:
  * arrows, Home and End move, Enter or a click plays, Esc or a click outside
@@ -55,20 +47,13 @@ type Variant = "card" | "compact";
  *
  * If the YouTube API never loaded, it only says "Radio unavailable".
  */
-export default function Radio({ variant }: { variant: Variant }) {
+export default function Radio() {
   const r = useRadio();
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLDivElement>(null);
   const toggle = useRef<HTMLButtonElement>(null);
   const list = useRef<HTMLUListElement>(null);
   const listId = useId();
-  const compact = variant === "compact";
-
-  useEffect(() => {
-    if (!compact) return;
-    countHud(1);
-    return () => countHud(-1);
-  }, [compact]);
 
   // A click anywhere else closes the list.
   useEffect(() => {
@@ -106,12 +91,10 @@ export default function Radio({ variant }: { variant: Variant }) {
     };
   }, [r.playing, r.position]);
 
-  const rootClass = compact ? `${s.root} ${s.compact}` : s.root;
-
   if (r.unavailable) {
     return (
-      <div data-radio="" className={rootClass}>
-        <div role={compact ? "status" : undefined} className={`${s.unavailable} ${s.mono}`}>
+      <div data-radio="" className={s.root}>
+        <div className={`${s.unavailable} ${s.mono}`}>
           <MusicNotes aria-hidden weight="fill" />
           Radio unavailable
         </div>
@@ -188,7 +171,7 @@ export default function Radio({ variant }: { variant: Variant }) {
       data-radio=""
       data-track={id}
       data-position={r.position}
-      className={rootClass}
+      className={s.root}
       onKeyDown={(e) => {
         // Esc anywhere in the radio closes an open list, and only that: it
         // is marked handled so the game (or the hero popover) does not also
@@ -214,9 +197,8 @@ export default function Radio({ variant }: { variant: Variant }) {
                 VICE FM · {r.position + 1} / {r.order.length}
               </span>
             </div>
-            {/* The HUD's copy is the live region; the hero card is not, since
-                the pill beside it announces. */}
-            <div data-radio-title="" aria-live={compact ? "polite" : undefined} title={label}>
+            {/* Not a live region: the pill beside it announces. */}
+            <div data-radio-title="" title={label}>
               <div className={s.title}>{title}</div>
               {artist && <div className={s.artist}>{artist}</div>}
             </div>

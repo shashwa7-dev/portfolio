@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { playOrder, shownProgress, stepTrack, trackTitle } from "./radio";
+import { clock, playOrder, shownProgress, stepTrack, trackTitle } from "./radio";
 
 describe("stepTrack", () => {
   it("moves forward and back by one", () => {
@@ -77,5 +77,18 @@ describe("shownProgress", () => {
   it("shows 0 for a reading from another track", () => {
     expect(shownProgress({ position: 4, value: 0.6 }, 5)).toBe(0);
     expect(shownProgress({ position: -1, value: 0.3 }, 0)).toBe(0);
+  });
+});
+
+describe("clock", () => {
+  it("shows minutes and two-digit seconds", () => {
+    expect(clock(0)).toBe("0:00");
+    expect(clock(5.9)).toBe("0:05");
+    expect(clock(65)).toBe("1:05");
+    expect(clock(754)).toBe("12:34");
+  });
+  it("shows 0:00 for no reading", () => {
+    expect(clock(-3)).toBe("0:00");
+    expect(clock(NaN)).toBe("0:00");
   });
 });

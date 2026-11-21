@@ -408,6 +408,39 @@
   font: 10px/1.4 Anton, Impact, sans-serif;
   letter-spacing: 1px;
 }
+/* The score in the billboard's bottom-left corner during play and results
+   (owner, 2026-11-21): a small dark badge over the slideshow, the number in
+   the HUD's display face with a pink glow. The VI tag keeps the other
+   corner. */
+.scoreBoard {
+  position: absolute;
+  left: 6px;
+  bottom: 6px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0.3em 0.55em 0.35em;
+  border-radius: 3px;
+  background: rgba(14, 12, 22, 0.7);
+  color: #fff;
+  font-family: Anton, Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  line-height: 1;
+}
+.scoreBoard b {
+  font-weight: 400;
+  font-size: clamp(1rem, 2vw, 1.75rem);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 0 #000, 0 0 12px rgba(244, 158, 163, 0.6);
+}
+.scoreBoard small {
+  order: -1;
+  margin-bottom: 0.25em;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: clamp(0.4375rem, 0.6vw, 0.5625rem);
+  letter-spacing: 0.2em;
+  color: #f49ea3;
+}
 .dim {
   position: absolute;
   inset: 0;

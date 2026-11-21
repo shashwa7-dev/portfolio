@@ -21,7 +21,7 @@ type Props = {
  * play/pause, then `children` (Vice Hunt's revolver) and the ✕. The vinyl
  * stops when paused, and under reduced motion.
  *
- * Clicking the vinyl opens the full card (`Radio variant="card"`) as a
+ * Clicking the vinyl opens the full card (`Radio`) as a
  * popover under the pill. A click outside it, Esc from anywhere, or the
  * revolver or ✕ closes it. The track text is the live region while no HUD
  * radio is mounted.
@@ -115,7 +115,7 @@ export default function RadioPill({ onExit, children }: Props) {
       {extras}
       {open && (
         <div id={popId} className={s.popover}>
-          <Radio variant="card" />
+          <Radio />
         </div>
       )}
     </div>
