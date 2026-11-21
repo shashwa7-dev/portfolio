@@ -1,11 +1,12 @@
 import { RELOAD_TIME, createAmmo, fire, startReload, tick } from "./ammo";
 import { SPRITES } from "./art/sprites";
 import { createGun } from "./gun";
-import { addCorpse, createScene, drawScene, stepScene } from "./render";
+import { stepFinishing } from "./modules";
+import { addPuff, createScene, drawScene, stepScene } from "./render";
 import { mulberry32 } from "./rng";
 import { createSound, type SfxUrls } from "./sound";
 import { loadedArt, preloadHunt, svgUrl } from "./sprites";
-import type { Kind } from "./creatures";
+import { CREATURES, type Kind } from "./creatures";
 import type { Kills } from "./types";
 import { createWorld, drain, resize, shoot, step } from "./world";
 
@@ -143,12 +144,12 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
       sound.empty(); // reloading: dry click, no shot
       return;
     }
-    const { hit, finished } = shoot(world, x, y);
+    const { hit, finished } = shoot(world, x, y, rng);
     gun.fire();
     sound.shot();
     const hb = host.getBoundingClientRect();
     if (finished && hit) {
-      addCorpse(scene, world, hit, rng);
+      if (CREATURES[hit.kind].finish === "falls") addPuff(scene, world, hit, rng);
       sound.kill();
       showKills(world.kills);
       options.onKills?.({ ...world.kills });
@@ -203,6 +204,7 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
     const dt = last === null ? 0 : (now - last) / 1000;
     last = now;
     step(world, dt, rng);
+    stepFinishing(world, dt, reducedMotion);
     drain(world); // the events become callbacks in a later task; drop them so they do not pile up
     stepScene(scene, Math.min(dt, 0.05));
     if (tick(ammo, dt)) reportAmmo();
@@ -212,7 +214,7 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
       options.onBigfoot?.(big);
     }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    drawScene(ctx, scene, world, loadedArt(), dpr);
+    drawScene(ctx, scene, world, loadedArt());
     raf = requestAnimationFrame(frame);
   };
   const onVisibility = () => {

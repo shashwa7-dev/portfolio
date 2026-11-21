@@ -17,14 +17,14 @@ The public entry is `src/index.ts`:
   - `onExit()`: Esc or right click. Esc is ignored when the event was already handled (`defaultPrevented`) or comes from inside a `[role="dialog"]`. The host then calls `destroy()`, which is safe to call twice.
   - `muted`, `sfx` (see Sound), `showScore` (default true; false hides the package's score strip for a host with its own HUD), `scoreInset` (the strip's CSS px from the host's left edge, default 12).
 - The gun is a six-round revolver (`art/revolver.ts`, built from `art/revolver.svg`). After the sixth shot it reloads on its own (1 s, the cylinder spins, clicks meanwhile only dry-fire); R reloads early.
-- Balance (spec revision 2): one hit kills a rabbit, iguana or flamingo, Bigfoot takes 3. A kill removes the animal from the world at once; the renderer plays its death animation (`death.ts`) from a short-lived corpse list.
+- Balance (spec revision 2): one hit kills a rabbit, iguana or flamingo, Bigfoot takes 3. A kill removes the animal from the world at once; the animal moves into `world.finishing` and plays its finish module (`src/modules/`: registries `FINISHES`, `MOVES`, `HIT_REACTIONS`, `THREATS`; prey use `falls`, which wraps `death.ts`; ids whose module has not landed use a generic 0.6 s fade). The host steps them with `stepFinishing(world, dt, reduced)`.
 - Reduced motion: no screen shake, and the recoil is a small translate.
 
 ## Sound
 
 `createSound(muted, sfx)` plays the recorded file given for an effect (`sfx: { shot, reload, empty, hit, kill }`, each a URL, all optional) once it has loaded, and synthesises the effect with Web Audio otherwise. It is silent, and fetches nothing, when `muted` is set or `navigator.webdriver` is true. This package ships no audio files; the host passes the URLs.
 
-Modules: `render.ts` (canvas: animals, corpses, poofs), `gun.ts` (first-person revolver and crosshair, DOM), `sound.ts`, `sprites.ts` (art decoding). Pure and tested: `ammo.ts` (`createAmmo`, `fire`, `startReload`, `tick`), `death.ts` (`deathPose(kind, age, fall, out)`, `DEATHS`). The pure simulation lives in `src/world.ts` and has no DOM access:
+Modules: `render.ts` (canvas: animals, finishing entries, poofs), `gun.ts` (first-person revolver and crosshair, DOM), `sound.ts`, `sprites.ts` (art decoding). Pure and tested: `ammo.ts` (`createAmmo`, `fire`, `startReload`, `tick`), `death.ts` (`deathPose(kind, age, fall, out)`, `DEATHS`). The pure simulation lives in `src/world.ts` and has no DOM access:
 
 - `createWorld(width, height, rng)`, `step(world, dt, rng)`, `shoot(world, x, y)` (returns `{ hit, finished }`), `resize(world, width, height)`, `emptyKills()`
 - The world pushes typed events (`GameEvent` in `src/events.ts`: hits, kills, penalties, damage, rares, the merman's escape, callouts, WASTED) onto `world.events`; the host takes them each frame with `drain(world)`.

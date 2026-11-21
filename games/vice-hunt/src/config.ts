@@ -9,3 +9,5 @@ export const STREAK_WINDOW = 1.5;
 export const SEA_LINE = 0.69;
 // Hearts at the start of a round.
 export const HEARTS = 3;
+// Where the ground lane's feet rest, a fraction of the height.
+export const GROUND_LINE = 0.94;

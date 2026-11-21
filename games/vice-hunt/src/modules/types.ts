@@ -1,0 +1,46 @@
+// Interfaces for the behaviour modules. Registries (modules/index.ts) are
+// exhaustive Records over the id unions in creatures.ts. Modules are pure
+// (no DOM) except `draw`, which takes a canvas context and keeps no state.
+import type { FinishId } from "../creatures";
+import type { GameEvent } from "../events";
+import type { Rng } from "../rng";
+import type { Art } from "../sprites";
+import type { Animal, World } from "../world";
+
+export interface FinishModule<S> {
+  start(c: Animal, world: World, rng: Rng): S; // pure
+  step(s: S, dt: number, out: GameEvent[]): void; // pure, world time only; pushes events
+  done(s: S): boolean;
+  // `scratch` is the scene's offscreen canvas, for the white hit flash.
+  draw(ctx: CanvasRenderingContext2D, s: S, art: Art, scratch: HTMLCanvasElement): void; // no module state
+  reduced?: FinishId; // the gentle version to use under reduced motion (must share this module's state)
+}
+
+export interface MoveModule {
+  y(a: Animal, world: World): number; // vertical offset from the lane's resting y
+  frame(a: Animal): number; // sprite frame, 0 or 1
+}
+
+export interface HitReactionModule<S> {
+  start(a: Animal): S;
+  step(s: S, dt: number): void;
+  draw(ctx: CanvasRenderingContext2D, s: S, art: Art): void;
+}
+
+export interface ThreatModule<S> {
+  start(a: Animal, world: World, rng: Rng): S;
+  step(s: S, dt: number, world: World, rng: Rng, out: GameEvent[]): void;
+  draw(ctx: CanvasRenderingContext2D, s: S, art: Art): void;
+}
+
+// A finished animal playing out its finish; its module's state rides along.
+export type Finishing = {
+  kind: Animal["kind"];
+  id: FinishId;
+  state: unknown;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  dir: 1 | -1;
+};

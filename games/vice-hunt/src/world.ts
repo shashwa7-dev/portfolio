@@ -1,4 +1,5 @@
 import {
+  GROUND_LINE,
   HEARTS,
   IGUANA_PAUSE,
   MAX_ALIVE,
@@ -9,6 +10,8 @@ import {
 } from "./config";
 import { CREATURES, KINDS, type Creature, isRare, kindsWhere, penaltyFor, streaks, type Kind } from "./creatures";
 import type { GameEvent } from "./events";
+import { FINISHES } from "./modules";
+import type { Finishing } from "./modules/types";
 import type { Rng } from "./rng";
 import { type Surface, SURFACE_OUT, dive, duck, newSurface, sinkOffset, stepSurface, surfaceX } from "./surface";
 import type { Kills } from "./types";
@@ -37,6 +40,7 @@ export type World = {
   time: number;
   nextSpawn: number;
   animals: Animal[];
+  finishing: Finishing[]; // finished animals playing out their finish
   kills: Kills;
   nextId: number;
   streak: number; // kills in a row, each within STREAK_WINDOW of the last
@@ -48,7 +52,7 @@ export type World = {
 };
 
 const TOP_BAND: [number, number] = [0.12, 0.3];
-export const GROUND_LINE = 0.94;
+export { GROUND_LINE };
 const HIT_INSET = 0.15;
 const FLASH = 0.12;
 const KNOCKBACK = 6;
@@ -99,6 +103,7 @@ export function createWorld(width: number, height: number, rng: Rng): World {
     time: 0,
     nextSpawn: between(rng, SPAWN_INTERVAL),
     animals: [],
+    finishing: [],
     kills: emptyKills(),
     nextId: 1,
     streak: 0,
@@ -250,13 +255,26 @@ function inBox(world: World, a: Animal, x: number, y: number): boolean {
 }
 
 // Front-most first: the list's end is drawn last, so it is on top.
-export function shoot(world: World, x: number, y: number): { hit: Animal | null; finished: boolean } {
+export function shoot(world: World, x: number, y: number, rng: Rng = Math.random): { hit: Animal | null; finished: boolean } {
   if (world.wasted) return { hit: null, finished: false };
   for (let i = world.animals.length - 1; i >= 0; i--) {
     const a = world.animals[i];
     if (!inBox(world, a, x, y)) continue;
     const finished = registerHit(world, a);
-    if (finished) world.animals.splice(i, 1);
+    if (finished) {
+      world.animals.splice(i, 1);
+      const id = table[a.kind].finish;
+      world.finishing.push({
+        kind: a.kind,
+        id,
+        state: FINISHES[id].start(a, world, rng),
+        x: a.x,
+        y: a.y,
+        w: a.w,
+        h: a.h,
+        dir: a.vx < 0 ? -1 : 1,
+      });
+    }
     return { hit: a, finished };
   }
   return { hit: null, finished: false };
