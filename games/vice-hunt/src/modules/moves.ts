@@ -1,9 +1,9 @@
 // Movement modules: pure functions of the animal's age (and the merman's
 // surface state), so the lane's resting y can be recovered by subtracting y.
-import { IGUANA_PAUSE } from "../config";
+import { IGUANA_PAUSE, SEA_LINE } from "../config";
 import type { Rng } from "../rng";
 import { sinkOffset } from "../surface";
-import type { Animal } from "../world";
+import type { Animal, World } from "../world";
 import { frameOf } from "./draw";
 import type { MoveModule } from "./types";
 
@@ -59,7 +59,45 @@ const surface: MoveModule = {
 
 /** The UFO's wobble: 5 degrees, 1.5 more per hit taken. */
 export const hoverTilt = (a: Animal): number => (5 + 1.5 * a.hits) * RAD * Math.sin(a.age * 2.1);
-const hover: MoveModule = { y: (a) => Math.sin(a.age * 1.3) * 0.02 * a.h, frame: frameOf, tilt: hoverTilt };
+
+// The tractor beam, just for looks: on for BEAM_ON s out of every BEAM_EVERY s
+// (offset per animal id so two never sync), off for BEAM_QUIET s after a hit.
+export const BEAM_EVERY = 5;
+export const BEAM_ON = 1.6;
+export const BEAM_QUIET = 2.5;
+export function beamOn(a: Animal, time: number): boolean {
+  if (time - a.lastHitAt < BEAM_QUIET) return false;
+  return (a.age + (a.id % 5) * 0.7) % BEAM_EVERY < BEAM_ON;
+}
+
+function drawBeam(ctx: CanvasRenderingContext2D, a: Animal, world: World): void {
+  if (!beamOn(a, world.time)) return;
+  const phase = (a.age + (a.id % 5) * 0.7) % BEAM_EVERY;
+  const fade = Math.min(1, phase / 0.25, (BEAM_ON - phase) / 0.25); // ease in and out
+  const pulse = 1 + 0.08 * Math.sin(a.age * 12);
+  const cx = a.x + a.w / 2;
+  const top = a.y + a.h * 0.8;
+  const bottom = Math.max(top + 10, SEA_LINE * world.height);
+  const half = a.w * 0.5 * pulse;
+  ctx.save();
+  ctx.globalAlpha = 0.22 * fade;
+  ctx.fillStyle = "#5ad1d6";
+  ctx.beginPath();
+  ctx.moveTo(cx - a.w * 0.12, top);
+  ctx.lineTo(cx + a.w * 0.12, top);
+  ctx.lineTo(cx + half, bottom);
+  ctx.lineTo(cx - half, bottom);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+const hover: MoveModule = {
+  y: (a) => Math.sin(a.age * 1.3) * 0.02 * a.h,
+  frame: frameOf,
+  tilt: hoverTilt,
+  draw: drawBeam,
+};
 
 // Bigfoot is drawn by his rig (Task 9).
 const stomp: MoveModule = { y: () => 0, frame: frameOf };

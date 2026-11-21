@@ -25,6 +25,7 @@ export type Animal = {
   h: number;
   hp: number; // hits to finish, rolled at spawn
   hits: number; // hits taken so far (the merman's count can reset)
+  lastHitAt: number; // world.time of the latest hit (the UFO's beam goes off for a moment)
   firstHitAt: number; // world.time of the first hit of the current count
   provoked: boolean; // Bigfoot fights back once hit
   surface?: Surface; // merman only
@@ -153,6 +154,7 @@ export function spawn(world: World, rng: Rng, kind?: Kind): Animal {
     h,
     hp,
     hits: 0,
+    lastHitAt: -Infinity,
     firstHitAt: -Infinity,
     provoked: false,
     age: 0,
@@ -272,6 +274,7 @@ function registerHit(world: World, a: Animal): boolean {
   const within = cfg.rule.within;
   if (within !== undefined && a.hits > 0 && world.time - a.firstHitAt > within) a.hits = 0; // a new count
   a.hits += 1;
+  a.lastHitAt = world.time;
   if (a.hits === 1) a.firstHitAt = world.time;
   a.flash = FLASH;
   if (a.reaction === undefined || cfg.hit === "flinch") a.reaction = HIT_REACTIONS[cfg.hit].start(a);

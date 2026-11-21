@@ -3,7 +3,7 @@ import { CREATURES } from "../creatures";
 import { mulberry32 } from "../rng";
 import { createWorld, spawn } from "../world";
 import { MOVES } from "./index";
-import { hoverTilt } from "./moves";
+import { BEAM_QUIET, beamOn, hoverTilt } from "./moves";
 
 function make(kind: Parameters<typeof spawn>[2]) {
   const rng = mulberry32(3);
@@ -54,5 +54,43 @@ describe("moves", () => {
   it("every creature's frame is 0 or 1", () => {
     const { a } = make("tiger");
     expect([0, 1]).toContain(MOVES[CREATURES.tiger.move].frame(a));
+  });
+
+  it("ufo beam: on now and then, off for 2.5 s after any hit", () => {
+    const { a } = make("ufo");
+    a.lastHitAt = -Infinity;
+    a.age = 0;
+    const seen = new Set<boolean>();
+    for (let t = 0; t < 12; t += 0.1) {
+      a.age = t;
+      seen.add(beamOn(a, t));
+    }
+    expect(seen).toEqual(new Set([true, false]));
+    // find an instant the beam would be on, then hit just before it
+    a.age = 0;
+    let t0 = 0;
+    while (!beamOn(a, t0)) a.age = t0 += 0.1;
+    a.lastHitAt = t0 - 0.1;
+    expect(beamOn(a, t0)).toBe(false);
+    expect(beamOn(a, a.lastHitAt + BEAM_QUIET - 0.01)).toBe(false);
+  });
+
+  it("iguana dash pauses and resumes, moving only while not paused", () => {
+    const { a } = make("iguana");
+    const rng = mulberry32(1);
+    let pauses = 0;
+    let wasPaused = false;
+    let resumed = false;
+    for (let i = 0; i < 300; i++) {
+      const x0 = a.x;
+      const moves = MOVES.dash.advance!(a, 1 / 60, rng);
+      if (moves) a.x += a.vx / 60;
+      expect(a.x !== x0).toBe(moves);
+      if (!moves && !wasPaused) pauses++;
+      if (moves && wasPaused) resumed = true;
+      wasPaused = !moves;
+    }
+    expect(pauses).toBeGreaterThanOrEqual(1);
+    expect(resumed).toBe(true);
   });
 });

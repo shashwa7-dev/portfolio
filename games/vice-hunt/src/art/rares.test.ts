@@ -5,6 +5,7 @@ import { KINDS } from "../creatures";
 
 const EXTRA_IDS: readonly ExtraId[] = [
   "cowGarland",
+  "garland",
   "sharkRocket",
   "ufoEmpty",
   "alienChute",
@@ -55,6 +56,9 @@ describe("rare creature art", () => {
     expect(EXTRA.ufoEmpty).not.toContain("#8ee06a"); // no green pilot in the dome
     expect(RARE_FRAMES.ufo[0]).toContain("#8ee06a");
     expect(EXTRA.cowGarland).toContain("#f7a01c"); // marigolds on
+    expect(EXTRA.garland).toContain("#f7a01c");
+    expect(EXTRA.garland).toContain('viewBox="0 0 170 120"');
+    expect(EXTRA.garland).not.toContain("#dfe4ef"); // no cow body, just the marigolds
     expect(RARE_FRAMES.cow[0]).not.toContain("#f7a01c");
     expect(EXTRA.fish).toContain("#f49ea3");
   });

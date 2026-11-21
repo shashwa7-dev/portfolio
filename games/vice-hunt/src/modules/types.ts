@@ -19,6 +19,8 @@ export interface FinishModule<S> {
 export interface MoveModule {
   y(a: Animal, world: World): number; // vertical offset from the lane's resting y
   frame(a: Animal): number; // sprite frame, 0 or 1
+  // Drawn under the sprite, in world px (the UFO's tractor beam).
+  draw?(ctx: CanvasRenderingContext2D, a: Animal, world: World): void;
   tilt?(a: Animal): number; // radians about the sprite's centre
   // Per-tick horizontal movement; false when the animal stands still (the iguana's pauses).
   advance?(a: Animal, dt: number, rng: Rng): boolean;

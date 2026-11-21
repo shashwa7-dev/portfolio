@@ -273,8 +273,16 @@ const RARE_FRAMES = {
   ufo: [ufoFrame(0, false), ufoFrame(1, false)],
 };
 
+// The garland group alone, in the cow's own viewBox and size, so it lines up exactly over her.
+function garlandOnly() {
+  const s = tidy(read("anim-cow.svg"));
+  const root = s.match(/<svg[^>]*>/)[0];
+  return finish(sized(`${root}${part(s, "garland")[0]}</svg>`, ...SIZE.cow));
+}
+
 const EXTRA = {
   cowGarland: cowFrame(0, true),
+  garland: garlandOnly(),
   sharkRocket: sharkFrame(0, true),
   ufoEmpty: ufoFrame(0, true),
   alienChute: copy("sp-alien-chute.svg", 110, 150),
@@ -298,6 +306,7 @@ export type RareKind = "cow" | "tiger" | "shark" | "merman" | "ufo";
 
 export type ExtraId =
   | "cowGarland"
+  | "garland"
   | "sharkRocket"
   | "ufoEmpty"
   | "alienChute"

@@ -79,11 +79,12 @@ export function stepScene(scene: Scene, dt: number): void {
   scene.poofs = scene.poofs.filter((p) => p.age < p.life);
 }
 
-function drawAnimal(ctx: CanvasRenderingContext2D, scene: Scene, art: Art, a: Animal): void {
+function drawAnimal(ctx: CanvasRenderingContext2D, scene: Scene, world: World, art: Art, a: Animal): void {
   const frames = art.sprites[a.kind];
-  ctx.save();
   const cfg = CREATURES[a.kind];
   const move = MOVES[cfg.move];
+  move.draw?.(ctx, a, world);
+  ctx.save();
   const react = HIT_REACTIONS[cfg.hit];
   enterSprite(ctx, a.x, a.y, a.w, a.vx < 0 ? -1 : 1);
   const jolt = a.reaction != null ? react.pose?.(a.reaction) : undefined;
@@ -137,7 +138,7 @@ export function drawScene(
   ctx.clearRect(0, 0, world.width, world.height);
   if (art) {
     for (const f of world.finishing) resolveFinish(f.id, reduced).draw(ctx, f.state, art, scene.scratch);
-    for (const a of world.animals) drawAnimal(ctx, scene, art, a);
+    for (const a of world.animals) drawAnimal(ctx, scene, world, art, a);
   }
   for (const p of scene.poofs) drawPoof(ctx, p);
 }
