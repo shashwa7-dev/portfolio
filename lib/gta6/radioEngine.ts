@@ -5,7 +5,7 @@
  * drive it with a fake. `components/gta6/useMusic.ts` wires it to YouTube.
  */
 
-import { stepTrack } from "@/lib/gta6/radio";
+import { playOrder, stepTrack } from "@/lib/gta6/radio";
 
 /** The radio's volume once faded in (YouTube's 0 to 100 scale). */
 export const VOLUME = 60;
@@ -24,7 +24,6 @@ export type RadioPlayer = {
   setVolume(volume: number): void;
   loadVideo(id: string): void;
   cueVideo(id: string): void;
-  videoData(): { videoId: string; title: string } | null;
   mute(): void;
   unMute(): void;
   destroy(): void;
@@ -35,7 +34,6 @@ export type PlayerHandlers = {
   onPlaying(): void;
   onEnded(): void;
   onError(code: number): void;
-  onCued(): void;
 };
 
 export type RadioDeps = {
@@ -55,12 +53,17 @@ export type RadioDeps = {
   fadeMs(): number;
   /** Automation: never make a player (test runs stay silent). */
   silent(): boolean;
+  /** The shuffle's source (defaults to `Math.random`). */
+  random?: () => number;
 };
 
 /** What the radio cards show. */
 export type RadioState = {
-  /** The track, an index into the playlist. */
-  index: number;
+  /** This session's play order, as playlist indices: the first entry, then
+   *  the rest shuffled (`playOrder`). Looped as it is. */
+  order: readonly number[];
+  /** Where in `order` the radio is; the track is `order[position]`. */
+  position: number;
   /** The visitor paused it. */
   paused: boolean;
   /** The visitor muted it. Kept for the page's life, across exits. */
@@ -71,13 +74,11 @@ export type RadioState = {
   blocked: boolean;
   /** The YouTube API never loaded: the card says so and nothing plays. */
   unavailable: boolean;
-  /** Titles learned from the player, by video id (kept for the page's life). */
-  titles: Readonly<Record<string, string>>;
 };
 
-/** A fresh start; `muted` and `titles` carry over. */
+/** A fresh start (with a fresh `order`); `muted` carries over. */
 const FRESH = {
-  index: 0,
+  position: 0,
   paused: false,
   playing: false,
   blocked: false,
@@ -117,7 +118,8 @@ export type Radio = ReturnType<typeof createRadio>;
  */
 export function createRadio(deps: RadioDeps) {
   const { ids } = deps;
-  let state: RadioState = { ...FRESH, muted: false, titles: {} };
+  const shuffle = () => playOrder(ids.length, deps.random);
+  let state: RadioState = { ...FRESH, order: shuffle(), muted: false };
   const subscribers = new Set<() => void>();
   let session: Session | null = null;
 
@@ -147,10 +149,14 @@ export function createRadio(deps: RadioDeps) {
     return s.duck ? DUCKED : VOLUME;
   }
 
-  function learnTitle(s: Session) {
-    const data = s.player?.videoData();
-    if (!data || state.titles[data.videoId] === data.title) return;
-    update({ titles: { ...state.titles, [data.videoId]: data.title } });
+  /** The video id at the current position. */
+  function current(): string {
+    return ids[state.order[state.position]];
+  }
+
+  /** The position `delta` steps on, looping the order. */
+  function step(delta: number): number {
+    return stepTrack(state.position, delta, state.order.length);
   }
 
   /**
@@ -163,7 +169,7 @@ export function createRadio(deps: RadioDeps) {
   function sync(s: Session, gesture: boolean) {
     const player = s.player;
     if (!player || !s.ready || s.failed || !s.active) return;
-    const id = ids[state.index];
+    const id = current();
     if (state.paused) {
       clearTimeout(s.refused);
       if (s.loaded !== id) player.cueVideo(id);
@@ -200,7 +206,7 @@ export function createRadio(deps: RadioDeps) {
       player: null,
       close: () => {},
       ready: false,
-      loaded: ids[state.index],
+      loaded: current(),
       active: true,
       dead: false,
       failed: false,
@@ -221,14 +227,12 @@ export function createRadio(deps: RadioDeps) {
           // Always set, so the card and the player never disagree.
           if (state.muted) s.player?.mute();
           else s.player?.unMute();
-          learnTitle(s);
           // The mode's start (or a retry): a visitor's gesture.
           sync(s, true);
         },
         onPlaying() {
           if (s.dead) return;
           s.errors = 0;
-          learnTitle(s);
           // A backstop: paused while it was getting there.
           if (s.active && state.paused) return s.player?.pause();
           // Recorded even while fading out, so taking the session back
@@ -240,13 +244,10 @@ export function createRadio(deps: RadioDeps) {
           update({ blocked: false, playing: true });
           fadeTo(s, level(s));
         },
-        onCued() {
-          if (!s.dead) learnTitle(s);
-        },
         onEnded() {
           if (!s.active || s.dead) return;
           s.playing = false;
-          update({ index: stepTrack(state.index, 1, ids.length) });
+          update({ position: step(1) });
           sync(s, false);
         },
         onError() {
@@ -257,7 +258,7 @@ export function createRadio(deps: RadioDeps) {
           // One track that cannot play (removed, not embeddable) is
           // skipped; a whole lap of them means the player is no good.
           if (s.active && s.errors < ids.length) {
-            update({ index: stepTrack(state.index, 1, ids.length) });
+            update({ position: step(1) });
             return sync(s, false);
           }
           s.failed = true;
@@ -287,9 +288,9 @@ export function createRadio(deps: RadioDeps) {
     return s;
   }
 
-  /** Moves to track `index` on a visitor's request. */
-  function go(index: number) {
-    update({ index });
+  /** Moves to `position` in the order on a visitor's request. */
+  function go(position: number) {
+    update({ position });
     const s = session;
     if (!s) return;
     s.errors = 0;
@@ -309,7 +310,7 @@ export function createRadio(deps: RadioDeps) {
     start() {
       if (deps.silent()) {
         // No player under automation; the cards' state still works.
-        update({ ...FRESH });
+        update({ ...FRESH, order: shuffle() });
         return;
       }
       const s = session;
@@ -327,7 +328,7 @@ export function createRadio(deps: RadioDeps) {
         return;
       }
       if (s) kill(s);
-      update({ ...FRESH });
+      update({ ...FRESH, order: shuffle() });
       session = build();
     },
 
@@ -344,15 +345,16 @@ export function createRadio(deps: RadioDeps) {
       fadeTo(s, 0, () => kill(s));
     },
 
-    next: () => go(stepTrack(state.index, 1, ids.length)),
-    prev: () => go(stepTrack(state.index, -1, ids.length)),
+    next: () => go(step(1)),
+    prev: () => go(step(-1)),
 
-    /** Picks a track from the list: it plays. Picking the one already
-     *  playing does nothing; picking it while paused resumes it. */
-    select(index: number) {
-      if (index === state.index && !state.paused) return;
+    /** Picks the track at `position` in the order (the list): it plays.
+     *  Picking the one already playing does nothing; picking it while paused
+     *  resumes it. */
+    select(position: number) {
+      if (position === state.position && !state.paused) return;
       update({ paused: false });
-      go(index);
+      go(position);
     },
 
     togglePause() {

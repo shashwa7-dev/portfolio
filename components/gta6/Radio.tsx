@@ -19,6 +19,12 @@ function cover(id: string): string {
   return `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
 }
 
+/** Playlist entry `i`'s names; "Track N" only if the entry is missing. */
+function names(i: number): { title: string; artist: string } {
+  const track = PLAYLIST[i];
+  return { title: trackTitle(i, track?.title), artist: track?.artist ?? "" };
+}
+
 /** Focuses option `index`, keeping it in view inside the list without
  *  scrolling the page. */
 function focusOption(ul: HTMLUListElement | null, index: number) {
@@ -28,6 +34,19 @@ function focusOption(ul: HTMLUListElement | null, index: number) {
   if (li.offsetTop < ul.scrollTop) ul.scrollTop = li.offsetTop;
   else if (li.offsetTop + li.offsetHeight > ul.scrollTop + ul.clientHeight)
     ul.scrollTop = li.offsetTop + li.offsetHeight - ul.clientHeight;
+}
+
+/** A list row's names: "N. Title" bold, the artist muted below. */
+function TrackNames({ position, index }: { position: number; index: number }) {
+  const { title, artist } = names(index);
+  return (
+    <span className="flex min-w-0 flex-col">
+      <span className="truncate font-semibold">
+        {position + 1}. {title}
+      </span>
+      {artist && <span className="truncate opacity-60">{artist}</span>}
+    </span>
+  );
 }
 
 /**
@@ -81,7 +100,7 @@ const SKIN: Record<
  * the music session (`useRadio`), so the track carries across.
  *
  * Previous, play/pause, next, mute and a list button that drops down all
- * thirty tracks (a listbox: arrows, Home and End move, Enter or a click
+ * tracks, in this session's play order (a listbox: arrows, Home and End move, Enter or a click
  * plays, Esc or a click outside closes, focus goes back to the button). Esc
  * is marked handled, so the game does not also take it as "exit".
  *
@@ -116,7 +135,7 @@ export default function Radio({ place }: { place: Place }) {
 
   // Opening puts focus on the current track.
   useEffect(() => {
-    if (open) focusOption(list.current, r.index);
+    if (open) focusOption(list.current, r.position);
     // Only on opening: moving through the list keeps its own focus.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
@@ -134,9 +153,10 @@ export default function Radio({ place }: { place: Place }) {
     );
   }
 
-  const id = PLAYLIST[r.index];
-  const title = trackTitle(r.index, r.titles[id]);
-  const count = `${r.index + 1} / ${PLAYLIST.length}`;
+  const index = r.order[r.position];
+  const id = PLAYLIST[index]?.id ?? "";
+  const { title, artist } = names(index);
+  const count = `${r.position + 1} / ${r.order.length}`;
   const showPause = !r.paused && !r.blocked;
 
   function close() {
@@ -146,7 +166,7 @@ export default function Radio({ place }: { place: Place }) {
 
   function onListKey(e: React.KeyboardEvent<HTMLUListElement>) {
     const at = Array.prototype.indexOf.call(list.current?.children ?? [], document.activeElement);
-    const last = PLAYLIST.length - 1;
+    const last = r.order.length - 1;
     let to: number | null = null;
     if (e.key === "ArrowDown") to = at < 0 ? 0 : Math.min(at + 1, last);
     else if (e.key === "ArrowUp") to = at < 0 ? last : Math.max(at - 1, 0);
@@ -169,6 +189,8 @@ export default function Radio({ place }: { place: Place }) {
     <div
       ref={root}
       data-radio=""
+      data-track={id}
+      data-position={r.position}
       className={`relative ${skin.root}`}
       onKeyDown={(e) => {
         // Esc anywhere in the card closes an open list, and only that: it is
@@ -195,14 +217,23 @@ export default function Radio({ place }: { place: Place }) {
         <div
           data-radio-title=""
           aria-live={live ? "polite" : undefined}
-          className={
-            place === "hud"
-              ? "truncate text-xs font-semibold leading-tight"
-              : "max-w-32 truncate normal-case"
-          }
-          title={title}
+          className={place === "hud" ? "min-w-0" : "flex min-w-0 max-w-32 flex-col normal-case leading-none"}
+          title={artist ? `${title}, ${artist}` : title}
         >
-          {title}
+          <div
+            className={
+              place === "hud"
+                ? "truncate text-xs font-semibold leading-tight"
+                : "truncate font-semibold text-foreground"
+            }
+          >
+            {title}
+          </div>
+          {artist && (
+            <div className={place === "hud" ? "truncate text-2xs leading-tight text-white/60" : "truncate"}>
+              {artist}
+            </div>
+          )}
         </div>
         {place === "hud" && (
           <div className="mt-0.5 font-mono text-2xs tracking-label text-[#f49ea3]">
@@ -268,11 +299,11 @@ export default function Radio({ place }: { place: Place }) {
           onKeyDown={onListKey}
           className={`absolute z-10 max-h-72 overflow-y-auto rounded-xl p-1 font-sans text-xs normal-case tracking-normal ${skin.list}`}
         >
-          {PLAYLIST.map((track, i) => (
+          {r.order.map((index, i) => (
             <li
-              key={track}
+              key={index}
               role="option"
-              aria-selected={i === r.index}
+              aria-selected={i === r.position}
               tabIndex={-1}
               onClick={() => {
                 radio.select(i);
@@ -282,15 +313,13 @@ export default function Radio({ place }: { place: Place }) {
             >
               {/* eslint-disable-next-line @next/next/no-img-element -- a YouTube cover thumbnail */}
               <img
-                src={cover(track)}
+                src={cover(PLAYLIST[index]?.id ?? "")}
                 alt=""
                 loading="lazy"
                 decoding="async"
                 className="h-6 w-10 flex-none rounded object-cover"
               />
-              <span className="truncate">
-                {i + 1}. {trackTitle(i, r.titles[track])}
-              </span>
+              <TrackNames position={i} index={index} />
             </li>
           ))}
         </ul>

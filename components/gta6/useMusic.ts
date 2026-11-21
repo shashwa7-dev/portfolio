@@ -24,7 +24,7 @@ function fadeMs(): number {
  * card (hero and HUD) shows the same track, even across remounts.
  */
 const engine = createRadio({
-  ids: PLAYLIST,
+  ids: PLAYLIST.map((t) => t.id),
   fadeMs,
   silent: () => navigator.webdriver,
   open(firstId, handlers, wanted) {
@@ -70,13 +70,14 @@ export function useRadio(): RadioState {
 }
 
 /**
- * Vice FM, while `active`: the 30-track playlist on one hidden YouTube
- * player (off-screen, 200x200, invisible), starting from the first track
- * (session logic in `lib/gta6/radioEngine.ts`).
+ * Vice FM, while `active`: the 31-track playlist on one hidden YouTube
+ * player (off-screen, 200x200, invisible): the first track (the theme),
+ * then the rest in an order shuffled once per session and looped (session
+ * logic in `lib/gta6/radioEngine.ts`).
  *
  * The player is built when the mode turns on, plays on ready, and fades up
  * from silence once it is really playing. When a track ends the next one
- * plays, wrapping round to the first. Turning off fades it back to silence,
+ * in the order plays, looping round. Turning off fades it back to silence,
  * then destroys it; turning on again during that fade keeps the same player
  * (and track) and fades it back up.
  *

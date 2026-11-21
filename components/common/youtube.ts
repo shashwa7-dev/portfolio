@@ -21,7 +21,6 @@ type YTPlayer = {
   setVolume(volume: number): void;
   loadVideoById(id: string): void;
   cueVideoById(id: string): void;
-  getVideoData(): { video_id?: string; title?: string } | undefined;
   mute(): void;
   unMute(): void;
   destroy(): void;
@@ -42,7 +41,7 @@ declare global {
   interface Window {
     YT?: {
       Player?: YTPlayerCtor;
-      PlayerState?: { ENDED: number; PLAYING: number; CUED: number };
+      PlayerState?: { ENDED: number; PLAYING: number };
     };
     onYouTubeIframeAPIReady?: () => void;
   }
@@ -93,7 +92,6 @@ export function primeYouTube(timeoutMs?: number): Promise<void> {
 /** YouTube's player states, in case `YT.PlayerState` is missing. */
 const ENDED = 0;
 const PLAYING = 1;
-const CUED = 5;
 
 export type YouTubePlayer = {
   play(): void;
@@ -105,8 +103,6 @@ export type YouTubePlayer = {
   loadVideo(id: string): void;
   /** Switches to another video without playing it. */
   cueVideo(id: string): void;
-  /** The loaded video's id and title (YouTube's `getVideoData`), once known. */
-  videoData(): { videoId: string; title: string } | null;
   mute(): void;
   unMute(): void;
   destroy(): void;
@@ -133,8 +129,6 @@ export function createPlayer(
     onPlaying(): void;
     onEnded(): void;
     onError(code: number): void;
-    /** A video was cued (`cueVideo`): its data can be read, nothing plays. */
-    onCued?(): void;
   },
 ): YouTubePlayer {
   const params = new URLSearchParams({
@@ -178,7 +172,6 @@ export function createPlayer(
             if (destroyed) return;
             if (e.data === (states?.PLAYING ?? PLAYING)) handlers.onPlaying();
             if (e.data === (states?.ENDED ?? ENDED)) handlers.onEnded();
-            if (e.data === (states?.CUED ?? CUED)) handlers.onCued?.();
           },
           onError: (e) => {
             if (!destroyed) handlers.onError(e.data);
@@ -206,14 +199,6 @@ export function createPlayer(
     cueVideo: (id) => call((p) => p.cueVideoById(id)),
     mute: () => call((p) => p.mute()),
     unMute: () => call((p) => p.unMute()),
-    videoData() {
-      let data: { videoId: string; title: string } | null = null;
-      call((p) => {
-        const d = p.getVideoData();
-        if (d?.video_id && d.title) data = { videoId: d.video_id, title: d.title };
-      });
-      return data;
-    },
     setVolume: (volume) =>
       call((p) => p.setVolume(Math.max(0, Math.min(100, Math.round(volume))))),
     currentTime() {

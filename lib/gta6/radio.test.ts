@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { stepTrack, trackTitle } from "./radio";
+import { playOrder, stepTrack, trackTitle } from "./radio";
 
 describe("stepTrack", () => {
   it("moves forward and back by one", () => {
@@ -32,5 +32,40 @@ describe("trackTitle", () => {
   });
   it("trims the title", () => {
     expect(trackTitle(2, "  Song  ")).toBe("Song");
+  });
+});
+
+/** A seeded source (mulberry32), so shuffles repeat. */
+function seeded(seed: number) {
+  return () => {
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+describe("playOrder", () => {
+  it("always starts with the first entry", () => {
+    for (let seed = 1; seed < 50; seed++) expect(playOrder(31, seeded(seed))[0]).toBe(0);
+    expect(playOrder(31)[0]).toBe(0);
+  });
+  it("plays every other entry exactly once", () => {
+    const order = playOrder(31, seeded(7));
+    expect(order).toHaveLength(31);
+    expect([...order].sort((a, b) => a - b)).toEqual(Array.from({ length: 31 }, (_, i) => i));
+  });
+  it("is deterministic for a given random source", () => {
+    expect(playOrder(31, seeded(42))).toEqual(playOrder(31, seeded(42)));
+    expect(playOrder(31, seeded(42))).not.toEqual(playOrder(31, seeded(43)));
+  });
+  it("actually shuffles the rest", () => {
+    const identity = Array.from({ length: 31 }, (_, i) => i);
+    expect(playOrder(31, seeded(3))).not.toEqual(identity);
+  });
+  it("handles tiny lists", () => {
+    expect(playOrder(0)).toEqual([]);
+    expect(playOrder(1)).toEqual([0]);
+    expect(playOrder(2)).toEqual([0, 1]);
   });
 });

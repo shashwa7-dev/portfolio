@@ -12,7 +12,6 @@ function fakePlayer() {
     setVolume: () => {},
     loadVideo: (id) => calls.push(`load:${id}`),
     cueVideo: (id) => calls.push(`cue:${id}`),
-    videoData: () => null,
     mute: () => calls.push("mute"),
     unMute: () => calls.push("unMute"),
     destroy: () => calls.push("destroy"),
@@ -21,15 +20,17 @@ function fakePlayer() {
 }
 
 /** A radio over the fake, with the handlers it gave the "player". */
-function setup() {
+function setup(random: () => number = () => 0.999999) {
   const fake = fakePlayer();
-  const opened: { handlers: PlayerHandlers; closed: boolean }[] = [];
+  const opened: { first: string; handlers: PlayerHandlers; closed: boolean }[] = [];
   const radio = createRadio({
     ids: IDS,
     fadeMs: () => 100,
     silent: () => false,
-    open(_first, handlers) {
-      const entry = { handlers, closed: false };
+    // Near 1, the shuffle leaves the order as it is.
+    random,
+    open(first, handlers) {
+      const entry = { first, handlers, closed: false };
       opened.push(entry);
       return { player: Promise.resolve(fake.player), close: () => (entry.closed = true) };
     },
@@ -51,13 +52,13 @@ describe("radio engine", () => {
     await settle();
     h().onReady();
     for (let i = 0; i < 29; i++) h().onError(150);
-    expect(radio.getState().index).toBe(29);
+    expect(radio.getState().position).toBe(29);
     expect(fake.calls.filter((c) => c.startsWith("load:"))).toHaveLength(29);
     expect(radio.getState().blocked).toBe(false);
 
     h().onError(150);
     expect(radio.getState().blocked).toBe(true);
-    expect(radio.getState().index).toBe(29);
+    expect(radio.getState().position).toBe(29);
     // No further skipping once failed.
     h().onError(150);
     expect(fake.calls.filter((c) => c.startsWith("load:"))).toHaveLength(29);
@@ -135,10 +136,31 @@ describe("radio engine", () => {
     radio.start();
     expect(opened).toHaveLength(2);
     expect(radio.getState().muted).toBe(true);
-    expect(radio.getState().index).toBe(0);
+    expect(radio.getState().position).toBe(0);
+    expect(opened[1].first).toBe("id0");
     fake.calls.length = 0;
     await settle();
     h().onReady();
     expect(fake.calls).toContain("mute");
+  });
+
+  it("plays the first entry first, then the shuffled order, looping it", async () => {
+    let n = 0;
+    const { radio, fake, opened, h } = setup(() => ((n = (n * 7 + 3) % 10), n / 10));
+    radio.start();
+    const order = radio.getState().order;
+    expect(order[0]).toBe(0);
+    expect(order).not.toEqual(IDS.map((_, i) => i));
+    expect(opened[0].first).toBe("id0");
+    await settle();
+    h().onReady();
+    h().onPlaying();
+    h().onEnded();
+    expect(fake.calls).toContain(`load:id${order[1]}`);
+    expect(radio.getState().position).toBe(1);
+    radio.prev();
+    radio.prev();
+    expect(radio.getState().position).toBe(29);
+    expect(fake.calls[fake.calls.length - 1]).toBe(`load:id${order[29]}`);
   });
 });

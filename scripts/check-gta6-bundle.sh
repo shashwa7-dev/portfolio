@@ -8,7 +8,7 @@
 # as a failure, so a broken build cannot pass silently.
 set -euo pipefail
 html=.next/server/app/index.html
-pattern='IeqQ-UWgxuY|/gta6/wallpapers|startHunt|preloadHunt|vice-hunt'
+pattern='aonTwBM1AZM|IeqQ-UWgxuY|/gta6/wallpapers|startHunt|preloadHunt|vice-hunt'
 css_pattern='data-mod="gta6"|data-mod=gta6'
 if [ "${1:-}" = "--off" ]; then
   pattern="$pattern|Vice City mode|hero-live-dot|data-gta-cluster"

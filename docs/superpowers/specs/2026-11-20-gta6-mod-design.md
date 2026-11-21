@@ -188,13 +188,13 @@ A full-viewport overlay (`position: fixed; inset: 0`, above everything), not ins
 - **Esc:** ignored while a dialog has focus or the event was already handled.
 
 ### Radio
-Replaces the single track. The playlist is the owner's 30 YouTube ids, in order, starting with `IeqQ-UWgxuY`, looping. Compact glass card: cover thumbnail (`i.ytimg.com/vi/<id>/mqdefault.jpg`), title (from the player's own `getVideoData().title` once loaded, else "Track N"), previous, play/pause, next, mute, and a list button that drops down all tracks. The mode no longer ends when a track ends; the next one plays. If the YouTube API never loads (blocked), the card says "Radio unavailable" and the mode continues silently. The hidden player is at least 200x200 (off-screen, `opacity: 0`).
+Replaces the single track. The playlist is 31 tracks (see Ids below): the theme first, then the rest shuffled, looping. Compact glass card: cover thumbnail (`i.ytimg.com/vi/<id>/mqdefault.jpg`), title and artist (from the playlist file; "Track N" only for a missing entry), previous, play/pause, next, mute, and a list button that drops down all tracks. The mode no longer ends when a track ends; the next one plays. If the YouTube API never loads (blocked), the card says "Radio unavailable" and the mode continues silently. The hidden player is at least 200x200 (off-screen, `opacity: 0`).
 
 ### Sound
 Short recorded effects, CC0 (or equivalent free licence, credited in `public/gta6/sfx/CREDITS.md`), as `.mp3` in `public/gta6/sfx/`, loaded only when the game opens: revolver shot, cylinder spin plus click (reload), dry click (empty), hit thud, a short kill cue, a low entry stinger, and a soft ocean-waves loop under the music. Mixed quietly under the radio. Silent under `navigator.webdriver` and when the visitor mutes the radio. The owner may swap any file by ear later.
 
 ### Ids (playlist, in order)
-IeqQ-UWgxuY 9RN2aNH0BKU 2FRnfzphm8s 7ySjFIG3s48 7oEceZdFZlk 8DSBy4G4IeA 2-V8kYT1pvE Wp6UBRv9rug dBrRBZy8OTs tfdwcqfuxwA 1Vf4mMCpNY0 QtXby3twMmI QcMEmuPFlwM s86K-p089R8 FLTchCiC0T0 SDTZ7iX4vTQ 0Z8eMHVwFDw CxM-apTyHiQ _K6MoWuAXjQ b6ZnjrvRu6Y Gft_kG9cfJg Ny8aOB9iP3A r3Pr1_v7hsw h4UqMyldS7Q cEGMmEvGe7c EwdsnGfrd-k p3j2NYZ8FKs _JZom_gVfuw md4ujXhHzLs rzRqEWJYwX4
+The playlist lives in `components/gta6/track.ts` (`PLAYLIST`, entries of `{ id, title, artist }`): 31 tracks, starting with the original theme `aonTwBM1AZM`, then the owner's 30 (`IeqQ-UWgxuY` first). The card and list show each entry's title and artist from that file. The theme always plays first; the other 30 follow in an order shuffled once per music session (`playOrder` in `lib/gta6/radio.ts`), and the radio loops that order. The list shows the play order.
 
 ### Final-review fixes folded in
 Palm homepage-only and mode-off on navigation; focus returns to the avatar button (or the palm) after Exit, Exit named "Exit Vice City mode"; the YouTube script rejects after a timeout so a blocked API never hangs; `check-gta6-bundle.sh` fails on zero stylesheets; flag-off contract wording in CLAUDE.md is "no mode markup or lazy GTA chunks".
