@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 import {
   MusicNotes,
   Pause,
@@ -28,6 +28,24 @@ function focusOption(ul: HTMLUListElement | null, index: number) {
   if (li.offsetTop < ul.scrollTop) ul.scrollTop = li.offsetTop;
   else if (li.offsetTop + li.offsetHeight > ul.scrollTop + ul.clientHeight)
     ul.scrollTop = li.offsetTop + li.offsetHeight - ul.clientHeight;
+}
+
+/**
+ * How many HUD cards are mounted. While the game is open its HUD copy is the
+ * one in view, so only it announces track changes: one live region at a
+ * time, never the hero's (under the overlay) as well.
+ */
+let huds = 0;
+const hudWatchers = new Set<() => void>();
+function watchHuds(fn: () => void) {
+  hudWatchers.add(fn);
+  return () => {
+    hudWatchers.delete(fn);
+  };
+}
+function countHud(delta: number) {
+  huds += delta;
+  for (const fn of hudWatchers) fn();
 }
 
 /** The two places the card lives. The hero's is one row inside the mode's
@@ -77,6 +95,14 @@ export default function Radio({ place }: { place: Place }) {
   const toggle = useRef<HTMLButtonElement>(null);
   const list = useRef<HTMLUListElement>(null);
   const listId = useId();
+  const hudOpen = useSyncExternalStore(watchHuds, () => huds > 0, () => false);
+  const live = place === "hud" || !hudOpen;
+
+  useEffect(() => {
+    if (place !== "hud") return;
+    countHud(1);
+    return () => countHud(-1);
+  }, [place]);
 
   // A click anywhere else closes the list.
   useEffect(() => {
@@ -99,7 +125,7 @@ export default function Radio({ place }: { place: Place }) {
     return (
       <div
         data-radio=""
-        role="status"
+        role={live ? "status" : undefined}
         className={`${skin.root} ${place === "hud" ? "w-auto font-mono text-2xs tracking-label opacity-80" : ""}`}
       >
         <MusicNotes aria-hidden weight="fill" className={skin.icon} />
@@ -167,7 +193,8 @@ export default function Radio({ place }: { place: Place }) {
       />
       <div className={place === "hud" ? "min-w-0 flex-1" : "flex min-w-0 items-center gap-1.5"}>
         <div
-          aria-live="polite"
+          data-radio-title=""
+          aria-live={live ? "polite" : undefined}
           className={
             place === "hud"
               ? "truncate text-xs font-semibold leading-tight"

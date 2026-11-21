@@ -471,7 +471,6 @@
 }
 .buttons .primary:hover { background: #f7b6ba; border-color: #f7b6ba; }
 
-/* The radio's place until the radio card arrives. */
 @media (prefers-reduced-motion: reduce) {
   .stage,
   .overlay[data-phase="entry"] .stage { transform: none; transition-duration: var(--duration-fast); }
