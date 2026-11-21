@@ -1,0 +1,301 @@
+/*
+ * Vice FM's card, design A (approved 2026-11-21; mockup
+ * .superpowers/brainstorm/55516-1795237094/content/radio-card.html, `.card.a`
+ * and `.list`): the cover fills the left of a dark card and fades into it,
+ * the names and controls sit on the right, a progress line runs along the
+ * bottom edge. The list drops down below in the same dark glass.
+ */
+
+.root {
+  position: relative;
+  width: 340px;
+  color: #fff;
+}
+
+/* In the hero, scaled down. From 1280px it hangs in the right margin beside
+   the measure, clear of the hero's text; narrower, it sits at the right of
+   the measure below the identity row's links (under the cluster pill). */
+.hero {
+  position: absolute;
+  top: 5.5rem;
+  right: 0;
+  z-index: 40;
+  transform: scale(0.7);
+  transform-origin: top right;
+}
+@media (min-width: 1280px) {
+  .hero {
+    top: 0;
+    right: auto;
+    left: calc(100% + 1rem);
+    transform-origin: top left;
+  }
+}
+@media (min-width: 1360px) {
+  .hero {
+    left: calc(100% + 1.5rem);
+    transform: scale(0.8);
+  }
+}
+
+.card {
+  position: relative;
+  height: 112px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #151221;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.cover {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 62%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(21, 18, 33, 0) 0%,
+    rgba(21, 18, 33, 0.2) 30%,
+    rgba(21, 18, 33, 0.85) 52%,
+    #151221 66%
+  );
+}
+
+.body {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 58%;
+  padding: 12px 12px 10px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.mono {
+  font-family: var(--font-mono), ui-monospace, monospace;
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9px;
+  letter-spacing: 1.6px;
+  color: #f49ea3;
+}
+
+.eq {
+  display: inline-flex;
+  gap: 2px;
+  align-items: flex-end;
+  height: 9px;
+}
+.eq i {
+  width: 2px;
+  height: 4px;
+  border-radius: 1px;
+  background: #7fd6cf;
+}
+.eq[data-on] i {
+  animation: eq var(--duration-gta-eq) ease-in-out infinite alternate;
+}
+.eq i:nth-child(2) { animation-delay: calc(var(--duration-gta-eq) * 0.22); height: 7px; }
+.eq i:nth-child(3) { animation-delay: calc(var(--duration-gta-eq) * 0.44); height: 5px; }
+@keyframes eq {
+  from { height: 2px; }
+  to { height: 9px; }
+}
+
+.title {
+  margin-top: 6px;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.artist {
+  margin-top: 2px;
+  font-size: 11.5px;
+  color: #d8cfe6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.controls {
+  margin-top: auto;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.controls button {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.14);
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+.controls button:hover { background: rgba(255, 255, 255, 0.24); }
+.controls button svg { width: 11px; height: 11px; }
+.controls .big {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #fff;
+  color: #151221;
+}
+.controls .big:hover { background: #f7e9ee; }
+.spacer { flex: 1; }
+
+.controls button:focus-visible {
+  outline: 2px solid #f49ea3;
+  outline-offset: 1px;
+}
+/* Inside the row, so the list's clipping never cuts it. */
+.row:focus-visible {
+  outline: 2px solid #f49ea3;
+  outline-offset: -2px;
+  border-radius: 8px;
+}
+
+.bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.12);
+}
+.bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #f49ea3, #7fd6cf);
+  transform-origin: left;
+  transition: transform var(--duration-gta-progress) linear;
+}
+
+/* "Radio unavailable": a slim card that stays out of the way. */
+.unavailable {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: max-content;
+  padding: 8px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #151221;
+  font-size: 10px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #d8cfe6;
+}
+.unavailable svg { width: 12px; height: 12px; }
+
+/* The track list. */
+.list {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 10;
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(21, 18, 33, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+.head {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 12px;
+  font-size: 9px;
+  letter-spacing: 1.6px;
+  color: #d8cfe6;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.rows {
+  position: relative;
+  max-height: 18rem;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+.row:hover { background: rgba(255, 255, 255, 0.06); }
+.row[aria-selected="true"] {
+  background: linear-gradient(90deg, rgba(244, 158, 163, 0.28), rgba(244, 158, 163, 0.06));
+}
+.row[aria-selected="true"]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  border-radius: 2px;
+  background: #f49ea3;
+}
+.n {
+  flex: none;
+  width: 18px;
+  font-size: 10px;
+  text-align: right;
+  color: #a59fc3;
+}
+.thumb {
+  flex: none;
+  width: 52px;
+  height: 30px;
+  border-radius: 5px;
+  object-fit: cover;
+}
+.names {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+.names b,
+.names span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.names b {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.row[aria-selected="true"] .names b { color: #f49ea3; }
+.names span {
+  font-size: 10.5px;
+  color: #a59fc3;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eq[data-on] i { animation: none; }
+  .bar i { transition: none; }
+}

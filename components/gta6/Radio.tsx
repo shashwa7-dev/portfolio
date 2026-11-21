@@ -12,8 +12,12 @@ import {
   SpeakerSlash,
 } from "@phosphor-icons/react/ssr";
 import { PLAYLIST } from "@/components/gta6/track";
-import { radio, useRadio } from "@/components/gta6/useMusic";
+import { radio, radioProgress, useRadio } from "@/components/gta6/useMusic";
 import { trackTitle } from "@/lib/gta6/radio";
+import s from "@/components/gta6/Radio.module.css";
+
+/** How often the progress line reads the player while it plays. */
+const PROGRESS_EVERY = 1000; // ms
 
 function cover(id: string): string {
   return `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
@@ -36,19 +40,6 @@ function focusOption(ul: HTMLUListElement | null, index: number) {
     ul.scrollTop = li.offsetTop + li.offsetHeight - ul.clientHeight;
 }
 
-/** A list row's names: "N. Title" bold, the artist muted below. */
-function TrackNames({ position, index }: { position: number; index: number }) {
-  const { title, artist } = names(index);
-  return (
-    <span className="flex min-w-0 flex-col">
-      <span className="truncate font-semibold">
-        {position + 1}. {title}
-      </span>
-      {artist && <span className="truncate opacity-60">{artist}</span>}
-    </span>
-  );
-}
-
 /**
  * How many HUD cards are mounted. While the game is open its HUD copy is the
  * one in view, so only it announces track changes: one live region at a
@@ -67,48 +58,31 @@ function countHud(delta: number) {
   for (const fn of hudWatchers) fn();
 }
 
-/** The two places the card lives. The hero's is one row inside the mode's
- *  cluster, in the page's own colours; the HUD's is the approved R1 glass
- *  card (cover, title, station line, buttons). */
+/** The two places the card lives: under the mode's cluster in the hero
+ *  (scaled down, or in the right margin on wide screens), and the game's
+ *  HUD, top left. Same card, same state. */
 type Place = "hero" | "hud";
 
-const SKIN: Record<
-  Place,
-  { root: string; button: string; icon: string; list: string; option: string }
-> = {
-  hero: {
-    root: "flex items-center gap-1.5",
-    button:
-      "grid h-4 w-4 place-items-center rounded-sm transition-colors duration-fast ease-out hover:text-foreground",
-    icon: "h-2.5 w-2.5",
-    list: "right-0 top-full mt-2.5 w-64 border border-border bg-background/95 text-foreground shadow-lg",
-    option: "hover:bg-muted aria-selected:text-accent",
-  },
-  hud: {
-    root: "flex w-60 items-center gap-2.5 rounded-xl border border-white/15 bg-[rgba(14,12,22,0.62)] p-2.5 text-white backdrop-blur-md",
-    button:
-      "grid h-6 w-6 place-items-center rounded-md bg-white/10 transition-colors duration-fast ease-out hover:bg-white/20",
-    icon: "h-3 w-3",
-    list: "inset-x-0 top-full mt-2 border border-white/15 bg-[rgba(14,12,22,0.86)] text-white",
-    option: "hover:bg-white/10 aria-selected:text-[#f49ea3]",
-  },
-};
-
 /**
- * Vice FM's card. The same component sits in the hero cluster while the mode
- * is on and in the game's HUD (top left) while it is open; its state lives in
- * the music session (`useRadio`), so the track carries across.
+ * Vice FM's card, design A. The same component sits in the hero while the
+ * mode is on and in the game's HUD (top left) while it is open; its state
+ * lives in the music session (`useRadio`), so the track carries across.
  *
- * Previous, play/pause, next, mute and a list button that drops down all
- * tracks, in this session's play order (a listbox: arrows, Home and End move, Enter or a click
- * plays, Esc or a click outside closes, focus goes back to the button). Esc
- * is marked handled, so the game does not also take it as "exit".
+ * The cover fills the left and fades into the dark card; on the right, the
+ * station line ("VICE FM · n / 31", with an equaliser that moves only while
+ * playing), the title, the artist, then previous, play/pause, next, mute and
+ * the list button. A progress line along the bottom edge reads the player
+ * once a second while it plays.
+ *
+ * The list drops down the tracks in this session's play order (a listbox:
+ * arrows, Home and End move, Enter or a click plays, Esc or a click outside
+ * closes, focus goes back to the button). Esc is marked handled, so the game
+ * does not also take it as "exit".
  *
  * If the YouTube API never loaded, the card only says "Radio unavailable".
  */
 export default function Radio({ place }: { place: Place }) {
   const r = useRadio();
-  const skin = SKIN[place];
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLDivElement>(null);
   const toggle = useRef<HTMLButtonElement>(null);
@@ -140,15 +114,27 @@ export default function Radio({ place }: { place: Place }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
+  const [progress, setProgress] = useState(0);
+
+  // The progress line: read once a second while playing; it holds where it
+  // got to while paused (and stays at 0 with no player, as under automation).
+  useEffect(() => {
+    if (!r.playing) return;
+    const read = () => setProgress(radioProgress());
+    read();
+    const t = window.setInterval(read, PROGRESS_EVERY);
+    return () => window.clearInterval(t);
+  }, [r.playing, r.position]);
+
+  const placeClass = place === "hero" ? `${s.root} ${s.hero}` : s.root;
+
   if (r.unavailable) {
     return (
-      <div
-        data-radio=""
-        role={live ? "status" : undefined}
-        className={`${skin.root} ${place === "hud" ? "w-auto font-mono text-2xs tracking-label opacity-80" : ""}`}
-      >
-        <MusicNotes aria-hidden weight="fill" className={skin.icon} />
-        Radio unavailable
+      <div data-radio="" className={placeClass}>
+        <div role={live ? "status" : undefined} className={`${s.unavailable} ${s.mono}`}>
+          <MusicNotes aria-hidden weight="fill" />
+          Radio unavailable
+        </div>
       </div>
     );
   }
@@ -156,7 +142,6 @@ export default function Radio({ place }: { place: Place }) {
   const index = r.order[r.position];
   const id = PLAYLIST[index]?.id ?? "";
   const { title, artist } = names(index);
-  const count = `${r.position + 1} / ${r.order.length}`;
   const showPause = !r.paused && !r.blocked;
 
   function close() {
@@ -191,7 +176,7 @@ export default function Radio({ place }: { place: Place }) {
       data-radio=""
       data-track={id}
       data-position={r.position}
-      className={`relative ${skin.root}`}
+      className={placeClass}
       onKeyDown={(e) => {
         // Esc anywhere in the card closes an open list, and only that: it is
         // marked handled so the game does not also exit.
@@ -201,128 +186,103 @@ export default function Radio({ place }: { place: Place }) {
         close();
       }}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element -- a YouTube cover thumbnail; next/image adds nothing here */}
-      <img
-        src={cover(id)}
-        alt=""
-        loading="lazy"
-        decoding="async"
-        className={
-          place === "hud"
-            ? "h-12 w-12 flex-none rounded-lg object-cover"
-            : "h-3.5 w-5 flex-none rounded-sm object-cover"
-        }
-      />
-      <div className={place === "hud" ? "min-w-0 flex-1" : "flex min-w-0 items-center gap-1.5"}>
-        <div
-          data-radio-title=""
-          aria-live={live ? "polite" : undefined}
-          className={place === "hud" ? "min-w-0" : "flex min-w-0 max-w-32 flex-col normal-case leading-none"}
-          title={artist ? `${title}, ${artist}` : title}
-        >
-          <div
-            className={
-              place === "hud"
-                ? "truncate text-xs font-semibold leading-tight"
-                : "truncate font-semibold text-foreground"
-            }
-          >
-            {title}
+      <div className={s.card}>
+        {/* eslint-disable-next-line @next/next/no-img-element -- a YouTube cover thumbnail; next/image adds nothing here */}
+        <img src={cover(id)} alt="" loading="lazy" decoding="async" className={s.cover} />
+        <div aria-hidden className={s.fade} />
+        <div className={s.body}>
+          <div className={`${s.eyebrow} ${s.mono}`}>
+            <span aria-hidden className={s.eq} data-on={r.playing ? "" : undefined}>
+              <i />
+              <i />
+              <i />
+            </span>
+            <span data-radio-count="">
+              VICE FM · {r.position + 1} / {r.order.length}
+            </span>
           </div>
-          {artist && (
-            <div className={place === "hud" ? "truncate text-2xs leading-tight text-white/60" : "truncate"}>
-              {artist}
-            </div>
-          )}
+          <div data-radio-title="" aria-live={live ? "polite" : undefined} title={artist ? `${title}, ${artist}` : title}>
+            <div className={s.title}>{title}</div>
+            {artist && <div className={s.artist}>{artist}</div>}
+          </div>
+          <div className={s.controls}>
+            <button type="button" aria-label="Previous track" title="Previous track" onClick={radio.prev}>
+              <SkipBack aria-hidden weight="fill" />
+            </button>
+            <button
+              type="button"
+              aria-label={showPause ? "Pause" : "Play"}
+              title={showPause ? "Pause" : "Play"}
+              onClick={r.blocked ? radio.retry : radio.togglePause}
+              className={s.big}
+            >
+              {showPause ? <Pause aria-hidden weight="fill" /> : <Play aria-hidden weight="fill" />}
+            </button>
+            <button type="button" aria-label="Next track" title="Next track" onClick={radio.next}>
+              <SkipForward aria-hidden weight="fill" />
+            </button>
+            <span className={s.spacer} />
+            <button
+              type="button"
+              aria-label={r.muted ? "Unmute" : "Mute"}
+              aria-pressed={r.muted}
+              title={r.muted ? "Unmute" : "Mute"}
+              onClick={radio.toggleMute}
+            >
+              {r.muted ? <SpeakerSlash aria-hidden weight="fill" /> : <SpeakerHigh aria-hidden weight="fill" />}
+            </button>
+            <button
+              ref={toggle}
+              type="button"
+              aria-label="Track list"
+              title="Track list"
+              aria-haspopup="listbox"
+              aria-expanded={open}
+              aria-controls={open ? listId : undefined}
+              onClick={() => setOpen((o) => !o)}
+            >
+              <Playlist aria-hidden weight="bold" />
+            </button>
+          </div>
         </div>
-        {place === "hud" && (
-          <div className="mt-0.5 font-mono text-2xs tracking-label text-[#f49ea3]">
-            VICE FM · {count}
-          </div>
-        )}
-        <div className={place === "hud" ? "mt-1.5 flex gap-1" : "flex items-center gap-0.5"}>
-          <button type="button" aria-label="Previous track" title="Previous track" onClick={radio.prev} className={skin.button}>
-            <SkipBack aria-hidden weight="fill" className={skin.icon} />
-          </button>
-          <button
-            type="button"
-            aria-label={showPause ? "Pause" : "Play"}
-            title={showPause ? "Pause" : "Play"}
-            onClick={r.blocked ? radio.retry : radio.togglePause}
-            className={skin.button}
-          >
-            {showPause ? (
-              <Pause aria-hidden weight="fill" className={skin.icon} />
-            ) : (
-              <Play aria-hidden weight="fill" className={skin.icon} />
-            )}
-          </button>
-          <button type="button" aria-label="Next track" title="Next track" onClick={radio.next} className={skin.button}>
-            <SkipForward aria-hidden weight="fill" className={skin.icon} />
-          </button>
-          <button
-            type="button"
-            aria-label={r.muted ? "Unmute" : "Mute"}
-            aria-pressed={r.muted}
-            title={r.muted ? "Unmute" : "Mute"}
-            onClick={radio.toggleMute}
-            className={skin.button}
-          >
-            {r.muted ? (
-              <SpeakerSlash aria-hidden weight="fill" className={skin.icon} />
-            ) : (
-              <SpeakerHigh aria-hidden weight="fill" className={skin.icon} />
-            )}
-          </button>
-          <button
-            ref={toggle}
-            type="button"
-            aria-label="Track list"
-            title="Track list"
-            aria-haspopup="listbox"
-            aria-expanded={open}
-            aria-controls={open ? listId : undefined}
-            onClick={() => setOpen((o) => !o)}
-            className={skin.button}
-          >
-            <Playlist aria-hidden weight="bold" className={skin.icon} />
-          </button>
+        <div aria-hidden className={s.bar}>
+          <i style={{ transform: `scaleX(${progress})` }} />
         </div>
       </div>
 
       {open && (
-        <ul
-          ref={list}
-          id={listId}
-          role="listbox"
-          aria-label="Vice FM tracks"
-          onKeyDown={onListKey}
-          className={`absolute z-10 max-h-72 overflow-y-auto rounded-xl p-1 font-sans text-xs normal-case tracking-normal ${skin.list}`}
-        >
-          {r.order.map((index, i) => (
-            <li
-              key={index}
-              role="option"
-              aria-selected={i === r.position}
-              tabIndex={-1}
-              onClick={() => {
-                radio.select(i);
-                close();
-              }}
-              className={`flex cursor-pointer items-center gap-2 rounded-lg px-1.5 py-1 outline-none focus-visible:ring-2 focus-visible:ring-ring ${skin.option}`}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element -- a YouTube cover thumbnail */}
-              <img
-                src={cover(PLAYLIST[index]?.id ?? "")}
-                alt=""
-                loading="lazy"
-                decoding="async"
-                className="h-6 w-10 flex-none rounded object-cover"
-              />
-              <TrackNames position={i} index={index} />
-            </li>
-          ))}
-        </ul>
+        <div className={s.list}>
+          <div aria-hidden className={`${s.head} ${s.mono}`}>
+            <span>UP NEXT · SHUFFLED</span>
+            <span>{r.order.length} TRACKS</span>
+          </div>
+          <ul ref={list} id={listId} role="listbox" aria-label="Vice FM tracks" onKeyDown={onListKey} className={s.rows}>
+            {r.order.map((index, i) => {
+              const n = names(index);
+              return (
+                <li
+                  key={index}
+                  role="option"
+                  aria-selected={i === r.position}
+                  tabIndex={-1}
+                  onClick={() => {
+                    radio.select(i);
+                    close();
+                  }}
+                  className={s.row}
+                >
+                  <span className={`${s.n} ${s.mono}`}>{i + 1}</span>
+                  {/* eslint-disable-next-line @next/next/no-img-element -- a YouTube cover thumbnail */}
+                  <img src={cover(PLAYLIST[index]?.id ?? "")} alt="" loading="lazy" decoding="async" className={s.thumb} />
+                  <span className={s.names}>
+                    <b>{n.title}</b>
+                    {n.artist && <span>{n.artist}</span>}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       )}
     </div>
   );

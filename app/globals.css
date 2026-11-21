@@ -495,6 +495,10 @@
   --duration-gta-callout: 1100ms;
   --duration-gta-banner: 2600ms;
   --duration-gta-edge-pulse: 1200ms;
+  /* Vice FM's card (components/gta6/Radio.module.css): one equaliser bar
+     swing, and the progress line's glide between its 1 s readings. */
+  --duration-gta-eq: 900ms;
+  --duration-gta-progress: 1s;
   --duration-glyph-wave: 1100ms;
   --duration-live-pulse: 1800ms;
   --duration-live-ring: 280ms;

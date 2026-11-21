@@ -24,6 +24,9 @@ export type RadioPlayer = {
   setVolume(volume: number): void;
   loadVideo(id: string): void;
   cueVideo(id: string): void;
+  /** Seconds played, and the track's length (0 until known). */
+  currentTime(): number;
+  duration(): number;
   mute(): void;
   unMute(): void;
   destroy(): void;
@@ -299,6 +302,14 @@ export function createRadio(deps: RadioDeps) {
 
   return {
     getState: () => state,
+
+    /** How far through the current track it is, 0 to 1 (0 with no player). */
+    progress(): number {
+      const p = session?.player;
+      if (!p) return 0;
+      const length = p.duration();
+      return length > 0 ? Math.min(1, Math.max(0, p.currentTime() / length)) : 0;
+    },
     subscribe(fn: () => void) {
       subscribers.add(fn);
       return () => {

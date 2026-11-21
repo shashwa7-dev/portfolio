@@ -18,6 +18,7 @@ type YTPlayer = {
   playVideo(): void;
   pauseVideo(): void;
   getCurrentTime(): number;
+  getDuration(): number;
   setVolume(volume: number): void;
   loadVideoById(id: string): void;
   cueVideoById(id: string): void;
@@ -97,6 +98,8 @@ export type YouTubePlayer = {
   play(): void;
   pause(): void;
   currentTime(): number;
+  /** The video's length in seconds, 0 until known. */
+  duration(): number;
   /** The volume, 0 to 100. */
   setVolume(volume: number): void;
   /** Switches to another video and plays it. */
@@ -207,6 +210,13 @@ export function createPlayer(
         t = p.getCurrentTime() || 0;
       });
       return t;
+    },
+    duration() {
+      let d = 0;
+      call((p) => {
+        d = p.getDuration() || 0;
+      });
+      return d;
     },
     destroy() {
       if (destroyed) return;

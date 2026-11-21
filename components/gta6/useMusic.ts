@@ -64,6 +64,9 @@ export const radio = {
   retry: engine.retry,
 };
 
+/** How far through the current track it is, 0 to 1 (polled by the card). */
+export const radioProgress = engine.progress;
+
 /** The radio's state, for the cards. */
 export function useRadio(): RadioState {
   return useSyncExternalStore(engine.subscribe, engine.getState, engine.getState);

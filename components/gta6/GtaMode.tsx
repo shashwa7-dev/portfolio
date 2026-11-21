@@ -34,9 +34,9 @@ type Props = {
  * page's own paper colour, heavy on the left where the text is and thin on
  * the right where the art is, then a fade at the bottom so the hero melts
  * into the next section. On top, in the header's top padding at the right
- * of the measure: a small cluster with the full wanted row, the Vice FM
- * radio (`Radio`, one row here; the same card moves to the game's HUD) and
- * Exit, led by Vice Hunt's revolver (`HuntControl`, which opens the
+ * of the measure: a small cluster with the full wanted row and Exit, with
+ * the Vice FM card (`Radio`; the same card moves to the game's HUD) below
+ * it, led by Vice Hunt's revolver (`HuntControl`, which opens the
  * full-screen game) when the game is on (`data-gta-cluster`).
  */
 export default function GtaMode({ leaving, onGone }: Props) {
@@ -116,7 +116,6 @@ export default function GtaMode({ leaving, onGone }: Props) {
                   <Star key={n} aria-hidden weight="fill" className="h-2.5 w-2.5" />
                 ))}
               </span>
-              <Radio place="hero" />
               <button
                 type="button"
                 onClick={() => {
@@ -128,6 +127,10 @@ export default function GtaMode({ leaving, onGone }: Props) {
                 <X aria-hidden weight="bold" className="h-2.5 w-2.5" />
                 Exit
               </button>
+            </div>
+            {/* Vice FM, under the cluster (or beside the measure on wide screens). */}
+            <div data-leaving={leavingAttr} className="gta-fade pointer-events-auto">
+              <Radio place="hero" />
             </div>
           </div>
         </Container>

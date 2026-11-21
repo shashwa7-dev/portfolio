@@ -12,6 +12,8 @@ function fakePlayer() {
     setVolume: () => {},
     loadVideo: (id) => calls.push(`load:${id}`),
     cueVideo: (id) => calls.push(`cue:${id}`),
+    currentTime: () => 30,
+    duration: () => 120,
     mute: () => calls.push("mute"),
     unMute: () => calls.push("unMute"),
     destroy: () => calls.push("destroy"),
@@ -162,5 +164,14 @@ describe("radio engine", () => {
     radio.prev();
     expect(radio.getState().position).toBe(29);
     expect(fake.calls[fake.calls.length - 1]).toBe(`load:id${order[29]}`);
+  });
+
+  it("reports progress through the track, 0 with no player", async () => {
+    const { radio, h } = setup();
+    expect(radio.progress()).toBe(0);
+    radio.start();
+    await settle();
+    h().onReady();
+    expect(radio.progress()).toBe(0.25);
   });
 });
