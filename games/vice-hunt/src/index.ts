@@ -8,7 +8,7 @@ import { createSound, type SfxUrls } from "./sound";
 import { loadedArt, preloadHunt, svgUrl } from "./sprites";
 import { CREATURES, type Kind } from "./creatures";
 import type { Kills } from "./types";
-import { createWorld, drain, resize, shoot, step } from "./world";
+import { createWorld, drain, resize, shoot, spawn, step } from "./world";
 
 export type { Kills } from "./types";
 export type { Kind } from "./creatures";
@@ -46,6 +46,8 @@ export type HuntOptions = {
   /** Recorded effects by URL; any left out (or failing to load) are
    *  synthesised. Same silent rules either way. */
   sfx?: SfxUrls;
+  /** Dev pages: creatures to spawn at the start. */
+  spawn?: Kind[];
 };
 export type Hunt = { destroy(): void };
 
@@ -120,6 +122,7 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
     if (w !== world.width || h !== world.height) resize(world, w, h);
   };
   fit();
+  for (const k of options.spawn ?? []) spawn(world, rng, k);
   gun.aim(world.width / 2, world.height / 2, world.width, world.height);
   const ro = new ResizeObserver(fit);
   ro.observe(layer);

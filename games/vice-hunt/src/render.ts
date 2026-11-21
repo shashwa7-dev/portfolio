@@ -1,6 +1,7 @@
 import { DEATHS, deathPose, newPose, type Puff } from "./death";
-import { resolveFinish } from "./modules";
-import { drawSprite, enterSprite, frameOf } from "./modules/draw";
+import { CREATURES } from "./creatures";
+import { HIT_REACTIONS, MOVES, resolveFinish } from "./modules";
+import { drawSprite, enterSprite } from "./modules/draw";
 import type { Rng } from "./rng";
 import type { Art } from "./sprites";
 import { GROUND_LINE } from "./config";
@@ -81,8 +82,20 @@ export function stepScene(scene: Scene, dt: number): void {
 function drawAnimal(ctx: CanvasRenderingContext2D, scene: Scene, art: Art, a: Animal): void {
   const frames = art.sprites[a.kind];
   ctx.save();
+  const cfg = CREATURES[a.kind];
+  const move = MOVES[cfg.move];
+  const react = HIT_REACTIONS[cfg.hit];
   enterSprite(ctx, a.x, a.y, a.w, a.vx < 0 ? -1 : 1);
-  drawSprite(ctx, scene.scratch, frames[frameOf(a)], a.w, a.h, a.flash);
+  const jolt = a.reaction != null ? react.pose?.(a.reaction) : undefined;
+  if (jolt) ctx.translate(jolt.dx, jolt.dy);
+  const tilt = move.tilt?.(a) ?? 0;
+  if (tilt) {
+    ctx.translate(a.w / 2, a.h / 2);
+    ctx.rotate(tilt);
+    ctx.translate(-a.w / 2, -a.h / 2);
+  }
+  drawSprite(ctx, scene.scratch, frames[move.frame(a)], a.w, a.h, a.flash);
+  if (a.reaction != null) react.draw(ctx, a.reaction, art);
   ctx.restore();
 
   if (a.kind === "bigfoot") {

@@ -19,11 +19,16 @@ export interface FinishModule<S> {
 export interface MoveModule {
   y(a: Animal, world: World): number; // vertical offset from the lane's resting y
   frame(a: Animal): number; // sprite frame, 0 or 1
+  tilt?(a: Animal): number; // radians about the sprite's centre
+  // Per-tick horizontal movement; false when the animal stands still (the iguana's pauses).
+  advance?(a: Animal, dt: number, rng: Rng): boolean;
 }
 
 export interface HitReactionModule<S> {
   start(a: Animal): S;
   step(s: S, dt: number): void;
+  pose?(s: S): { dx: number; dy: number }; // jolt applied to the body, in sprite px
+  // Drawn over the body, in sprite space.
   draw(ctx: CanvasRenderingContext2D, s: S, art: Art): void;
 }
 

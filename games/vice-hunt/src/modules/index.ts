@@ -3,37 +3,19 @@
 import type { FinishId, HitReactionId, MoveId, ThreatId } from "../creatures";
 import { MAX_DT } from "../config";
 import type { World } from "../world";
-import { frameOf } from "./draw";
 import { fade } from "./finishes/fade";
 import { falls } from "./finishes/falls";
+import { moves } from "./moves";
+import { flinch, garland, noReaction } from "./reactions";
 import type { FinishModule, HitReactionModule, MoveModule, ThreatModule } from "./types";
 
 export type { Finishing } from "./types";
 
 const none = () => {};
 
-// Placeholder: the world still moves animals itself (today's bob and lane
-// logic); Task 6 moves that behaviour in here, id by id.
-const still: MoveModule = { y: () => 0, frame: frameOf };
+export const MOVES: Record<MoveId, MoveModule> = moves;
 
-export const MOVES: Record<MoveId, MoveModule> = {
-  hop: still,
-  dash: still,
-  glide: still,
-  float: still,
-  swoop: still,
-  strut: still,
-  surface: still,
-  hover: still,
-  stomp: still,
-};
-
-const noReaction: HitReactionModule<null> = { start: () => null, step: none, draw: none };
-export const HIT_REACTIONS: Record<HitReactionId, HitReactionModule<any>> = {
-  none: noReaction,
-  flinch: noReaction,
-  garland: noReaction,
-};
+export const HIT_REACTIONS: Record<HitReactionId, HitReactionModule<any>> = { none: noReaction, flinch, garland };
 
 const noThreat: ThreatModule<null> = { start: () => null, step: none, draw: none };
 export const THREATS: Record<ThreatId, ThreatModule<any>> = {

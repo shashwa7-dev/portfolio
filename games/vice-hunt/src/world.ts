@@ -1,7 +1,6 @@
 import {
   GROUND_LINE,
   HEARTS,
-  IGUANA_PAUSE,
   MAX_ALIVE,
   MAX_DT,
   SEA_LINE,
@@ -10,7 +9,7 @@ import {
 } from "./config";
 import { CREATURES, KINDS, type Creature, isRare, kindsWhere, penaltyFor, streaks, type Kind } from "./creatures";
 import type { GameEvent } from "./events";
-import { FINISHES } from "./modules";
+import { FINISHES, HIT_REACTIONS, MOVES } from "./modules";
 import type { Finishing } from "./modules/types";
 import type { Rng } from "./rng";
 import { type Surface, SURFACE_OUT, dive, duck, newSurface, sinkOffset, stepSurface, surfaceX } from "./surface";
@@ -32,6 +31,7 @@ export type Animal = {
   age: number;
   pause: number; // > 0: iguana is standing still
   flash: number;
+  reaction?: unknown; // hit-reaction state (garland, flinch), see modules/reactions.ts
 };
 
 export type World = {
@@ -56,10 +56,6 @@ export { GROUND_LINE };
 const HIT_INSET = 0.15;
 const FLASH = 0.12;
 const KNOCKBACK = 6;
-const FLAMINGO_BOB = 10;
-const RABBIT_HOP = 14;
-// Per-second chance a dashing iguana stops, giving irregular dash lengths.
-const IGUANA_STOP_RATE = 1.2;
 
 const between = (rng: Rng, [lo, hi]: readonly [number, number]) => lo + rng() * (hi - lo);
 const intBetween = (rng: Rng, [lo, hi]: readonly [number, number]) => lo + Math.floor(rng() * (hi - lo + 1));
@@ -76,11 +72,8 @@ const sharesScreen = (k: Kind) => table[k].role === "hostile";
 // Vertical offset from the lane's resting y, a pure function of the animal's
 // age (or the merman's surface state) so the resting y can be recovered by
 // subtracting it.
-function bob(a: Animal): number {
-  if (a.surface) return sinkOffset(a.surface, a.h);
-  if (a.kind === "flamingo") return Math.sin(a.age * 2.2) * FLAMINGO_BOB;
-  if (a.kind === "rabbit") return -Math.abs(Math.sin(a.age * 7)) * RABBIT_HOP;
-  return 0;
+function bob(a: Animal, world: World): number {
+  return MOVES[table[a.kind].move].y(a, world);
 }
 
 function restingY(world: World, a: Animal, topFraction: number): number {
@@ -172,7 +165,7 @@ export function spawn(world: World, rng: Rng, kind?: Kind): Animal {
     a.vx = 0;
     a.x = surfaceX(rng, world.width, w);
   }
-  a.y = restingY(world, a, between(rng, TOP_BAND)) + bob(a);
+  a.y = restingY(world, a, between(rng, TOP_BAND)) + bob(a, world);
   // Protected kinds stay at the front of the list: drawn first, hit last.
   if (cfg.role === "protected") {
     const i = world.animals.findIndex((b) => table[b.kind].role !== "protected");
@@ -222,22 +215,15 @@ export function step(world: World, dt: number, rng: Rng): void {
 
   const left = new Set<Animal>();
   for (const a of world.animals) {
-    const rest = a.y - bob(a);
+    const rest = a.y - bob(a, world);
     a.age += dt;
     if (a.surface && !stepMerman(world, a, a.surface, dt, rng)) left.add(a);
-    a.y = rest + bob(a);
+    a.y = rest + bob(a, world);
     a.flash = Math.max(0, a.flash - dt);
 
-    if (a.kind === "iguana") {
-      if (a.pause > 0) {
-        a.pause = Math.max(0, a.pause - dt);
-        continue;
-      }
-      if (rng() < IGUANA_STOP_RATE * dt) {
-        a.pause = between(rng, IGUANA_PAUSE);
-        continue;
-      }
-    }
+    const cfg = table[a.kind];
+    if (a.reaction != null) HIT_REACTIONS[cfg.hit].step(a.reaction, dt);
+    if (MOVES[cfg.move].advance?.(a, dt, rng) === false) continue;
     a.x += a.vx * dt;
   }
 
@@ -288,6 +274,7 @@ function registerHit(world: World, a: Animal): boolean {
   a.hits += 1;
   if (a.hits === 1) a.firstHitAt = world.time;
   a.flash = FLASH;
+  if (a.reaction === undefined || cfg.hit === "flinch") a.reaction = HIT_REACTIONS[cfg.hit].start(a);
   a.x -= Math.sign(a.vx) * KNOCKBACK;
   const at = centre(a);
   const finished = a.hits >= a.hp;
@@ -329,10 +316,10 @@ export function resize(world: World, width: number, height: number): void {
   const rx = width / world.width;
   const oldHeight = world.height;
   for (const a of world.animals) {
-    const rest = a.y - bob(a);
+    const rest = a.y - bob(a, world);
     a.x *= rx;
     a.vx *= rx;
-    a.y = restingY({ ...world, height }, a, rest / oldHeight) + bob(a);
+    a.y = restingY({ ...world, height }, a, rest / oldHeight) + bob(a, world);
   }
   world.width = width;
   world.height = height;
