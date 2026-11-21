@@ -10,7 +10,8 @@ import {
 import { CREATURES, KINDS, type Creature, isRare, kindsWhere, penaltyFor, streaks, type Kind } from "./creatures";
 import type { GameEvent } from "./events";
 import { FINISHES, HIT_REACTIONS, MOVES } from "./modules";
-import type { Finishing } from "./modules/types";
+import { createGlass, type Glass } from "./fx/glass";
+import type { Finishing, Threatening } from "./modules/types";
 import type { Rng } from "./rng";
 import { type Surface, SURFACE_OUT, dive, duck, newSurface, sinkOffset, stepSurface, surfaceX } from "./surface";
 import type { Kills } from "./types";
@@ -42,6 +43,8 @@ export type World = {
   nextSpawn: number;
   animals: Animal[];
   finishing: Finishing[]; // finished animals playing out their finish
+  threats: Threatening[]; // attacks on the player in progress (the tiger's claw, Bigfoot's throws)
+  glass: Glass; // scratches and splats on the screen
   kills: Kills;
   nextId: number;
   streak: number; // kills in a row, each within STREAK_WINDOW of the last
@@ -98,6 +101,8 @@ export function createWorld(width: number, height: number, rng: Rng): World {
     nextSpawn: between(rng, SPAWN_INTERVAL),
     animals: [],
     finishing: [],
+    threats: [],
+    glass: createGlass(),
     kills: emptyKills(),
     nextId: 1,
     streak: 0,

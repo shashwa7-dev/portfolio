@@ -38,15 +38,15 @@ describe("stepFinishing", () => {
   it("removes a falls entry after DEATHS[kind].duration", () => {
     const world = finishedRabbit();
     const steps = Math.round(DEATHS.rabbit.duration / 0.02);
-    for (let i = 0; i < steps - 2; i++) stepFinishing(world, 0.02, false);
+    for (let i = 0; i < steps - 2; i++) stepFinishing(world, 0.02, false, mulberry32(9));
     expect(world.finishing).toHaveLength(1);
-    for (let i = 0; i < 5; i++) stepFinishing(world, 0.02, false);
+    for (let i = 0; i < 5; i++) stepFinishing(world, 0.02, false, mulberry32(9));
     expect(world.finishing).toHaveLength(0);
   });
 
   it("with dt 1.0 advances by MAX_DT only", () => {
     const world = finishedRabbit();
-    stepFinishing(world, 1.0, false);
+    stepFinishing(world, 1.0, false, mulberry32(9));
     expect((world.finishing[0].state as { age: number }).age).toBeCloseTo(MAX_DT);
   });
 
@@ -55,9 +55,9 @@ describe("stepFinishing", () => {
     const fake = { kind: "bigfoot", x: 0, y: 0, w: 1, h: 1, vx: 1, pause: 0, age: 0, flash: 0 };
     world.finishing[0].id = "jet"; // still the generic fade until Task 9
     world.finishing[0].state = FINISHES.jet.start(fake as never, world, mulberry32(1));
-    for (let i = 0; i < 11; i++) stepFinishing(world, 0.05, false);
+    for (let i = 0; i < 11; i++) stepFinishing(world, 0.05, false, mulberry32(9));
     expect(world.finishing).toHaveLength(1);
-    for (let i = 0; i < 2; i++) stepFinishing(world, 0.05, false);
+    for (let i = 0; i < 2; i++) stepFinishing(world, 0.05, false, mulberry32(9));
     expect(world.finishing).toHaveLength(0);
   });
 });
@@ -78,7 +78,7 @@ describe("reduced motion", () => {
     try {
       const world = finishedRabbit();
       world.finishing[0].id = "crashes";
-      stepFinishing(world, 0.02, true);
+      stepFinishing(world, 0.02, true, mulberry32(9));
       resolveFinish("crashes", true).draw({} as never, {}, {} as never, {} as never);
       expect(variant.step).toHaveBeenCalledTimes(1);
       expect(variant.draw).toHaveBeenCalledTimes(1);

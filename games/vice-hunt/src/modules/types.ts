@@ -1,7 +1,7 @@
 // Interfaces for the behaviour modules. Registries (modules/index.ts) are
 // exhaustive Records over the id unions in creatures.ts. Modules are pure
 // (no DOM) except `draw`, which takes a canvas context and keeps no state.
-import type { FinishId } from "../creatures";
+import type { FinishId, Kind, ThreatId } from "../creatures";
 import type { GameEvent } from "../events";
 import type { Rng } from "../rng";
 import type { Art } from "../sprites";
@@ -34,11 +34,21 @@ export interface HitReactionModule<S> {
   draw(ctx: CanvasRenderingContext2D, s: S, art: Art): void;
 }
 
+// Where a threat comes from: a live animal (Bigfoot's throws) or a finished
+// body (the tiger, once its pounce has landed).
+export type Origin = { kind: Kind; x: number; y: number; w: number; h: number; dir: 1 | -1 };
+
+// Attacks on the player. Threats may change the world (damage, glass marks),
+// so their step gets it; they never run while the world is wasted. `draw`
+// paints on the glass layer, above the gun.
 export interface ThreatModule<S> {
-  start(a: Animal, world: World, rng: Rng): S;
+  start(at: Origin, world: World, rng: Rng, reduced: boolean): S;
   step(s: S, dt: number, world: World, rng: Rng, out: GameEvent[]): void;
+  done(s: S): boolean;
   draw(ctx: CanvasRenderingContext2D, s: S, art: Art): void;
 }
+
+export type Threatening = { kind: Kind; id: ThreatId; state: unknown };
 
 // A finished animal playing out its finish; its module's state rides along.
 export type Finishing = {

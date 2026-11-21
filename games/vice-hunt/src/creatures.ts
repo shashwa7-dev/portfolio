@@ -14,7 +14,7 @@ export type HitReactionId = "none" | "flinch" | "garland";
 export type FinishId =
   | "falls" | "deflates" | "pounces" | "rocket" | "fountain" | "crashes" | "jet"
   // The gentle versions used under reduced motion (a module's `reduced`).
-  | "deflates-gentle" | "rocket-gentle" | "fountain-gentle" | "crashes-gentle";
+  | "deflates-gentle" | "pounces-gentle" | "rocket-gentle" | "fountain-gentle" | "crashes-gentle";
 export type ThreatId = "claw-swipe" | "throw";
 
 export type Retaliates = { kind: "retaliates"; damage: number; attack: ThreatId };

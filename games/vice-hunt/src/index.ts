@@ -1,7 +1,9 @@
 import { RELOAD_TIME, createAmmo, fire, startReload, tick } from "./ammo";
 import { SPRITES } from "./art/sprites";
 import { createGun } from "./gun";
-import { stepFinishing } from "./modules";
+import { MAX_DT } from "./config";
+import { drawGlass, shakeOffset, stepGlass } from "./fx/glass";
+import { stepFinishing, stepThreats, THREATS } from "./modules";
 import { addPuff, createScene, drawScene, stepScene } from "./render";
 import { mulberry32 } from "./rng";
 import { createSound, type SfxUrls } from "./sound";
@@ -109,6 +111,12 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
   layer.append(canvas);
   const ctx = canvas.getContext("2d")!;
   const gun = createGun(layer, reducedMotion);
+  // The glass, in front of the gun: the tiger's face and paw, claw scratches
+  // and splats. Never takes a shot.
+  const glassCanvas = document.createElement("canvas");
+  glassCanvas.style.cssText = "position:absolute;inset:0;width:100%;height:100%;pointer-events:none";
+  layer.append(glassCanvas);
+  const glassCtx = glassCanvas.getContext("2d")!;
   const showKills = options.showScore === false ? () => {} : scoreStrip(layer, options.scoreInset ?? 12);
   host.append(layer);
 
@@ -120,8 +128,8 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
     const w = Math.max(1, layer.clientWidth);
     const h = Math.max(1, layer.clientHeight);
     dpr = window.devicePixelRatio || 1;
-    canvas.width = Math.round(w * dpr);
-    canvas.height = Math.round(h * dpr);
+    canvas.width = glassCanvas.width = Math.round(w * dpr);
+    canvas.height = glassCanvas.height = Math.round(h * dpr);
     if (w !== world.width || h !== world.height) resize(world, w, h);
   };
   fit();
@@ -225,7 +233,9 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
     last = now;
     step(world, dt, rng);
     devFinish();
-    stepFinishing(world, dt, reducedMotion);
+    stepFinishing(world, dt, reducedMotion, rng);
+    stepThreats(world, dt, rng);
+    stepGlass(world.glass, Math.min(dt, MAX_DT));
     drain(world); // the events become callbacks in a later task; drop them so they do not pile up
     stepScene(scene, Math.min(dt, 0.05));
     if (tick(ammo, dt)) reportAmmo();
@@ -234,8 +244,17 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
       bigfoot = big;
       options.onBigfoot?.(big);
     }
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    drawScene(ctx, scene, world, loadedArt(), reducedMotion);
+    const jolt = shakeOffset(world.glass);
+    const art = loadedArt();
+    for (const c of [ctx, glassCtx]) {
+      c.setTransform(1, 0, 0, 1, 0, 0);
+      c.clearRect(0, 0, canvas.width, canvas.height); // the whole canvas, whatever the shake
+    }
+    ctx.setTransform(dpr, 0, 0, dpr, jolt.dx * dpr, jolt.dy * dpr);
+    drawScene(ctx, scene, world, art, reducedMotion);
+    glassCtx.setTransform(dpr, 0, 0, dpr, jolt.dx * dpr, jolt.dy * dpr);
+    if (art) for (const t of world.threats) THREATS[t.id].draw(glassCtx, t.state, art);
+    drawGlass(glassCtx, world.glass);
     raf = requestAnimationFrame(frame);
   };
   const onVisibility = () => {
