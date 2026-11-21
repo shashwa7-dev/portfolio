@@ -9,7 +9,7 @@
 set -euo pipefail
 html=.next/server/app/index.html
 pattern='aonTwBM1AZM|IeqQ-UWgxuY|/gta6/wallpapers|startHunt|preloadHunt|vice-hunt'
-css_pattern='data-mod="gta6"|data-mod=gta6'
+css_pattern='data-mod="gta6"|data-mod=gta6|anton-latin'
 if [ "${1:-}" = "--off" ]; then
   pattern="$pattern|Vice City mode|hero-live-dot|data-gta-cluster"
 fi
@@ -21,8 +21,11 @@ for c in $chunks; do
   if [ ! -f "$f" ]; then echo "referenced chunk missing: $c"; hits=1; continue; fi
   if grep -qE "$pattern" "$f"; then echo "GTA 6 code in initial chunk: $c"; hits=1; fi
 done
-# Every stylesheet the homepage links, whatever the attribute order.
-for c in $(grep -oE '<link[^>]*rel="stylesheet"[^>]*>' "$html" | grep -oE '/_next/static/[^"]+\.css' | sort -u); do
+# Every stylesheet the homepage links, whatever the attribute order. None at
+# all means the HTML changed shape and nothing was checked, so that fails too.
+sheets=$(grep -oE '<link[^>]*rel="stylesheet"[^>]*>' "$html" | grep -oE '/_next/static/[^"]+\.css' | sort -u || true)
+if [ -z "$sheets" ]; then echo "no stylesheets found in $html"; hits=1; fi
+for c in $sheets; do
   f=".next${c#/_next}"
   if [ ! -f "$f" ]; then echo "referenced stylesheet missing: $c"; hits=1; continue; fi
   if grep -qE "$css_pattern" "$f"; then echo "GTA 6 styles in homepage stylesheet: $c"; hits=1; fi

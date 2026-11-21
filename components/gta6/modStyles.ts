@@ -21,8 +21,14 @@
  * for one turn (`--duration-gta-wall-turn`, 5 s) and staggered a turn apart,
  * fading over the first and last second of its turn, so each fade out is the
  * next one's fade in. The keyframe stops assume those two values (1 s of
- * 65 s is 1.538%); change them together. Under reduced motion only the first
- * shows.
+ * 65 s is 1.538%); change them together. The first is shown alone and still
+ * until it has loaded (`GtaMode` mounts the rest then, with `data-cycle`);
+ * the cycle is pulled back by one fade (a fifth of a turn) so the first
+ * starts fully up and the others join without a flash. Under reduced motion
+ * only the first shows.
+ *
+ * The page's dot-matrix brand mark (BrandBackdrop) is hidden while the mode
+ * is on: it would sit on top of the wallpapers.
  */
 export const MOD_CSS = `
 html[data-mod="gta6"] {
@@ -43,15 +49,16 @@ html[data-mod="gta6"] .hero-name { color: hsl(var(--accent)); }
 html[data-mod="gta6"] .hero-live { color: hsl(var(--gta-live)); }
 html[data-mod="gta6"] .hero-live-dot { background-color: hsl(var(--gta-live)); }
 html[data-mod="gta6"] .starter-pack-hang { display: none; }
+html[data-mod="gta6"] :is(.brand-backdrop, .brand-backdrop-fill) { display: none; }
 
 .gta-fade { transition: opacity var(--duration-gta-fade) var(--ease-out); }
 @starting-style { .gta-fade { opacity: 0; } }
 .gta-fade[data-leaving] { opacity: 0; }
 
-.gta-wall {
+.gta-wall[data-cycle] {
   opacity: 0;
   animation: gta-wall var(--duration-gta-wall-cycle) linear infinite;
-  animation-delay: calc(var(--i) * var(--duration-gta-wall-turn));
+  animation-delay: calc((var(--i) - 0.2) * var(--duration-gta-wall-turn));
 }
 @keyframes gta-wall {
   0% { opacity: 0; }
@@ -61,7 +68,7 @@ html[data-mod="gta6"] .starter-pack-hang { display: none; }
   100% { opacity: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .gta-wall { animation: none; }
+  .gta-wall[data-cycle] { animation: none; }
   .gta-wall:first-child { opacity: 1; }
 }
 

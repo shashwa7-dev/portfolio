@@ -19,7 +19,9 @@ type Props = {
  * then kills per animal, accuracy (hits over shots) and the best streak,
  * then Play again or Back to site.
  * A modal dialog: focus lands on Play again, Tab stays between its two
- * buttons, Esc goes back to the site.
+ * buttons, Esc goes back to the site. A press anywhere else on it (the
+ * backdrop, the card's text) keeps focus where it is, so focus is never
+ * stranded outside the two buttons.
  */
 export default function Results({ tally, icons, onAgain, onBack }: Props) {
   const title = useId();
@@ -42,7 +44,12 @@ export default function Results({ tally, icons, onAgain, onBack }: Props) {
   };
 
   return (
-    <div className={s.results}>
+    <div
+      className={s.results}
+      onMouseDown={(e) => {
+        if (!(e.target instanceof Element && e.target.closest("button"))) e.preventDefault();
+      }}
+    >
       <div
         role="dialog"
         aria-modal="true"

@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gtaMode } from "@/lib/gta6/store";
 import { MOD_CSS } from "@/components/gta6/modStyles";
 import { useMusic } from "@/components/gta6/useMusic";
 import HuntControl from "@/components/gta6/HuntControl";
 import RadioPill from "@/components/gta6/RadioPill";
 import { VICE_HUNT_ENABLED } from "@/lib/gta6";
+import { focusAfterMode } from "@/components/gta6/focusAfterMode";
 
 const WALLPAPERS = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13"];
 
@@ -43,6 +44,18 @@ export default function GtaMode({ leaving, onGone }: Props) {
     gone.current = onGone;
   });
 
+  // The other twelve wallpapers, mounted once the first has loaded or failed
+  // to (never under reduced motion, which shows the first alone).
+  const firstWall = useRef<HTMLImageElement>(null);
+  const [allWalls, setAllWalls] = useState(false);
+  const showAllWalls = () => {
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) setAllWalls(true);
+  };
+  // The first may have loaded from cache before the handler could see it.
+  useEffect(() => {
+    if (firstWall.current?.complete) showAllWalls();
+  }, []);
+
   // The running Vice Hunt game's exit, if one is running.
   const stopGame = useRef<(() => void) | null>(null);
 
@@ -77,17 +90,23 @@ export default function GtaMode({ leaving, onGone }: Props) {
         className="gta-fade pointer-events-none absolute inset-0 -z-10 overflow-hidden"
       >
         <div className="absolute inset-0">
-          {WALLPAPERS.map((n, i) => (
-            // eslint-disable-next-line @next/next/no-img-element -- full-bleed art fetched only when the mode turns on; next/image adds nothing here
-            <img
-              key={n}
-              src={`/gta6/wallpapers/${n}.webp`}
-              alt=""
-              decoding="async"
-              style={{ "--i": i } as React.CSSProperties}
-              className="gta-wall absolute inset-0 h-full w-full object-cover"
-            />
-          ))}
+          {WALLPAPERS.map((n, i) =>
+            i === 0 || allWalls ? (
+              // eslint-disable-next-line @next/next/no-img-element -- full-bleed art fetched only when the mode turns on; next/image adds nothing here
+              <img
+                key={n}
+                ref={i === 0 ? firstWall : undefined}
+                src={`/gta6/wallpapers/${n}.webp`}
+                alt=""
+                decoding="async"
+                onLoad={i === 0 ? showAllWalls : undefined}
+                onError={i === 0 ? showAllWalls : undefined}
+                data-cycle={allWalls ? "" : undefined}
+                style={{ "--i": i } as React.CSSProperties}
+                className="gta-wall absolute inset-0 h-full w-full object-cover"
+              />
+            ) : null,
+          )}
         </div>
         <div className="gta-veil absolute inset-0" />
         <div className="absolute inset-x-0 bottom-0 h-16 bg-[linear-gradient(transparent,hsl(var(--background)))]" />
@@ -104,6 +123,7 @@ export default function GtaMode({ leaving, onGone }: Props) {
           onExit={() => {
             stopGame.current?.();
             gtaMode.set(false);
+            focusAfterMode();
           }}
         >
           {VICE_HUNT_ENABLED && (

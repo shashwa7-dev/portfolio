@@ -16,7 +16,8 @@ const LEDS = Array.from({ length: 15 }, (_, i) => {
   const x = 2 + 96 * t;
   // The quadratic from (2, 8) through control (50, 38) to (98, 8).
   const y = 8 + 2 * t * (1 - t) * 30;
-  return { x, y, fill: ["#fff3c4", "#ffd6e6", "#cdf4ff"][i % 3], delay: [1, 2, 0][i % 3] };
+  // Each tint twinkles a third of a cycle (`--duration-gta-twinkle`) after the last.
+  return { x, y, fill: ["#fff3c4", "#ffd6e6", "#cdf4ff"][i % 3], phase: [1 / 3, 2 / 3, 0][i % 3] };
 });
 
 const LAMP_POSTS = [
@@ -40,12 +41,13 @@ type Props = { time: TimeOfDay };
 export default function BeachScene({ time }: Props) {
   const lane = useRef<HTMLDivElement>(null);
   const firstWall = useRef<HTMLImageElement>(null);
-  // The other twelve wallpapers, mounted once the first has loaded (never
-  // under reduced motion, which shows the first alone).
+  // The other twelve wallpapers, mounted once the first has loaded, or
+  // failed to (never under reduced motion, which shows the first alone).
   const [allWalls, setAllWalls] = useState(false);
 
+  // No cars under reduced motion: the bridge stays still.
   useEffect(() => {
-    if (!lane.current) return;
+    if (!lane.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     return startTraffic(lane.current, { runner: s.runner, car: s.car, head: s.head, tail: s.tail });
   }, []);
 
@@ -115,6 +117,7 @@ export default function BeachScene({ time }: Props) {
                 alt=""
                 decoding="async"
                 onLoad={i === 0 ? showAllWalls : undefined}
+                onError={i === 0 ? showAllWalls : undefined}
                 data-cycle={allWalls ? "" : undefined}
                 style={{ "--i": i } as React.CSSProperties}
                 className={s.wall}
@@ -156,7 +159,7 @@ export default function BeachScene({ time }: Props) {
         <svg viewBox="0 0 100 40" preserveAspectRatio="none">
           <path d="M2 8 Q50 38 98 8" stroke="#3a2a22" strokeWidth=".7" fill="none" vectorEffect="non-scaling-stroke" />
           {LEDS.map((d) => (
-            <circle key={d.x} cx={d.x} cy={d.y} r={1.4} fill={d.fill} style={{ animationDelay: `${d.delay}s` }} />
+            <circle key={d.x} cx={d.x} cy={d.y} r={1.4} fill={d.fill} style={{ animationDelay: `calc(var(--duration-gta-twinkle) * ${d.phase})` }} />
           ))}
         </svg>
       </div>

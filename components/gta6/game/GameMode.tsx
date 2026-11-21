@@ -191,7 +191,9 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
       onKeyDown={(e) => {
         // Nothing to shoot yet: Esc during the entry goes straight back
         // (unless something inside, the radio's list, already took it).
-        if (phase === "entry" && e.key === "Escape" && !e.defaultPrevented) close.current();
+        // On the results card, Esc is Back to site even if focus has
+        // somehow left its buttons.
+        if (phase !== "play" && e.key === "Escape" && !e.defaultPrevented) close.current();
       }}
       className={s.overlay}
     >
