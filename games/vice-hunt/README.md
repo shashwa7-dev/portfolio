@@ -24,6 +24,7 @@ The public entry is `src/index.ts`:
   - `onAmmo(rounds, reloading)`: once at the start and on every change.
   - `onBigfoot(present)`: true while a live Bigfoot is on (not once his finish starts), false once he is gone (finished or off the far edge).
   - `onPause()`: Esc or right click during play (not while paused, not once WASTED). Esc is ignored when the event was already handled (`defaultPrevented`) or comes from inside a `[role="dialog"]`. The host shows its menu and calls `pause()`; later `resume()` carries on with no catch-up step, or `destroy()` ends it (safe to call twice).
+  - `spotted`: rares the host saw appear in earlier rounds (from `onRare(kind, "appeared")`). A rare that has appeared, this round or in one listed here, comes back about once a minute (`SPOTTED_PER_MINUTE`) instead of its own rate; Bigfoot always keeps his.
   - `pause()` / `resume()` on the returned handle: paused, the round does not step, shots and R do nothing, the gun's animations hold and sound is suspended. A hidden tab does not resume a paused hunt.
   - `muted`, `sfx` (see Sound), `showScore` (default true; false hides the package's score strip for a host with its own HUD), `scoreInset` (the strip's CSS px from the host's left edge, default 12), `seaLine(width, height)` (the host scene's water line, see below).
   - Dev pages only: `spawn`, `keep`, `finish` and `hit` (lists of kinds; see "Dev page").

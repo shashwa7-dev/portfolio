@@ -22,6 +22,7 @@ import Entry from "@/components/gta6/game/Entry";
 import Hud, { NAMES, type Row, type TimeChoice } from "@/components/gta6/game/Hud";
 import Results from "@/components/gta6/game/Results";
 import Pause from "@/components/gta6/game/Pause";
+import { markSpotted, spottedRares } from "@/lib/gta6/spotted";
 import Wasted from "@/components/gta6/game/Wasted";
 import { timeOfDay } from "@/lib/gta6/timeOfDay";
 import { callout, emptyTally, killLabel, recordHit, recordKill, recordPenalty, recordShot } from "@/lib/gta6/streak";
@@ -205,7 +206,11 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
           pop({ at: null, text: damageLabel(lost), tone: "damage" });
         },
         onWasted: () => setWasted(true),
-        onRare: () => setRareFlash((n) => n + 1),
+        spotted: spottedRares(),
+        onRare: (kind, event) => {
+          if (event === "appeared") markSpotted(kind);
+          setRareFlash((n) => n + 1);
+        },
         onEscaped: (_kind, x, y) => pop({ at: { x, y }, text: "TOO SLOW", tone: "word" }),
         onCallout: (text, x, y) => pop({ at: { x, y }, text, tone: "word" }),
         onAmmo: (rounds, reloading) => setAmmo({ rounds, reloading }),

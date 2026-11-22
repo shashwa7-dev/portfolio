@@ -5,6 +5,7 @@ import {
   MAX_DT,
   SEA_LINE,
   SPAWN_INTERVAL,
+  SPOTTED_PER_MINUTE,
   STREAK_WINDOW,
 } from "./config";
 import { CREATURES, KINDS, type Creature, isEnabled, isRare, kindsWhere, penaltyFor, streaks, type Kind } from "./creatures";
@@ -55,6 +56,7 @@ export type World = {
   hearts: number;
   wasted: boolean; // out of hearts: the world stops
   met: Set<Kind>; // rares hit at least once
+  spotted: Set<Kind>; // rares that have appeared, this round or (from the host) before
 };
 
 const TOP_BAND: [number, number] = [0.12, 0.3];
@@ -95,7 +97,15 @@ function restingY(world: World, a: Animal, topFraction: number): number {
 
 const centre = (a: Animal) => ({ x: a.x + a.w / 2, y: a.y + a.h / 2 });
 
-export function createWorld(width: number, height: number, rng: Rng, sea = SEA_LINE * height): World {
+/** `spotted`: rares the host saw appear in earlier rounds; they come back
+ *  more often (`rareRate`). */
+export function createWorld(
+  width: number,
+  height: number,
+  rng: Rng,
+  sea = SEA_LINE * height,
+  spotted: Iterable<Kind> = [],
+): World {
   return {
     width,
     height,
@@ -114,6 +124,7 @@ export function createWorld(width: number, height: number, rng: Rng, sea = SEA_L
     hearts: HEARTS,
     wasted: false,
     met: new Set(),
+    spotted: new Set(spotted),
   };
 }
 
@@ -187,8 +198,19 @@ export function spawn(world: World, rng: Rng, kind?: Kind): Animal {
   } else {
     world.animals.push(a);
   }
-  if (isRare(k)) world.events.push({ type: "rare", kind: k, event: "appeared" });
+  if (isRare(k)) {
+    world.spotted.add(k);
+    world.events.push({ type: "rare", kind: k, event: "appeared" });
+  }
   return a;
+}
+
+/** A rare's spawns per minute: its own rate until it has been spotted, then
+ *  SPOTTED_PER_MINUTE. A hostile one (Bigfoot) always keeps its own. */
+export function rareRate(world: World, kind: Kind): number {
+  const sp = table[kind].spawn;
+  if (!("perMinute" in sp)) return 0;
+  return world.spotted.has(kind) && table[kind].role !== "hostile" ? SPOTTED_PER_MINUTE : sp.perMinute;
 }
 
 // Each rare not alive rolls its per-second chance; at most one rare on screen
@@ -199,7 +221,7 @@ function spawnRares(world: World, dt: number, rng: Rng): void {
     if (!("perMinute" in sp) || world.time < (sp.after ?? 0)) continue;
     if (world.animals.some((a) => a.kind === k)) continue;
     if (!sharesScreen(k) && world.animals.some((a) => isRare(a.kind) && !sharesScreen(a.kind))) continue;
-    if (rng() < (sp.perMinute / 60) * dt) spawn(world, rng, k);
+    if (rng() < (rareRate(world, k) / 60) * dt) spawn(world, rng, k);
   }
 }
 

@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { MAX_ALIVE, MAX_DT, SEA_LINE } from "./config";
+import { MAX_ALIVE, MAX_DT, SEA_LINE, SPOTTED_PER_MINUTE } from "./config";
 import { CREATURES, KINDS, isRare, pointsFor } from "./creatures";
 import type { GameEvent } from "./events";
 import { mulberry32 } from "./rng";
-import { type Animal, type World, createWorld, damage, drain, resize, shoot as shootWith, spawn, step } from "./world";
+import { type Animal, type World, createWorld, damage, drain, rareRate, resize, shoot as shootWith, spawn, step } from "./world";
 import type { Kind } from "./types";
 
 const DT = 1 / 60;
@@ -468,5 +468,33 @@ describe("world rules", () => {
     expect(a.y).toBeCloseTo(SEA_LINE * world.height - a.h * 0.78);
     run(world, rng, 3 * 4.8);
     expect(world.animals).not.toContain(a);
+  });
+});
+
+describe("spotted rares come back more often", () => {
+  it("a rare not yet spotted keeps its own rate", () => {
+    const world = createWorld(1000, 400, () => 0);
+    expect(rareRate(world, "shark")).toBe(0.4);
+  });
+
+  it("a rare that has appeared comes back about once a minute", () => {
+    const rng = mulberry32(1);
+    const world = createWorld(1000, 400, rng);
+    spawn(world, rng, "shark");
+    expect(world.spotted.has("shark")).toBe(true);
+    expect(rareRate(world, "shark")).toBe(SPOTTED_PER_MINUTE);
+    expect(SPOTTED_PER_MINUTE).toBe(1);
+  });
+
+  it("a host can hand over the rares spotted in an earlier round", () => {
+    const world = createWorld(1000, 400, () => 0, undefined, ["merman", "cow"]);
+    expect(rareRate(world, "merman")).toBe(SPOTTED_PER_MINUTE);
+    expect(rareRate(world, "cow")).toBe(SPOTTED_PER_MINUTE);
+    expect(rareRate(world, "ufo")).toBe(1 / 3);
+  });
+
+  it("Bigfoot keeps his rate even once spotted", () => {
+    const world = createWorld(1000, 400, () => 0, undefined, ["bigfoot"]);
+    expect(rareRate(world, "bigfoot")).toBe(0.22);
   });
 });

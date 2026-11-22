@@ -79,6 +79,9 @@ export type HuntOptions = {
   seaLine?(width: number, height: number): number;
   /** Dev pages: creatures to spawn at the start. */
   spawn?: Kind[];
+  /** Rares the host saw appear in earlier rounds (`onRare(kind, "appeared")`):
+   *  they come back about once a minute from the start. Not Bigfoot. */
+  spotted?: Kind[];
   /** Dev pages: kinds kept on screen; each comes back 1.5 s after the last
    *  one of its kind has gone (shot down or walked off). */
   keep?: Kind[];
@@ -201,7 +204,7 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
   const seaAt = (w: number, h: number) => options.seaLine?.(w, h) ?? SEA_LINE * h;
   const startW = Math.max(1, layer.clientWidth);
   const startH = Math.max(1, layer.clientHeight);
-  const world = createWorld(startW, startH, rng, seaAt(startW, startH));
+  const world = createWorld(startW, startH, rng, seaAt(startW, startH), options.spotted);
 
   const fit = () => {
     const w = Math.max(1, layer.clientWidth);
