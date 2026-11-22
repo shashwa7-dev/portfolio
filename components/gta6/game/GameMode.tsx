@@ -21,6 +21,7 @@ function devOptions(kinds: readonly string[]): Pick<HuntOptions, "spawn" | "keep
 import Entry from "@/components/gta6/game/Entry";
 import Hud, { NAMES, type Row, type TimeChoice } from "@/components/gta6/game/Hud";
 import Results from "@/components/gta6/game/Results";
+import Pause from "@/components/gta6/game/Pause";
 import Wasted from "@/components/gta6/game/Wasted";
 import { timeOfDay } from "@/lib/gta6/timeOfDay";
 import { callout, emptyTally, killLabel, recordHit, recordKill, recordPenalty, recordShot } from "@/lib/gta6/streak";
@@ -95,6 +96,9 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
   // Counts hits taken: each one flashes the screen's edges red once.
   const [hurt, setHurt] = useState(0);
   const [wasted, setWasted] = useState(false);
+  // Esc or right click during play: the hunt is frozen under the pause menu.
+  const [paused, setPaused] = useState(false);
+  const huntRef = useRef<import("@games/vice-hunt").Hunt | null>(null);
   // Counts rares coming on or first hit: each one glows the RARE counter.
   const [rareFlash, setRareFlash] = useState(0);
   const [pops, setPops] = useState<Pop[]>([]);
@@ -212,10 +216,11 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
           if (present) setBanner((n) => n + 1);
         },
         onPause: () => {
-          setBanner(0);
-          setPhase("results");
+          hunt.pause();
+          setPaused(true);
         },
       });
+      huntRef.current = hunt;
     } catch {
       // A game that cannot start must not leave the page locked under a
       // dead overlay.
@@ -224,6 +229,8 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
     }
     return () => {
       hunt.destroy();
+      huntRef.current = null;
+      setPaused(false);
       setBigfoot(false);
     };
   }, [phase, round, game]);
@@ -237,6 +244,12 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
 
   const last = tally.log[tally.log.length - 1];
   const latest = last ? { kind: last.kind, count: tally.log.length } : null;
+
+  const resume = () => {
+    setPaused(false);
+    huntRef.current?.resume();
+    overlay.current?.focus({ preventScroll: true });
+  };
 
   const playAgain = () => {
     setTally(emptyTally(game.KINDS));
@@ -257,6 +270,7 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
       data-vice-hunt-overlay=""
       data-phase={phase}
       data-wasted={wasted && phase === "play" ? "" : undefined}
+      data-paused={paused && phase === "play" ? "" : undefined}
       role="region"
       aria-label="Vice Hunt"
       tabIndex={-1}
@@ -265,7 +279,11 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
         // (unless something inside, the radio's list, already took it).
         // On the results card, Esc is Back to site even if focus has
         // somehow left its buttons.
-        if (phase !== "play" && e.key === "Escape" && !e.defaultPrevented) close.current();
+        if (e.key !== "Escape" || e.defaultPrevented) return;
+        if (phase !== "play") close.current();
+        // Paused with focus off the menu (a click on the backdrop): Esc
+        // still resumes.
+        else if (paused) resume();
       }}
       className={s.overlay}
     >
@@ -344,6 +362,16 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
       <div aria-hidden className={`${s.bar} ${s.barTop}`} />
       <div aria-hidden className={`${s.bar} ${s.barBottom}`} />
       {phase === "entry" && <Entry onStart={() => setPhase("play")} />}
+      {phase === "play" && paused && (
+        <Pause
+          onResume={resume}
+          onEnd={() => {
+            setBanner(0);
+            setPhase("results");
+          }}
+          onBack={() => close.current()}
+        />
+      )}
       {phase === "play" && wasted && <Wasted onDone={() => setPhase("results")} />}
 
       {phase === "results" && (

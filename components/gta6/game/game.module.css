@@ -126,7 +126,7 @@
   box-shadow: inset 0 0.1em 0 rgba(255, 255, 255, 0.5), 0 0.22em 0 #8a0f4f, 0 0.45em 0.7em rgba(0, 0, 0, 0.35);
 }
 .chromeCyan,
-.chromeDark:focus-visible,
+.chromeDark:focus,
 .chromeDark:hover {
   color: #10203a;
   border-color: transparent;
@@ -834,6 +834,32 @@
   19% { opacity: 0.35; }
   24%, 100% { opacity: 1; }
 }
+
+/* The pause menu, over the frozen hunt. */
+.pause {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  display: grid;
+  place-items: center;
+  background: rgba(14, 10, 30, 0.62);
+  backdrop-filter: blur(3px);
+  animation: fade-in var(--duration-fast) var(--ease-out);
+}
+.pauseMenu {
+  display: grid;
+  gap: 0.9rem;
+  justify-items: center;
+}
+.pauseMenu .chrome { min-width: 15rem; }
+.pauseTitle {
+  margin: 0 0 0.75rem;
+  font-size: clamp(3.5rem, 8vw, 6rem);
+  line-height: 1;
+  transform: rotate(-6deg);
+}
+/* The HUD's own loops hold with the hunt. */
+.overlay[data-paused] .cylinder { animation-play-state: paused; }
 
 /* Results. */
 .results {
