@@ -13,6 +13,7 @@ const hunt = startHunt(host, {
   muted,
   spawn: kinds("spawn"),
   finish: kinds("shoot"), // ?shoot=ufo lands the hits that finish it
+  hit: kinds("hit"), // ?hit=bigfoot lands one hit (he starts throwing)
   onKills: (kills) => log("kills", kills),
   onShot: (x, y, hit) => log("shot", Math.round(x), Math.round(y), hit),
   onExit: () => {

@@ -34,6 +34,7 @@ export type Animal = {
   pause: number; // > 0: iguana is standing still
   flash: number;
   reaction?: unknown; // hit-reaction state (garland, flinch), see modules/reactions.ts
+  throwK?: number; // 0..1 into a throw (a provoked Bigfoot), set by modules/threats/throw.ts
 };
 
 export type World = {

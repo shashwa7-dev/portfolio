@@ -4,6 +4,7 @@ import { CREATURES, KINDS } from "../creatures";
 import { DEATHS } from "../death";
 import { mulberry32 } from "../rng";
 import { createWorld, shoot, spawn } from "../world";
+import { fade } from "./finishes/fade";
 import { FINISHES, HIT_REACTIONS, MOVES, THREATS, resolveFinish, stepFinishing } from "./index";
 
 describe("registries", () => {
@@ -52,13 +53,19 @@ describe("stepFinishing", () => {
 
   it("the generic fade finish ends after 0.6 s", () => {
     const world = finishedRabbit();
-    const fake = { kind: "bigfoot", x: 0, y: 0, w: 1, h: 1, vx: 1, pause: 0, age: 0, flash: 0 };
-    world.finishing[0].id = "jet"; // still the generic fade until Task 9
-    world.finishing[0].state = FINISHES.jet.start(fake as never, world, mulberry32(1));
-    for (let i = 0; i < 11; i++) stepFinishing(world, 0.05, false, mulberry32(9));
-    expect(world.finishing).toHaveLength(1);
-    for (let i = 0; i < 2; i++) stepFinishing(world, 0.05, false, mulberry32(9));
-    expect(world.finishing).toHaveLength(0);
+    const saved = FINISHES.deflates;
+    FINISHES.deflates = fade; // the stand-in for a finish whose module has not landed
+    try {
+      const f = world.finishing[0];
+      f.id = "deflates";
+      f.state = fade.start({ ...world.finishing[0], vx: 1, pause: 0, age: 0, flash: 0 } as never, world, mulberry32(1));
+      for (let i = 0; i < 11; i++) stepFinishing(world, 0.05, false, mulberry32(9));
+      expect(world.finishing).toHaveLength(1);
+      for (let i = 0; i < 2; i++) stepFinishing(world, 0.05, false, mulberry32(9));
+      expect(world.finishing).toHaveLength(0);
+    } finally {
+      FINISHES.deflates = saved;
+    }
   });
 });
 

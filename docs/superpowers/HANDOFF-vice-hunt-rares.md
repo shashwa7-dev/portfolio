@@ -15,8 +15,8 @@ Read this first, then the plan. Branch `vice-hunt-rares`, stacked on `gta6-mod` 
 | 7 finishes: deflates, rocket, fountain, crashes (+ gentle versions) | done | `890a080`, `1b81a9c` |
 | 8 the glass, the tiger's pounce and claw | done | `5df3c21` |
 | Owner fixes: merman in the water, per-creature `enabled` (tiger off), dev `?spawn=` | done | `3f1d211`, `e23f99e` |
-| 9 Bigfoot: rig, throws, jet | **next** | |
-| 10 host wiring: events to callbacks | todo (partly done, see below) | |
+| 9 Bigfoot: rig, throws, jet | done | see `git log` |
+| 10 host wiring: events to callbacks | **next** (partly done, see below) | |
 | 11 app: hearts, RARE menu, pop-ups, WASTED, results | todo | |
 | 12 verify in the real app, docs, bundle, PR | todo | |
 
@@ -36,7 +36,7 @@ Gates last run on `e23f99e`: `npx tsc --noEmit -p .` clean; `npm test` 427 passe
 - **Sea line.** `world.sea` (px) replaces `SEA_LINE * height` everywhere. The host passes `seaLine(width, height)`; the app passes `beachSeaLine` from `lib/gta6/sea.ts`, which follows BeachScene's `inset:-2%`, `center bottom / cover` 16:9 art (water line at 0.665 of the art's height; the sand's highest point is 0.694). The old fixed 0.69 put the merman on the sand on wide windows. The merman is also clipped at the water line while alive (`render.ts`). Plan Task 12's "adjust `SEA_LINE` once" is now moot: checked at 1440x900, 1920x900, 2560x1080.
 - **Enable flags.** Every creature in `creatures.ts` has `enabled`; the **tiger is off** (owner, 2026-11-22, to be re-enabled later). Disabled kinds never spawn on their own; an explicit `spawn(world, rng, kind)` still works. `isEnabled` is exported. **Task 11:** the RARE menu's "n / 6" and its rows must count only enabled rares (it would be 5 now).
 - **Spawning for tests.** Package dev page: `?spawn=ufo&shoot=ufo` (`spawn`, and `finish`: lands the hits once the creature is fully on screen). The real app, under `npm run dev` only: `http://localhost:3001/?spawn=merman,cow` (`spawn` + `keep`: each comes back 1.5 s after it goes). This replaces the `window.__viceHunt` hook in plan Task 12, step 1.
-- `modules.test.ts`'s generic-fade test uses `jet` as the stand-in: it breaks when Task 9 makes `jet` real; switch it to a fake module then.
+- **Bigfoot (Task 9).** `rig/rig.ts` (pure: `ik`, `POSES`, `blend`, `walkPose`, `throwArm`, `finishPose`, `toWorld`, `rigTop`) and `rig/drawRig.ts` (`drawRig`, `drawBossBar`). The `throw` threat is one per provoked Bigfoot, started by `stepThreats` (which now takes `reduced`); `Threatening.from` names the animal. `dealt` and the globs live in the threat state (not on the animal, as the plan said), so the 1.5 cap holds after he dies. Throws are every 1.5 s start to start (the prototype waited 1.5 s after each 0.55 s throw). The threat writes `a.throwK` for the rig's arm. `FinishModule.step` gets the world's `glass` as an optional 4th argument and an optional `drawGlass` hook (drawn above the gun): the jet splats the glass but never deals damage. New `jet-gentle`. Dev page: `?hit=bigfoot` lands one hit once he is on screen (he starts throwing).
 
 ## Known gaps (spec items not built yet)
 

@@ -4,15 +4,20 @@
 import type { FinishId, Kind, ThreatId } from "../creatures";
 import type { GameEvent } from "../events";
 import type { Rng } from "../rng";
+import type { Glass } from "../fx/glass";
 import type { Art } from "../sprites";
 import type { Animal, World } from "../world";
 
 export interface FinishModule<S> {
   start(c: Animal, world: World, rng: Rng): S; // pure
-  step(s: S, dt: number, out: GameEvent[]): void; // pure, world time only; pushes events
+  // World time only; pushes events. A finish never damages the player, but
+  // it may mark the glass (Bigfoot's jet splats it): `glass` is the world's.
+  step(s: S, dt: number, out: GameEvent[], glass?: Glass): void;
   done(s: S): boolean;
   // `scratch` is the scene's offscreen canvas, for the white hit flash.
   draw(ctx: CanvasRenderingContext2D, s: S, art: Art, scratch: HTMLCanvasElement): void; // no module state
+  // Drawn on the glass layer, above the gun (globs flying at the camera).
+  drawGlass?(ctx: CanvasRenderingContext2D, s: S, art: Art): void;
   reduced?: FinishId; // the gentle version to use under reduced motion (must share this module's state)
 }
 
@@ -35,8 +40,8 @@ export interface HitReactionModule<S> {
 }
 
 // Where a threat comes from: a live animal (Bigfoot's throws) or a finished
-// body (the tiger, once its pounce has landed).
-export type Origin = { kind: Kind; x: number; y: number; w: number; h: number; dir: 1 | -1 };
+// body (the tiger, once its pounce has landed). `id` names a live animal.
+export type Origin = { kind: Kind; x: number; y: number; w: number; h: number; dir: 1 | -1; id?: number };
 
 // Attacks on the player. Threats may change the world (damage, glass marks),
 // so their step gets it; they never run while the world is wasted. `draw`
@@ -48,7 +53,8 @@ export interface ThreatModule<S> {
   draw(ctx: CanvasRenderingContext2D, s: S, art: Art): void;
 }
 
-export type Threatening = { kind: Kind; id: ThreatId; state: unknown };
+// `from`: the animal it belongs to (one throw threat per provoked Bigfoot).
+export type Threatening = { kind: Kind; id: ThreatId; state: unknown; from?: number };
 
 // A finished animal playing out its finish; its module's state rides along.
 export type Finishing = {

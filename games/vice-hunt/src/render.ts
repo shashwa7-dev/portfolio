@@ -6,6 +6,8 @@ import { drawParticles, emit, stepParticles, type Particle } from "./fx/particle
 import type { Rng } from "./rng";
 import type { Art } from "./sprites";
 import { GROUND_LINE } from "./config";
+import { drawBossBar, drawRig } from "./rig/drawRig";
+import { RIG, rigTop, throwArm, walkPose } from "./rig/rig";
 import type { Animal, World } from "./world";
 
 const FEATHERS = ["#f7b6cc", "#e8789f", "#fbd3e0"];
@@ -68,7 +70,27 @@ export function stepScene(scene: Scene, dt: number): void {
   stepParticles(scene.poofs, dt, 0);
 }
 
+const FLASH = 0.12; // world.ts's hit flash
+const RECOIL_RATE = 5; // the rig's recoil falls from 1 to 0 over 0.2 s
+
+// Bigfoot alive: the rig walking (recoiling from the latest hit, throwing
+// once provoked), and his boss bar from the first hit.
+function drawBigfoot(ctx: CanvasRenderingContext2D, world: World, a: Animal): void {
+  const scale = a.w / RIG.W;
+  const ground = a.y + a.h;
+  const recoil = Math.max(0, 1 - (world.time - a.lastHitAt) * RECOIL_RATE);
+  const pose = walkPose(a.age, recoil);
+  if (a.provoked) pose.face = "strain";
+  if (a.throwK !== undefined) throwArm(pose, a.throwK);
+  const top = rigTop(ground, scale);
+  const mirrored = a.vx < 0;
+  drawRig(ctx, pose, a.x, top, scale, mirrored);
+  if (a.flash > 0) drawRig(ctx, pose, a.x, top, scale, mirrored, { white: true, alpha: Math.min(1, a.flash / FLASH) });
+  if (a.provoked) drawBossBar(ctx, a.x + a.w / 2, ground - 178 * scale, scale, 1 - a.hits / a.hp);
+}
+
 function drawAnimal(ctx: CanvasRenderingContext2D, scene: Scene, world: World, art: Art, a: Animal): void {
+  if (a.kind === "bigfoot") return drawBigfoot(ctx, world, a);
   const frames = art.sprites[a.kind];
   const cfg = CREATURES[a.kind];
   const move = MOVES[cfg.move];
@@ -93,16 +115,6 @@ function drawAnimal(ctx: CanvasRenderingContext2D, scene: Scene, world: World, a
   drawSprite(ctx, scene.scratch, frames[move.frame(a)], a.w, a.h, a.flash);
   if (a.reaction != null) react.draw(ctx, a.reaction, art);
   ctx.restore();
-
-  if (a.kind === "bigfoot") {
-    const bw = a.w * 0.8;
-    const bx = a.x + (a.w - bw) / 2;
-    const by = a.y - 12;
-    ctx.fillStyle = "rgba(0,0,0,.55)";
-    ctx.fillRect(bx - 1, by - 1, bw + 2, 7);
-    ctx.fillStyle = "#ff3d5a";
-    ctx.fillRect(bx, by, bw * Math.max(0, (a.hp - a.hits) / a.hp), 5);
-  }
 }
 
 // Draws one frame in CSS px; the caller has already scaled ctx by dpr.

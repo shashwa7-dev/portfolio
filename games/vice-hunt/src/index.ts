@@ -3,7 +3,7 @@ import { SPRITES } from "./art/sprites";
 import { createGun } from "./gun";
 import { MAX_DT, SEA_LINE } from "./config";
 import { drawGlass, shakeOffset, stepGlass } from "./fx/glass";
-import { stepFinishing, stepThreats, THREATS } from "./modules";
+import { resolveFinish, stepFinishing, stepThreats, THREATS } from "./modules";
 import { addPuff, createScene, drawScene, stepScene } from "./render";
 import { mulberry32 } from "./rng";
 import { createSound, type SfxUrls } from "./sound";
@@ -60,6 +60,8 @@ export type HuntOptions = {
   /** Dev pages: kinds to shoot down (one hit a frame, once fully on screen)
    *  so a finish can be watched. Bypasses the gun. */
   finish?: Kind[];
+  /** Dev pages: kinds to hit once, once fully on screen (provokes Bigfoot). */
+  hit?: Kind[];
 };
 export type Hunt = { destroy(): void };
 
@@ -244,7 +246,13 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
     }
   };
 
+  const devHit = new Set(options.hit ?? []);
   const devFinish = () => {
+    for (const a of world.animals) {
+      if (!devHit.has(a.kind) || a.x < 0 || a.x + a.w > world.width) continue;
+      shoot(world, a.x + a.w / 2, a.y + a.h * 0.3, rng);
+      devHit.delete(a.kind);
+    }
     if (devLeft.size === 0) return;
     for (const a of [...world.animals]) {
       if (!devLeft.has(a.kind) || a.x < 0 || a.x + a.w > world.width) continue;
@@ -264,7 +272,7 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
     devFinish();
     devKeep(dt);
     stepFinishing(world, dt, reducedMotion, rng);
-    stepThreats(world, dt, rng);
+    stepThreats(world, dt, rng, reducedMotion);
     stepGlass(world.glass, Math.min(dt, MAX_DT));
     drain(world); // the events become callbacks in a later task; drop them so they do not pile up
     stepScene(scene, Math.min(dt, 0.05));
@@ -283,7 +291,10 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
     ctx.setTransform(dpr, 0, 0, dpr, jolt.dx * dpr, jolt.dy * dpr);
     drawScene(ctx, scene, world, art, reducedMotion);
     glassCtx.setTransform(dpr, 0, 0, dpr, jolt.dx * dpr, jolt.dy * dpr);
-    if (art) for (const t of world.threats) THREATS[t.id].draw(glassCtx, t.state, art);
+    if (art) {
+      for (const f of world.finishing) resolveFinish(f.id, reducedMotion).drawGlass?.(glassCtx, f.state, art);
+      for (const t of world.threats) THREATS[t.id].draw(glassCtx, t.state, art);
+    }
     drawGlass(glassCtx, world.glass);
     raf = requestAnimationFrame(frame);
   };
