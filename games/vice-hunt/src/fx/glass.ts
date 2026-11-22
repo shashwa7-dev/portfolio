@@ -1,8 +1,10 @@
-// The "glass" in front of the scene: the tiger's claw scratches and Bigfoot's
-// splats, plus the screen shake that goes with them. State and stepping are
-// pure; `drawGlass` takes the context and keeps no state. Marks never take
-// shots (the glass canvas has pointer-events:none).
+// The "glass" in front of the scene: the tiger's claw scratches, Bigfoot's
+// splats and the gator's candies, plus the screen shake that goes with them.
+// State and stepping are pure; `drawGlass` takes the context and keeps no
+// state. Only candies take shots: `shoot` asks `candyAt` first and knocks the
+// candy off; every other mark lets shots through.
 import type { Rng } from "../rng";
+import { type CandyLook, drawCandy } from "./candy";
 
 export const SCRATCH_DRAW = 0.15; // each scratch draws in over this
 export const SCRATCH_STAGGER = 0.035;
@@ -46,7 +48,27 @@ export type Splat = Base & {
   drips: number[]; // x, length pairs
 };
 
-export type Mark = Scratch | Splat;
+export type Candy = Base & {
+  kind: "candy";
+  x: number; // centre, px
+  y: number;
+  size: number; // px across
+  rot: number; // radians
+  look: CandyLook;
+  off: boolean; // knocked off by a shot: falling away
+  offAge: number;
+  vx: number;
+  vy: number;
+  vr: number;
+};
+
+export type Mark = Scratch | Splat | Candy;
+
+export const CANDY_STICK = 4; // seconds stuck before it slides and fades
+export const CANDY_FADE = 0.7;
+export const CANDY_KNOCKED = 0.7; // a knocked candy's fall, then it is gone
+const CANDY_SQUASH = 0.25;
+const CANDY_HIT = 0.45; // of its size: the radius a shot must land within
 
 export type Glass = {
   marks: Mark[];
@@ -118,6 +140,35 @@ export function addSplat(glass: Glass, x: number, y: number, r: number, main: bo
   return s;
 }
 
+/** A candy stuck to the glass, centred on (x, y). */
+export function addCandy(glass: Glass, x: number, y: number, size: number, rot: number, look: CandyLook, gentle = false): Candy {
+  const c: Candy = {
+    kind: "candy", x, y, size, rot, look, off: false, offAge: 0, vx: 0, vy: 0, vr: 0,
+    age: 0, delay: 0, fadeAt: CANDY_STICK, fadeFor: CANDY_FADE, gentle,
+  };
+  glass.marks.push(c);
+  return c;
+}
+
+/** The topmost candy still stuck (not knocked off, not fading) under (x, y). */
+export function candyAt(glass: Glass, x: number, y: number): Candy | null {
+  for (let i = glass.marks.length - 1; i >= 0; i--) {
+    const m = glass.marks[i];
+    if (m.kind !== "candy" || m.off || m.age >= m.fadeAt) continue;
+    if (Math.hypot(x - m.x, y - m.y) <= m.size * CANDY_HIT) return m;
+  }
+  return null;
+}
+
+/** A shot knocks a candy off: it pops up, spins and falls away. */
+export function knockCandy(c: Candy, rng: Rng): void {
+  c.off = true;
+  c.offAge = 0;
+  c.vx = (rng() - 0.5) * c.size * 5;
+  c.vy = -c.size * 5.5;
+  c.vr = (rng() - 0.5) * 16;
+}
+
 /** A screen jolt of `amp` px over `dur` s (skipped by the caller under reduced motion). */
 export function shake(glass: Glass, amp: number, dur: number): void {
   glass.shakes.push({ age: 0, dur, amp });
@@ -128,6 +179,15 @@ export function stepGlass(glass: Glass, dt: number): void {
   for (const m of glass.marks) {
     if (m.delay > 0) m.delay = Math.max(0, m.delay - dt);
     else m.age += dt;
+    if (m.kind === "candy" && m.off) {
+      m.offAge += dt;
+      m.vy += m.size * 35 * dt; // gravity, scaled with the candy (and so the screen)
+      m.x += m.vx * dt;
+      m.y += m.vy * dt;
+      m.rot += m.vr * dt;
+      if (m.offAge < CANDY_KNOCKED) glass.marks[n++] = m;
+      continue;
+    }
     if (m.age < m.fadeAt + m.fadeFor) glass.marks[n++] = m;
   }
   glass.marks.length = n;
@@ -153,6 +213,7 @@ const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
 // Opacity from the fade-out (and the gentle fade-in).
 function alphaOf(m: Mark): number {
   if (m.delay > 0) return 0;
+  if (m.kind === "candy" && m.off) return 1 - clamp01(m.offAge / CANDY_KNOCKED);
   const out = 1 - clamp01((m.age - m.fadeAt) / m.fadeFor);
   return m.gentle ? Math.min(out, clamp01(m.age / GENTLE_IN)) : out;
 }
@@ -232,6 +293,26 @@ function drawSplat(ctx: CanvasRenderingContext2D, m: Splat): void {
   ctx.restore();
 }
 
+// A candy squashes as it lands (not gentle), sits, then slides down a little as it fades.
+function drawStuckCandy(ctx: CanvasRenderingContext2D, m: Candy): void {
+  if (m.off) return drawCandy(ctx, m.look, m.x, m.y, m.size, m.rot);
+  const k = m.age / CANDY_SQUASH;
+  const sq = m.gentle || k >= 1 ? 1 : 1 + Math.sin(k * Math.PI) * 0.22 * (1 - k);
+  const slide = Math.max(0, m.age - m.fadeAt) * m.size * 0.7;
+  ctx.save();
+  ctx.translate(m.x, m.y + slide);
+  ctx.scale(sq, 2 - sq);
+  // A soft shadow so it reads as stuck on the glass.
+  ctx.globalAlpha *= 0.3;
+  ctx.fillStyle = "#000";
+  ctx.beginPath();
+  ctx.ellipse(0, m.size * 0.1, m.size * 0.42, m.size * 0.36, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.globalAlpha /= 0.3;
+  drawCandy(ctx, m.look, 0, 0, m.size, m.rot);
+  ctx.restore();
+}
+
 export function drawGlass(ctx: CanvasRenderingContext2D, glass: Glass): void {
   ctx.save();
   ctx.lineCap = "round";
@@ -241,6 +322,7 @@ export function drawGlass(ctx: CanvasRenderingContext2D, glass: Glass): void {
     if (a <= 0) continue;
     ctx.globalAlpha = a;
     if (m.kind === "scratch") drawScratch(ctx, m);
+    else if (m.kind === "candy") drawStuckCandy(ctx, m);
     else drawSplat(ctx, m);
   }
   ctx.restore();

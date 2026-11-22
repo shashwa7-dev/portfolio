@@ -11,7 +11,7 @@ import {
 import { CREATURES, KINDS, type Creature, isEnabled, isRare, kindsWhere, penaltyFor, streaks, type Kind } from "./creatures";
 import type { GameEvent } from "./events";
 import { FINISHES, HIT_REACTIONS, MOVES } from "./modules";
-import { createGlass, type Glass } from "./fx/glass";
+import { candyAt, createGlass, knockCandy, type Glass } from "./fx/glass";
 import type { Finishing, Threatening } from "./modules/types";
 import type { Rng } from "./rng";
 import { type Surface, SURFACE_OUT, dive, duck, newSurface, sinkOffset, stepSurface, surfaceX } from "./surface";
@@ -285,9 +285,18 @@ function inBox(world: World, a: Animal, x: number, y: number): boolean {
   return table[a.kind].lane !== "sea" || y < world.sea;
 }
 
-// Front-most first: the list's end is drawn last, so it is on top.
-export function shoot(world: World, x: number, y: number, rng: Rng): { hit: Animal | null; finished: boolean } {
+/** A shot's outcome; `blocked` when a candy on the glass took it. */
+export type Shot = { hit: Animal | null; finished: boolean; blocked?: true };
+
+// A candy stuck to the glass takes the shot first; then animals, front-most
+// first (the list's end is drawn last, so it is on top).
+export function shoot(world: World, x: number, y: number, rng: Rng): Shot {
   if (world.wasted) return { hit: null, finished: false };
+  const candy = candyAt(world.glass, x, y);
+  if (candy) {
+    knockCandy(candy, rng);
+    return { hit: null, finished: false, blocked: true };
+  }
   for (let i = world.animals.length - 1; i >= 0; i--) {
     const a = world.animals[i];
     if (!inBox(world, a, x, y)) continue;

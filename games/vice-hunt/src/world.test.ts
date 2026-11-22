@@ -3,6 +3,8 @@ import { MAX_ALIVE, MAX_DT, SEA_LINE, SPOTTED_PER_MINUTE } from "./config";
 import { CREATURES, KINDS, isRare, pointsFor } from "./creatures";
 import type { GameEvent } from "./events";
 import { mulberry32 } from "./rng";
+import { addCandy } from "./fx/glass";
+import { randomCandy } from "./fx/candy";
 import { type Animal, type World, createWorld, damage, drain, rareRate, resize, shoot as shootWith, spawn, step } from "./world";
 import type { Kind } from "./types";
 
@@ -373,6 +375,19 @@ describe("world rules", () => {
     const events = drain(world);
     expect(ofType(events, "hit")).toMatchObject([{ kind: "gator", n: 1, of: a.hp }]);
     expect(ofType(events, "callout")).toEqual([]);
+  });
+
+  it("a stuck candy takes the shot: the gator behind it is not hit", () => {
+    const { rng, world } = quiet();
+    const a = spawn(world, rng, "gator");
+    a.x = 400;
+    const x = a.x + a.w / 2;
+    const y = a.y + a.h / 2;
+    addCandy(world.glass, x, y, 40, 0, randomCandy(rng), false);
+    expect(shoot(world, x, y)).toEqual({ hit: null, finished: false, blocked: true });
+    expect(a.hits).toBe(0);
+    expect(shoot(world, x, y)).toMatchObject({ hit: a, finished: false });
+    expect(a.hits).toBe(1);
   });
 
   it("only a boss shares the screen with another rare", () => {
