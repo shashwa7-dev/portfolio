@@ -11,7 +11,7 @@ type Props = {
   rows: readonly Row[];
   /** Kinds hit at least once this round (the tally's). */
   met: readonly Kind[];
-  hits: Record<Kind, number>;
+  downed: Record<Kind, number>;
   kills: Record<Kind, number>;
   icons: Record<Kind, string>;
   /** Bumped on every rare that comes on or is first hit: one glow each. */
@@ -24,10 +24,10 @@ type Props = {
  * while it is off). Hovering it with a mouse drops the list below it; a click
  * pins the list open (so a keyboard can open it too) until it is clicked
  * again, a press lands outside, or Esc. Each row: icon, name, count (kills;
- * hits, in red, for a creature that cannot be killed, the cow). An unmet
+ * how many were brought down, in red, for a creature that cannot be killed, the cow). An unmet
  * rare is a dark silhouette, "???" and 0. The list mounts only while shown.
  */
-export default function RareMenu({ rows, met, hits, kills, icons, flash }: Props) {
+export default function RareMenu({ rows, met, downed, kills, icons, flash }: Props) {
   const [pinned, setPinned] = useState(false);
   const [hovered, setHovered] = useState(false);
   const open = pinned || hovered;
@@ -73,16 +73,16 @@ export default function RareMenu({ rows, met, hits, kills, icons, flash }: Props
         // Its padding bridges the gap, so the hover holds on the way down.
         <div className={s.rareCard}>
           <ul className={s.glass}>
-            {rows.map(({ kind, name, byHits }) => {
+            {rows.map(({ kind, name, byDowned }) => {
               const seen = met.includes(kind);
               return (
                 <li key={kind} data-met={seen ? "" : undefined}>
                   {/* eslint-disable-next-line @next/next/no-img-element -- a sprite data URL from the game package */}
                   <img src={icons[kind]} alt="" />
                   <span>{seen ? name : "???"}</span>
-                  <b className={s.display} data-hits={seen && byHits ? "" : undefined}>
-                    {seen ? (byHits ? hits[kind] : kills[kind]) : 0}
-                    {seen && byHits && <span className="sr-only"> hits</span>}
+                  <b className={s.display} data-hits={seen && byDowned ? "" : undefined}>
+                    {seen ? (byDowned ? downed[kind] : kills[kind]) : 0}
+                    {seen && byDowned && <span className="sr-only"> brought down</span>}
                   </b>
                 </li>
               );

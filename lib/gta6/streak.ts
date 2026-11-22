@@ -26,11 +26,14 @@ export type Entry = { kind: Kind; points: number };
 
 /** One hunt's numbers, for the HUD and the results card. `log` is every kill
  *  in order (the HUD lights the latest chip); `entries` is every kill and
- *  penalty in order, which the score folds. `met` lists kinds hit at least once. */
+ *  penalty in order, which the score folds. `met` lists kinds hit at least once.
+ *  `downed` counts the ones brought down by their last hit (the cow: never a
+ *  kill, so `kills` stays 0 for it). */
 export type Tally = {
   shots: number;
   hits: Record<Kind, number>;
   kills: Kills;
+  downed: Record<Kind, number>;
   met: readonly Kind[];
   bestStreak: number;
   log: readonly Kill[];
@@ -42,15 +45,21 @@ function zeros(kinds: readonly Kind[]): Record<Kind, number> {
 }
 
 export function emptyTally(kinds: readonly Kind[]): Tally {
-  return { shots: 0, hits: zeros(kinds), kills: zeros(kinds), met: [], bestStreak: 0, log: [], entries: [] };
+  return { shots: 0, hits: zeros(kinds), kills: zeros(kinds), downed: zeros(kinds), met: [], bestStreak: 0, log: [], entries: [] };
 }
 
 export function recordShot(t: Tally): Tally {
   return { ...t, shots: t.shots + 1 };
 }
 
-export function recordHit(t: Tally, kind: Kind): Tally {
-  return { ...t, hits: { ...t.hits, [kind]: t.hits[kind] + 1 }, met: t.met.includes(kind) ? t.met : [...t.met, kind] };
+/** `finished`: this was the hit that brought it down. */
+export function recordHit(t: Tally, kind: Kind, finished = false): Tally {
+  return {
+    ...t,
+    hits: { ...t.hits, [kind]: t.hits[kind] + 1 },
+    downed: finished ? { ...t.downed, [kind]: t.downed[kind] + 1 } : t.downed,
+    met: t.met.includes(kind) ? t.met : [...t.met, kind],
+  };
 }
 
 /** Total hits across every kind. */

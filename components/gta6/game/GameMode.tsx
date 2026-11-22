@@ -115,7 +115,7 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
       kind,
       name: NAMES[kind],
       rare: game.isRare(kind),
-      byHits: game.kindsWhere("protected").includes(kind),
+      byDowned: game.kindsWhere("protected").includes(kind),
     })),
   );
   const [icons] = useState(
@@ -184,7 +184,7 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
         ...devOptions(game.KINDS),
         onShot: () => setTally(recordShot),
         onHit: (kind, n, of, x, y) => {
-          setTally((t) => recordHit(t, kind));
+          setTally((t) => recordHit(t, kind, of !== undefined && n >= of));
           const text = hitLabel(n, of, game.penaltyFor(kind, n, false));
           if (text) pop({ at: { x, y }, text, tone: "count" });
         },
@@ -282,8 +282,12 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
         if (e.key !== "Escape" || e.defaultPrevented) return;
         if (phase !== "play") close.current();
         // Paused with focus off the menu (a click on the backdrop): Esc
-        // still resumes.
-        else if (paused) resume();
+        // still resumes, and is marked done so the game's own Esc listener
+        // does not read the same press as a new pause.
+        else if (paused) {
+          e.preventDefault();
+          resume();
+        }
       }}
       className={s.overlay}
     >
@@ -338,7 +342,7 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
         shown={phase !== "entry"}
         rows={rows}
         kills={tally.kills}
-        hits={tally.hits}
+        downed={tally.downed}
         met={tally.met}
         hearts={hearts}
         rareFlash={rareFlash}

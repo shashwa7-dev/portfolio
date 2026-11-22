@@ -32,9 +32,10 @@ export const NAMES: Record<Kind, string> = {
 };
 
 /** One creature as the HUD and the results card list it, built by GameMode
- *  from the game's registry (enabled kinds only, in its order). `byHits`: it
- *  cannot be killed (the cow), so its count is its hits. */
-export type Row = { kind: Kind; name: string; rare: boolean; byHits: boolean };
+ *  from the game's registry (enabled kinds only, in its order). `byDowned`: it
+ *  cannot be killed (the cow), so its count is how many were brought down
+ *  (one cow is one, whatever its hits). */
+export type Row = { kind: Kind; name: string; rare: boolean; byDowned: boolean };
 
 /** Chamber centres round the cylinder, in percent of its box, from the top. */
 function chambers(n: number) {
@@ -50,7 +51,7 @@ type Props = {
   /** Every creature in the game, commons (the chips) and rares (the menu). */
   rows: readonly Row[];
   kills: Kills;
-  hits: Record<Kind, number>;
+  downed: Record<Kind, number>;
   /** Kinds hit at least once this round. */
   met: readonly Kind[];
   /** 0 to 3, in halves. */
@@ -87,7 +88,7 @@ export default function Hud({
   shown,
   rows,
   kills,
-  hits,
+  downed,
   met,
   hearts,
   rareFlash,
@@ -145,7 +146,7 @@ export default function Hud({
           <RareMenu
             rows={rows.filter((r) => r.rare)}
             met={met}
-            hits={hits}
+            downed={downed}
             kills={kills}
             icons={icons}
             flash={rareFlash}

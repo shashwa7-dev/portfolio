@@ -21,7 +21,7 @@ type Props = {
 /**
  * The card Esc (or WASTED) brings up: the score first (the clamped fold)
  * with the common animals' points under it, then every creature two to a
- * line (kills; hits, in red, for one that cannot be killed, the cow; a rare
+ * line (kills; how many were brought down, in red, for one that cannot be killed, the cow; a rare
  * not met this round is a silhouette and "???"), accuracy (hits over shots)
  * and the best streak, then Play again or Back to site.
  * A modal dialog: focus lands on Play again, Tab stays between its two
@@ -82,7 +82,7 @@ export default function Results({ tally, rows, icons, pointsFor, onAgain, onBack
           <span>DOUBLE +50% · TRIPLE +100%</span>
         </p>
         <dl className={s.table}>
-          {rows.map(({ kind, name, rare, byHits }, i) => {
+          {rows.map(({ kind, name, rare, byDowned }, i) => {
             const seen = !rare || tally.met.includes(kind);
             return (
               <div key={kind} className="contents">
@@ -91,9 +91,9 @@ export default function Results({ tally, rows, icons, pointsFor, onAgain, onBack
                   <img src={icons[kind]} alt="" />
                   {seen ? name : "???"}
                 </dt>
-                <dd className={s.display} data-hits={seen && byHits ? "" : undefined}>
-                  {byHits ? tally.hits[kind] : tally.kills[kind]}
-                  {seen && byHits && <span className="sr-only"> hits</span>}
+                <dd className={s.display} data-hits={seen && byDowned ? "" : undefined}>
+                  {byDowned ? tally.downed[kind] : tally.kills[kind]}
+                  {seen && byDowned && <span className="sr-only"> brought down</span>}
                 </dd>
               </div>
             );

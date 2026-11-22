@@ -63,6 +63,13 @@ describe("tally", () => {
     expect(t.met).toEqual(["cow"]);
     expect(hitCount(t)).toBe(2);
   });
+  it("one cow brought down by its two hits counts as one cow downed, not two", () => {
+    let t = emptyTally(ALL);
+    t = recordHit(t, "cow", false);
+    t = recordHit(t, "cow", true); // the finishing hit
+    expect(t.downed.cow).toBe(1);
+    expect(t.kills.cow).toBe(0); // still never a kill
+  });
   it("a penalty adds a negative entry and no kill", () => {
     const t = recordPenalty(emptyTally(ALL), "cow", -500);
     expect(t.kills.cow).toBe(0);
