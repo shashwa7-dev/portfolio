@@ -210,7 +210,7 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
           setBigfoot(present);
           if (present) setBanner((n) => n + 1);
         },
-        onExit: () => {
+        onPause: () => {
           setBanner(0);
           setPhase("results");
         },

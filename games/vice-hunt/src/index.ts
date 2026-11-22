@@ -11,6 +11,7 @@ import { loadedArt, preloadHunt, svgUrl } from "./sprites";
 import { CREATURES, type Kind } from "./creatures";
 import type { GameEvent } from "./events";
 import type { Kills } from "./types";
+import { createClock, escapeAction } from "./pause";
 import { createWorld, drain, resize, shoot, spawn, step } from "./world";
 
 export type { Kills } from "./types";
@@ -33,7 +34,9 @@ export type Callout = Extract<GameEvent, { type: "callout" }>["text"];
 export type HuntOptions = {
   onKills?(kills: Kills): void;
   onShot?(x: number, y: number, hit: Kind | null): void; // CSS px relative to host
-  onExit?(): void;
+  /** Esc or a right click during play: the host shows its pause menu and
+   *  calls `pause()` (nothing while paused or WASTED). */
+  onPause?(): void;
   muted?: boolean;
   /** Where the score strip starts: CSS px from the host's left edge, so a
    *  host can line it up with its own content. Default 12. */
@@ -85,7 +88,9 @@ export type HuntOptions = {
   /** Dev pages: kinds to hit once, once fully on screen (provokes Bigfoot). */
   hit?: Kind[];
 };
-export type Hunt = { destroy(): void };
+/** `pause()` freezes the round (no steps, no input, gun animations held,
+ *  sound suspended); `resume()` carries on with no catch-up step. */
+export type Hunt = { destroy(): void; pause(): void; resume(): void };
 
 const SCORE_ORDER: Kind[] = ["rabbit", "iguana", "flamingo", "bigfoot"];
 
@@ -244,7 +249,7 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
   const onDown = (e: PointerEvent) => {
     // ctrl+click is a right click on macOS: it only exits, never shoots.
     // Once the round is WASTED the gun is down: no shot, no round spent.
-    if (destroyed || world.wasted || e.button !== 0 || e.ctrlKey) return;
+    if (destroyed || paused || world.wasted || e.button !== 0 || e.ctrlKey) return;
     e.preventDefault();
     const { x, y } = local(e);
     gun.aim(x, y, world.width, world.height);
@@ -283,14 +288,17 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
   const onEnter = () => gun.showCrosshair(true);
   const onLeave = () => gun.showCrosshair(false);
 
+  const askPause = () => {
+    if (escapeAction({ paused, wasted: world.wasted }) === "pause") options.onPause?.();
+  };
   const onMenu = (e: MouseEvent) => {
     e.preventDefault();
-    options.onExit?.();
+    askPause();
   };
   const onKey = (e: KeyboardEvent) => {
     if (e.key === "Escape") {
-      if (escapeIsOurs(e)) options.onExit?.();
-    } else if ((e.key === "r" || e.key === "R") && !world.wasted && !e.metaKey && !e.ctrlKey && !e.altKey && !typing(e)) {
+      if (escapeIsOurs(e)) askPause();
+    } else if ((e.key === "r" || e.key === "R") && !paused && !world.wasted && !e.metaKey && !e.ctrlKey && !e.altKey && !typing(e)) {
       if (startReload(ammo)) {
         beginReload();
         reportAmmo();
@@ -337,11 +345,11 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
   };
 
   let raf = 0;
-  let last: number | null = null;
+  const clock = createClock();
+  let paused = false; // by the host, through pause(); a hidden tab is not this
   let bigfoot = false;
   const frame = (now: number) => {
-    const dt = last === null ? 0 : (now - last) / 1000;
-    last = now;
+    const dt = clock.tick(now);
     step(world, dt, rng);
     devFinish();
     devKeep(dt);
@@ -375,7 +383,8 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
   };
   const onVisibility = () => {
     cancelAnimationFrame(raf);
-    last = null;
+    if (paused) return; // stays paused until the host resumes
+    clock.resume(); // the next tick steps by 0
     if (!document.hidden) raf = requestAnimationFrame(frame);
   };
 
@@ -390,7 +399,27 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
   reportAmmo();
   options.onHealth?.(world.hearts);
 
+  const held = () => layer.getAnimations({ subtree: true });
+
   return {
+    pause() {
+      if (destroyed || paused) return;
+      paused = true;
+      cancelAnimationFrame(raf);
+      clock.pause();
+      for (const a of held()) a.pause();
+      gun.showCrosshair(false);
+      sound.suspend();
+    },
+    resume() {
+      if (destroyed || !paused) return;
+      paused = false;
+      clock.resume();
+      for (const a of held()) a.play();
+      sound.resume();
+      cancelAnimationFrame(raf);
+      if (!document.hidden) raf = requestAnimationFrame(frame);
+    },
     destroy() {
       if (destroyed) return;
       destroyed = true;

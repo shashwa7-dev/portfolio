@@ -16,8 +16,17 @@ const hunt = startHunt(host, {
   hit: kinds("hit"), // ?hit=bigfoot lands one hit (he starts throwing)
   onKills: (kills) => log("kills", kills),
   onShot: (x, y, hit) => log("shot", Math.round(x), Math.round(y), hit),
-  onExit: () => {
-    hunt.destroy();
-    log("exited");
+  // Esc pauses; the next Esc resumes (the dev page has no menu).
+  onPause: () => {
+    hunt.pause();
+    log("paused");
+    const again = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      window.removeEventListener("keydown", again, true);
+      e.stopPropagation();
+      hunt.resume();
+      log("resumed");
+    };
+    window.addEventListener("keydown", again, true);
   },
 });

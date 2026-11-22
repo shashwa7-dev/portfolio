@@ -23,7 +23,8 @@ The public entry is `src/index.ts`:
   - `onCallout(text, x, y)`: a word to pop ("ANGRY!", "HSSSS!", "PFFT!", "SPLAT!"); the package draws no text.
   - `onAmmo(rounds, reloading)`: once at the start and on every change.
   - `onBigfoot(present)`: true while a live Bigfoot is on (not once his finish starts), false once he is gone (finished or off the far edge).
-  - `onExit()`: Esc or right click. Esc is ignored when the event was already handled (`defaultPrevented`) or comes from inside a `[role="dialog"]`. The host then calls `destroy()`, which is safe to call twice.
+  - `onPause()`: Esc or right click during play (not while paused, not once WASTED). Esc is ignored when the event was already handled (`defaultPrevented`) or comes from inside a `[role="dialog"]`. The host shows its menu and calls `pause()`; later `resume()` carries on with no catch-up step, or `destroy()` ends it (safe to call twice).
+  - `pause()` / `resume()` on the returned handle: paused, the round does not step, shots and R do nothing, the gun's animations hold and sound is suspended. A hidden tab does not resume a paused hunt.
   - `muted`, `sfx` (see Sound), `showScore` (default true; false hides the package's score strip for a host with its own HUD), `scoreInset` (the strip's CSS px from the host's left edge, default 12), `seaLine(width, height)` (the host scene's water line, see below).
   - Dev pages only: `spawn`, `keep`, `finish` and `hit` (lists of kinds; see "Dev page").
 - `destroy()` stops the frame loop and every listener and removes the layer with its three parts: the scene canvas, the gun, and the glass canvas in front of the gun (the tiger's face and paw, claw scratches, splats; it never takes a shot). Nothing keeps running: every sequence advances from frame time, never a timer.

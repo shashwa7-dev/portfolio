@@ -1,6 +1,7 @@
 export type Effect = "shot" | "reload" | "empty" | "hit" | "kill";
 export type SfxUrls = Partial<Record<Effect, string>>;
-export type Sound = Record<Effect, () => void> & { close(): void };
+/** `suspend()` / `resume()` hold and release the audio while the hunt is paused. */
+export type Sound = Record<Effect, () => void> & { close(): void; suspend(): void; resume(): void };
 
 const SHOT_LEN = 0.12;
 const THUMP_LEN = 0.15;
@@ -11,7 +12,7 @@ const SHOT_PART = SHOT_GAIN / 2;
 const FILE_GAIN = 0.5;
 
 const noop = () => {};
-const silent: Sound = { shot: noop, reload: noop, empty: noop, hit: noop, kill: noop, close: noop };
+const silent: Sound = { shot: noop, reload: noop, empty: noop, hit: noop, kill: noop, close: noop, suspend: noop, resume: noop };
 
 // Effects play the recorded file given for them in `sfx` once it has loaded,
 // and are synthesised with Web Audio until then (or when none is given, or it
@@ -131,6 +132,12 @@ export function createSound(muted: boolean, sfx: SfxUrls = {}): Sound {
     empty: play("empty"),
     hit: play("hit"),
     kill: play("kill"),
+    suspend() {
+      void ctx?.suspend();
+    },
+    resume() {
+      if (!closed) void ctx?.resume();
+    },
     close() {
       closed = true;
       void ctx?.close();
