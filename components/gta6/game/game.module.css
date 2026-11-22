@@ -55,6 +55,147 @@
   letter-spacing: 0.08em;
 }
 
+/* The menus' faces (spec 2026-11-22-vice-hunt-opening-pause-design.md):
+   neon titles in Monoton and Mr Dafoe, buttons and controls in Audiowide.
+   Self-hosted like Anton (SIL OFL 1.1, latin subset). */
+@font-face {
+  font-family: Monoton;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/gta6/fonts/monoton-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Mr Dafoe";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/gta6/fonts/mr-dafoe-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: Audiowide;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/gta6/fonts/audiowide-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Neon words. Only "VICE", "Hunt", "Paused" and "WASTED" glow; buttons and
+   the controls never do. */
+.neonPink {
+  font-family: Monoton, Impact, sans-serif;
+  font-weight: 400;
+  color: #ffd8ec;
+  text-shadow: 0 0 0.05em #ff3ea5, 0 0 0.15em #ff3ea5, 0 0 0.33em #ff3ea5;
+}
+.neonCyan {
+  font-family: "Mr Dafoe", cursive;
+  font-weight: 400;
+  color: #7ff5ff;
+  text-shadow: 0 0 0.05em #18d6ff, 0 0 0.2em #18d6ff;
+}
+.neonRed {
+  font-family: Monoton, Impact, sans-serif;
+  font-weight: 400;
+  color: #ffd6d6;
+  text-shadow: 0 0 0.05em #ff2a2a, 0 0 0.15em #ff2a2a, 0 0 0.33em #ff2a2a;
+}
+
+/* Slanted 80s chrome buttons: a two-tone fill, a hard bottom edge and a soft
+   dark drop, no glow. The label inside is unskewed. */
+.chrome {
+  display: inline-block;
+  padding: 0.55em 1.6em;
+  font: 400 1.125rem/1 Audiowide, system-ui, sans-serif;
+  letter-spacing: 0.06em;
+  transform: skewX(-12deg);
+  border-radius: 0.2em;
+  cursor: pointer;
+  transition: transform var(--duration-fast) var(--ease-out), filter var(--duration-fast) var(--ease-out);
+}
+.chrome > span { display: inline-block; transform: skewX(12deg); }
+.chrome:hover { filter: brightness(1.08); }
+.chrome:active { transform: skewX(-12deg) translateY(0.15em); }
+.chrome:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.chromePink {
+  color: #fff;
+  background: linear-gradient(180deg, #ff7cc4 0 48%, #f0338f 52% 100%);
+  box-shadow: inset 0 0.1em 0 rgba(255, 255, 255, 0.5), 0 0.22em 0 #8a0f4f, 0 0.45em 0.7em rgba(0, 0, 0, 0.35);
+}
+.chromeCyan,
+.chromeDark:focus-visible,
+.chromeDark:hover {
+  color: #10203a;
+  border-color: transparent;
+  background: linear-gradient(180deg, #c6fdff 0 48%, #5fe6ff 52% 100%);
+  box-shadow: inset 0 0.1em 0 rgba(255, 255, 255, 0.6), 0 0.22em 0 #0a7f9c, 0 0.45em 0.7em rgba(0, 0, 0, 0.35);
+}
+.chromeDark {
+  color: #e6fbff;
+  background: rgba(20, 10, 40, 0.78);
+  border: 2px solid rgba(127, 245, 255, 0.45);
+}
+
+/* The controls, in the site dock's notch (see .dock in app/globals.css):
+   a dark tab out of the bottom edge, two layers, slanted SVG sides. */
+.notch {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  z-index: 9;
+  translate: -50% 0;
+  padding-top: 6px;
+  pointer-events: none;
+  filter: drop-shadow(0 -2px 12px rgb(0 0 0 / 0.3));
+  --notch-outer: hsl(30 6% 7.5%);
+  --notch-inner: hsl(30 5% 12.5%);
+  --notch-edge: hsl(30 5% 17%);
+}
+.notchLayer { position: absolute; inset-inline: 0; }
+.notchLayer > * { position: absolute; top: 0; display: block; }
+.notchOuter { top: 0; height: 54px; color: var(--notch-outer); }
+.notchInner { top: 6px; height: 48px; color: var(--notch-inner); }
+.notchStrip { inset-block: 0; left: 12.14px; right: 12.14px; background: currentColor; }
+.notchInner .notchStrip { border-top: 1px solid var(--notch-edge); }
+.notchOuter .notchLeft { left: -35.31px; }
+.notchOuter .notchRight { right: -35.31px; transform: scaleX(-1); }
+.notchInner .notchLeft { left: -19.39px; }
+.notchInner .notchRight { right: -19.39px; transform: scaleX(-1); }
+.notchEdge { fill: none; stroke: var(--notch-edge); stroke-width: 1; }
+.notchItems {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  height: 48px;
+  padding: 0 22px;
+}
+.notchItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font: 400 0.9375rem/1 Audiowide, system-ui, sans-serif;
+  letter-spacing: 0.04em;
+  color: hsl(35 6% 80%);
+  white-space: nowrap;
+}
+.keycap {
+  display: inline-grid;
+  place-items: center;
+  min-width: 26px;
+  height: 24px;
+  padding: 0 7px;
+  border-radius: 5px;
+  background: linear-gradient(hsl(35 6% 94%), hsl(35 5% 78%));
+  color: hsl(30 6% 9%);
+  font-size: 0.75rem;
+  box-shadow: 0 3px 0 hsl(30 5% 28%);
+}
+.mouseIcon { width: 17px; height: 25px; }
+
 .glass {
   background: rgba(14, 12, 22, 0.62);
   border: 1px solid rgba(255, 255, 255, 0.14);
