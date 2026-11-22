@@ -1,6 +1,6 @@
 # Handoff: Vice Hunt rares (2026-11-22)
 
-Read this first, then the plan. Branch `vice-hunt-rares`, stacked on `gta6-mod` (PR #82). **Not pushed since Task 3** (local commits up to `e23f99e`).
+Read this first, then the plan. Branch `vice-hunt-rares`, stacked on `gta6-mod` (PR #82). **Not pushed since Task 3**: every task's commit is local. All twelve tasks are done except plan Task 12 step 5 (push and open the PR against `gta6-mod`), which waits for the owner to ask.
 
 - Spec (binding, "Edge cases and rules" especially): `docs/superpowers/specs/2026-11-21-vice-hunt-rares-design.md`
 - Plan (12 tasks): `docs/superpowers/plans/2026-11-21-vice-hunt-rares.md`
@@ -15,14 +15,15 @@ Read this first, then the plan. Branch `vice-hunt-rares`, stacked on `gta6-mod` 
 | 7 finishes: deflates, rocket, fountain, crashes (+ gentle versions) | done | `890a080`, `1b81a9c` |
 | 8 the glass, the tiger's pounce and claw | done | `5df3c21` |
 | Owner fixes: merman in the water, per-creature `enabled` (tiger off), dev `?spawn=` | done | `3f1d211`, `e23f99e` |
-| 9 Bigfoot: rig, throws, jet | done | see `git log` |
-| 10 host wiring: events to callbacks | **next** (partly done, see below) | |
-| 11 app: hearts, RARE menu, pop-ups, WASTED, results | todo | |
-| 12 verify in the real app, docs, bundle, PR | todo | |
+| 9 Bigfoot: rig, throws, jet | done | `3c84c10` |
+| 10 host wiring: events to callbacks | done | `0d8cda8` |
+| 11 app: hearts, RARE menu, pop-ups, WASTED, results | done | `2e4543d` |
+| 12 verify in the real app, docs, bundle | done; push and PR wait for the owner | see `git log` ("Vice Hunt rares: verified, docs") |
+| Final whole-branch review | self-review (no subagent tool); see the SDD ledger's `Final` lines | |
 
-The owner said "we will fix the issues by far": they may bring more issues from play-testing before Task 9. Ask what they found before starting Task 9.
+Gates last run on Task 11's commit `2e4543d`: `npx tsc --noEmit -p .` clean; `npm test` 455 passed (61 files); `npm run lint` 0 errors (20 warnings, all in untouched files); `./scripts/verify-simplification.sh` exit 0; `npm run build` exit 0 and `./scripts/check-gta6-bundle.sh`, `./scripts/check-diwali-bundle.sh --off`, `./scripts/check-starter-pack-bundle.sh` all exit 0. (The build also contained the owner's uncommitted `/vice-hunt` route, which is on disk.)
 
-Gates last run on `e23f99e`: `npx tsc --noEmit -p .` clean; `npm test` 427 passed; `npm run lint` 0 errors (20 warnings, all in untouched files); `./scripts/verify-simplification.sh` exit 0. Build and bundle checks not run since before this work (Task 12).
+Verified by eye (muted headless Chrome, `--mute-audio --enable-automation`): the production build's real entry path at 1440x900 (homepage, footer palm, revolver, play; HUD and RARE menu; no console errors), and on the dev server every rare moving and mid-finish at 1440x900, the merman on the sea line, hits and penalties, Bigfoot's splats capped at 1.5 hearts, WASTED then the results card, Play again, and reduced motion.
 
 ## Decisions made while building (not in the plan)
 
@@ -37,16 +38,17 @@ Gates last run on `e23f99e`: `npx tsc --noEmit -p .` clean; `npm test` 427 passe
 - **Enable flags.** Every creature in `creatures.ts` has `enabled`; the **tiger is off** (owner, 2026-11-22, to be re-enabled later). Disabled kinds never spawn on their own; an explicit `spawn(world, rng, kind)` still works. `isEnabled` is exported. **Task 11:** the RARE menu's "n / 6" and its rows must count only enabled rares (it would be 5 now).
 - **Spawning for tests.** Package dev page: `?spawn=ufo&shoot=ufo` (`spawn`, and `finish`: lands the hits once the creature is fully on screen). The real app, under `npm run dev` only: `http://localhost:3001/?spawn=merman,cow` (`spawn` + `keep`: each comes back 1.5 s after it goes). This replaces the `window.__viceHunt` hook in plan Task 12, step 1.
 - **Bigfoot (Task 9).** `rig/rig.ts` (pure: `ik`, `POSES`, `blend`, `walkPose`, `throwArm`, `finishPose`, `toWorld`, `rigTop`) and `rig/drawRig.ts` (`drawRig`, `drawBossBar`). The `throw` threat is one per provoked Bigfoot, started by `stepThreats` (which now takes `reduced`); `Threatening.from` names the animal. `dealt` and the globs live in the threat state (not on the animal, as the plan said), so the 1.5 cap holds after he dies. Throws are every 1.5 s start to start (the prototype waited 1.5 s after each 0.55 s throw). The threat writes `a.throwK` for the rig's arm. `FinishModule.step` gets the world's `glass` as an optional 4th argument and an optional `drawGlass` hook (drawn above the gun): the jet splats the glass but never deals damage. New `jet-gentle`. Dev page: `?hit=bigfoot` lands one hit once he is on screen (he starts throwing).
+- **Host wiring (Task 10).** `toCallbacks` maps every event to its callback; `startHunt` flushes after each shot and every frame; kills reach the host only from `kill` events (R8: a finished cow or tiger is a penalty, never a kill); WASTED ignores clicks and R; `onHealth` also fires once at the start.
+- **The app (Task 11).** Hearts, the RARE menu ("RARE n / 5": enabled rares only), pop-ups, WASTED and the results card. Pure helpers in `lib/gta6/hud.ts`. Under reduced motion the pop-ups, the red edge flash and WASTED keep their durations (the site's global rule would cut them to nothing). Under `npm run dev`, `?shoot=cow` and `?hit=bigfoot` work in the app as on the package dev page (with `?spawn=`), e.g. `http://localhost:3001/vice-hunt?spawn=tiger,bigfoot&shoot=tiger&hit=bigfoot` reaches WASTED in about 8 s.
 
-## Known gaps (spec items not built yet)
+## Known gaps
 
 - The merman's foam line where he breaks the surface (spec, Merman) is not drawn.
-- Task 10 is partly done: the frame loop already runs `stepFinishing`, `stepThreats` and `stepGlass` and draws the glass canvas; still `drain(world)` drops events (no callbacks yet), and `destroy()` needs no change (the glass canvas is inside the layer it removes).
-- Nothing in the app shows hearts, WASTED, penalties or "1 / 3" yet (Task 11), so a tiger claw or Bigfoot splat costs hearts invisibly.
+- Dev helper only: `?shoot=ufo` stops shooting if a creature in front takes one of its shots and dies (it checks `finished`, not which animal finished). Re-run the page.
 
 ## How to check visually (silent)
 
-The owner must never hear audio from automated checks: headless Chrome always with `--mute-audio` (the game is also silent when `navigator.webdriver`). Do not use `--virtual-time-budget` screenshots: virtual time starves `requestAnimationFrame` and world time lags far behind. Drive Chrome in real time over the DevTools protocol instead (Node 24 has `WebSocket` and `fetch` built in): launch `--headless=new --mute-audio --remote-debugging-port=<port> --user-data-dir=<scratch dir>`, connect to the page's `webSocketDebuggerUrl`, `Page.navigate`, then `Page.captureScreenshot` at chosen real times (and `Runtime.evaluate` to click `button[aria-label="Vice City mode"]`, then `[data-revolver]` once enabled; play starts about 9 s later). Combine frames into a contact sheet with Pillow (`python3 -I`). Dev server is on port 3001.
+The owner must never hear audio from automated checks: headless Chrome always with `--mute-audio` (the game is also silent when `navigator.webdriver`). Do not use `--virtual-time-budget` screenshots: virtual time starves `requestAnimationFrame` and world time lags far behind. Drive Chrome in real time over the DevTools protocol instead (Node 24 has `WebSocket` and `fetch` built in): launch `--headless=new --mute-audio --enable-automation --remote-debugging-port=<port> --user-data-dir=<scratch dir>` (plain headless reports `navigator.webdriver` false; `--enable-automation` makes it true, so the game and radio skip audio entirely, on top of the mute), connect to the page's `webSocketDebuggerUrl`, `Page.navigate`, then `Page.captureScreenshot` at chosen real times (and `Runtime.evaluate` to click `button[aria-label="Vice City mode"]`, then `[data-revolver]` once enabled; play starts about 9 s later). Combine frames into a contact sheet with Pillow (`python3 -I`). Dev server is on port 3001.
 
 Rebuild the package dev page after changes: `npx esbuild games/vice-hunt/dev/main.ts --bundle --outfile=games/vice-hunt/dev/main.js`.
 
