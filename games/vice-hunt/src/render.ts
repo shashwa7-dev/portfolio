@@ -11,7 +11,7 @@ import { RIG, rigTop, throwArm, walkPose } from "./rig/rig";
 import type { Animal, World } from "./world";
 import { OST_BOX, drawOstrich, emitSkateSparks, ostrichParts, skatePose } from "./modules/ostrich";
 import { drawGator } from "./rig/drawGator";
-import { GATOR, G_POSES, type GatorLook, type GatorPose, angerOf, blendPose, gatorPoints, gatorToWorld, gatorWalk } from "./rig/gator";
+import { GATOR, angerOf, gatorPoints, gatorToWorld, gatorTop, liveGator } from "./rig/gator";
 
 const FEATHERS = ["#f7b6cc", "#e8789f", "#fbd3e0"];
 const DUST = ["#d9cbb3", "#bfae92", "#ece2d0"];
@@ -109,24 +109,6 @@ export function addHitFeathers(scene: Scene, a: Animal, rng: Rng, reduced: boole
   }
 }
 
-// A live gator's pose and look: his strut, blended into the aim while he
-// shoots back (threats/candyGun.ts writes aim, spin, eyes and shootK).
-export function liveGator(a: Animal): { pose: GatorPose; look: GatorLook } {
-  const anger = angerOf(a.hits, a.hp);
-  const ph = a.phase ?? 0;
-  const aim = a.aim ?? 0;
-  const pose = blendPose(gatorWalk(ph, anger), G_POSES.aim, aim);
-  const look: GatorLook = {
-    anger,
-    gun: a.shootK !== undefined && aim > 0.05,
-    spin: a.spin ?? 0,
-    flex: aim,
-    eyes: a.eyes ?? "cool",
-    flap: a.shootK !== undefined ? -6 : Math.sin(ph * 2) * 10 - 4,
-  };
-  return { pose, look };
-}
-
 const STEAM = "rgba(255,255,255,.9)";
 
 /** Per-frame effects of live creatures: sparks off a fast skater's wheels,
@@ -184,9 +166,6 @@ function drawLiveOstrich(ctx: CanvasRenderingContext2D, scene: Scene, art: Art, 
   const box = { x: a.x + (jolt?.dx ?? 0) * dir, y: a.y, w: a.w, h: a.h, dir: dir as 1 | -1 };
   drawOstrich(ctx, art, scene.scratch, box, pose, { ...ostrichParts(a.hits), bare: false, shock: false }, a.flash);
 }
-
-/** The top of a live gator's rig box: his soles on the ground line. */
-const gatorTop = (a: Animal) => a.y + a.h - GATOR.GROUND * (a.w / GATOR.W);
 
 function drawLiveGator(ctx: CanvasRenderingContext2D, a: Animal): void {
   const { pose, look } = liveGator(a);

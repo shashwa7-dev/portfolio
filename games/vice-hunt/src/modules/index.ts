@@ -15,6 +15,7 @@ import { pounces, pouncesGentle } from "./finishes/pounces";
 import { rocket, rocketGentle } from "./finishes/rocket";
 import { moves } from "./moves";
 import { flinch, garland, noReaction } from "./reactions";
+import { candyGun } from "./threats/candyGun";
 import { clawSwipe } from "./threats/clawSwipe";
 import { throwAt } from "./threats/throw";
 import type { FinishModule, HitReactionModule, MoveModule, Origin, ThreatModule } from "./types";
@@ -28,7 +29,7 @@ export const HIT_REACTIONS: Record<HitReactionId, HitReactionModule<any>> = { no
 export const THREATS: Record<ThreatId, ThreatModule<any>> = {
   "claw-swipe": clawSwipe,
   throw: throwAt,
-  "candy-gun": { start: () => null, step: () => {}, done: () => true, draw: () => {} }, // placeholder (plan Task 6)
+  "candy-gun": candyGun,
 };
 
 export const FINISHES: Record<FinishId, FinishModule<any>> = {
@@ -83,14 +84,15 @@ export function startThreat(world: World, at: Origin, id: ThreatId, rng: Rng, re
   world.threats.push({ kind: at.kind, id, state: THREATS[id].start(at, world, rng, reduced), from: at.id });
 }
 
-type Throws = { kind: string; attack: ThreatId };
+type Provoked = { kind: string; attack: ThreatId };
 
-// A provoked animal that throws (Bigfoot) gets its threat once.
+// A provoked animal that throws (Bigfoot) or returns fire (the gator) gets
+// its threat once.
 function startThrowers(world: World, rng: Rng, reduced: boolean): void {
   for (const a of world.animals) {
     if (!a.provoked) continue;
-    const threat = (CREATURES[a.kind] as { threat?: Throws }).threat;
-    if (threat?.kind !== "throws" || world.threats.some((t) => t.from === a.id)) continue;
+    const threat = (CREATURES[a.kind] as { threat?: Provoked }).threat;
+    if ((threat?.kind !== "throws" && threat?.kind !== "returns-fire") || world.threats.some((t) => t.from === a.id)) continue;
     startThreat(world, { ...a, dir: a.vx < 0 ? -1 : 1 }, threat.attack, rng, reduced);
   }
 }

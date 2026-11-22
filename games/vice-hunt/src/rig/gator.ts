@@ -190,3 +190,35 @@ export const gatorToWorld = (p: Vec, x: number, y: number, scale: number, facing
   x + (facing < 0 ? GATOR.W - p[0] : p[0]) * scale,
   y + p[1] * scale,
 ];
+
+/** What a live gator's drawing reads off his animal (world.ts's Animal). */
+export type LiveGator = {
+  hits: number;
+  hp: number;
+  phase?: number;
+  aim?: number;
+  spin?: number;
+  eyes?: GatorEyes;
+  shootK?: number;
+};
+
+// A live gator's pose and look: his strut, blended into the aim while he
+// shoots back (threats/candyGun.ts writes aim, spin, eyes and shootK).
+export function liveGator(a: LiveGator): { pose: GatorPose; look: GatorLook } {
+  const anger = angerOf(a.hits, a.hp);
+  const ph = a.phase ?? 0;
+  const aim = a.aim ?? 0;
+  const pose = blendPose(gatorWalk(ph, anger), G_POSES.aim, aim);
+  const look: GatorLook = {
+    anger,
+    gun: a.shootK !== undefined && aim > 0.05,
+    spin: a.spin ?? 0,
+    flex: aim,
+    eyes: a.eyes ?? "cool",
+    flap: a.shootK !== undefined ? -6 : Math.sin(ph * 2) * 10 - 4,
+  };
+  return { pose, look };
+}
+
+/** The top of a live gator's rig box: his soles on the ground line. */
+export const gatorTop = (a: { y: number; h: number; w: number }) => a.y + a.h - GATOR.GROUND * (a.w / GATOR.W);
