@@ -10,6 +10,7 @@ import { deflates, deflatesGentle } from "./finishes/deflates";
 import { falls } from "./finishes/falls";
 import { jet, jetGentle } from "./finishes/jet";
 import { fountain, fountainGentle } from "./finishes/fountain";
+import { plucked, pluckedGentle } from "./finishes/plucked";
 import { pounces, pouncesGentle } from "./finishes/pounces";
 import { rocket, rocketGentle } from "./finishes/rocket";
 import { moves } from "./moves";
@@ -44,9 +45,9 @@ export const FINISHES: Record<FinishId, FinishModule<any>> = {
   "fountain-gentle": fountainGentle,
   "crashes-gentle": crashesGentle,
   "jet-gentle": jetGentle,
-  // Placeholders (plan Tasks 4 and 7).
-  plucked: rocket,
-  "plucked-gentle": rocketGentle,
+  plucked,
+  "plucked-gentle": pluckedGentle,
+  // Placeholders (plan Task 7).
   "candy-pop": rocket,
   "candy-pop-gentle": rocketGentle,
 };

@@ -9,7 +9,7 @@ import { GROUND_LINE } from "./config";
 import { drawBossBar, drawRig } from "./rig/drawRig";
 import { RIG, rigTop, throwArm, walkPose } from "./rig/rig";
 import type { Animal, World } from "./world";
-import { OST_BOX, OST_HIP, OST_WHEELS, drawOstrich, legPoint, ostrichParts, skatePose } from "./modules/ostrich";
+import { OST_BOX, drawOstrich, emitSkateSparks, ostrichParts, skatePose } from "./modules/ostrich";
 
 const FEATHERS = ["#f7b6cc", "#e8789f", "#fbd3e0"];
 const DUST = ["#d9cbb3", "#bfae92", "#ece2d0"];
@@ -104,50 +104,6 @@ export function addHitFeathers(scene: Scene, a: Animal, rng: Rng, reduced: boole
       spin: reduced ? 0.01 : (rng() - 0.5) * 8 || 0.01, // a spinning dot is a feather
       color: OSTRICH_FEATHERS[Math.floor(rng() * OSTRICH_FEATHERS.length)],
     });
-  }
-}
-
-const SPARK = ["#fff3c4", "#f7c46c", "#f49ea3", "#5ad1d6", "#ffffff", "#f7a01c", "#8bff3a", "#ff2d55"];
-
-/** Fireworks off a skater's wheels, sprayed backwards: `strength` dots per
- *  wheel on average, plus the odd star burst. Shared with the plucked finish
- *  through `emitSkateSparks`. */
-export function emitSkateSparks(
-  list: Particle[],
-  wheel: (bx: number, by: number) => [number, number],
-  back: 1 | -1, // the direction sparks fly: opposite the facing
-  legAngles: readonly number[],
-  strength: number,
-  k: number,
-  rng: Rng,
-): void {
-  for (const deg of legAngles) {
-    for (const w of OST_WHEELS) {
-      const [bx, by] = legPoint(w, deg);
-      const [x, y] = wheel(bx, by);
-      const n = Math.round(strength * (0.6 + rng()));
-      for (let i = 0; i < n; i++) {
-        emit(list, {
-          kind: "dot",
-          x,
-          y,
-          vx: back * (80 + rng() * 260) * k,
-          vy: -(40 + rng() * 200) * k,
-          g: 520 * k,
-          life: 0.4 + rng() * 0.35,
-          size: (1.4 + rng() * 2.2) * k,
-          color: SPARK[Math.floor(rng() * SPARK.length)],
-        });
-      }
-    }
-  }
-  if (rng() < 0.16 * strength) {
-    const [bx, by] = wheel(OST_HIP[0] - (20 + rng() * 80), 120 + rng() * 40);
-    const color = SPARK[Math.floor(rng() * SPARK.length)];
-    for (let j = 0; j < 10; j++) {
-      const a = (j / 10) * Math.PI * 2;
-      emit(list, { kind: "star", x: bx, y: by, vx: Math.cos(a) * 70 * k, vy: Math.sin(a) * 70 * k, drag: 3, g: 60 * k, life: 0.55, size: 2.2 * k, color });
-    }
   }
 }
 
