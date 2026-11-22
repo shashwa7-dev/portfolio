@@ -69,3 +69,17 @@ Sound for the menus.
 
 Exact flicker keyframes, focus ring style on the chrome buttons, the notch's
 font sizes at small window widths.
+
+## Addendum (2026-11-22): results card
+
+Agreed in the companion (`results-v2.html` header B, `results-points.html`
+option 1). Header: "LEONIDA WILDLIFE REPORT" eyebrow, "Hunt over" in cyan neon
+script, the score in pink neon. The "RABBIT 100 · ..." rule lines are gone;
+instead the card shows how the score was made, one line each: every common
+animal (kills, "N each", points), the rares together (named once met), a
+protected kind once hit (cows brought down and their penalty, in red), the
+streak bonus, and what the zero floor kept if a penalty hit it. The lines add
+up to the score. Then accuracy and best streak, then the chrome Play again and
+Back to site buttons. The buttons never leave the card: it is capped at the
+window height and the lines scroll inside it. A protected kind counts how
+many were brought down, never its hits (one cow is 1).

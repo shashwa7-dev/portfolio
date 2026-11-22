@@ -383,7 +383,7 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
           tally={tally}
           rows={rows}
           icons={icons}
-          pointsFor={game.pointsFor}
+          pointsFor={game.pointsFor} penaltyFor={game.penaltyFor}
           onAgain={playAgain}
           onBack={() => close.current()}
         />

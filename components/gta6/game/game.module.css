@@ -111,6 +111,7 @@
   padding: 0.55em 1.6em;
   font: 400 1.125rem/1 Audiowide, system-ui, sans-serif;
   letter-spacing: 0.06em;
+  white-space: nowrap;
   transform: skewX(-12deg);
   border-radius: 0.2em;
   cursor: pointer;
@@ -657,10 +658,8 @@
   font-variant-numeric: tabular-nums;
 }
 .rareCard li:not([data-met]) { color: rgba(232, 224, 240, 0.5); }
-.rareCard li:not([data-met]) img,
-.table dt[data-unmet] img { filter: brightness(0); opacity: 0.75; }
-.rareCard li b[data-hits],
-.table dd[data-hits] { color: #ff5a64; }
+.rareCard li:not([data-met]) img { filter: brightness(0); opacity: 0.75; }
+.rareCard li b[data-hits] { color: #ff5a64; }
 /* The latest kill: pink, then back to glass over the glow time. */
 .chip[data-hot] {
   animation: chip-glow var(--duration-gta-chip-glow) var(--ease-out) forwards;
@@ -874,111 +873,116 @@
 @keyframes fade-in {
   from { opacity: 0; }
 }
-.card {
+/* The report card: header B (cyan script, the score in pink neon), then the
+   score's breakdown, then accuracy and the best streak, then the buttons.
+   It never grows past the window: the breakdown scrolls inside it instead,
+   so the buttons always sit inside the card. */
+.report {
+  display: flex;
+  flex-direction: column;
   width: min(30rem, calc(100% - 2rem));
-  padding: 1.75rem 2rem 1.5rem;
+  max-height: calc(100dvh - 2rem);
+  padding: 1.5rem 1.75rem 1.75rem;
+  border-radius: 1rem;
+  background: rgba(18, 12, 34, 0.9);
+  border: 1px solid rgba(127, 245, 255, 0.18);
   text-align: center;
+  font-family: Audiowide, system-ui, sans-serif;
+  color: #f1ecff;
   outline: none;
   animation: card-in var(--duration-gta-hud-in) var(--ease-out);
 }
 @keyframes card-in {
   from { opacity: 0; transform: translateY(1.5rem) scale(0.96); }
 }
-.card .sub {
+.reportEyebrow {
   font-size: 0.6875rem;
-  color: #f49ea3;
+  letter-spacing: 0.14em;
+  color: #ff9ccf;
 }
-.card h2 {
-  margin: 0.25rem 0 0;
-  font-size: 3rem;
-  line-height: 1;
-  letter-spacing: 0.06em;
-  text-shadow: 0 3px 0 #000;
-}
-.finalScore {
-  margin-top: 1rem;
+.reportTitle {
+  margin: 0.4rem 0 0.2rem;
   font-size: 3.5rem;
   line-height: 1;
-  font-variant-numeric: tabular-nums;
-  color: #f49ea3;
-  text-shadow: 0 3px 0 #000, 0 0 22px rgba(244, 158, 163, 0.5);
+  transform: rotate(-6deg);
 }
-.finalScore small {
+.reportScore {
+  font-size: 3.25rem;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.reportScore small {
   display: block;
   margin-top: 0.2rem;
-  font-size: 0.6875rem;
-  letter-spacing: 0.2em;
-  color: #e8e0f0;
+  font: 400 0.625rem/1 Audiowide, system-ui, sans-serif;
+  letter-spacing: 0.3em;
+  color: #b9b0d0;
   text-shadow: none;
 }
-.points span { display: block; }
-.points {
-  margin: 0.6rem 0 0;
-  font-size: 0.625rem;
-  line-height: 1.6;
-  color: #a59fc3;
-}
-/* Two creatures a line, then accuracy and the best streak side by side. */
-.table {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr auto;
-  gap: 0.45rem 0;
-  margin: 1.25rem auto 1.5rem;
+.lines {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  margin: 1.1rem -0.25rem 0;
+  padding: 0 0.25rem;
   text-align: left;
-  font-size: 0.9375rem;
 }
-.table dt {
-  display: flex;
+.line {
+  display: grid;
+  grid-template-columns: 1.75rem 1fr auto 4.5rem;
   align-items: center;
-  gap: 0.5rem;
-  color: #e8e0f0;
-  white-space: nowrap;
+  gap: 0.6rem;
+  padding: 0.35rem 0;
 }
-.table dt[data-col="1"] { padding-left: 1.5rem; }
-.table dt[data-rule][data-col="0"] { grid-column-start: 1; }
-.table dt[data-unmet] { color: rgba(232, 224, 240, 0.5); }
-.table dt img {
+.line img {
   width: 1.75rem;
   height: 1.25rem;
   object-fit: contain;
 }
-.table dd {
-  margin: 0;
-  padding-left: 0.75rem;
+.line span { font-size: 0.9375rem; line-height: 1.2; }
+.line span small {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.6875rem;
+  color: #8f86a8;
+}
+.line b,
+.line em {
+  font-family: Anton, Impact, sans-serif;
+  font-weight: 400;
+  font-style: normal;
   text-align: right;
-  font-size: 1.375rem;
-  line-height: 1.1;
   font-variant-numeric: tabular-nums;
 }
-.table [data-rule] {
-  margin-top: 0.3rem;
-  padding-top: 0.6rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.14);
-}
-.buttons {
+.line b { font-size: 1.375rem; }
+.line em { font-size: 1.125rem; color: #ff9ccf; }
+.line[data-tone="penalty"] b,
+.line[data-tone="penalty"] em { color: #ff5a64; }
+.line[data-tone="bonus"] span,
+.line[data-tone="bonus"] em { color: #ffe66d; }
+.line[data-tone="bonus"] span small { color: #bfae55; }
+.reportFoot {
   display: flex;
+  justify-content: space-between;
+  margin-top: 0.6rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 0.9375rem;
+}
+.reportFoot b {
+  margin-left: 0.5rem;
+  font-family: Anton, Impact, sans-serif;
+  font-weight: 400;
+  font-size: 1.25rem;
+}
+.reportButtons {
+  display: flex;
+  flex: none;
   justify-content: center;
-  gap: 0.75rem;
+  gap: 1rem;
+  margin-top: 1.5rem;
 }
-.buttons button {
-  padding: 0.55rem 1.1rem;
-  border-radius: 0.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  font-size: 0.8125rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: background-color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
-}
-.buttons button:hover { border-color: rgba(255, 255, 255, 0.6); }
-.buttons button:focus-visible { outline: 2px solid #f49ea3; outline-offset: 2px; }
-.buttons .primary {
-  background: #f49ea3;
-  border-color: #f49ea3;
-  color: #1a1727;
-}
-.buttons .primary:hover { background: #f7b6ba; border-color: #f7b6ba; }
+.reportButtons .chrome { font-size: 1rem; padding-inline: 1.3em; }
 
 @media (prefers-reduced-motion: reduce) {
   .stage,
