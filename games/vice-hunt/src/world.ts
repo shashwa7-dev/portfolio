@@ -216,11 +216,11 @@ export function spawn(world: World, rng: Rng, kind?: Kind): Animal {
 }
 
 /** A rare's spawns per minute: its own rate until it has been spotted, then
- *  SPOTTED_PER_MINUTE. A hostile one (Bigfoot) always keeps its own. */
+ *  SPOTTED_PER_MINUTE. A boss (Bigfoot) always keeps its own. */
 export function rareRate(world: World, kind: Kind): number {
   const sp = table[kind].spawn;
   if (!("perMinute" in sp)) return 0;
-  return world.spotted.has(kind) && table[kind].role !== "hostile" ? SPOTTED_PER_MINUTE : sp.perMinute;
+  return world.spotted.has(kind) && !isBoss(kind) ? SPOTTED_PER_MINUTE : sp.perMinute;
 }
 
 // Each rare not alive rolls its per-second chance; at most one rare on screen
@@ -330,7 +330,8 @@ function registerHit(world: World, a: Animal): boolean {
   a.lastHitAt = world.time;
   if (a.hits === 1) a.firstHitAt = world.time;
   a.flash = FLASH;
-  if (a.reaction === undefined || cfg.hit === "flinch") a.reaction = HIT_REACTIONS[cfg.hit].start(a);
+  // A flinch (and the ostrich's pluck, a flinch) restarts on every hit.
+  if (a.reaction === undefined || cfg.hit === "flinch" || cfg.hit === "pluck") a.reaction = HIT_REACTIONS[cfg.hit].start(a);
   a.x -= Math.sign(a.vx) * KNOCKBACK;
   const at = centre(a);
   const finished = a.hits >= a.hp;
@@ -377,6 +378,33 @@ export function resize(world: World, width: number, height: number, sea = SEA_LI
     a.x *= rx;
     a.vx *= rx;
     a.y = restingY({ ...world, height, sea }, a, rest / oldHeight) + bob(a, world);
+  }
+  // Marks on the glass move with the screen (a candy, a splat, a scratch).
+  const ry = height / oldHeight;
+  for (const m of world.glass.marks) {
+    if (m.kind === "scratch") {
+      m.x1 *= rx;
+      m.x2 *= rx;
+      m.cx *= rx;
+      m.y1 *= ry;
+      m.y2 *= ry;
+      m.cy *= ry;
+    } else if (m.kind === "splat") {
+      m.x *= rx;
+      m.y *= ry;
+      for (let i = 0; i < m.outline.length; i += 2) {
+        m.outline[i] *= rx;
+        m.outline[i + 1] *= ry;
+      }
+      for (let i = 0; i < m.flecks.length; i += 3) {
+        m.flecks[i] *= rx;
+        m.flecks[i + 1] *= ry;
+      }
+      for (let i = 0; i < m.drips.length; i += 2) m.drips[i] *= rx;
+    } else {
+      m.x *= rx;
+      m.y *= ry;
+    }
   }
   world.width = width;
   world.height = height;

@@ -390,6 +390,33 @@ describe("world rules", () => {
     expect(a.hits).toBe(1);
   });
 
+  it("a resize moves the candies on the glass with the screen", () => {
+    const { rng, world } = quiet();
+    addCandy(world.glass, 900, 300, 40, 0, randomCandy(rng), false);
+    resize(world, 500, 200);
+    const c = world.glass.marks[0] as { x: number; y: number };
+    expect(c.x).toBeCloseTo(450);
+    expect(c.y).toBeCloseTo(150);
+  });
+
+  it("the ostrich flinches on every hit that does not finish it", () => {
+    const { rng, world } = quiet();
+    const a = spawn(world, rng, "ostrich");
+    a.x = 400;
+    hitAt(world, a);
+    const first = a.reaction;
+    hitAt(world, a);
+    expect(a.reaction).not.toBe(first);
+  });
+
+  it("the gator comes back like the other rares once spotted; Bigfoot keeps his rate", () => {
+    const { world } = quiet();
+    world.spotted.add("gator");
+    world.spotted.add("bigfoot");
+    expect(rareRate(world, "gator")).toBe(SPOTTED_PER_MINUTE);
+    expect(rareRate(world, "bigfoot")).toBe(CREATURES.bigfoot.spawn.perMinute);
+  });
+
   it("only a boss shares the screen with another rare", () => {
     const zero = () => 0;
     const world = createWorld(1000, 400, zero);

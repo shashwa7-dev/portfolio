@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { GameEvent } from "../../events";
 import type { Candy } from "../../fx/glass";
 import { mulberry32 } from "../../rng";
-import { type Animal, createWorld, drain, shoot, spawn, type World } from "../../world";
+import { type Animal, createWorld, drain, resize, shoot, spawn, type World } from "../../world";
 import { stepThreats } from "../index";
 import { CANDY_FLIGHT, type CandyGunState, shotTimeline } from "./candyGun";
 
@@ -99,5 +99,17 @@ describe("candy gun", () => {
     expect(candies(world).length).toBe(12);
     expect(candies(world).every((c) => c.gentle)).toBe(true);
     expect((world.threats[0].state as CandyGunState).flights).toHaveLength(0);
+  });
+
+  it("candies in flight land on screen after the window shrinks", () => {
+    const { rng, world, a } = setup();
+    hit(world, a, rng);
+    run(world, rng, shotTimeline(0.2).fire + 0.02);
+    resize(world, 400, 300);
+    run(world, rng, 2);
+    for (const c of candies(world)) {
+      expect(c.x).toBeLessThanOrEqual(400);
+      expect(c.y).toBeLessThanOrEqual(300);
+    }
   });
 });

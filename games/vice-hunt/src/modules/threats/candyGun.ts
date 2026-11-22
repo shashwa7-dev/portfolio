@@ -91,6 +91,9 @@ const facing = (a: Animal) => (a.vx < 0 ? -1 : 1);
 const toWorld = (a: Animal, p: [number, number]) => gatorToWorld(p, a.x, gatorTop(a), a.w / GATOR.W, facing(a));
 
 function land(s: CandyGunState, world: World, f: Flight): void {
+  // Aimed at the screen as it was: kept on it if the window shrank since.
+  f.x1 = Math.min(world.width - f.size / 2, Math.max(f.size / 2, f.x1));
+  f.y1 = Math.min(world.height - f.size / 2, Math.max(f.size / 2, f.y1));
   addCandy(world.glass, f.x1, f.y1, f.size, f.rot, f.look, s.reduced);
   if (f.spray.hurt) return;
   f.spray.hurt = true;
