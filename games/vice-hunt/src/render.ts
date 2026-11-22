@@ -9,6 +9,7 @@ import { GROUND_LINE } from "./config";
 import { drawBossBar, drawRig } from "./rig/drawRig";
 import { RIG, rigTop, throwArm, walkPose } from "./rig/rig";
 import type { Animal, World } from "./world";
+import { OST_BOX, OST_HIP, OST_WHEELS, drawOstrich, legPoint, ostrichParts, skatePose } from "./modules/ostrich";
 
 const FEATHERS = ["#f7b6cc", "#e8789f", "#fbd3e0"];
 const DUST = ["#d9cbb3", "#bfae92", "#ece2d0"];
@@ -66,6 +67,103 @@ export function addPuff(scene: Scene, world: World, a: Animal, rng: Rng): void {
   else addPoof(scene, cx, a.y + a.h + pose.dy, puff, true, rng);
 }
 
+// Feathers knocked off a roller ostrich by a hit: the tail on the first, the
+// wing and neck fluff on the second. They drift down, swaying, and fade;
+// under reduced motion they fall straight.
+const OSTRICH_FEATHERS = ["#ff8a1f", "#ff3d8b", "#1fe0c4", "#9b5cff"];
+const FEATHER_BOXES: Record<number, { n: number; box: [number, number, number, number] }> = {
+  1: { n: 14, box: [0, 58, 30, 104] },
+  2: { n: 16, box: [26, 62, 92, 92] },
+};
+
+/** Box units (130 x 180, facing right) to world px for a live ostrich. */
+function ostrichAt(a: Animal, bx: number, by: number): [number, number] {
+  const s = a.w / OST_BOX[0];
+  return [a.x + (a.vx < 0 ? OST_BOX[0] - bx : bx) * s, a.y + by * s];
+}
+
+export function addHitFeathers(scene: Scene, a: Animal, rng: Rng, reduced: boolean): void {
+  const spec = FEATHER_BOXES[a.hits];
+  if (!spec) return;
+  const [x0, y0, x1, y1] = spec.box;
+  const k = a.w / 96;
+  for (let i = 0; i < spec.n; i++) {
+    const [x, y] = ostrichAt(a, x0 + rng() * (x1 - x0), y0 + rng() * (y1 - y0));
+    const ang = -Math.PI / 2 + (rng() - 0.5) * Math.PI * 1.6;
+    const sp = reduced ? 0 : (90 + rng() * 160) * k;
+    emit(scene.poofs, {
+      kind: "dot",
+      x,
+      y,
+      vx: Math.cos(ang) * sp,
+      vy: Math.sin(ang) * sp,
+      drag: 2.6,
+      g: 70 * k,
+      life: 2.2 + rng() * 1.2,
+      size: (4 + rng() * 3) * k,
+      spin: reduced ? 0.01 : (rng() - 0.5) * 8 || 0.01, // a spinning dot is a feather
+      color: OSTRICH_FEATHERS[Math.floor(rng() * OSTRICH_FEATHERS.length)],
+    });
+  }
+}
+
+const SPARK = ["#fff3c4", "#f7c46c", "#f49ea3", "#5ad1d6", "#ffffff", "#f7a01c", "#8bff3a", "#ff2d55"];
+
+/** Fireworks off a skater's wheels, sprayed backwards: `strength` dots per
+ *  wheel on average, plus the odd star burst. Shared with the plucked finish
+ *  through `emitSkateSparks`. */
+export function emitSkateSparks(
+  list: Particle[],
+  wheel: (bx: number, by: number) => [number, number],
+  back: 1 | -1, // the direction sparks fly: opposite the facing
+  legAngles: readonly number[],
+  strength: number,
+  k: number,
+  rng: Rng,
+): void {
+  for (const deg of legAngles) {
+    for (const w of OST_WHEELS) {
+      const [bx, by] = legPoint(w, deg);
+      const [x, y] = wheel(bx, by);
+      const n = Math.round(strength * (0.6 + rng()));
+      for (let i = 0; i < n; i++) {
+        emit(list, {
+          kind: "dot",
+          x,
+          y,
+          vx: back * (80 + rng() * 260) * k,
+          vy: -(40 + rng() * 200) * k,
+          g: 520 * k,
+          life: 0.4 + rng() * 0.35,
+          size: (1.4 + rng() * 2.2) * k,
+          color: SPARK[Math.floor(rng() * SPARK.length)],
+        });
+      }
+    }
+  }
+  if (rng() < 0.16 * strength) {
+    const [bx, by] = wheel(OST_HIP[0] - (20 + rng() * 80), 120 + rng() * 40);
+    const color = SPARK[Math.floor(rng() * SPARK.length)];
+    for (let j = 0; j < 10; j++) {
+      const a = (j / 10) * Math.PI * 2;
+      emit(list, { kind: "star", x: bx, y: by, vx: Math.cos(a) * 70 * k, vy: Math.sin(a) * 70 * k, drag: 3, g: 60 * k, life: 0.55, size: 2.2 * k, color });
+    }
+  }
+}
+
+/** Per-frame effects of live creatures: sparks off a fast skater's wheels.
+ *  Nothing under reduced motion. */
+export function stepSceneFx(scene: Scene, world: World, dt: number, rng: Rng, reduced: boolean): void {
+  if (reduced || world.wasted) return;
+  for (const a of world.animals) {
+    if (a.kind !== "ostrich") continue;
+    const mul = a.speedMul ?? 1;
+    if (mul < 1.3 || rng() > (mul - 1) * 30 * dt) continue;
+    const pose = skatePose(a.phase ?? 0, mul);
+    emitSkateSparks(scene.poofs, (bx, by) => ostrichAt(a, bx, by), a.vx < 0 ? 1 : -1, [pose.lN, pose.lF], 0.5, a.w / 96, rng);
+  }
+}
+
 export function stepScene(scene: Scene, dt: number): void {
   stepParticles(scene.poofs, dt, 0);
 }
@@ -89,8 +187,19 @@ function drawBigfoot(ctx: CanvasRenderingContext2D, world: World, a: Animal): vo
   if (a.provoked) drawBossBar(ctx, a.x + a.w / 2, ground - 178 * scale, scale, 1 - a.hits / a.hp);
 }
 
+// The roller ostrich alive: its parts posed for the push phase and speed,
+// minus the feathers its hits have knocked off.
+function drawLiveOstrich(ctx: CanvasRenderingContext2D, scene: Scene, art: Art, a: Animal): void {
+  const pose = skatePose(a.phase ?? 0, a.speedMul ?? 1);
+  const jolt = a.reaction != null ? HIT_REACTIONS[CREATURES[a.kind].hit].pose?.(a.reaction) : undefined;
+  const dir = a.vx < 0 ? -1 : 1;
+  const box = { x: a.x + (jolt?.dx ?? 0) * dir, y: a.y, w: a.w, h: a.h, dir: dir as 1 | -1 };
+  drawOstrich(ctx, art, scene.scratch, box, pose, { ...ostrichParts(a.hits), bare: false, shock: false }, a.flash);
+}
+
 function drawAnimal(ctx: CanvasRenderingContext2D, scene: Scene, world: World, art: Art, a: Animal): void {
   if (a.kind === "bigfoot") return drawBigfoot(ctx, world, a);
+  if (a.kind === "ostrich") return drawLiveOstrich(ctx, scene, art, a);
   const frames = art.sprites[a.kind];
   const cfg = CREATURES[a.kind];
   const move = MOVES[cfg.move];

@@ -22,7 +22,7 @@ export type { Finishing } from "./types";
 
 export const MOVES: Record<MoveId, MoveModule> = moves;
 
-export const HIT_REACTIONS: Record<HitReactionId, HitReactionModule<any>> = { none: noReaction, flinch, garland, pluck: flinch };
+export const HIT_REACTIONS: Record<HitReactionId, HitReactionModule<any>> = { none: noReaction, flinch, garland, pluck: flinch }; // the ostrich flinches; its feathers fly as scene particles (render.ts)
 
 export const THREATS: Record<ThreatId, ThreatModule<any>> = {
   "claw-swipe": clawSwipe,

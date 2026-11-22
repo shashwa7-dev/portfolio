@@ -44,6 +44,7 @@ export type Animal = {
   spin?: number;
   eyes?: "cool" | "squint" | "shock" | "wink";
   speedMul?: number; // the ostrich's current skate speed, eased (modules/moves.ts)
+  phase?: number; // a skater's or walker's step phase, radians (modules/moves.ts)
 };
 
 export type World = {

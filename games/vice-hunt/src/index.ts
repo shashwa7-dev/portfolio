@@ -4,7 +4,7 @@ import { createGun } from "./gun";
 import { MAX_DT, SEA_LINE } from "./config";
 import { drawGlass, shakeOffset, stepGlass } from "./fx/glass";
 import { resolveFinish, stepFinishing, stepThreats, THREATS } from "./modules";
-import { addPuff, createScene, drawScene, stepScene } from "./render";
+import { addHitFeathers, addPuff, createScene, drawScene, stepScene, stepSceneFx } from "./render";
 import { mulberry32 } from "./rng";
 import { createSound, type SfxUrls } from "./sound";
 import { loadedArt, preloadHunt, svgUrl } from "./sprites";
@@ -260,14 +260,17 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
       sound.empty(); // reloading: dry click, no shot
       return;
     }
-    const { hit, finished } = shoot(world, x, y, rng);
+    const { hit, finished, blocked } = shoot(world, x, y, rng);
     gun.fire();
     sound.shot();
     if (finished && hit) {
       if (CREATURES[hit.kind].finish === "falls") addPuff(scene, world, hit, rng);
       sound.kill();
     } else if (hit) {
+      hitFx(hit);
       sound.hit();
+    } else if (blocked) {
+      sound.hit(); // a candy knocked off the glass
     }
     flush(); // the shot's hit, kill, penalty and callouts, straight away
     if (destroyed) return; // a callback ended the hunt
@@ -331,17 +334,24 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
     }
   };
 
+  // A non-finishing hit's effects in the scene (the ostrich's feathers).
+  const hitFx = (a: (typeof world.animals)[number]) => {
+    if (CREATURES[a.kind].hit === "pluck") addHitFeathers(scene, a, rng, reducedMotion);
+  };
+
   const devHit = new Set(options.hit ?? []);
   const devFinish = () => {
     for (const a of world.animals) {
       if (!devHit.has(a.kind) || a.x < 0 || a.x + a.w > world.width) continue;
-      shoot(world, a.x + a.w / 2, a.y + a.h * 0.3, rng);
+      if (shoot(world, a.x + a.w / 2, a.y + a.h * 0.3, rng).hit === a) hitFx(a);
       devHit.delete(a.kind);
     }
     if (devLeft.size === 0) return;
     for (const a of [...world.animals]) {
       if (!devLeft.has(a.kind) || a.x < 0 || a.x + a.w > world.width) continue;
-      if (!shoot(world, a.x + a.w / 2, a.y + a.h * 0.3, rng).finished) continue;
+      const shot = shoot(world, a.x + a.w / 2, a.y + a.h * 0.3, rng);
+      if (shot.hit === a && !shot.finished) hitFx(a);
+      if (!shot.finished) continue;
       devLeft.delete(a.kind);
       if (CREATURES[a.kind].finish === "falls") addPuff(scene, world, a, rng);
     }
@@ -359,6 +369,7 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
     stepFinishing(world, dt, reducedMotion, rng);
     stepThreats(world, dt, rng, reducedMotion);
     stepGlass(world.glass, Math.min(dt, MAX_DT));
+    stepSceneFx(scene, world, Math.min(dt, MAX_DT), rng, reducedMotion);
     stepScene(scene, Math.min(dt, MAX_DT));
     flush();
     if (destroyed) return; // a callback ended the hunt

@@ -1,15 +1,18 @@
-import { EXTRA, type ExtraId } from "./art/rares";
+import { OSTRICH_EXTRA, type OstrichPart } from "./art/ostrich";
+import { EXTRA as RARE_EXTRA, type ExtraId as RareExtraId } from "./art/rares";
 import { SPRITES } from "./art/sprites";
 import { KINDS, type Kind } from "./creatures";
 
-export type { ExtraId } from "./art/rares";
+export type ExtraId = RareExtraId | OstrichPart;
+const EXTRA: Record<ExtraId, string> = { ...RARE_EXTRA, ...OSTRICH_EXTRA };
 
 export type Art = {
   /** Every kind's frames; Bigfoot's two are for icons and the reduced-motion
    *  fallback (in play he is a rig). */
   sprites: Record<Kind, readonly HTMLImageElement[]>;
   /** Special states and props: the cow's garland, the shark rocket, the
-   *  empty UFO, the alien's parachute, the tiger's face and paw, the pile, a fish. */
+   *  empty UFO, the alien's parachute, the tiger's face and paw, the pile, a fish,
+   *  the roller ostrich's parts. */
   extra: Record<ExtraId, HTMLImageElement>;
 };
 

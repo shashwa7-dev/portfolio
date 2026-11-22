@@ -5,6 +5,7 @@ import type { Rng } from "../rng";
 import { sinkOffset } from "../surface";
 import type { Animal, World } from "../world";
 import { frameOf } from "./draw";
+import { SKATE_EASE, SKATE_SPEED, STRIDE } from "./ostrich";
 import type { MoveModule } from "./types";
 
 const RAD = Math.PI / 180;
@@ -102,5 +103,21 @@ const hover: MoveModule = {
 // Bigfoot is drawn by his rig (Task 9).
 const stomp: MoveModule = { y: () => 0, frame: frameOf };
 
-// Placeholders until their own modules land (plan Tasks 3 and 5).
-export const moves = { hop, dash, glide, float, swoop, strut, surface, hover, stomp, skate: strut, swagger: stomp };
+// The roller ostrich: faster with every hit (SKATE_SPEED), easing up to the
+// new pace. Its bob and push phase live on the animal and are drawn, not
+// added to y, so the lane's resting y stays recoverable.
+const skate: MoveModule = {
+  y: () => 0,
+  frame: frameOf,
+  advance(a: Animal, dt: number) {
+    const target = SKATE_SPEED[Math.min(a.hits, SKATE_SPEED.length - 1)];
+    const mul = (a.speedMul ??= 1);
+    a.speedMul = mul + (target - mul) * Math.min(1, dt * SKATE_EASE);
+    a.phase = (a.phase ?? 0) + ((dt * Math.pow(a.speedMul, 0.8)) / STRIDE) * Math.PI * 2;
+    a.x += a.vx * (a.speedMul - 1) * dt;
+    return true;
+  },
+};
+
+// Placeholder until its own module lands (plan Task 5).
+export const moves = { hop, dash, glide, float, swoop, strut, surface, hover, stomp, skate, swagger: stomp };

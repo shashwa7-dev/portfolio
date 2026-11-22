@@ -53,7 +53,7 @@ The owner said to proceed with the build after approving both mockups; approach 
 
 **Hit 3, finish `plucked` (+700).** Every remaining feather blows off. The bird goes bare and shocked, a "!!" pops over its head, and it shivers for about 0.5 s while its skates start to spark. Then it crouches (a quick squash), and rushes off in its facing direction, accelerating hard, legs pumping, leaning forward, with fireworks sprayed backwards off every wheel: sparks, little star bursts, white smoke. It leaves the screen and the finish ends when it is off screen and the last particle is gone.
 
-**Gentle (reduced motion).** No speed-ups beyond the base pace, no sparks. Feathers fall straight down and fade. On the last hit the bare bird fades out where it stands over about 0.7 s.
+**Gentle (reduced motion).** It still speeds up (that is play, not motion), but throws no sparks. Feathers fall straight down and fade. On the last hit the bare bird fades out where it stands over about 0.7 s.
 
 ## The candy gator
 
