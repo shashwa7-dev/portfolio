@@ -62,7 +62,7 @@ hearts, ammo, chips) stays in Anton. No em-dashes in copy.
 
 ## Not doing
 
-Changing the HUD, results card or Bigfoot banner fonts. Touch support.
+Changing the HUD or Bigfoot banner fonts (the results card was redone later: see the addendum). Touch support.
 Sound for the menus.
 
 ## Left to the builder
