@@ -104,8 +104,6 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
   const [pops, setPops] = useState<Pop[]>([]);
   const [shout, setShout] = useState<{ id: number; text: string } | null>(null);
   const [bigfoot, setBigfoot] = useState(false);
-  // Counts Bigfoot's entrances: each one sweeps the banner across once.
-  const [banner, setBanner] = useState(0);
   const [timeChoice, setTimeChoice] = useState<TimeChoice>("auto");
   const [autoTime] = useState(() => timeOfDay(new Date().getHours()));
   // Every enabled creature, in the registry's order: the HUD's chips and
@@ -213,7 +211,6 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
         onAmmo: (rounds, reloading) => setAmmo({ rounds, reloading }),
         onBigfoot: (present) => {
           setBigfoot(present);
-          if (present) setBanner((n) => n + 1);
         },
         onPause: () => {
           hunt.pause();
@@ -301,8 +298,7 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
       <div aria-hidden className={s.vignette} />
       <div ref={host} className={s.host} />
       <div aria-hidden className={s.edge} data-on={bigfoot ? "" : undefined} />
-      {/* A new key flashes the edges again for each hit taken (prefixed: the
-          banner below is a keyed sibling too). */}
+      {/* A new key flashes the edges again for each hit taken. */}
       {hurt > 0 && <div key={`hurt-${hurt}`} aria-hidden className={s.hurt} />}
 
       <div aria-hidden className={s.pops}>
@@ -356,23 +352,13 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
         icons={icons}
       />
 
-      {banner > 0 && phase === "play" && (
-        <div key={banner} role="status" className={s.banner} onAnimationEnd={() => setBanner(0)}>
-          <b className={s.display}>BIGFOOT SPOTTED</b>
-          <small className={s.mono}>TWENTY HITS TO TAKE HIM DOWN</small>
-        </div>
-      )}
-
       <div aria-hidden className={`${s.bar} ${s.barTop}`} />
       <div aria-hidden className={`${s.bar} ${s.barBottom}`} />
       {phase === "entry" && <Entry onStart={() => setPhase("play")} />}
       {phase === "play" && paused && (
         <Pause
           onResume={resume}
-          onEnd={() => {
-            setBanner(0);
-            setPhase("results");
-          }}
+          onEnd={() => setPhase("results")}
           onBack={() => close.current()}
         />
       )}

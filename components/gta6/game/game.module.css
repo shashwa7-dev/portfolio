@@ -13,7 +13,7 @@
  *
  * Stacking inside the overlay: scene (0), vignette (1), the game's layer
  * (2), red edges (3: Bigfoot's pulse, a hit's flash), pop-ups (4), HUD (5),
- * banner (6), bars, title and WASTED (7), results (8).
+ * bars and WASTED (7), title, pause and results (8).
  */
 
 .overlay {
@@ -723,39 +723,6 @@
   text-shadow: 0 1px 2px #000;
 }
 
-/* Bigfoot's banner: sweeps in, holds, sweeps out. */
-.banner {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 40%;
-  z-index: 6;
-  pointer-events: none;
-  padding: 0.75rem 0;
-  text-align: center;
-  background: linear-gradient(90deg, transparent, rgba(160, 20, 40, 0.85) 20%, rgba(160, 20, 40, 0.85) 80%, transparent);
-  animation: banner-sweep var(--duration-gta-banner) var(--ease-out) forwards;
-}
-.banner b {
-  display: block;
-  font-size: 3rem;
-  line-height: 1;
-  letter-spacing: 0.08em;
-  text-shadow: 0 3px 0 #000;
-}
-.banner small {
-  display: block;
-  margin-top: 0.35rem;
-  font-size: 0.75rem;
-  opacity: 0.85;
-}
-@keyframes banner-sweep {
-  0% { opacity: 0; transform: translateX(-60%); }
-  14% { opacity: 1; transform: none; }
-  82% { opacity: 1; transform: none; }
-  100% { opacity: 0; transform: translateX(60%); }
-}
-
 /* WASTED: red, over the greyed scene, until its hold ends (Wasted.tsx). */
 .wasted {
   position: absolute;
@@ -1014,8 +981,7 @@
   }
   /* Kept as plain fades so their ends still fire and clear them. */
   .pop,
-  .callout,
-  .banner { animation-name: fade-out; }
+  .callout { animation-name: fade-out; }
   /* The neon comes on without the stutter. */
   .titleVice,
   .titleHunt { animation-name: fade-in; }

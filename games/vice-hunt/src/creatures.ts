@@ -95,7 +95,8 @@ export const CREATURES = {
   },
   bigfoot: {
     enabled: true,
-    role: "hostile", lane: "ground", size: [109, 153], speed: [0.05, 0.075], spawn: { perMinute: 0.22, after: 30 },
+    role: "hostile", lane: "ground", size: [136, 191], // 25% up on [109, 153] (owner, 2026-11-22)
+    speed: [0.05, 0.075], spawn: { perMinute: 0.22, after: 30 },
     rule: { hits: [20, 20] }, move: "stomp", hit: "flinch", finish: "jet", points: 3000,
     threat: { kind: "throws", perHit: 0.5, max: 1.5, every: 1.5, attack: "throw", provokedBy: "first-hit" },
     boss: { bar: true },

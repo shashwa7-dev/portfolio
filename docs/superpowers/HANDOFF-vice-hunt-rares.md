@@ -46,12 +46,12 @@ Verified by eye (muted headless Chrome, `--mute-audio --enable-automation`): the
 
 - The merman's foam line where he breaks the surface (spec, Merman) is not drawn.
 - Dev helper only: `?shoot=ufo` stops shooting if a creature in front takes one of its shots and dies (it checks `finished`, not which animal finished). Re-run the page.
-- Under reduced motion the entry title and the Bigfoot banner vanish at once (the site's global rule; code from `gta6-mod`), and the RARE counter's glow does not show. The pop-ups, the red edge flash and WASTED do keep their time.
+- Under reduced motion the RARE counter's glow does not show. The pop-ups, the red edge flash and WASTED do keep their time.
 - Hand-listed kinds remain in three places: `world.ts` ("ufo" has a secret hit total), `index.ts` `SCORE_ORDER` (the package's own score strip, dev page only), and `render.ts` / `modules/draw.ts` ("bigfoot" for the rig).
 - Pop-ups are `aria-hidden`; screen readers hear WASTED but not each hit taken.
 - The tiger's face and paw keep the size they had when the claw began if the window is resized mid-claw.
 - The spec's "Callbacks added to HuntOptions" still shows `onHit(kind, hitNumber, x, y)` (the code follows the plan: `onHit(kind, n, of, x, y)`), and its `FinishModule` sketch lacks the glass parameter.
-- The Bigfoot banner's "TWENTY HITS" is app copy, not read from the registry.
+- The "BIGFOOT SPOTTED" banner was removed (owner, 2026-11-22): players discover him. He is 25% bigger (`size: [136, 191]`).
 
 ## How to check visually (silent)
 

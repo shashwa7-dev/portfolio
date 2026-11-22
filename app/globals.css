@@ -493,7 +493,6 @@
   --duration-gta-hud-in: 500ms;
   --duration-gta-pop: 900ms;
   --duration-gta-callout: 1100ms;
-  --duration-gta-banner: 2600ms;
   --duration-gta-edge-pulse: 1200ms;
   /* Vice Hunt's health and rares: the hearts jump when one is lost while the
      screen's edges flash red; the RARE counter glows once when a rare comes
