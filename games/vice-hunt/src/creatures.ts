@@ -7,7 +7,9 @@
 export type Lane = "sky" | "ground" | "sea";
 /** Inclusive hit range; `within`: seconds for the rest after the first, else the count resets. */
 export type HitRule = { hits: readonly [number, number]; within?: number };
-export type Spawn = { weight: number } | { perMinute: number; after?: number };
+/** Commons by `weight`; rares roll `perMinute`, not before `after` seconds,
+ *  and once spotted at `spotted` a minute (default SPOTTED_PER_MINUTE). */
+export type Spawn = { weight: number } | { perMinute: number; after?: number; spotted?: number };
 
 export type MoveId = "hop" | "dash" | "glide" | "float" | "swoop" | "strut" | "surface" | "hover" | "stomp" | "skate" | "swagger";
 export type HitReactionId = "none" | "flinch" | "garland" | "pluck";
@@ -111,7 +113,8 @@ export const CREATURES = {
   ostrich: {
     enabled: true,
     // Skates faster with every hit (modules/moves.ts, SKATE_SPEED).
-    role: "trophy", lane: "ground", size: [96, 133], speed: [0.095, 0.105], spawn: { perMinute: 0.4 },
+    // Rarer than the other trophies, even once spotted (owner, 2026-11-23).
+    role: "trophy", lane: "ground", size: [96, 133], speed: [0.095, 0.105], spawn: { perMinute: 0.25, spotted: 0.4 },
     rule: { hits: [3, 3] }, move: "skate", hit: "pluck", finish: "plucked", points: 700,
   },
   gator: {

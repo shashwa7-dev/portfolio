@@ -26,7 +26,7 @@ describe("creature registry", () => {
   it("has the roller ostrich and the candy gator", () => {
     expect(CREATURES.ostrich).toMatchObject({
       enabled: true, role: "trophy", lane: "ground", rule: { hits: [3, 3] }, points: 700,
-      spawn: { perMinute: 0.4 }, size: [96, 133], move: "skate", hit: "pluck", finish: "plucked",
+      spawn: { perMinute: 0.25, spotted: 0.4 }, size: [96, 133], move: "skate", hit: "pluck", finish: "plucked",
     });
     expect(CREATURES.gator).toMatchObject({
       enabled: true, role: "hostile", lane: "ground", rule: { hits: [5, 6] }, points: 1200,

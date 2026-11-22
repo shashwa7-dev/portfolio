@@ -409,6 +409,13 @@ describe("world rules", () => {
     expect(a.reaction).not.toBe(first);
   });
 
+  it("the ostrich stays rarer: 0.25 a minute, 0.4 once spotted", () => {
+    const { world } = quiet();
+    expect(rareRate(world, "ostrich")).toBe(0.25);
+    world.spotted.add("ostrich");
+    expect(rareRate(world, "ostrich")).toBe(0.4);
+  });
+
   it("the gator comes back like the other rares once spotted; Bigfoot keeps his rate", () => {
     const { world } = quiet();
     world.spotted.add("gator");

@@ -216,11 +216,13 @@ export function spawn(world: World, rng: Rng, kind?: Kind): Animal {
 }
 
 /** A rare's spawns per minute: its own rate until it has been spotted, then
- *  SPOTTED_PER_MINUTE. A boss (Bigfoot) always keeps its own. */
+ *  its `spotted` rate (default SPOTTED_PER_MINUTE). A boss (Bigfoot) always
+ *  keeps its own. */
 export function rareRate(world: World, kind: Kind): number {
   const sp = table[kind].spawn;
   if (!("perMinute" in sp)) return 0;
-  return world.spotted.has(kind) && !isBoss(kind) ? SPOTTED_PER_MINUTE : sp.perMinute;
+  if (!world.spotted.has(kind) || isBoss(kind)) return sp.perMinute;
+  return "spotted" in sp && sp.spotted !== undefined ? sp.spotted : SPOTTED_PER_MINUTE;
 }
 
 // Each rare not alive rolls its per-second chance; at most one rare on screen

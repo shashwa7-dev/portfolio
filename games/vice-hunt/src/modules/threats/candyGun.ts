@@ -172,7 +172,8 @@ export const candyGun: ThreatModule<CandyGunState> = {
         s.shotT = 0;
         s.sprayed = false;
         s.shot = shotTimeline(angerOf(a.hits, a.hp));
-        const [hx, hy] = toWorld(a, gatorPoints(liveGator(a).pose, liveGator(a).look).headTop);
+        const live = liveGator(a);
+        const [hx, hy] = toWorld(a, gatorPoints(live.pose, live.look).headTop);
         out.push({ type: "callout", text: GATOR_LINES[Math.min(GATOR_LINES.length - 1, s.answered - 1)], x: hx, y: hy });
       }
       if (s.shotT >= 0) {

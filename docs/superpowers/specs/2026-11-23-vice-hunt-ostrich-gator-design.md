@@ -42,7 +42,7 @@ The owner said to proceed with the build after approving both mockups; approach 
 | Lane | ground |
 | Hits | 3 |
 | Points | 700 on the third hit (my call; between the shark's 600 and the UFO's 1000) |
-| Rarity | 0.4 per minute, like the shark (my call) |
+| Rarity | 0.25 per minute, and 0.4 once spotted, where other rares come back once a minute (owner, 2026-11-23: it showed up too often) |
 | Size | 96 x 133 px at 1x (the art's 130 x 180 box) |
 
 **Look (owner: "very vibrant", look B, Sunset Leopard).** The body has an orange-to-pink gradient with purple leopard rosettes. The tail has teal and violet plumes, and the wing is pink with a teal tip line. The neck is golden with orange rings, and the head is golden with a violet crest and an orange-red beak. Roller skates: purple boots, teal wheels. Plucked: bare pink skin with goosebumps, shocked eyes, beak open, a blush; the neck, head colour and skates keep their colours so it still reads as the same bird.
@@ -76,7 +76,7 @@ The owner said to proceed with the build after approving both mockups; approach 
 **Shooting back: the candy gun.** Every hit that does not finish him starts one shot. Hits that land while he is already shooting are counted, and queue one more shot straight after.
 - He stops walking, draws the gun into his hand, raises his arm to aim (the elbow straightens, the bicep bulges), squints and fires. While calm he twirls the gun as he draws and blows the "smoke" off afterwards with a wink; once anger passes halfway he skips the show and draws faster (the timeline shrinks by up to 1.9x).
 - The gun is a gold revolver with a pink grip and a long red-and-white candy-cane barrel with a pink rounded tip (owner). There is no fire: a pink sugar puff and coloured sparkles at the tip, and "FWUMP!".
-- One shot sprays `round(10 + 10 x anger)` candies, so 12 after the first hit and up to 20 when red (owner: "10, 20 candies"; anger is already above 0 on the first shot, as in the approved mockup). They tumble at the camera, growing, staggered by 25 ms each, spread around the middle of the screen (wider for bigger sprays).
+- One shot sprays `round(10 + 10 x anger)` candies, so 12 or 13 after the first hit (6 or 5 hits to finish him) and up to 20 when red (owner: "10, 20 candies"; anger is already above 0 on the first shot, as in the approved mockup). They tumble at the camera, growing, staggered by 25 ms each, spread around the middle of the screen (wider for bigger sprays).
 - Candies come in five kinds, in the game's bright colours: a wrapped sweet, a swirl lollipop, a peppermint, a gumdrop and a candy heart. Stuck candies are 32 to 52 px across at a 1280 px stage (owner, 2026-11-23: "a bit smaller" than the mockup's 46 to 76).
 - Each candy lands on the glass with a small squash and sticks for 4 s. Then it slides down a little and fades over 0.7 s.
 - **Candies take shots.** A click on a stuck candy knocks it off the glass (it pops off with a spin and falls). The round is spent and nothing behind the candy is hit. This is the owner's "making it difficult for us to hit it".

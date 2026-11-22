@@ -52,32 +52,38 @@ function line(ctx: CanvasRenderingContext2D, d: string, color: string, lw: numbe
 }
 
 const circle = (r: number, cx = 0, cy = 0) => `M${cx + r} ${cy} A${r} ${r} 0 1 0 ${cx - r} ${cy} A${r} ${r} 0 1 0 ${cx + r} ${cy} Z`;
+// Built once: the shapes are drawn hundreds of times a frame in a burst.
+const C11 = circle(11);
+const C12 = circle(12);
+const C14 = circle(14);
+const C3 = circle(3);
+const SUGAR = [[-5, -4], [3, -7], [6, 2], [-2, 4], [-7, 5]].map(([x, y]) => circle(1.2, x, y));
 
 function wrapped(ctx: CanvasRenderingContext2D, c: CandyLook): void {
   fill(ctx, "M-12 0 L-22 -9 L-19 0 L-22 9 Z M12 0 L22 -9 L19 0 L22 9 Z", c.color2);
-  fill(ctx, circle(11), c.color);
+  fill(ctx, C11, c.color);
   line(ctx, "M-6 -8 C-2 -2 2 2 6 8 M-10 -2 C-6 2 -2 6 2 10 M-2 -10 C2 -6 6 -2 10 2", "#fff", 2.4, 0.8);
 }
 
 function lollipop(ctx: CanvasRenderingContext2D, c: CandyLook): void {
   line(ctx, "M0 12 L0 27", OUT, 5.4);
   line(ctx, "M0 12 L0 27", "#f4efe6", 3);
-  fill(ctx, circle(14), c.color);
+  fill(ctx, C14, c.color);
   line(ctx, "M0 -2 a2 2 0 1 1 -2 2 a4 4 0 1 1 4 4 a6 6 0 1 1 -6 -6 a8 8 0 1 1 8 8 a10 10 0 1 1 -10 -10", "#fff", 2.4);
 }
 
 function peppermint(ctx: CanvasRenderingContext2D, c: CandyLook): void {
-  fill(ctx, circle(12), "#fff", false);
+  fill(ctx, C12, "#fff", false);
   fill(ctx, "M0 0 L0 -12 A12 12 0 0 1 10.4 -6 Z M0 0 L10.4 6 A12 12 0 0 1 0 12 Z M0 0 L-10.4 6 A12 12 0 0 1 -10.4 -6 Z", c.color, false);
-  line(ctx, circle(12), OUT, 2);
-  fill(ctx, circle(3), "#fff", true, 1);
+  line(ctx, C12, OUT, 2);
+  fill(ctx, C3, "#fff", true, 1);
 }
 
 function gumdrop(ctx: CanvasRenderingContext2D, c: CandyLook): void {
   fill(ctx, "M-12 10 C-13 -2 -8 -12 0 -12 C8 -12 13 -2 12 10 Z", c.color);
   ctx.save();
   ctx.globalAlpha *= 0.85;
-  for (const [x, y] of [[-5, -4], [3, -7], [6, 2], [-2, 4], [-7, 5]]) fill(ctx, circle(1.2, x, y), "#fff", false);
+  for (const d of SUGAR) fill(ctx, d, "#fff", false);
   ctx.restore();
   line(ctx, "M-6 -8 C-4 -10 -2 -10 0 -10", "#fff", 2);
 }

@@ -135,6 +135,12 @@ function pop(s: CandyPopState, out: Parameters<FinishModule<CandyPopState>["step
   );
 }
 
+// The falling bandana's paths, built on first use (constants after that).
+let bandana: { cloth: Path2D; tails: Path2D } | null = null;
+const bandanaPaths = () =>
+  (bandana ??= { cloth: new Path2D("M2 20 C4 6 22 0 38 8 C26 10 14 14 2 20 Z"), tails: new Path2D("M4 19 L-2 28 M6 18 L4 29") });
+const FLASH = 0.12; // world.ts's hit flash
+
 function drawItem(ctx: CanvasRenderingContext2D, it: Item, k: number): void {
   const a = it.age / it.life;
   ctx.save();
@@ -149,12 +155,12 @@ function drawItem(ctx: CanvasRenderingContext2D, it: Item, k: number): void {
     ctx.translate(-20, -15);
     ctx.fillStyle = "#2f6bff";
     ctx.lineWidth = 1.6;
-    const p = new Path2D("M2 20 C4 6 22 0 38 8 C26 10 14 14 2 20 Z");
-    ctx.fill(p);
-    ctx.stroke(p);
+    const { cloth, tails } = bandanaPaths();
+    ctx.fill(cloth);
+    ctx.stroke(cloth);
     ctx.strokeStyle = "#1f4fd0";
     ctx.lineWidth = 3;
-    ctx.stroke(new Path2D("M4 19 L-2 28 M6 18 L4 29"));
+    ctx.stroke(tails);
   } else {
     ctx.fillStyle = "#ffcc33";
     ctx.lineWidth = 1.8;
@@ -177,7 +183,7 @@ function draw(ctx: CanvasRenderingContext2D, s: CandyPopState): void {
   if (!s.popped && s.alpha > 0) {
     const [px, py] = PIVOT;
     drawGator(ctx, s.pose, s.look, s.x, s.top + s.lift, s.scale, s.dir < 0, { rot: s.rot * DEG, px, py, alpha: s.alpha });
-    if (s.flash > 0) drawGator(ctx, s.pose, s.look, s.x, s.top + s.lift, s.scale, s.dir < 0, { rot: s.rot * DEG, px, py, white: true, alpha: Math.min(1, s.flash / 0.12) });
+    if (s.flash > 0) drawGator(ctx, s.pose, s.look, s.x, s.top + s.lift, s.scale, s.dir < 0, { rot: s.rot * DEG, px, py, white: true, alpha: Math.min(1, s.flash / FLASH) });
   }
   if (s.popped && s.popT < RING_LIFE) {
     const e = 1 - (1 - s.popT / RING_LIFE) ** 3;
