@@ -22,11 +22,12 @@ export type { Finishing } from "./types";
 
 export const MOVES: Record<MoveId, MoveModule> = moves;
 
-export const HIT_REACTIONS: Record<HitReactionId, HitReactionModule<any>> = { none: noReaction, flinch, garland };
+export const HIT_REACTIONS: Record<HitReactionId, HitReactionModule<any>> = { none: noReaction, flinch, garland, pluck: flinch };
 
 export const THREATS: Record<ThreatId, ThreatModule<any>> = {
   "claw-swipe": clawSwipe,
   throw: throwAt,
+  "candy-gun": { start: () => null, step: () => {}, done: () => true, draw: () => {} }, // placeholder (plan Task 6)
 };
 
 export const FINISHES: Record<FinishId, FinishModule<any>> = {
@@ -43,6 +44,11 @@ export const FINISHES: Record<FinishId, FinishModule<any>> = {
   "fountain-gentle": fountainGentle,
   "crashes-gentle": crashesGentle,
   "jet-gentle": jetGentle,
+  // Placeholders (plan Tasks 4 and 7).
+  plucked: rocket,
+  "plucked-gentle": rocketGentle,
+  "candy-pop": rocket,
+  "candy-pop-gentle": rocketGentle,
 };
 
 // The one place `reduced` is resolved: step and draw both use it.

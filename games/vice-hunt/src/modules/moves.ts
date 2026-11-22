@@ -102,4 +102,5 @@ const hover: MoveModule = {
 // Bigfoot is drawn by his rig (Task 9).
 const stomp: MoveModule = { y: () => 0, frame: frameOf };
 
-export const moves = { hop, dash, glide, float, swoop, strut, surface, hover, stomp };
+// Placeholders until their own modules land (plan Tasks 3 and 5).
+export const moves = { hop, dash, glide, float, swoop, strut, surface, hover, stomp, skate: strut, swagger: stomp };

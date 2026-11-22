@@ -36,6 +36,14 @@ export type Animal = {
   flash: number;
   reaction?: unknown; // hit-reaction state (garland, flinch), see modules/reactions.ts
   throwK?: number; // 0..1 into a throw (a provoked Bigfoot), set by modules/threats/throw.ts
+  // A gator shooting back, set by modules/threats/candyGun.ts: 0..1 into the
+  // shot (undefined when not shooting), how far the gun arm is up (0..1), the
+  // gun's twirl in degrees and his eyes.
+  shootK?: number;
+  aim?: number;
+  spin?: number;
+  eyes?: "cool" | "squint" | "shock" | "wink";
+  speedMul?: number; // the ostrich's current skate speed, eased (modules/moves.ts)
 };
 
 export type World = {
@@ -74,8 +82,9 @@ export function emptyKills(): Kills {
 
 const table: Record<Kind, Creature> = CREATURES;
 const RARES = KINDS.filter((k) => isRare(k) && isEnabled(k));
-// Hostile rares (Bigfoot) may share the screen with one other rare.
-const sharesScreen = (k: Kind) => table[k].role === "hostile";
+// A boss (Bigfoot) may share the screen with one other rare.
+const isBoss = (k: Kind) => "boss" in table[k];
+const sharesScreen = isBoss;
 
 // Vertical offset from the lane's resting y, a pure function of the animal's
 // age (or the merman's surface state) so the resting y can be recovered by
@@ -315,7 +324,7 @@ function registerHit(world: World, a: Animal): boolean {
   a.x -= Math.sign(a.vx) * KNOCKBACK;
   const at = centre(a);
   const finished = a.hits >= a.hp;
-  const secret = a.kind === "ufo" || cfg.role === "hostile"; // UFO's total is secret; Bigfoot has a bar
+  const secret = a.kind === "ufo" || isBoss(a.kind); // UFO's total is secret; Bigfoot has a bar
   world.events.push(
     secret
       ? { type: "hit", kind: a.kind, n: a.hits, ...at }
@@ -328,7 +337,8 @@ function registerHit(world: World, a: Animal): boolean {
   }
   if (cfg.role === "hostile" && !a.provoked) {
     a.provoked = true;
-    world.events.push({ type: "callout", text: "ANGRY!", x: at.x, y: a.y });
+    // Bigfoot's shout; the gator has his own lines (threats/candyGun.ts).
+    if (cfg.threat.kind === "throws") world.events.push({ type: "callout", text: "ANGRY!", x: at.x, y: a.y });
   }
   if (a.surface && a.hits === 1 && !finished) duck(a.surface);
 

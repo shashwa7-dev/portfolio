@@ -33,6 +33,8 @@ export const DEATHS: Record<Kind, { duration: number; puff: Puff }> = {
   shark: { duration: 0.8, puff: { at: 0, style: "dust", count: 5, life: 0.35 } },
   merman: { duration: 0.8, puff: { at: 0, style: "dust", count: 5, life: 0.35 } },
   ufo: { duration: 0.8, puff: { at: 0, style: "dust", count: 5, life: 0.35 } },
+  ostrich: { duration: 0.8, puff: { at: 0, style: "feather", count: 5, life: 0.8 } },
+  gator: { duration: 0.8, puff: { at: 0, style: "dust", count: 5, life: 0.35 } },
 };
 
 const RABBIT = { air: 0.45, hop: 36, drift: 20, bounce: 6, bounceTime: 0.15, fadeFrom: 0.55 };

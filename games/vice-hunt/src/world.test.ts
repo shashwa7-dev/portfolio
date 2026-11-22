@@ -363,6 +363,33 @@ describe("world rules", () => {
     expect(ofType(events, "hit").every((e) => !("of" in e))).toBe(true);
   });
 
+  it("the gator shows its hit total, is provoked, and only Bigfoot shouts ANGRY!", () => {
+    const { rng, world } = quiet();
+    const a = spawn(world, rng, "gator");
+    a.x = 400;
+    drain(world);
+    hitAt(world, a);
+    expect(a.provoked).toBe(true);
+    const events = drain(world);
+    expect(ofType(events, "hit")).toMatchObject([{ kind: "gator", n: 1, of: a.hp }]);
+    expect(ofType(events, "callout")).toEqual([]);
+  });
+
+  it("only a boss shares the screen with another rare", () => {
+    const zero = () => 0;
+    const world = createWorld(1000, 400, zero);
+    world.nextSpawn = Infinity;
+    world.time = 31;
+    const g = spawn(world, zero, "gator");
+    g.vx = 0; // stays on screen
+    g.x = 400;
+    for (let i = 0; i < 10 * 60; i++) {
+      step(world, DT, zero);
+      expect(world.animals.filter((a) => isRare(a.kind) && a.kind !== "bigfoot" && a.kind !== "gator")).toEqual([]);
+    }
+    expect(world.animals.some((a) => a.kind === "bigfoot")).toBe(true);
+  });
+
   it("damage clamps at 0 and emits wasted once", () => {
     const { world } = quiet();
     expect(world.hearts).toBe(3);

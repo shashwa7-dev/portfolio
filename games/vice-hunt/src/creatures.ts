@@ -9,13 +9,14 @@ export type Lane = "sky" | "ground" | "sea";
 export type HitRule = { hits: readonly [number, number]; within?: number };
 export type Spawn = { weight: number } | { perMinute: number; after?: number };
 
-export type MoveId = "hop" | "dash" | "glide" | "float" | "swoop" | "strut" | "surface" | "hover" | "stomp";
-export type HitReactionId = "none" | "flinch" | "garland";
+export type MoveId = "hop" | "dash" | "glide" | "float" | "swoop" | "strut" | "surface" | "hover" | "stomp" | "skate" | "swagger";
+export type HitReactionId = "none" | "flinch" | "garland" | "pluck";
 export type FinishId =
-  | "falls" | "deflates" | "pounces" | "rocket" | "fountain" | "crashes" | "jet"
+  | "falls" | "deflates" | "pounces" | "rocket" | "fountain" | "crashes" | "jet" | "plucked" | "candy-pop"
   // The gentle versions used under reduced motion (a module's `reduced`).
-  | "deflates-gentle" | "pounces-gentle" | "rocket-gentle" | "fountain-gentle" | "crashes-gentle" | "jet-gentle";
-export type ThreatId = "claw-swipe" | "throw";
+  | "deflates-gentle" | "pounces-gentle" | "rocket-gentle" | "fountain-gentle" | "crashes-gentle" | "jet-gentle"
+  | "plucked-gentle" | "candy-pop-gentle";
+export type ThreatId = "claw-swipe" | "throw" | "candy-gun";
 
 export type Retaliates = { kind: "retaliates"; damage: number; attack: ThreatId };
 export type Throws = {
@@ -26,6 +27,10 @@ export type Throws = {
   attack: ThreatId;
   provokedBy: "first-hit";
 };
+
+/** Shoots back once per hit taken (the gator): `perShot` hearts per shot,
+ *  at most `max` from one animal. */
+export type ReturnsFire = { kind: "returns-fire"; perShot: number; max: number; attack: ThreatId };
 
 export type Base = {
   /** Off: never spawns on its own (an explicit `spawn(world, rng, kind)`,
@@ -47,7 +52,9 @@ export type Protected = Base & {
   penalty: { perHit: number } | { onFinish: number };
   threat?: Retaliates;
 };
-export type Hostile = Base & { role: "hostile"; points: number; threat: Throws; boss?: { bar: true } };
+/** A hostile creature fights back once hit. Only a `boss` (Bigfoot) has a
+ *  bar, hides its hit total and may share the screen with another rare. */
+export type Hostile = Base & { role: "hostile"; points: number; threat: Throws | ReturnsFire; boss?: { bar: true } };
 export type Creature = Prey | Trophy | Protected | Hostile;
 
 export const CREATURES = {
@@ -100,6 +107,19 @@ export const CREATURES = {
     rule: { hits: [20, 20] }, move: "stomp", hit: "flinch", finish: "jet", points: 3000,
     threat: { kind: "throws", perHit: 0.5, max: 1.5, every: 1.5, attack: "throw", provokedBy: "first-hit" },
     boss: { bar: true },
+  },
+  ostrich: {
+    enabled: true,
+    // Skates faster with every hit (modules/moves.ts, SKATE_SPEED).
+    role: "trophy", lane: "ground", size: [96, 133], speed: [0.095, 0.105], spawn: { perMinute: 0.4 },
+    rule: { hits: [3, 3] }, move: "skate", hit: "pluck", finish: "plucked", points: 700,
+  },
+  gator: {
+    enabled: true,
+    // Angrier with every hit: faster, more candy (rig/gator.ts, threats/candyGun.ts).
+    role: "hostile", lane: "ground", size: [120, 152], speed: [0.065, 0.065], spawn: { perMinute: 0.35 },
+    rule: { hits: [5, 6] }, move: "swagger", hit: "flinch", finish: "candy-pop", points: 1200,
+    threat: { kind: "returns-fire", perShot: 0.5, max: 1.5, attack: "candy-gun" },
   },
 } as const satisfies Record<string, Creature>;
 
