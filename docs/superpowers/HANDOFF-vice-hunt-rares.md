@@ -19,6 +19,7 @@ Read this first, then the plan. Branch `vice-hunt-rares`, stacked on `gta6-mod` 
 | 10 host wiring: events to callbacks | done | `0d8cda8` |
 | 11 app: hearts, RARE menu, pop-ups, WASTED, results | done | `2e4543d` |
 | 12 verify in the real app, docs, bundle | done; push and PR wait for the owner | see `git log` ("Vice Hunt rares: verified, docs") |
+| Opening screen and pause (plan `docs/superpowers/plans/2026-11-22-vice-hunt-opening-pause.md`): neon title screen that waits for a click, Esc/right-click pause menu, neon WASTED, Monoton/Mr Dafoe/Audiowide self-hosted, controls in the dock's notch | done | `02a0fb2` … see `git log` |
 | Final whole-branch review | done as a self-review (no subagent tool): no Critical or Important findings, nothing to fix; minors below | |
 
 Gates last run on Task 11's commit `2e4543d`: `npx tsc --noEmit -p .` clean; `npm test` 455 passed (61 files); `npm run lint` 0 errors (20 warnings, all in untouched files); `./scripts/verify-simplification.sh` exit 0; `npm run build` exit 0 and `./scripts/check-gta6-bundle.sh`, `./scripts/check-diwali-bundle.sh --off`, `./scripts/check-starter-pack-bundle.sh` all exit 0. (The build also contained the owner's uncommitted `/vice-hunt` route, which is on disk.)
