@@ -1,6 +1,7 @@
 /**
- * Vice FM: the owner's playlist, in order. The first entry is the original
- * GTA 6 theme the mode launched with; the rest follow. Titles and artists were
+ * Vice FM: the owner's playlist, in order. The first entry is the theme song,
+ * Justice's "Flower In A Hurricane" from GTA VI (owner, 2026-11-22; it
+ * replaced the official main theme); the rest follow. Titles and artists were
  * read once from YouTube's public oEmbed (2026-11-21) and tidied by hand, so the
  * list shows real names before a track has ever been played.
  *
@@ -10,7 +11,7 @@
 export type Track = { id: string; title: string; artist: string };
 
 export const PLAYLIST: readonly Track[] = [
-  { id: "aonTwBM1AZM", title: "Official Main Theme", artist: "Grand Theft Auto VI" },
+  { id: "5dPwBWvmcbQ", title: "Flower In A Hurricane", artist: "Justice ft. Tame Impala, SZA, King Gizzard & the Lizard Wizard" },
   { id: "IeqQ-UWgxuY", title: "X", artist: "Jhayco" },
   { id: "9RN2aNH0BKU", title: "Dance With Me (feat. Elkan)", artist: "A Boogie wit da Hoodie" },
   { id: "2FRnfzphm8s", title: "Bigger", artist: "Burna Boy" },
