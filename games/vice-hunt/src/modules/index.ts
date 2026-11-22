@@ -5,6 +5,7 @@ import { MAX_DT } from "../config";
 import { CREATURES } from "../creatures";
 import type { Rng } from "../rng";
 import type { World } from "../world";
+import { candyPop, candyPopGentle } from "./finishes/candyPop";
 import { crashes, crashesGentle } from "./finishes/crashes";
 import { deflates, deflatesGentle } from "./finishes/deflates";
 import { falls } from "./finishes/falls";
@@ -48,9 +49,8 @@ export const FINISHES: Record<FinishId, FinishModule<any>> = {
   "jet-gentle": jetGentle,
   plucked,
   "plucked-gentle": pluckedGentle,
-  // Placeholders (plan Task 7).
-  "candy-pop": rocket,
-  "candy-pop-gentle": rocketGentle,
+  "candy-pop": candyPop,
+  "candy-pop-gentle": candyPopGentle,
 };
 
 // The one place `reduced` is resolved: step and draw both use it.
