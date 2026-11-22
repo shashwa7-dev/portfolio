@@ -1,0 +1,32 @@
+import { startHunt } from "../src/index";
+import { KINDS, type Kind } from "../src/creatures";
+
+const host = document.getElementById("host")!;
+const muted = !new URLSearchParams(location.search).has("sound");
+const log = (...args: unknown[]) => console.log("[vice-hunt]", ...args);
+
+const kinds = (param: string): Kind[] =>
+  (new URLSearchParams(location.search).get(param) ?? "")
+    .split(",")
+    .filter((k): k is Kind => (KINDS as readonly string[]).includes(k));
+const hunt = startHunt(host, {
+  muted,
+  spawn: kinds("spawn"),
+  finish: kinds("shoot"), // ?shoot=ufo lands the hits that finish it
+  hit: kinds("hit"), // ?hit=bigfoot lands one hit (he starts throwing)
+  onKills: (kills) => log("kills", kills),
+  onShot: (x, y, hit) => log("shot", Math.round(x), Math.round(y), hit),
+  // Esc pauses; the next Esc resumes (the dev page has no menu).
+  onPause: () => {
+    hunt.pause();
+    log("paused");
+    const again = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      window.removeEventListener("keydown", again, true);
+      e.stopPropagation();
+      hunt.resume();
+      log("resumed");
+    };
+    window.addEventListener("keydown", again, true);
+  },
+});

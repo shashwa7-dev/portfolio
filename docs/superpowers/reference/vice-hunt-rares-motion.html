@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Vice Hunt: how the new creatures move</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root { color-scheme: dark; }
+  body { margin:0; background:#151221; color:#efeaf7; font-family:Inter, system-ui, sans-serif; }
+  .wrap { max-width:1280px; margin:0 auto; padding:18px 18px 28px; }
+  h2 { margin:0 0 4px; font-size:20px; }
+  .sub { margin:0 0 12px; color:#b9b0cf; font-size:13px; line-height:1.5; }
+  .bar { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+  .bar button { font:700 11px/1 "JetBrains Mono", monospace; letter-spacing:1px; color:#fff; background:#2a2440; border:1px solid #4a4266; padding:8px 11px; border-radius:999px; cursor:pointer; }
+  .bar button[aria-pressed="true"] { background:#f49ea3; color:#151221; border-color:#f49ea3; }
+  .stage { position:relative; width:100%; aspect-ratio:16/9; overflow:hidden; border-radius:12px; background:url(vice-hunt-rares-bg.png) center/cover; cursor:crosshair; user-select:none; }
+  .stage.slow * { }
+  .c { position:absolute; left:0; top:0; will-change:transform; }
+  .c svg { display:block; width:100%; height:auto; overflow:visible; }
+  .c .body { transform-origin:50% 50%; }
+  .score { position:absolute; left:14px; top:12px; padding:6px 10px; border-radius:8px; background:rgba(14,12,22,.7); font:400 26px/1 Anton, Impact, sans-serif; }
+  .score small { display:block; font:700 9px/1.4 "JetBrains Mono", monospace; letter-spacing:1.4px; color:#f49ea3; }
+  .pop { position:absolute; font:400 22px/1 Anton, Impact, sans-serif; color:#fff; text-shadow:0 2px 0 #2b2234, 0 0 12px rgba(244,158,163,.6); pointer-events:none; animation:pop 1.1s ease-out forwards; }
+  .pop.neg { color:#ff5a6a; text-shadow:0 2px 0 #2b2234, 0 0 12px rgba(255,90,106,.6); }
+  @keyframes pop { 0% { transform:translate(-50%,0) scale(.6); opacity:0 } 15% { transform:translate(-50%,-8px) scale(1.15); opacity:1 } 100% { transform:translate(-50%,-48px) scale(1); opacity:0 } }
+  .puff { position:absolute; border-radius:50%; pointer-events:none; }
+  .ring { position:absolute; border:3px solid #e9fbff; border-radius:50%; pointer-events:none; }
+  .label { position:absolute; font:700 9px/1 "JetBrains Mono", monospace; letter-spacing:1.2px; color:#fff; background:rgba(21,18,33,.65); padding:3px 6px; border-radius:4px; pointer-events:none; white-space:nowrap; transform:translateX(-50%); }
+
+  /* Part motion (transform-box: fill-box makes each origin relative to the part). */
+  svg g, svg circle { transform-box:fill-box; }
+  .cow .wn { transform-origin:75% 100%; animation:flap .62s ease-in-out infinite; }
+  .cow .wf { transform-origin:30% 100%; animation:flap .62s ease-in-out infinite .08s; }
+  .cow .garland { opacity:0; transform-origin:50% 0; }
+  .cow.g1 .garland { opacity:1; animation:garland .45s cubic-bezier(.3,1.6,.5,1); }
+  @keyframes garland { from { transform:scale(.2); opacity:0 } }
+  .tiger .wn { transform-origin:55% 100%; animation:flapFast .3s ease-in-out infinite; }
+  .tiger .wf { transform-origin:40% 100%; animation:flapFast .3s ease-in-out infinite .04s; }
+  .tiger .tail { transform-origin:100% 100%; animation:tail 1.1s ease-in-out infinite; }
+  @keyframes flap { 0%,100% { transform:rotate(0) scaleY(1) } 50% { transform:rotate(-24deg) scaleY(.82) } }
+  @keyframes flapFast { 0%,100% { transform:rotate(4deg) scaleY(1) } 50% { transform:rotate(-30deg) scaleY(.7) } }
+  @keyframes tail { 0%,100% { transform:rotate(0) } 50% { transform:rotate(-14deg) } }
+  .shark .lf { transform-origin:50% 0; animation:stepA .72s ease-in-out infinite; }
+  .shark .ln { transform-origin:50% 0; animation:stepB .72s ease-in-out infinite; }
+  .shark .an { transform-origin:0 0; animation:armA .72s ease-in-out infinite; }
+  .shark .af { transform-origin:100% 0; animation:armB .72s ease-in-out infinite; }
+  .shark .tail { transform-origin:100% 0; animation:tail .72s ease-in-out infinite; }
+  @keyframes stepA { 0%,100% { transform:rotate(-16deg) } 50% { transform:rotate(20deg) } }
+  @keyframes stepB { 0%,100% { transform:rotate(18deg) } 50% { transform:rotate(-18deg) } }
+  @keyframes armA { 0%,100% { transform:rotate(-14deg) } 50% { transform:rotate(16deg) } }
+  @keyframes armB { 0%,100% { transform:rotate(14deg) } 50% { transform:rotate(-12deg) } }
+  .shark.dead g { animation-play-state:paused; }
+  .merman .arm { transform-origin:0 100%; animation:wave .5s ease-in-out infinite alternate; }
+  .merman .tail { transform-origin:80% 100%; animation:flick 1.3s ease-in-out infinite; }
+  .merman .splash { opacity:0; }
+  .merman.surfacing .splash { opacity:1; }
+  @keyframes wave { from { transform:rotate(-10deg) } to { transform:rotate(16deg) } }
+  @keyframes flick { 0%,100% { transform:rotate(0) } 50% { transform:rotate(14deg) } }
+  .ufo .lamp { animation:blink 1s steps(1) infinite; }
+  .ufo .l2 { animation-delay:.2s } .ufo .l3 { animation-delay:.4s } .ufo .l4 { animation-delay:.6s } .ufo .l5 { animation-delay:.8s }
+  @keyframes blink { 0% { opacity:1 } 50% { opacity:.25 } }
+  .ufo .beam { opacity:0; transition:opacity .4s; transform-origin:50% 0; }
+  .ufo.beaming .beam { opacity:1; animation:beam .5s ease-in-out infinite alternate; }
+  @keyframes beam { from { transform:scaleX(.9) } to { transform:scaleX(1.08) } }
+  .ufo.empty .pilot { display:none; }
+  .ufo.hit .lamp { animation:blink .12s steps(1) infinite; fill:#ff5a6a; }
+  .seamask { position:absolute; overflow:hidden; pointer-events:none; }
+  .seamask .c { pointer-events:auto; }
+  .foam { position:absolute; height:6px; border-radius:50%; background:rgba(233,251,255,.85); pointer-events:none; }
+  .hearts { position:absolute; left:14px; top:74px; display:flex; gap:4px; z-index:10; filter:drop-shadow(0 2px 0 rgba(0,0,0,.45)); }
+  .hearts svg { width:26px; height:24px; }
+  .hearts.hit { animation:heartsHit .35s ease-out; }
+  @keyframes heartsHit { 0%{transform:scale(1)} 30%{transform:scale(1.25) rotate(-4deg)} 100%{transform:scale(1)} }
+  .hurt { position:absolute; inset:0; pointer-events:none; z-index:11; opacity:0; box-shadow:inset 0 0 90px 30px rgba(255,40,60,.75); }
+  .wasted { position:absolute; inset:0; display:grid; place-items:center; z-index:12; pointer-events:none; opacity:0; font:400 86px/1 "Pricedown", Anton, Impact, sans-serif; color:#d81e2a; letter-spacing:2px; text-shadow:0 4px 0 #000, 0 0 24px rgba(0,0,0,.6); background:rgba(40,40,40,.0); }
+  .bossbar { position:absolute; height:8px; border-radius:999px; background:rgba(14,12,22,.75); border:1px solid rgba(255,255,255,.35); overflow:hidden; pointer-events:none; z-index:4; transform:translateX(-50%); opacity:0; transition:opacity .2s; }
+  .bossbar i { position:absolute; inset:0; transform-origin:left; background:linear-gradient(90deg,#ff4d6a,#f7c46c); transition:transform .18s cubic-bezier(.23,1,.32,1); }
+  .bossbar.on { opacity:1; }
+  .legend { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px 18px; margin-top:14px; font-size:12.5px; color:#c9c1de; line-height:1.45; }
+  .legend b { color:#fff; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h2>How they move (click to shoot)</h2>
+  <p class="sub">A rough motion preview, not the game: every creature loops here so you can see them all. In the game they are rare. Click any of them to see its hit. The cow and the tiger cost points; Bigfoot and the tiger can hurt you (hearts, top left), but only after you hit them.</p>
+  <div class="bar">
+    <button id="reset">RESPAWN ALL</button>
+    <button id="slow" aria-pressed="false">SLOW MOTION</button>
+    <button id="labels" aria-pressed="true">LABELS</button>
+  </div>
+  <div class="stage" id="stage">
+    <div class="score"><small>SCORE</small><span id="score">0</span></div>
+    <div class="hearts" id="hearts" aria-label="Health"></div>
+    <div class="hurt" id="hurt"></div>
+    <div class="wasted" id="wasted">WASTED</div>
+  </div>
+  <div class="legend">
+    <div><b>Flying cow</b>: floats slowly, bobbing, wings flapping. Hit 1: garland pops on, −500. Hit 2: −500, she deflates like a balloon and zigzags off.</div>
+    <div><b>Flying tiger</b>: fast pass, quick wingbeats, tail swishing, swooping. Protected, three hits: the first two make it flinch (1 / 3, 2 / 3); the third is −250 and its claw costs 1.5 ♥: it pounces down onto the sand, crouches, then leaps straight at the screen (your point of view), hissing, and claws the glass. The scratches are the last beat: it drops out of view and only the marks stay, then fade.</div>
+    <div><b>Walking shark</b>: struts upright, legs stepping, fins swinging like arms, a bounce on each step. Hit: +600, it turns into a rocket: crouches, ignites, and blasts straight up into the sky on a shower of fireworks spraying out underneath.</div>
+    <div><b>Merman</b>: rises out of the sea, waves, dives back, pops up somewhere else. Needs three quick hits: the first makes him duck and start slipping under, and you have about a second for the other two, or he is gone and it resets. Third hit: +600, he drops under and the sea shoots up a fountain of small fish that arc over and dive back in.</div>
+    <div><b>UFO</b>: hovers and wobbles, lights chasing, beam now and then. Tough: 6 or 7 hits; each one sparks and jolts it, and it smokes and wobbles more as it takes damage. Last hit: +800, sparks and smoke, spirals into the sea; the alien bails out (the dome is empty from then on) and parachutes down, swaying, into the water.</div>
+    <div><b>Bigfoot</b>: harmless until you hit him. First hit: ANGRY!, and he keeps walking while throwing his poop at the screen every 1.5 s until he is off it. Each splat blocks part of your view for a few seconds and costs ½ ♥, up to 1.5 ♥ in all from one Bigfoot (later throws still splat, but cost nothing). A boss: 20 hits, shown by a bar over his head. Twentieth hit: +1500, he squats, strains, PFFT!, and jets off diagonally, splatting the screen as he goes.</div>
+  </div>
+</div>
+
+<script>
+const stage = document.getElementById("stage");
+const scoreEl = document.getElementById("score");
+let score = 0, slow = 1, showLabels = true;
+const svgs = {};
+const names = ["cow","tiger","shark","merman","ufo","alien","bigfoot"];
+
+function load() { Object.assign(svgs, {"cow": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 170 120\">\n  <!-- far wing -->\n  <g class=\"wf\"><path d=\"M78 44 C70 28 66 14 74 2 C82 8 88 16 92 26 C96 18 102 14 108 14 C108 26 100 38 90 46 Z\" fill=\"#dfe4ef\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\"/></g>\n  <!-- tail -->\n  <path d=\"M32 56 C22 58 18 66 16 76\" fill=\"none\" stroke=\"#2b2234\" stroke-width=\"4.4\" stroke-linecap=\"round\"/>\n  <path d=\"M32 56 C22 58 18 66 16 76\" fill=\"none\" stroke=\"#f6f1ea\" stroke-width=\"2\" stroke-linecap=\"round\"/>\n  <path d=\"M16 74 C11 78 11 84 15 86 C19 84 21 80 18 74 Z\" fill=\"#2b2234\"/>\n  <!-- back legs, dangling -->\n  <g stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\">\n    <path d=\"M44 72 L42 96 L52 96 L54 74 Z\" fill=\"#ece5da\"/>\n    <path d=\"M41 94 L53 94 L53 101 L41 101 Z\" fill=\"#3a2f3f\"/>\n    <path d=\"M58 76 L58 100 L68 100 L68 76 Z\" fill=\"#f6f1ea\"/>\n    <path d=\"M57 98 L69 98 L69 105 L57 105 Z\" fill=\"#3a2f3f\"/>\n  </g>\n  <!-- udder -->\n  <ellipse cx=\"74\" cy=\"84\" rx=\"10\" ry=\"6.5\" fill=\"#f2b3b8\" stroke=\"#2b2234\" stroke-width=\"2\"/>\n  <path d=\"M69 90 v4 M74 91 v4 M79 90 v4\" stroke=\"#2b2234\" stroke-width=\"2.4\" stroke-linecap=\"round\"/>\n  <!-- body -->\n  <path d=\"M30 58 C30 40 52 34 78 36 C104 36 122 42 122 60 C122 76 104 84 78 84 C50 84 30 78 30 58 Z\" fill=\"#f6f1ea\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\"/>\n  <!-- patches -->\n  <path d=\"M44 44 C52 40 62 44 60 52 C58 60 46 60 42 54 C40 50 40 46 44 44 Z\" fill=\"#2b2234\"/>\n  <path d=\"M82 52 C90 46 104 50 104 60 C104 70 92 74 86 68 C80 64 78 56 82 52 Z\" fill=\"#2b2234\"/>\n  <path d=\"M66 70 C72 68 76 72 74 76 C70 80 64 78 64 74 Z\" fill=\"#2b2234\"/>\n  <!-- belly line -->\n  <path d=\"M40 74 C58 82 92 82 112 74\" fill=\"none\" stroke=\"#e3dbcf\" stroke-width=\"3\" stroke-linecap=\"round\"/>\n  <!-- front legs, tucked forward like a flying hero -->\n  <g stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\">\n    <path d=\"M100 74 L112 92 L120 87 L110 70 Z\" fill=\"#ece5da\"/>\n    <path d=\"M110 90 L119 85 L123 91 L114 96 Z\" fill=\"#3a2f3f\"/>\n    <path d=\"M110 70 L126 84 L132 78 L118 64 Z\" fill=\"#f6f1ea\"/>\n    <path d=\"M124 82 L131 76 L136 81 L129 87 Z\" fill=\"#3a2f3f\"/>\n  </g>\n  <!-- near wing -->\n  <g class=\"wn\"><path d=\"M66 44 C56 30 50 16 56 2 C64 6 70 14 74 24 C78 14 86 8 94 8 C96 22 90 36 80 46 Z\" fill=\"#ffffff\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\"/>\n  <path d=\"M62 30 Q70 28 76 34 M66 20 Q72 20 76 26\" fill=\"none\" stroke=\"#c9d0de\" stroke-width=\"1.6\" stroke-linecap=\"round\"/>\n  </g>\n  <!-- head -->\n  <path d=\"M114 46 C114 32 126 26 138 28 C150 30 156 40 154 52 C152 62 144 66 134 66 C122 66 114 58 114 46 Z\" fill=\"#f6f1ea\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\"/>\n  <!-- ear -->\n  <path d=\"M118 36 C108 30 102 32 100 36 C104 40 110 42 118 42 Z\" fill=\"#e3dbcf\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\"/>\n  <path d=\"M116 38 C110 35 106 35 104 37\" fill=\"none\" stroke=\"#f2b3b8\" stroke-width=\"2\" stroke-linecap=\"round\"/>\n  <!-- horns -->\n  <path d=\"M126 30 C124 22 126 16 130 14 C130 20 132 24 132 29 Z\" fill=\"#f3e2b8\" stroke=\"#2b2234\" stroke-width=\"1.8\" stroke-linejoin=\"round\"/>\n  <path d=\"M140 29 C142 22 146 18 150 18 C148 23 146 27 145 31 Z\" fill=\"#f3e2b8\" stroke=\"#2b2234\" stroke-width=\"1.8\" stroke-linejoin=\"round\"/>\n  <!-- patch over eye -->\n  <path d=\"M130 34 C136 30 144 32 144 38 C144 44 136 46 132 42 C128 40 128 36 130 34 Z\" fill=\"#2b2234\"/>\n  <!-- snout -->\n  <ellipse cx=\"148\" cy=\"56\" rx=\"13\" ry=\"9.5\" fill=\"#f2b3b8\" stroke=\"#2b2234\" stroke-width=\"2\"/>\n  <ellipse cx=\"144\" cy=\"55\" rx=\"1.8\" ry=\"2.6\" fill=\"#2b2234\"/>\n  <ellipse cx=\"153\" cy=\"55\" rx=\"1.8\" ry=\"2.6\" fill=\"#2b2234\"/>\n  <path d=\"M142 61 Q148 64 155 61\" fill=\"none\" stroke=\"#2b2234\" stroke-width=\"1.4\" stroke-linecap=\"round\"/>\n  <!-- eye -->\n  <circle cx=\"138\" cy=\"39\" r=\"3\" fill=\"#fff\"/>\n  <circle cx=\"138.6\" cy=\"39.4\" r=\"1.9\" fill=\"#2b2234\"/>\n  <!-- bell -->\n  <path d=\"M120 64 Q126 70 134 66\" fill=\"none\" stroke=\"#e8789f\" stroke-width=\"3\" stroke-linecap=\"round\"/>\n  <path d=\"M124 68 L132 68 L131 74 L125 74 Z\" fill=\"#f7c46c\" stroke=\"#2b2234\" stroke-width=\"1.6\" stroke-linejoin=\"round\"/>\n<g class=\"garland\"><circle cx=\"113\" cy=\"50\" r=\"3.6\" fill=\"#f7a01c\" stroke=\"#2b2234\" stroke-width=\"1\"/><circle cx=\"113\" cy=\"50\" r=\"1.1\" fill=\"#c96a10\"/><circle cx=\"114\" cy=\"56\" r=\"3.6\" fill=\"#ffc83d\" stroke=\"#2b2234\" stroke-width=\"1\"/><circle cx=\"114\" cy=\"56\" r=\"1.1\" fill=\"#c96a10\"/><circle cx=\"116\" cy=\"61\" r=\"3.6\" fill=\"#f7a01c\" stroke=\"#2b2234\" stroke-width=\"1\"/><circle cx=\"116\" cy=\"61\" r=\"1.1\" fill=\"#c96a10\"/><circle cx=\"119\" cy=\"65\" r=\"3.6\" fill=\"#ffc83d\" stroke=\"#2b2234\" stroke-width=\"1\"/><circle cx=\"119\" cy=\"65\" r=\"1.1\" fill=\"#c96a10\"/><circle cx=\"123\" cy=\"68\" r=\"3.6\" fill=\"#f7a01c\" stroke=\"#2b2234\" stroke-width=\"1\"/><circle cx=\"123\" cy=\"68\" r=\"1.1\" fill=\"#c96a10\"/><circle cx=\"127\" cy=\"70\" r=\"3.6\" fill=\"#ffc83d\" stroke=\"#2b2234\" stroke-width=\"1\"/><circle cx=\"127\" cy=\"70\" r=\"1.1\" fill=\"#c96a10\"/><circle cx=\"131\" cy=\"70\" r=\"3.6\" fill=\"#f7a01c\" stroke=\"#2b2234\" stroke-width=\"1\"/><circle cx=\"131\" cy=\"70\" r=\"1.1\" fill=\"#c96a10\"/><circle cx=\"135\" cy=\"68\" r=\"3.6\" fill=\"#ffc83d\" stroke=\"#2b2234\" stroke-width=\"1\"/><circle cx=\"135\" cy=\"68\" r=\"1.1\" fill=\"#c96a10\"/><circle cx=\"138\" cy=\"65\" r=\"3.6\" fill=\"#f7a01c\" stroke=\"#2b2234\" stroke-width=\"1\"/><circle cx=\"138\" cy=\"65\" r=\"1.1\" fill=\"#c96a10\"/></g>\n</svg>\n", "tiger": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 210 116\">\n  <!-- far wing -->\n  <g class=\"wf\"><path d=\"M100 46 C92 28 92 12 104 0 C112 8 116 18 118 28 C124 20 132 16 140 18 C138 32 128 42 116 50 Z\" fill=\"#e0703a\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\"/></g>\n  <!-- tail, curling up -->\n  <g class=\"tail\"><path d=\"M50 58 C34 58 22 50 16 36 C12 26 16 18 22 16\" fill=\"none\" stroke=\"#2b2234\" stroke-width=\"8.4\" stroke-linecap=\"round\"/>\n  <path d=\"M50 58 C34 58 22 50 16 36 C12 26 16 18 22 16\" fill=\"none\" stroke=\"#f08a3c\" stroke-width=\"5\" stroke-linecap=\"round\"/>\n  <path d=\"M34 55 l-2 6 M24 47 l-5 4 M16 34 l-5 1 M18 22 l-4 -3\" stroke=\"#2b2234\" stroke-width=\"2.4\" stroke-linecap=\"round\"/>\n  </g>\n  <!-- back legs, stretched back -->\n  <g stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\">\n    <path d=\"M56 66 C46 72 34 78 22 80 L22 88 C36 88 50 82 62 74 Z\" fill=\"#e0703a\"/>\n    <ellipse cx=\"20\" cy=\"84\" rx=\"6\" ry=\"5\" fill=\"#fbe9d2\"/>\n    <path d=\"M66 70 C56 80 44 88 32 92 L34 99 C48 96 62 88 72 78 Z\" fill=\"#f08a3c\"/>\n    <ellipse cx=\"31\" cy=\"96\" rx=\"6\" ry=\"5\" fill=\"#fbe9d2\"/>\n  </g>\n  <path d=\"M42 80 l-2 5 M50 76 l-2 5 M52 86 l-2 5\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linecap=\"round\"/>\n  <!-- body -->\n  <path d=\"M48 58 C48 44 70 38 100 38 C130 38 150 44 152 58 C152 72 130 80 100 80 C70 80 48 72 48 58 Z\" fill=\"#f08a3c\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\"/>\n  <path d=\"M58 70 C78 80 122 80 144 68 C136 78 120 82 100 82 C80 82 64 78 58 70 Z\" fill=\"#fbe9d2\"/>\n  <path d=\"M56 70 C76 80 124 80 146 68\" fill=\"none\" stroke=\"#2b2234\" stroke-width=\"1.4\"/>\n  <!-- stripes -->\n  <path d=\"M64 44 C66 50 64 56 60 60 M78 40 C82 48 80 56 76 62 M94 39 C98 48 96 58 92 64 M110 39 C114 48 112 58 108 64 M126 41 C130 48 128 56 124 62 M140 46 C142 50 142 56 138 60\" fill=\"none\" stroke=\"#2b2234\" stroke-width=\"3\" stroke-linecap=\"round\"/>\n  <!-- front legs, reaching forward -->\n  <g stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\">\n    <path d=\"M138 64 C150 70 162 74 176 74 L176 82 C160 84 146 80 134 74 Z\" fill=\"#e0703a\"/>\n    <ellipse cx=\"179\" cy=\"78\" rx=\"6\" ry=\"5\" fill=\"#fbe9d2\"/>\n    <path d=\"M144 58 C156 62 170 62 184 60 L186 68 C170 72 154 70 140 66 Z\" fill=\"#f08a3c\"/>\n    <ellipse cx=\"188\" cy=\"64\" rx=\"6\" ry=\"5\" fill=\"#fbe9d2\"/>\n  </g>\n  <path d=\"M160 64 l1 5 M168 63 l1 5\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linecap=\"round\"/>\n  <!-- near wing -->\n  <g class=\"wn\"><path d=\"M84 46 C74 28 74 10 86 -2 C96 6 100 16 102 28 C108 18 118 12 128 14 C126 30 114 42 100 50 Z\" fill=\"#f7a35c\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\"/>\n  <path d=\"M82 30 Q92 28 98 36 M84 18 Q92 18 98 26 M104 32 Q112 26 120 26\" fill=\"none\" stroke=\"#2b2234\" stroke-width=\"2.2\" stroke-linecap=\"round\"/>\n  <path d=\"M86 -2 C92 2 96 8 98 14 C92 12 88 8 86 -2 Z\" fill=\"#2b2234\"/>\n  <path d=\"M128 14 C126 20 122 24 118 26 C120 20 124 16 128 14 Z\" fill=\"#2b2234\"/>\n  </g>\n  <!-- head -->\n  <ellipse cx=\"166\" cy=\"44\" rx=\"20\" ry=\"18\" fill=\"#f08a3c\" stroke=\"#2b2234\" stroke-width=\"2\"/>\n  <!-- ears -->\n  <path d=\"M152 32 L150 18 L162 27 Z\" fill=\"#f08a3c\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\"/>\n  <path d=\"M153 28 L152 22 L158 27 Z\" fill=\"#2b2234\"/>\n  <path d=\"M170 27 L178 15 L182 30 Z\" fill=\"#f08a3c\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\"/>\n  <path d=\"M174 26 L178 20 L179 28 Z\" fill=\"#2b2234\"/>\n  <!-- forehead stripes -->\n  <path d=\"M162 30 l2 6 M168 29 l0 6 M156 34 l4 4\" stroke=\"#2b2234\" stroke-width=\"2.4\" stroke-linecap=\"round\"/>\n  <!-- muzzle -->\n  <path d=\"M166 52 C170 44 184 42 188 50 C190 58 182 62 174 62 C168 62 164 58 166 52 Z\" fill=\"#fbe9d2\" stroke=\"#2b2234\" stroke-width=\"1.8\" stroke-linejoin=\"round\"/>\n  <path d=\"M180 47 L188 47 L184 52 Z\" fill=\"#e98a9a\" stroke=\"#2b2234\" stroke-width=\"1.4\" stroke-linejoin=\"round\"/>\n  <path d=\"M184 52 v3 M178 57 Q184 60 188 56\" fill=\"none\" stroke=\"#2b2234\" stroke-width=\"1.4\" stroke-linecap=\"round\"/>\n  <path d=\"M176 52 l-14 -2 M176 55 l-14 2 M188 53 l12 -3 M188 56 l12 1\" stroke=\"#2b2234\" stroke-width=\".9\" stroke-linecap=\"round\"/>\n  <!-- cheek stripes -->\n  <path d=\"M150 46 l6 1 M150 52 l6 -1\" stroke=\"#2b2234\" stroke-width=\"2.4\" stroke-linecap=\"round\"/>\n  <!-- eye -->\n  <path d=\"M170 38 C172 35 178 35 180 38 C178 41 172 41 170 38 Z\" fill=\"#f7e36c\" stroke=\"#2b2234\" stroke-width=\"1.4\"/>\n  <circle cx=\"176\" cy=\"38\" r=\"1.7\" fill=\"#2b2234\"/>\n</svg>\n", "shark": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 115 166\">\n  <!-- far leg, stepping back -->\n  <g class=\"lf\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\">\n    <path d=\"M50 110 C49 124 45 136 39 146 L49 150 C55 139 59 126 61 112 Z\" fill=\"#6c869b\"/>\n    <path d=\"M32 148 C32 144 38 143 48 146 L56 150 C58 154 56 158 50 158 L32 158 C28 158 28 151 32 148 Z\" fill=\"#e6e9ee\"/>\n    <path d=\"M28 155 L58 155 L58 159 L28 159 Z\" fill=\"#f49ea3\"/>\n  </g>\n  <!-- tail fin, trailing behind at the bottom -->\n  <g class=\"tail\"><path d=\"M44 104 C34 112 22 120 12 132 C26 130 38 124 48 116 Z\" fill=\"#7f9bb0\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\"/></g>\n  <!-- dorsal fin, on the back -->\n  <path d=\"M38 52 C26 46 14 42 4 44 C12 54 22 64 36 70 Z\" fill=\"#7f9bb0\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\"/>\n  <!-- far pectoral fin -->\n  <g class=\"af\"><path d=\"M38 74 C30 80 24 88 20 98 C30 94 38 88 42 82 Z\" fill=\"#6c869b\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\"/></g>\n  <!-- body, nose up -->\n  <path d=\"M70 4 C86 14 93 40 91 70 C89 92 83 108 74 116 L46 116 C38 104 34 86 36 64 C38 36 52 14 70 4 Z\" fill=\"#8fabbf\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\"/>\n  <!-- belly, the front -->\n  <path d=\"M82 30 C89 48 90 72 87 92 C85 104 80 112 74 116 L66 116 C73 100 79 70 82 30 Z\" fill=\"#eef2f4\"/>\n  <path d=\"M82 30 C79 70 73 100 66 116\" fill=\"none\" stroke=\"#2b2234\" stroke-width=\"1.4\"/>\n  <!-- back shading -->\n  <path d=\"M48 28 C42 46 40 70 44 96\" fill=\"none\" stroke=\"#7f9bb0\" stroke-width=\"5\" stroke-linecap=\"round\"/>\n  <!-- gills -->\n  <path d=\"M60 50 Q66 46 72 50 M60 57 Q66 53 72 57 M60 64 Q66 60 72 64\" fill=\"none\" stroke=\"#2b2234\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\n  <!-- mouth with teeth, grinning up at the sky -->\n  <path d=\"M66 30 C74 38 84 40 90 34\" fill=\"#3a2f3f\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\n  <path d=\"M69 32 l3 -3 l2 5 l3 -4 l2 5 l3 -4 l2 4 l3 -4 l2 3\" fill=\"#fff\" stroke=\"#2b2234\" stroke-width=\"1\" stroke-linejoin=\"round\"/>\n  <!-- eye with a cool brow -->\n  <circle cx=\"72\" cy=\"18\" r=\"3.8\" fill=\"#fff\" stroke=\"#2b2234\" stroke-width=\"1.6\"/>\n  <circle cx=\"73\" cy=\"17.5\" r=\"2.1\" fill=\"#2b2234\"/>\n  <path d=\"M65 12 L78 10\" stroke=\"#2b2234\" stroke-width=\"2.4\" stroke-linecap=\"round\"/>\n  <!-- near pectoral fin, swinging like an arm -->\n  <g class=\"an\"><path d=\"M86 74 C96 80 104 88 108 98 C98 96 90 90 84 84 Z\" fill=\"#7f9bb0\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\"/></g>\n  <!-- near leg, stepping forward -->\n  <g class=\"ln\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\">\n    <path d=\"M64 112 C66 126 70 136 76 146 L86 142 C80 132 77 122 76 112 Z\" fill=\"#8fabbf\"/>\n    <path d=\"M70 144 C70 140 78 138 88 140 L100 144 C104 146 104 154 98 154 L72 154 C68 154 68 148 70 144 Z\" fill=\"#fff\"/>\n    <path d=\"M68 151 L104 151 L104 155 L68 155 Z\" fill=\"#5ad1d6\"/>\n    <path d=\"M78 144 Q86 146 94 144\" fill=\"none\" stroke=\"#f49ea3\" stroke-width=\"2\" stroke-linecap=\"round\"/>\n  </g>\n</svg>\n", "merman": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 130 102\">\n  <!-- tail fin flicking out of the water behind him -->\n  <g class=\"tail\"><path d=\"M18 92 C14 78 8 70 2 64 C12 64 20 68 24 76 C26 66 32 58 42 54 C38 64 36 78 34 92 Z\" fill=\"#2fb5a8\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\"/>\n  <path d=\"M10 68 Q18 72 22 82 M38 60 Q32 70 30 84\" fill=\"none\" stroke=\"#1d8a80\" stroke-width=\"1.6\" stroke-linecap=\"round\"/>\n  </g>\n  <!-- torso -->\n  <path d=\"M58 60 C50 64 48 80 50 100 L96 100 C98 80 96 64 88 60 C80 56 66 56 58 60 Z\" fill=\"#c98a62\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\"/>\n  <path d=\"M60 72 Q66 76 72 72 M74 72 Q80 76 86 72 M66 84 Q73 87 80 84 M66 92 Q73 95 80 92\" fill=\"none\" stroke=\"#a86c48\" stroke-width=\"1.6\" stroke-linecap=\"round\"/>\n  <!-- scales where the tail begins -->\n  <path d=\"M50 96 C60 92 86 92 96 96 L96 102 L50 102 Z\" fill=\"#2fb5a8\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\"/>\n  <!-- far arm, on the hip -->\n  <path d=\"M58 64 C50 70 46 80 50 88 L56 86 C54 80 56 74 62 70 Z\" fill=\"#b97a54\" stroke=\"#2b2234\" stroke-width=\"1.8\" stroke-linejoin=\"round\"/>\n  <!-- near arm, waving -->\n  <g class=\"arm\"><path d=\"M88 62 C98 56 104 46 104 36 L112 36 C112 50 104 64 92 72 Z\" fill=\"#c98a62\" stroke=\"#2b2234\" stroke-width=\"1.8\" stroke-linejoin=\"round\"/>\n  <path d=\"M102 36 C100 30 102 24 106 22 C108 26 110 22 112 22 C116 24 116 32 112 36 Z\" fill=\"#c98a62\" stroke=\"#2b2234\" stroke-width=\"1.8\" stroke-linejoin=\"round\"/>\n  </g>\n  <!-- shell necklace -->\n  <path d=\"M60 62 Q73 72 86 62\" fill=\"none\" stroke=\"#fbe9d2\" stroke-width=\"2\"/>\n  <path d=\"M70 68 L73 74 L76 68 Q73 66 70 68 Z\" fill=\"#f49ea3\" stroke=\"#2b2234\" stroke-width=\"1.2\" stroke-linejoin=\"round\"/>\n  <!-- long wavy silver hair falling past the shoulders, behind -->\n  <path d=\"M62 26 C54 30 50 40 50 50 C49 58 46 62 47 70 C48 76 44 80 46 86 Q50 84 52 88 Q54 82 57 84 C56 76 59 70 58 62 C57 54 59 44 63 36 Z\" fill=\"#c4c8cf\" stroke=\"#2b2234\" stroke-width=\"1.8\" stroke-linejoin=\"round\"/>\n  <path d=\"M84 26 C92 30 96 40 96 50 C97 58 100 62 99 70 C98 76 102 80 100 86 Q96 84 94 88 Q92 82 89 84 C90 76 87 70 88 62 C89 54 87 44 83 36 Z\" fill=\"#c4c8cf\" stroke=\"#2b2234\" stroke-width=\"1.8\" stroke-linejoin=\"round\"/>\n  <path d=\"M54 42 Q51 54 52 64 Q53 72 50 80 M92 42 Q95 54 94 64 Q93 72 96 80\" fill=\"none\" stroke=\"#a3a9b2\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n  <!-- neck and head -->\n  <path d=\"M66 54 L66 62 L80 62 L80 54 Z\" fill=\"#b97a54\" stroke=\"#2b2234\" stroke-width=\"1.8\"/>\n  <ellipse cx=\"73\" cy=\"40\" rx=\"15\" ry=\"17\" fill=\"#c98a62\" stroke=\"#2b2234\" stroke-width=\"2\"/>\n  <!-- parted silver hair on top, waves falling either side of the face -->\n  <path d=\"M73 19 C64 18 57 24 56 34 C55 40 56 46 58 50 C59 44 60 38 63 33 C66 28 70 26 73 25 Z\" fill=\"#e3e5e9\" stroke=\"#2b2234\" stroke-width=\"1.8\" stroke-linejoin=\"round\"/>\n  <path d=\"M73 19 C82 18 89 24 90 34 C91 40 90 46 88 50 C87 44 86 38 83 33 C80 28 76 26 73 25 Z\" fill=\"#e3e5e9\" stroke=\"#2b2234\" stroke-width=\"1.8\" stroke-linejoin=\"round\"/>\n  <path d=\"M66 22 Q61 27 60 36 M80 22 Q85 27 86 36\" fill=\"none\" stroke=\"#b9bec6\" stroke-width=\"1.4\" stroke-linecap=\"round\"/>\n  <!-- white bushy brows -->\n  <path d=\"M63 35 Q67 32 71 35 M75 35 Q79 32 83 35\" fill=\"none\" stroke=\"#f4f4f2\" stroke-width=\"2.6\" stroke-linecap=\"round\"/>\n  <!-- sunglasses -->\n  <path d=\"M64 38 L84 38 L83 44 C81 47 77 47 75 44 L74 41 L72 41 L71 44 C69 47 65 47 64 44 Z\" fill=\"#e8789f\" stroke=\"#2b2234\" stroke-width=\"1.6\" stroke-linejoin=\"round\"/>\n  <path d=\"M66 40 L69 40\" stroke=\"#fff\" stroke-width=\"1.2\" stroke-linecap=\"round\"/>\n  <!-- big fluffy beard, white going grey -->\n  <path d=\"M58 41 C55 50 55 58 59 64 C57 69 61 74 66 71 C66 78 73 80 74 75 C78 80 85 78 84 71 C89 74 93 69 90 63 C94 57 92 48 88 41 C85 48 80 51 73 51 C66 51 61 48 58 41 Z\" fill=\"#f4f4f2\" stroke=\"#2b2234\" stroke-width=\"1.8\" stroke-linejoin=\"round\"/>\n  <path d=\"M62 56 Q65 60 63 64 M70 60 Q73 65 71 70 M78 60 Q81 65 79 70 M86 56 Q88 60 86 64\" fill=\"none\" stroke=\"#c4c9cf\" stroke-width=\"1.6\" stroke-linecap=\"round\"/>\n  <path d=\"M66 70 Q70 74 74 74 Q78 74 84 70\" fill=\"none\" stroke=\"#d5d9de\" stroke-width=\"2.2\" stroke-linecap=\"round\"/>\n  <!-- moustache -->\n  <path d=\"M63 49 C67 45 72 46 73 49 C74 46 79 45 83 49 C80 53 76 53 73 51 C70 53 66 53 63 49 Z\" fill=\"#e6e8ea\" stroke=\"#2b2234\" stroke-width=\"1.4\" stroke-linejoin=\"round\"/>\n  <!-- splash -->\n  <g class=\"splash\"><path d=\"M44 98 C42 92 44 88 46 86 M100 98 C102 92 100 88 98 86\" fill=\"none\" stroke=\"#cdf4ff\" stroke-width=\"2.4\" stroke-linecap=\"round\"/></g>\n</svg>\n", "ufo": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 140 92\">\n  <!-- tractor beam glow -->\n  <g class=\"beam\"><path d=\"M52 62 L36 92 L104 92 L88 62 Z\" fill=\"#5ad1d6\" opacity=\".22\"/></g>\n  <!-- glass dome -->\n  <path d=\"M42 40 C42 16 98 16 98 40 Z\" fill=\"#cdf4ff\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\"/>\n  <g class=\"pilot\"><!-- alien pilot -->\n  <ellipse cx=\"70\" cy=\"30\" rx=\"9\" ry=\"10\" fill=\"#8ee06a\" stroke=\"#2b2234\" stroke-width=\"1.8\"/>\n  <path d=\"M64 22 L60 12 M76 22 L80 12\" stroke=\"#2b2234\" stroke-width=\"1.6\" stroke-linecap=\"round\"/>\n  <circle cx=\"60\" cy=\"11\" r=\"2.4\" fill=\"#f49ea3\" stroke=\"#2b2234\" stroke-width=\"1.2\"/>\n  <circle cx=\"80\" cy=\"11\" r=\"2.4\" fill=\"#f49ea3\" stroke=\"#2b2234\" stroke-width=\"1.2\"/>\n  <ellipse cx=\"66\" cy=\"29\" rx=\"2.8\" ry=\"3.8\" fill=\"#2b2234\"/>\n  <ellipse cx=\"74\" cy=\"29\" rx=\"2.8\" ry=\"3.8\" fill=\"#2b2234\"/>\n  <circle cx=\"66.8\" cy=\"27.6\" r=\".9\" fill=\"#fff\"/><circle cx=\"74.8\" cy=\"27.6\" r=\".9\" fill=\"#fff\"/>\n  <path d=\"M67 35 Q70 37 73 35\" fill=\"none\" stroke=\"#2b2234\" stroke-width=\"1.2\" stroke-linecap=\"round\"/>\n  </g>\n  <!-- dome shine -->\n  <path d=\"M50 34 C50 26 56 20 64 19\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.4\" stroke-linecap=\"round\" opacity=\".8\"/>\n  <!-- saucer -->\n  <path d=\"M6 48 C6 38 40 34 70 34 C100 34 134 38 134 48 C134 58 100 62 70 62 C40 62 6 58 6 48 Z\" fill=\"#b9c2d0\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\"/>\n  <path d=\"M10 46 C30 40 110 40 130 46\" fill=\"none\" stroke=\"#e6ebf2\" stroke-width=\"3\" stroke-linecap=\"round\"/>\n  <path d=\"M10 52 C40 58 100 58 130 52\" fill=\"none\" stroke=\"#8d97a8\" stroke-width=\"2\"/>\n  <!-- rim lights -->\n  <circle class=\"lamp l1\" cx=\"22\" cy=\"50\" r=\"3.4\" fill=\"#f49ea3\" stroke=\"#2b2234\" stroke-width=\"1.2\"/>\n  <circle class=\"lamp l2\" cx=\"46\" cy=\"54\" r=\"3.4\" fill=\"#5ad1d6\" stroke=\"#2b2234\" stroke-width=\"1.2\"/>\n  <circle class=\"lamp l3\" cx=\"70\" cy=\"55\" r=\"3.4\" fill=\"#f7c46c\" stroke=\"#2b2234\" stroke-width=\"1.2\"/>\n  <circle class=\"lamp l4\" cx=\"94\" cy=\"54\" r=\"3.4\" fill=\"#5ad1d6\" stroke=\"#2b2234\" stroke-width=\"1.2\"/>\n  <circle class=\"lamp l5\" cx=\"118\" cy=\"50\" r=\"3.4\" fill=\"#f49ea3\" stroke=\"#2b2234\" stroke-width=\"1.2\"/>\n  <!-- underside -->\n  <path d=\"M48 61 C52 68 88 68 92 61\" fill=\"#8d97a8\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\"/>\n</svg>\n", "alien": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 92 126\">\n  <!-- canopy -->\n  <path d=\"M4 44 C4 16 24 2 46 2 C68 2 88 16 88 44 C82 40 76 40 70 44 C64 40 58 40 52 44 C46 40 40 40 34 44 C28 40 22 40 16 44 C12 40 8 40 4 44 Z\" fill=\"#f49ea3\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\"/>\n  <path d=\"M34 44 C34 20 40 4 46 2 C52 4 58 20 58 44\" fill=\"#fff3c4\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\"/>\n  <path d=\"M16 44 C18 22 30 6 46 2 M76 44 C74 22 62 6 46 2\" fill=\"none\" stroke=\"#2b2234\" stroke-width=\"1.4\"/>\n  <!-- lines -->\n  <path d=\"M4 44 L38 88 M34 44 L42 86 M58 44 L50 86 M88 44 L54 88\" stroke=\"#2b2234\" stroke-width=\"1.2\"/>\n  <!-- alien -->\n  <ellipse cx=\"46\" cy=\"94\" rx=\"11\" ry=\"12\" fill=\"#8ee06a\" stroke=\"#2b2234\" stroke-width=\"1.8\"/>\n  <path d=\"M39 84 L34 74 M53 84 L58 74\" stroke=\"#2b2234\" stroke-width=\"1.6\" stroke-linecap=\"round\"/>\n  <circle cx=\"34\" cy=\"73\" r=\"2.4\" fill=\"#f49ea3\" stroke=\"#2b2234\" stroke-width=\"1.2\"/>\n  <circle cx=\"58\" cy=\"73\" r=\"2.4\" fill=\"#f49ea3\" stroke=\"#2b2234\" stroke-width=\"1.2\"/>\n  <ellipse cx=\"41\" cy=\"93\" rx=\"3.2\" ry=\"4.4\" fill=\"#2b2234\"/>\n  <ellipse cx=\"51\" cy=\"93\" rx=\"3.2\" ry=\"4.4\" fill=\"#2b2234\"/>\n  <circle cx=\"42\" cy=\"91.4\" r=\"1\" fill=\"#fff\"/><circle cx=\"52\" cy=\"91.4\" r=\"1\" fill=\"#fff\"/>\n  <!-- worried mouth -->\n  <ellipse cx=\"46\" cy=\"101\" rx=\"2.4\" ry=\"1.8\" fill=\"#2b2234\"/>\n  <!-- body and dangling legs -->\n  <path d=\"M38 104 C38 112 54 112 54 104 L52 114 L40 114 Z\" fill=\"#b9c2d0\" stroke=\"#2b2234\" stroke-width=\"1.8\" stroke-linejoin=\"round\"/>\n  <path d=\"M42 114 L40 122 M50 114 L52 122\" stroke=\"#2b2234\" stroke-width=\"3\" stroke-linecap=\"round\"/>\n  <path d=\"M42 114 L40 122 M50 114 L52 122\" stroke=\"#8ee06a\" stroke-width=\"1.4\" stroke-linecap=\"round\"/>\n  <!-- arms up holding the lines -->\n  <path d=\"M38 106 L34 96 M54 106 L58 96\" stroke=\"#2b2234\" stroke-width=\"3\" stroke-linecap=\"round\"/>\n  <path d=\"M38 106 L34 96 M54 106 L58 96\" stroke=\"#8ee06a\" stroke-width=\"1.4\" stroke-linecap=\"round\"/>\n</svg>\n", "bigfoot": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 160 225\"> <g><path d=\"M58 66 C44 92 38 118 37 140 L49 143 C52 120 58 98 70 74 Z\" fill=\"#3e2a20\" stroke=\"#160f12\" stroke-width=\"2.2\" stroke-linejoin=\"round\"/><path d=\"M35 140 C33 148 37 156 43 156 C50 156 52 148 50 140 Z\" fill=\"#5c4232\" stroke=\"#160f12\" stroke-width=\"2\" stroke-linejoin=\"round\"/><path d=\"M38 154 q1 6 -1 9\" fill=\"none\" stroke=\"#160f12\" stroke-width=\"5.6\" stroke-linecap=\"round\"/><path d=\"M38 154 q1 6 -1 9\" fill=\"none\" stroke=\"#5c4232\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M41.5 154 q1 6 -1 9\" fill=\"none\" stroke=\"#160f12\" stroke-width=\"5.6\" stroke-linecap=\"round\"/><path d=\"M41.5 154 q1 6 -1 9\" fill=\"none\" stroke=\"#5c4232\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M45 154 q1 6 -1 9\" fill=\"none\" stroke=\"#160f12\" stroke-width=\"5.6\" stroke-linecap=\"round\"/><path d=\"M45 154 q1 6 -1 9\" fill=\"none\" stroke=\"#5c4232\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M48.5 154 q1 6 -1 9\" fill=\"none\" stroke=\"#160f12\" stroke-width=\"5.6\" stroke-linecap=\"round\"/><path d=\"M48.5 154 q1 6 -1 9\" fill=\"none\" stroke=\"#5c4232\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M50 144 q6 3 5 9\" fill=\"none\" stroke=\"#160f12\" stroke-width=\"5.6\" stroke-linecap=\"round\"/><path d=\"M50 144 q6 3 5 9\" fill=\"none\" stroke=\"#5c4232\" stroke-width=\"3\" stroke-linecap=\"round\"/></g> <g><path d=\"M66 128 L54 196 L76 198 L84 134 Z\" fill=\"#3e2a20\" stroke=\"#160f12\" stroke-width=\"2.2\" stroke-linejoin=\"round\"/><path d=\"M48 196 C46 204 70 208 80 202 C80 196 66 192 54 194 Z\" fill=\"#2c1e17\" stroke=\"#160f12\" stroke-width=\"2.2\" stroke-linejoin=\"round\"/></g> <path d=\"M46 70 Q74 40 112 62 Q122 96 116 132 Q80 146 48 132 Q40 100 46 70 Z\" fill=\"#5a3f2e\" stroke=\"#160f12\" stroke-width=\"2.2\" stroke-linejoin=\"round\"/> <path d=\"M60 80 l6 8 M74 76 l5 9 M92 78 l4 9 M104 90 l4 8 M58 104 l6 7 M80 100 l5 8 M100 110 l4 8 M64 122 l5 7\" stroke=\"#3e2a20\" stroke-width=\"2\" stroke-linecap=\"round\"/> <g><path d=\"M90 130 L112 194 L132 190 L108 128 Z\" fill=\"#5a3f2e\" stroke=\"#160f12\" stroke-width=\"2.2\" stroke-linejoin=\"round\"/><path d=\"M106 192 C104 200 132 204 140 196 C138 190 122 188 112 190 Z\" fill=\"#3b2a20\" stroke=\"#160f12\" stroke-width=\"2.2\" stroke-linejoin=\"round\"/></g> <path d=\"M70 58 Q66 30 88 22 Q110 28 108 58 Q90 68 70 58 Z\" fill=\"#5a3f2e\" stroke=\"#160f12\" stroke-width=\"2.2\" stroke-linejoin=\"round\"/> <ellipse cx=\"94\" cy=\"48\" rx=\"11\" ry=\"12\" fill=\"#a77d5f\" stroke=\"#160f12\" stroke-width=\"2.2\" stroke-linejoin=\"round\"/> <path d=\"M83 41 Q94 36 105 41\" fill=\"none\" stroke=\"#2c1e17\" stroke-width=\"3.5\" stroke-linecap=\"round\"/> <circle cx=\"89.5\" cy=\"46\" r=\"2\" fill=\"#160f12\"/><circle cx=\"99.5\" cy=\"46\" r=\"2\" fill=\"#160f12\"/> <path d=\"M90 55 Q94.5 57 99 55\" fill=\"none\" stroke=\"#2c1e17\" stroke-width=\"1.6\" stroke-linecap=\"round\"/> <g><path d=\"M104 66 C118 94 122 118 121 142 L109 144 C108 120 102 98 92 76 Z\" fill=\"#5a3f2e\" stroke=\"#160f12\" stroke-width=\"2.2\" stroke-linejoin=\"round\"/><path d=\"M107 142 C105 150 109 158 115 158 C122 158 124 150 122 142 Z\" fill=\"#7c5a45\" stroke=\"#160f12\" stroke-width=\"2\" stroke-linejoin=\"round\"/><path d=\"M110 156 q-1 6 1 9\" fill=\"none\" stroke=\"#160f12\" stroke-width=\"5.6\" stroke-linecap=\"round\"/><path d=\"M110 156 q-1 6 1 9\" fill=\"none\" stroke=\"#7c5a45\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M113.5 156 q-1 6 1 9\" fill=\"none\" stroke=\"#160f12\" stroke-width=\"5.6\" stroke-linecap=\"round\"/><path d=\"M113.5 156 q-1 6 1 9\" fill=\"none\" stroke=\"#7c5a45\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M117 156 q-1 6 1 9\" fill=\"none\" stroke=\"#160f12\" stroke-width=\"5.6\" stroke-linecap=\"round\"/><path d=\"M117 156 q-1 6 1 9\" fill=\"none\" stroke=\"#7c5a45\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M120.5 156 q-1 6 1 9\" fill=\"none\" stroke=\"#160f12\" stroke-width=\"5.6\" stroke-linecap=\"round\"/><path d=\"M120.5 156 q-1 6 1 9\" fill=\"none\" stroke=\"#7c5a45\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M108 146 q-6 3 -5 9\" fill=\"none\" stroke=\"#160f12\" stroke-width=\"5.6\" stroke-linecap=\"round\"/><path d=\"M108 146 q-6 3 -5 9\" fill=\"none\" stroke=\"#7c5a45\" stroke-width=\"3\" stroke-linecap=\"round\"/></g> </svg>", "tiger-face": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 200 170\">\n  <!-- ears -->\n  <path d=\"M40 46 L30 8 L68 30 Z\" fill=\"#f08a3c\" stroke=\"#2b2234\" stroke-width=\"2.4\" stroke-linejoin=\"round\"/>\n  <path d=\"M42 38 L37 18 L56 30 Z\" fill=\"#2b2234\"/>\n  <path d=\"M132 30 L170 8 L160 46 Z\" fill=\"#f08a3c\" stroke=\"#2b2234\" stroke-width=\"2.4\" stroke-linejoin=\"round\"/>\n  <path d=\"M144 30 L163 18 L158 38 Z\" fill=\"#2b2234\"/>\n  <!-- head -->\n  <path d=\"M100 22 C146 22 172 52 170 92 C168 130 138 156 100 156 C62 156 32 130 30 92 C28 52 54 22 100 22 Z\" fill=\"#f08a3c\" stroke=\"#2b2234\" stroke-width=\"2.4\"/>\n  <!-- cheek ruff -->\n  <path d=\"M34 104 L18 112 L36 118 L22 130 L44 130 M166 104 L182 112 L164 118 L178 130 L156 130\" fill=\"#fbe9d2\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\"/>\n  <!-- stripes -->\n  <path d=\"M100 26 L96 44 L104 44 Z M82 28 L84 46 M118 28 L116 46\" fill=\"#2b2234\" stroke=\"#2b2234\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\n  <path d=\"M36 74 L54 80 M34 90 L52 92 M164 74 L146 80 M166 90 L148 92\" stroke=\"#2b2234\" stroke-width=\"3.4\" stroke-linecap=\"round\"/>\n  <!-- angry brows -->\n  <path d=\"M54 58 L86 70 M146 58 L114 70\" stroke=\"#2b2234\" stroke-width=\"5\" stroke-linecap=\"round\"/>\n  <!-- eyes, narrowed -->\n  <path d=\"M58 72 Q72 66 86 76 Q72 84 58 72 Z\" fill=\"#f7e36c\" stroke=\"#2b2234\" stroke-width=\"2\"/>\n  <path d=\"M142 72 Q128 66 114 76 Q128 84 142 72 Z\" fill=\"#f7e36c\" stroke=\"#2b2234\" stroke-width=\"2\"/>\n  <ellipse cx=\"74\" cy=\"75\" rx=\"2\" ry=\"4.5\" fill=\"#2b2234\"/>\n  <ellipse cx=\"126\" cy=\"75\" rx=\"2\" ry=\"4.5\" fill=\"#2b2234\"/>\n  <!-- muzzle -->\n  <path d=\"M64 104 C64 90 82 86 100 92 C118 86 136 90 136 104 C136 124 120 140 100 140 C80 140 64 124 64 104 Z\" fill=\"#fbe9d2\" stroke=\"#2b2234\" stroke-width=\"2\"/>\n  <!-- nose -->\n  <path d=\"M90 90 L110 90 L100 102 Z\" fill=\"#e98a9a\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\"/>\n  <!-- hissing mouth with fangs -->\n  <path d=\"M76 110 Q100 102 124 110 Q122 134 100 136 Q78 134 76 110 Z\" fill=\"#7a2335\" stroke=\"#2b2234\" stroke-width=\"2.2\" stroke-linejoin=\"round\"/>\n  <path d=\"M84 120 Q100 128 116 120 Q110 132 100 133 Q90 132 84 120 Z\" fill=\"#e98a9a\"/>\n  <path d=\"M82 110 L86 123 L90 109 Z M118 110 L114 123 L110 109 Z\" fill=\"#fff\" stroke=\"#2b2234\" stroke-width=\"1.4\" stroke-linejoin=\"round\"/>\n  <!-- whiskers -->\n  <path d=\"M66 108 L30 100 M66 114 L28 116 M134 108 L170 100 M134 114 L172 116\" stroke=\"#2b2234\" stroke-width=\"1.4\" stroke-linecap=\"round\"/>\n</svg>\n", "tiger-paw": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 90 110\">\n  <!-- arm -->\n  <path d=\"M30 110 C26 86 26 66 30 50 L66 50 C68 66 66 86 62 110 Z\" fill=\"#f08a3c\" stroke=\"#2b2234\" stroke-width=\"2.4\" stroke-linejoin=\"round\"/>\n  <path d=\"M30 80 L44 76 M64 92 L52 90\" stroke=\"#2b2234\" stroke-width=\"3.4\" stroke-linecap=\"round\"/>\n  <!-- paw -->\n  <path d=\"M18 46 C14 30 28 20 48 20 C68 20 80 30 76 46 C72 58 62 62 48 62 C34 62 22 58 18 46 Z\" fill=\"#fbe9d2\" stroke=\"#2b2234\" stroke-width=\"2.4\"/>\n  <ellipse cx=\"48\" cy=\"46\" rx=\"11\" ry=\"8\" fill=\"#e98a9a\"/>\n  <circle cx=\"30\" cy=\"32\" r=\"5\" fill=\"#e98a9a\"/><circle cx=\"44\" cy=\"27\" r=\"5\" fill=\"#e98a9a\"/><circle cx=\"58\" cy=\"28\" r=\"5\" fill=\"#e98a9a\"/><circle cx=\"69\" cy=\"35\" r=\"5\" fill=\"#e98a9a\"/>\n  <!-- claws out -->\n  <path d=\"M28 24 L24 4 L34 22 Z M43 19 L42 0 L50 19 Z M58 20 L62 1 L64 22 Z M70 28 L80 12 L75 31 Z\" fill=\"#fff\" stroke=\"#2b2234\" stroke-width=\"1.6\" stroke-linejoin=\"round\"/>\n</svg>\n", "poop": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 60 52\">\n  <path d=\"M6 46 C2 46 2 38 8 37 C6 31 12 27 18 29 C18 23 24 20 29 22 C28 16 33 12 38 14 C36 8 42 4 44 8 C46 12 44 16 42 18 C48 18 50 24 46 28 C52 28 56 34 52 38 C58 38 58 46 54 47 Z\" fill=\"#7a4a2a\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\"/>\n  <path d=\"M10 38 C20 41 40 41 50 37 M16 30 C24 33 38 33 45 29 M24 22 C30 25 36 24 40 19\" fill=\"none\" stroke=\"#5a3420\" stroke-width=\"2\" stroke-linecap=\"round\"/>\n  <path d=\"M14 34 Q18 32 22 33 M24 26 Q27 24 30 25\" fill=\"none\" stroke=\"#a8724a\" stroke-width=\"2\" stroke-linecap=\"round\"/>\n</svg>\n", "furball": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\">\n  <path d=\"M50 4 L56 12 L64 6 L67 15 L77 12 L77 22 L87 23 L84 32 L94 36 L88 44 L96 50 L88 56 L94 64 L84 68 L87 77 L77 78 L77 88 L67 85 L64 94 L56 88 L50 96 L44 88 L36 94 L33 85 L23 88 L23 78 L13 77 L16 68 L6 64 L12 56 L4 50 L12 44 L6 36 L16 32 L13 23 L23 22 L23 12 L33 15 L36 6 L44 12 Z\" fill=\"#6b4a36\" stroke=\"#2b2234\" stroke-width=\"2\" stroke-linejoin=\"round\"/>\n  <circle cx=\"50\" cy=\"50\" r=\"34\" fill=\"#7c5840\"/>\n  <path d=\"M30 40 Q36 34 42 40 M58 40 Q64 34 70 40 M28 60 Q34 66 40 60 M60 62 Q66 68 72 62\" fill=\"none\" stroke=\"#5a3c2a\" stroke-width=\"2.4\" stroke-linecap=\"round\"/>\n  <!-- face peeking out, dizzy -->\n  <ellipse cx=\"50\" cy=\"52\" rx=\"14\" ry=\"11\" fill=\"#c9a27e\" stroke=\"#2b2234\" stroke-width=\"1.8\"/>\n  <path d=\"M42 48 l4 4 m0 -4 l-4 4 M54 48 l4 4 m0 -4 l-4 4\" stroke=\"#2b2234\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\n  <path d=\"M45 58 Q50 61 55 58\" fill=\"none\" stroke=\"#2b2234\" stroke-width=\"1.6\" stroke-linecap=\"round\"/>\n</svg>\n"}); start(); }
+
+// Base sizes in px at a 1280-wide stage (game sizes).
+const SIZE = { cow:118, tiger:136, shark:84, merman:96, ufo:132, alien:58, bigfoot:109 };
+const W = () => stage.clientWidth, H = () => stage.clientHeight, K = () => W() / 1280;
+const SEA = 0.69, GROUND = 0.93; // fractions of stage height
+
+function make(kind, parent = stage) {
+  const el = document.createElement("div");
+  el.className = `c ${kind}`;
+  el.style.width = SIZE[kind] * K() + "px";
+  el.innerHTML = `<div class="body">${svgs[kind]}</div>`;
+  parent.appendChild(el);
+  const label = document.createElement("div");
+  label.className = "label";
+  label.textContent = { cow:"FLYING COW", tiger:"FLYING TIGER", shark:"WALKING SHARK", merman:"MERMAN", ufo:"UFO", alien:"", bigfoot:"BIGFOOT" }[kind];
+  if (label.textContent) stage.appendChild(label);
+  return { el, body: el.firstChild, label };
+}
+function place(o, x, y, rot = 0, sx = 1, sy = 1) {
+  o.el.style.transform = `translate(${x}px, ${y}px)`;
+  o.body.style.transform = `rotate(${rot}deg) scale(${sx}, ${sy})`;
+  if (o.label) {
+    o.label.style.left = x + o.el.offsetWidth / 2 + "px";
+    o.label.style.top = y - 16 + "px";
+    o.label.style.display = showLabels && o.el.style.display !== "none" ? "" : "none";
+  }
+}
+function pop(x, y, text, neg) {
+  const p = document.createElement("div");
+  p.className = "pop" + (neg ? " neg" : "");
+  p.textContent = text; p.style.left = x + "px"; p.style.top = y + "px";
+  stage.appendChild(p); p.addEventListener("animationend", () => p.remove());
+}
+function addScore(n, x, y) {
+  score = Math.max(0, score + n); scoreEl.textContent = score.toLocaleString("en-US");
+  pop(x, y, (n > 0 ? "+" : "−") + Math.abs(n), n < 0);
+}
+let health = 3;
+function drawHearts() {
+  const box = document.getElementById("hearts"); box.innerHTML = "";
+  for (let i = 0; i < 3; i++) {
+    const fill = Math.max(0, Math.min(1, health - i)); // 1, .5 or 0
+    const id = "h" + i + Math.random().toString(36).slice(2, 6);
+    box.insertAdjacentHTML("beforeend", `<svg viewBox="0 0 26 24"><defs><clipPath id="${id}"><rect x="0" y="0" width="${26 * fill}" height="24"/></clipPath></defs>
+      <path d="M13 22 C4 15 1 10 2 6.5 C3 2.5 8 1 11 4 L13 6 L15 4 C18 1 23 2.5 24 6.5 C25 10 22 15 13 22 Z" fill="#3a2f3f" stroke="#160f12" stroke-width="1.8"/>
+      <path clip-path="url(#${id})" d="M13 22 C4 15 1 10 2 6.5 C3 2.5 8 1 11 4 L13 6 L15 4 C18 1 23 2.5 24 6.5 C25 10 22 15 13 22 Z" fill="#ff4d6a" stroke="#160f12" stroke-width="1.8"/>
+      <path d="M6 7 Q7 4.5 10 5" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".7"/></svg>`);
+  }
+}
+function damage(n, x, y) {
+  if (health <= 0) return;
+  health = Math.max(0, health - n); drawHearts();
+  const h = document.getElementById("hearts"); h.classList.remove("hit"); void h.offsetWidth; h.classList.add("hit");
+  document.getElementById("hurt").animate([{ opacity: 0 }, { opacity: 1, offset: .2 }, { opacity: 0 }], { duration: 520 * slow, easing: "ease-out" });
+  pop(x ?? 0.18 * W(), y ?? 0.2 * H(), "−" + n + " ♥", true);
+  if (health <= 0) {
+    // WASTED: the screen greys out, the word fades in, then a fresh start.
+    stage.animate([{ filter: "none" }, { filter: "grayscale(1) brightness(.7)" }], { duration: 700 * slow, fill: "forwards" });
+    document.getElementById("wasted").animate([{ opacity: 0, transform: "scale(1.15)" }, { opacity: 1, transform: "scale(1)" }], { duration: 600 * slow, delay: 400 * slow, fill: "forwards", easing: "cubic-bezier(.23,1,.32,1)" });
+    setTimeout(() => {
+      stage.getAnimations().forEach((a) => a.cancel()); document.getElementById("wasted").getAnimations().forEach((a) => a.cancel());
+      health = 3; drawHearts();
+    }, 3200 * slow);
+  }
+}
+function puff(x, y, { color = "rgba(255,255,255,.8)", size = 10, dx = 0, dy = -20, life = 700 } = {}) {
+  const p = document.createElement("div");
+  p.className = "puff"; Object.assign(p.style, { left: x + "px", top: y + "px", width: size + "px", height: size + "px", background: color });
+  stage.appendChild(p);
+  p.animate([{ transform: "translate(-50%,-50%) scale(.6)", opacity: 1 }, { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(1.8)`, opacity: 0 }], { duration: life * slow, easing: "ease-out" }).onfinish = () => p.remove();
+}
+function splash(x, y, big) {
+  const r = document.createElement("div"); r.className = "ring";
+  const w = (big ? 90 : 46) * K();
+  Object.assign(r.style, { left: x - w / 2 + "px", top: y - w * 0.15 + "px", width: w + "px", height: w * 0.3 + "px" });
+  stage.appendChild(r);
+  r.animate([{ transform: "scale(.3)", opacity: 1 }, { transform: "scale(1.4)", opacity: 0 }], { duration: 900 * slow, easing: "ease-out" }).onfinish = () => r.remove();
+  for (let i = 0; i < (big ? 9 : 5); i++) puff(x + (Math.random() - .5) * w * .5, y, { color: "rgba(233,251,255,.95)", size: (4 + Math.random() * 5) * K() * 1.4, dx: (Math.random() - .5) * 50 * K(), dy: -(20 + Math.random() * 40) * K(), life: 650 });
+}
+
+/* ---------- creatures ---------- */
+const actors = [];
+function hitTest(o, cb) { o.el.addEventListener("pointerdown", (e) => { e.stopPropagation(); cb(e); }); }
+const stageXY = (e) => { const b = stage.getBoundingClientRect(); return [e.clientX - b.left, e.clientY - b.top]; };
+
+function Cow() {
+  const o = make("cow"); let t = 0, x, hits, state;
+  const reset = () => { x = -0.15 * W(); hits = 0; state = "fly"; o.el.classList.remove("g1"); o.el.style.display = ""; t = Math.random() * 10; };
+  reset(); x = 0.22 * W();
+  hitTest(o, (e) => {
+    if (state !== "fly") return;
+    const [px, py] = stageXY(e); hits++;
+    addScore(-500, px, py - 10);
+    if (hits === 1) {
+      o.el.classList.add("g1");
+      o.body.animate([{ translate: "0 0" }, { translate: "-4px 2px" }, { translate: "4px -2px" }, { translate: "0 0" }], { duration: 260 });
+    } else {
+      state = "deflate"; deflate();
+    }
+  });
+  function deflate() {
+    // Balloon let go: hiss, shrink, then an erratic zigzag up and away.
+    const x0 = x, y0 = y(), dur = 1700 * slow; const t0 = performance.now();
+    const step = (now) => {
+      const k = Math.min(1, (now - t0) / dur);
+      const s = 1 - 0.62 * Math.min(1, k * 1.6);
+      const wob = Math.sin(k * 38) * (1 - k) * 0.18;
+      const zx = Math.sin(k * 15) * 70 * K() * (0.4 + k) + k * 0.35 * W();
+      const zy = -k * k * (y0 + 0.4 * H()) + Math.cos(k * 21) * 14 * K();
+      place(o, x0 + zx, y0 + zy, Math.sin(k * 24) * 40 + k * 260, s * (1 + wob), s * (0.78 - wob));
+      if (Math.random() < 0.55) puff(x0 + zx + 10 * K(), y0 + zy + o.el.offsetHeight * 0.55, { size: 8 * K() * 1.3, dx: -30 * K(), dy: 10 * K(), life: 500 });
+      if (k < 1) requestAnimationFrame(step); else { o.el.style.display = "none"; place(o, -999, -999); setTimeout(reset, 1800 * slow); }
+    };
+    requestAnimationFrame(step);
+  }
+  const y = () => 0.12 * H() + Math.sin(t * 2.4) * 0.018 * H();
+  return { tick(dt) { if (state !== "fly") return; t += dt; x += 0.055 * W() * dt; if (x > 1.08 * W()) reset(); place(o, x, y(), Math.cos(t * 2.4) * 5); } };
+}
+
+function Tiger() {
+  // Protected. Three hits: the first two make it flinch ("1 / 3", "2 / 3").
+  // The third (−250) brings it down onto the sand; there it turns to face the
+  // player, POV, lunges at the screen hissing, swipes, leaves three claw
+  // scratches on the "glass", then leaps off and flies away smug.
+  const o = make("tiger"); let t = 0, x, state, y = 0, fleeT = 0, hits = 0, lx0, ly0, landT = 0;
+  const reset = () => { x = -0.2 * W(); state = "fly"; t = 0; hits = 0; o.el.style.display = ""; o.el.style.opacity = 1; o.el.querySelectorAll("g").forEach((g) => (g.style.animationPlayState = "")); };
+  reset(); x = 0.5 * W();
+  hitTest(o, (e) => {
+    if (state !== "fly") return;
+    const [px, py] = stageXY(e); hits++;
+    o.body.animate([{ translate: "0 0" }, { translate: "-4px 2px" }, { translate: "4px -2px" }, { translate: "0 0" }], { duration: 160 });
+    if (hits < 3) { pop(px, py - 10, hits + " / 3", false); return; }
+    addScore(-250, px, py - 10);
+    // Down onto the sand.
+    state = "land"; landT = 0; lx0 = x; ly0 = y;
+    o.el.querySelectorAll("g").forEach((g) => (g.style.animationPlayState = "paused"));
+  });
+  function swipe() {
+    // From the sand: a crouch, then it leaps at the screen (the player's point
+    // of view), hissing, and claws the glass. The scratches are the last thing:
+    // the tiger drops away out of view and only the marks stay, then fade.
+    const s = slow, tw = o.el.offsetWidth, th = o.el.offsetHeight;
+    const cx0 = x + tw / 2, cy0 = y + th / 2;
+    o.body.animate([{ transform: "scale(1,1)" }, { transform: "scale(1.14,.8)" }], { duration: 220 * s, easing: "ease-in", fill: "forwards" });
+    const fw = 0.8 * H(), fh = fw * 0.85;
+    const face = document.createElement("div");
+    face.className = "c"; face.style.zIndex = 6; face.style.width = fw + "px";
+    face.innerHTML = svgs["tiger-face"]; stage.appendChild(face);
+    const fx = 0.5 * W() - fw / 2, fy = 0.46 * H() - fh / 2;
+    const at = (px, py, sc) => `translate(${px - fw / 2}px, ${py - fh / 2}px) scale(${sc})`;
+    const from = at(cx0, cy0, 0.16), mid = at((cx0 + 0.5 * W()) / 2, Math.min(cy0, 0.46 * H()) - 0.18 * H(), 0.45), to = `translate(${fx}px, ${fy}px) scale(1)`;
+    // The leap: up off the sand and straight at the camera, faster as it nears.
+    setTimeout(() => { o.el.style.opacity = 0; puff(cx0, GROUND * H() - 6, { color: "rgba(240,220,170,.95)", size: 30 * K(), dy: -14, life: 600 }); }, 220 * s);
+    face.animate([
+      { transform: from, opacity: 0 }, { transform: from, opacity: 1, offset: .02 },
+      { transform: mid, offset: .5 }, { transform: to + " rotate(-3deg)", offset: .92 }, { transform: to },
+    ], { duration: 460 * s, delay: 220 * s, easing: "cubic-bezier(.55,0,.85,.4)", fill: "both" });
+    // Hits the glass: a jolt and a hiss.
+    setTimeout(() => {
+      stage.animate([{ transform: "translate(0,0)" }, { transform: "translate(6px,-4px)" }, { transform: "translate(-5px,3px)" }, { transform: "translate(0,0)" }], { duration: 220 * s });
+      const hs = document.createElement("div"); hs.className = "pop neg"; hs.textContent = "HSSSS!";
+      hs.style.cssText += `left:${0.5 * W() + fw * 0.42}px;top:${fy + fh * 0.08}px;font-size:${34 * K() * 1.3}px;color:#fff3c4`;
+      stage.appendChild(hs); hs.addEventListener("animationend", () => hs.remove());
+    }, 680 * s);
+    // The paw rakes down-left across the screen.
+    const pw = 0.34 * H();
+    const paw = document.createElement("div");
+    paw.className = "c"; paw.style.zIndex = 7; paw.style.width = pw + "px";
+    paw.innerHTML = svgs["tiger-paw"]; stage.appendChild(paw);
+    paw.animate([
+      { transform: `translate(${0.76 * W()}px, ${1.02 * H()}px) rotate(35deg)` },
+      { transform: `translate(${0.68 * W()}px, ${0.04 * H()}px) rotate(20deg)`, offset: .45 },
+      { transform: `translate(${0.3 * W()}px, ${0.6 * H()}px) rotate(-38deg)`, offset: .75 },
+      { transform: `translate(${0.2 * W()}px, ${1.12 * H()}px) rotate(-50deg)` },
+    ], { duration: 480 * s, delay: 900 * s, easing: "cubic-bezier(.5,0,.6,1)", fill: "both" }).onfinish = () => paw.remove();
+    // The scratches, drawn in as the paw passes. The last beat.
+    setTimeout(() => {
+      const ns = "http://www.w3.org/2000/svg";
+      const svg = document.createElementNS(ns, "svg");
+      svg.setAttribute("viewBox", `0 0 ${W()} ${H()}`);
+      Object.assign(svg.style, { position: "absolute", inset: 0, width: "100%", height: "100%", zIndex: 8, pointerEvents: "none" });
+      for (let i = 0; i < 3; i++) {
+        const dx = (i - 1) * 0.06 * W();
+        const x1 = 0.7 * W() + dx, y1 = 0.1 * H() + i * 0.02 * H(), x2 = 0.32 * W() + dx, y2 = 0.84 * H() + i * 0.02 * H();
+        const d = `M${x1} ${y1} Q${(x1 + x2) / 2 + 0.02 * W()} ${(y1 + y2) / 2} ${x2} ${y2}`;
+        for (const [stroke, width] of [["rgba(20,12,30,.82)", 18 * K() * 1.3], ["rgba(122,35,53,.85)", 9 * K() * 1.3], ["rgba(255,255,255,.75)", 2.5 * K() * 1.3]]) {
+          const p = document.createElementNS(ns, "path");
+          p.setAttribute("d", d); p.setAttribute("fill", "none"); p.setAttribute("stroke", stroke);
+          p.setAttribute("stroke-width", width); p.setAttribute("stroke-linecap", "round"); p.setAttribute("pathLength", "1");
+          p.style.strokeDasharray = "1"; p.style.strokeDashoffset = "1";
+          svg.appendChild(p);
+          p.animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 150 * s, delay: i * 35 * s, easing: "ease-in", fill: "forwards" });
+        }
+      }
+      stage.appendChild(svg);
+      damage(1.5, 0.5 * W(), 0.3 * H());
+      stage.animate([{ transform: "translate(0,0)" }, { transform: "translate(-10px,6px)" }, { transform: "translate(8px,-4px)" }, { transform: "translate(-4px,2px)" }, { transform: "translate(0,0)" }], { duration: 320 * s });
+      // The tiger drops off the glass and out of view; only the marks stay.
+      face.animate([{ transform: to, opacity: 1 }, { transform: to + " translateY(18%)", opacity: 0 }], { duration: 260 * s, delay: 60 * s, easing: "ease-in", fill: "forwards" }).onfinish = () => face.remove();
+      svg.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 1600 * s, delay: 1500 * s, fill: "forwards" }).onfinish = () => svg.remove();
+      setTimeout(() => { o.body.getAnimations().forEach((a) => a.cancel()); reset(); x = -0.9 * W(); }, 1200 * s);
+    }, 1110 * s);
+  }
+  return { tick(dt) {
+    if (state === "fly") {
+      t += dt; x += 0.17 * W() * dt;
+      y = 0.27 * H() + Math.sin(t * 1.6) * 0.06 * H();
+      if (x > 1.1 * W()) { reset(); x = -0.6 * W(); }
+      place(o, x, y, Math.cos(t * 1.6) * -9);
+    } else if (state === "land") {
+      // A pounce down to the sand: an arc, a squash on landing, a dust puff, a beat.
+      landT += dt; const dur = 0.6, k = Math.min(1, landT / dur);
+      const gy = GROUND * H() - o.el.offsetHeight * 0.92;
+      x = lx0 + 0.1 * W() * k; y = ly0 + (gy - ly0) * (k * k) - Math.sin(k * Math.PI) * 0.06 * H();
+      place(o, x, y, 10 - k * 10 + Math.sin(k * Math.PI) * 18);
+      if (k >= 1) {
+        state = "sit";
+        puff(x + o.el.offsetWidth * 0.5, GROUND * H() - 6, { color: "rgba(240,220,170,.95)", size: 34 * K(), dy: -10, life: 700 });
+        o.body.animate([{ transform: "scale(1.12,.82)" }, { transform: "scale(.96,1.05)" }, { transform: "scale(1,1)" }], { duration: 320 * slow, easing: "ease-out" });
+        setTimeout(() => { state = "swipe"; swipe(); }, 450 * slow);
+      }
+    } else if (state === "flee") {
+      fleeT += dt; x += 0.5 * W() * dt; y -= 0.16 * H() * dt;
+      place(o, x, y, -18);
+      if (Math.random() < .5) puff(x, y + o.el.offsetHeight * 0.5, { color: "rgba(255,255,255,.7)", size: 8 * K() * 1.3, dx: -40 * K(), dy: 4, life: 400 });
+      if (x > 1.1 * W() || y < -0.3 * H()) { reset(); x = -0.8 * W(); }
+    }
+  } };
+}
+
+function Shark() {
+  const o = make("shark"); let t = 0, x, state;
+  const reset = () => { x = -0.1 * W(); state = "walk"; o.el.style.display = ""; o.el.classList.remove("dead"); o.el.getAnimations().forEach(a => a.cancel()); };
+  reset(); x = 0.36 * W();
+  // Killed: it becomes a rocket. Legs tuck, it crouches, then launches straight
+  // up into the sky on a shower of fireworks spraying out underneath.
+  let vy = 0, ry = 0, launchT = 0;
+  hitTest(o, (e) => {
+    if (state !== "walk") return;
+    const [px, py] = stageXY(e); addScore(600, px, py - 10); state = "crouch"; launchT = 0; ry = baseY();
+    o.el.classList.add("dead");
+    o.body.style.transformOrigin = "50% 100%";
+    o.body.animate([{ transform: "scale(1,1)" }, { transform: "scale(1.1,.86)" }, { transform: "scale(.94,1.08)" }], { duration: 420 * slow, easing: "ease-in", fill: "forwards" });
+  });
+  const SPARK = ["#fff3c4", "#f7c46c", "#f49ea3", "#5ad1d6", "#ffffff", "#f7a01c"];
+  function exhaust(cx, cy, strength) {
+    // Fireworks as exhaust: bright sparks fanning downward and out, some
+    // popping into tiny star bursts.
+    const n = Math.round(4 * strength);
+    for (let i = 0; i < n; i++) {
+      const c = SPARK[(Math.random() * SPARK.length) | 0];
+      puff(cx + (Math.random() - .5) * 10 * K(), cy, { color: c, size: (3 + Math.random() * 4) * K() * 1.4, dx: (Math.random() - .5) * 120 * K(), dy: (40 + Math.random() * 90) * K(), life: 500 + Math.random() * 300 });
+    }
+    if (Math.random() < .25 * strength) {
+      const bx = cx + (Math.random() - .5) * 70 * K(), by = cy + (20 + Math.random() * 50) * K(), c = SPARK[(Math.random() * SPARK.length) | 0];
+      for (let j = 0; j < 8; j++) { const a = j / 8 * Math.PI * 2; puff(bx, by, { color: c, size: 3 * K() * 1.4, dx: Math.cos(a) * 26 * K(), dy: Math.sin(a) * 26 * K(), life: 450 }); }
+    }
+    puff(cx, cy + 6 * K(), { color: "rgba(255,255,255,.5)", size: 18 * K() * 1.3, dx: (Math.random() - .5) * 30, dy: 30 * K(), life: 900 });
+  }
+  const baseY = () => GROUND * H() - o.el.offsetHeight;
+  return { tick(dt) {
+    if (state === "crouch" || state === "launch") {
+      launchT += dt;
+      const cx = x + o.el.offsetWidth / 2, bottom = ry + o.el.offsetHeight;
+      if (state === "crouch") {
+        // Ignition: a few sparks and a shake, then lift-off.
+        place(o, x + Math.sin(launchT * 70) * 2, ry, 0);
+        exhaust(cx, bottom - 4 * K(), 0.6);
+        if (launchT > 0.45) { state = "launch"; vy = -0.1 * H(); }
+      } else {
+        vy -= 2.2 * H() * dt; ry += vy * dt;
+        place(o, x + Math.sin(launchT * 40) * 1.5, ry, Math.sin(launchT * 9) * 3);
+        exhaust(cx, ry + o.el.offsetHeight - 2 * K(), 1.6);
+        if (ry < -o.el.offsetHeight * 1.5) { state = "gone"; o.el.style.opacity = 0; setTimeout(() => { o.body.style.transformOrigin = ""; o.body.getAnimations().forEach((a) => a.cancel()); o.el.style.opacity = 1; reset(); }, 1500 * slow); }
+      }
+      return;
+    }
+    if (state !== "walk") return;
+    t += dt; x += 0.075 * W() * dt; if (x > 1.05 * W()) reset();
+    const step = t / 0.72 * Math.PI * 2;
+    place(o, x, baseY() - Math.abs(Math.sin(step)) * 5 * K(), Math.sin(step) * 3);
+  } };
+}
+
+function Merman() {
+  // Lives in a mask whose bottom edge is the water line, so he rises out of the sea.
+  const mask = document.createElement("div"); mask.className = "seamask"; stage.appendChild(mask);
+  const foam = document.createElement("div"); foam.className = "foam"; stage.appendChild(foam);
+  const o = make("merman", mask); let state = "wait", t = 0.9, x = 0.4;
+  const h = () => o.el.offsetHeight;
+  function layout() { Object.assign(mask.style, { left: 0, top: 0, width: W() + "px", height: SEA * H() + "px" }); }
+  const cycle = { wait: 1.2, rise: 0.55, up: 2.6, dive: 0.45 };
+  // Three quick hits: the first makes him flinch and start slipping under;
+  // the other two must land before he is gone (WINDOW), or the count resets.
+  const WINDOW = 1.1; let hits = 0, sinkY = 0;
+  hitTest(o, (e) => {
+    if (state !== "up" && state !== "rise" && state !== "sinking") return;
+    const [px, py] = stageXY(e); hits++;
+    o.body.animate([{ translate: "0 0" }, { translate: "-5px 3px" }, { translate: "5px -2px" }, { translate: "0 0" }], { duration: 200 });
+    if (hits < 3) {
+      pop(px, py - 10, hits + " / 3", false);
+      splash(x * W() + o.el.offsetWidth / 2, SEA * H(), false);
+      if (hits === 1) { state = "sinking"; t = 0; sinkY = parseFloat(o.el.style.transform.split(",")[1]) || 0; }
+      return;
+    }
+    hits = 0;
+    addScore(600, px, py - 10); state = "hit"; t = 0;
+    const cx = x * W() + o.el.offsetWidth / 2;
+    splash(cx, SEA * H(), true);
+    // He drops under, then the sea answers: a fountain of small fish.
+    setTimeout(() => Fountain(cx, SEA * H()), 260 * slow);
+  });
+  return { tick(dt) {
+    layout(); t += dt;
+    const px = x * W(), water = SEA * H(), full = water - h() + 6 * K(), hidden = water + 4;
+    let y = hidden, rot = 0;
+    if (state === "wait") { y = hidden; if (t > cycle.wait) { state = "rise"; t = 0; x = 0.15 + Math.random() * 0.55; splash(x * W() + o.el.offsetWidth / 2, water, false); } }
+    else if (state === "rise") { const k = Math.min(1, t / cycle.rise); const e = 1 - Math.pow(1 - k, 3); y = hidden + (full - hidden) * e - Math.sin(k * Math.PI) * 6 * K(); if (k >= 1) { state = "up"; t = 0; } }
+    else if (state === "up") { y = full + Math.sin(t * 3) * 2.5 * K(); rot = Math.sin(t * 1.5) * 3; if (t > cycle.up) { state = "dive"; t = 0; } }
+    else if (state === "sinking") {
+      // Hit once: ducking, slowly slipping under; too slow and he is gone.
+      const k = Math.min(1, t / WINDOW); y = full + (hidden - full) * (k * k * 0.9 + k * 0.1); rot = Math.sin(t * 30) * 4 * (1 - k);
+      if (k >= 1) { state = "wait"; t = -0.8; hits = 0; splash(px + o.el.offsetWidth / 2, water, false); pop(px + o.el.offsetWidth / 2, water - 40 * K(), "TOO SLOW", true); }
+    }
+    else if (state === "dive") { const k = Math.min(1, t / cycle.dive); y = full + (hidden - full) * k * k; rot = -k * 18; if (k >= 1) { state = "wait"; t = 0; splash(px + o.el.offsetWidth / 2, water, false); } }
+    else if (state === "hit") { const k = Math.min(1, t / 0.3); y = full + (hidden - full) * k * k; rot = 0; if (k >= 1) { state = "wait"; t = -3.2; } }
+    place(o, px, y, rot);
+    const out = Math.max(0, Math.min(1, (hidden - y) / (hidden - full)));
+    Object.assign(foam.style, { left: px + o.el.offsetWidth * 0.12 + "px", top: water - 3 + "px", width: o.el.offsetWidth * 0.76 + "px", opacity: out > 0.05 ? 0.9 : 0 });
+    o.el.classList.toggle("surfacing", state === "rise" || state === "dive" || state === "sinking");
+    if (state === "wait") hits = 0;
+    if (o.label) o.label.style.display = showLabels && out > 0.3 ? "" : "none";
+  } };
+}
+
+function Ufo() {
+  // Tough: 6 or 7 hits (rolled per UFO). Each hit sparks and jolts it, and it
+  // smokes more the more damaged it is; the last one brings it down.
+  const o = make("ufo"); let t = 0, x, y, state, beamAt, hits = 0, need = 6;
+  const reset = () => { x = 1.05 * W(); state = "hover"; t = 0; hits = 0; need = 6 + (Math.random() < .5 ? 1 : 0); beamAt = 2 + Math.random() * 2; o.el.classList.remove("hit", "beaming", "empty"); o.el.style.display = ""; o.el.style.opacity = 1; };
+  reset(); x = 0.62 * W(); beamAt = 0.8;
+  hitTest(o, (e) => {
+    if (state !== "hover") return;
+    const [px, py] = stageXY(e); hits++;
+    for (let i = 0; i < 5; i++) puff(px, py, { color: i % 2 ? "rgba(255,243,196,1)" : "rgba(247,160,28,1)", size: 4 * K() * 1.4, dx: (Math.random() - .5) * 60, dy: (Math.random() - .5) * 60, life: 350 });
+    o.body.animate([{ translate: "0 0" }, { translate: "-5px 3px" }, { translate: "4px -2px" }, { translate: "0 0" }], { duration: 180 });
+    if (hits < need) { o.el.classList.remove("beaming"); beamAt = t + 2.5; return; }
+    addScore(800, px, py - 10);
+    state = "hit"; t = 0; o.el.classList.add("hit"); o.el.classList.remove("beaming");
+    for (let i = 0; i < 10; i++) puff(px, py, { color: i % 2 ? "rgba(255,243,196,1)" : "rgba(247,160,28,1)", size: 5 * K() * 1.4, dx: (Math.random() - .5) * 90, dy: (Math.random() - .5) * 90, life: 450 });
+    // The pilot leaves the dome as the parachute appears: from then on the saucer is empty.
+    setTimeout(() => { o.el.classList.add("empty"); Alien(x + o.el.offsetWidth * 0.45, y); }, 380 * slow);
+  });
+  let sx0, sy0;
+  return { tick(dt) {
+    t += dt;
+    if (state === "hover") {
+      x -= 0.045 * W() * dt; if (x < -0.2 * W()) reset();
+      y = 0.08 * H() + Math.sin(t * 1.3) * 0.02 * H();
+      if (t > beamAt) { o.el.classList.add("beaming"); if (t > beamAt + 1.6) { o.el.classList.remove("beaming"); beamAt = t + 3 + Math.random() * 3; } }
+      // Damage shows: smoke from the rim, thicker with every hit.
+      if (hits > 0 && Math.random() < hits / need * 0.7) puff(x + o.el.offsetWidth * (0.6 + Math.random() * 0.25), y + o.el.offsetHeight * 0.45, { color: `rgba(70,64,82,${0.25 + 0.4 * hits / need})`, size: (6 + 8 * hits / need) * K() * 1.4, dx: 18, dy: -26, life: 900 });
+      place(o, x, y, Math.sin(t * 2.1) * (5 + hits * 1.5));
+    } else if (state === "hit") {
+      // Sputters in place (tilt, shake), then spirals down into the sea.
+      place(o, x + Math.sin(t * 60) * 3, y + Math.cos(t * 50) * 2, -16 + Math.sin(t * 30) * 4);
+      if (Math.random() < .4) puff(x + o.el.offsetWidth * .7, y + o.el.offsetHeight * .4, { color: "rgba(70,64,82,.65)", size: 12 * K() * 1.4, dx: 20, dy: -24, life: 900 });
+      if (t > 0.45) { state = "fall"; t = 0; sx0 = x; sy0 = y; }
+    } else if (state === "fall") {
+      const dur = 1.5, k = Math.min(1, t / dur);
+      const tx = sx0 - 0.12 * W() * k + Math.sin(k * 9) * 30 * K() * (1 - k);
+      const ty = sy0 + (SEA * H() - 0.06 * H() - sy0) * (k * k);
+      x = tx; y = ty;
+      place(o, tx, ty, -16 + k * 40 + Math.sin(k * 14) * 12, 1 - k * 0.35, 1 - k * 0.35);
+      if (Math.random() < .6) puff(tx + o.el.offsetWidth * .6, ty + o.el.offsetHeight * .3, { color: "rgba(70,64,82,.6)", size: 14 * K() * 1.4, dx: 16, dy: -30, life: 1100 });
+      if (k >= 1) { state = "gone"; t = 0; o.el.style.display = "none"; splash(tx + o.el.offsetWidth * 0.4, SEA * H() - 0.03 * H(), true); }
+    } else if (state === "gone") { if (t > 5.5) reset(); }
+  } };
+}
+
+function Alien(x0, y0) {
+  const o = make("alien"); o.label.remove(); o.label = null;
+  o.el.style.zIndex = 3; o.body.style.transformOrigin = "50% 10%";
+  let t = 0, done = false;
+  const target = SEA * H() - 0.02 * H();
+  actors.push({ tick(dt) {
+    if (done) return; t += dt;
+    // Pops up out of the saucer, the chute opens, then a slow swaying descent.
+    const open = Math.min(1, t / 0.35);
+    let y = t < 0.35 ? y0 - 40 * K() * open : y0 - 40 * K() + (t - 0.35) * 0.075 * H();
+    const x = x0 + Math.sin(t * 1.4) * 26 * K() + t * 6 * K();
+    const sway = Math.sin(t * 2.2) * 11;
+    const bottom = y + o.el.offsetHeight;
+    place(o, x - o.el.offsetWidth / 2, y, sway, 0.4 + 0.6 * open, 0.4 + 0.6 * open);
+    if (bottom > target) {
+      done = true; splash(x, target, false);
+      o.el.animate([{ transform: o.el.style.transform, opacity: 1 }, { transform: o.el.style.transform + " translateY(14px) scale(.7)", opacity: 0 }], { duration: 600 * slow, fill: "forwards" }).onfinish = () => o.el.remove();
+    }
+  } });
+}
+
+const FISH = ["#f49ea3", "#5ad1d6", "#f7c46c", "#9be37c", "#e8789f", "#8fd3ff"];
+function fishSvg(c) {
+  return `<svg viewBox="0 0 26 12" width="100%"><path d="M2 6 C6 0 14 0 19 6 C14 12 6 12 2 6 Z" fill="${c}" stroke="#2b2234" stroke-width="1.3" stroke-linejoin="round"/><path d="M18 6 L25 1 L23.5 6 L25 11 Z" fill="${c}" stroke="#2b2234" stroke-width="1.3" stroke-linejoin="round"/><path d="M9 3 Q11 6 9 9" fill="none" stroke="#2b2234" stroke-width=".9"/><circle cx="5.6" cy="5" r="1.1" fill="#2b2234"/></svg>`;
+}
+function Fountain(cx, sea) {
+  // Many small fish thrown up out of the water in a column that fans out,
+  // arcing over and diving back in, each with a little splash.
+  const fish = [];
+  const n = 26;
+  for (let i = 0; i < n; i++) {
+    const el = document.createElement("div");
+    el.className = "c"; el.style.zIndex = 2;
+    const w = (14 + Math.random() * 10) * K() * 1.3;
+    el.style.width = w + "px";
+    el.innerHTML = fishSvg(FISH[i % FISH.length]);
+    stage.appendChild(el);
+    const spread = (Math.random() - 0.5);
+    fish.push({ el, w, x: cx + spread * 30 * K(), y: sea, vx: spread * 0.32 * W(), vy: -(0.75 + Math.random() * 0.45) * H(), delay: (i / n) * 0.55 + Math.random() * 0.08, wig: Math.random() * 6, done: false });
+  }
+  let t = 0;
+  for (let i = 0; i < 4; i++) setTimeout(() => splash(cx + (Math.random() - .5) * 20 * K(), sea, i === 0), i * 140 * slow);
+  actors.push({ tick(dt) {
+    t += dt;
+    for (const f of fish) {
+      if (f.done || t < f.delay) continue;
+      f.vy += 1.45 * H() * dt; f.x += f.vx * dt; f.y += f.vy * dt;
+      // Head (left end of the sprite) leads along the arc, with a wiggle.
+      const ang = Math.atan2(f.vy, f.vx) * 180 / Math.PI + 180 + Math.sin((t + f.wig) * 22) * 10;
+      f.el.style.transform = `translate(${f.x - f.w / 2}px, ${f.y}px) rotate(${ang}deg)`;
+      if (f.vy > 0 && f.y > sea) { f.done = true; f.el.remove(); if (Math.random() < .6) splash(f.x, sea, false); }
+    }
+  } });
+}
+
+/* ---------- Bigfoot: a skeletal rig (sprite space 160x225, facing right, ground y 198) ---------- */
+const NS = "http://www.w3.org/2000/svg";
+const RIG = {
+  OUT: "#160f12", NEAR: "#5a3f2e", FAR: "#3e2a20", HAND_N: "#7c5a45", HAND_F: "#5c4232", FOOT_N: "#3b2a20", FOOT_F: "#2c1e17",
+  THIGH: 36, SHIN: 34, UPPER: 32, FORE: 30, GROUND: 198,
+};
+const lerp = (a, b, k) => a + (b - a) * k;
+const easeIO = (k) => (k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2); // strong ease-in-out for on-screen moves
+const easeOut = (k) => 1 - Math.pow(1 - k, 3);
+const backOut = (k) => { const c = 1.6; return 1 + (c + 1) * Math.pow(k - 1, 3) + c * Math.pow(k - 1, 2); }; // settle with a small overshoot
+const dir = (deg) => [Math.sin(deg * Math.PI / 180), Math.cos(deg * Math.PI / 180)]; // 0 = straight down, + = forward
+// Two-bone IK: hip H, target ankle A -> knee, bending forward (+x).
+function ik(H, A, L1, L2) {
+  let dx = A[0] - H[0], dy = A[1] - H[1], d = Math.hypot(dx, dy);
+  const max = L1 + L2 - 0.01; if (d > max) { dx *= max / d; dy *= max / d; d = max; }
+  const a = Math.atan2(dy, dx), c = Math.max(-1, Math.min(1, (L1 * L1 + d * d - L2 * L2) / (2 * L1 * d)));
+  const k1 = [H[0] + L1 * Math.cos(a - Math.acos(c)), H[1] + L1 * Math.sin(a - Math.acos(c))];
+  const k2 = [H[0] + L1 * Math.cos(a + Math.acos(c)), H[1] + L1 * Math.sin(a + Math.acos(c))];
+  const knee = k1[0] > k2[0] ? k1 : k2;
+  return { knee, ankle: [H[0] + dx, H[1] + dy] };
+}
+// Poses: root = pelvis; feet are ankle targets (sprite space); arm angles absolute.
+const POSES = {
+  stand: { rx: 86, ry: 132, torso: 0, head: 0, fF: [72, 194], fN: [104, 194], uF: 12, fFo: 22, uN: 8, fNo: 18, face: "calm" },
+  squat: { rx: 80, ry: 164, torso: 22, head: -16, fF: [70, 194], fN: [106, 194], uF: 6, fFo: 38, uN: 2, fNo: 34, face: "strain" },
+  relief: { rx: 80, ry: 160, torso: 14, head: -6, fF: [70, 194], fN: [106, 194], uF: 4, fFo: 30, uN: 0, fNo: 26, face: "relief" },
+  crouch: { rx: 82, ry: 170, torso: 34, head: -10, fF: [72, 194], fN: [104, 194], uF: -40, fFo: -20, uN: -44, fNo: -24, face: "relief" },
+  jet: { rx: 80, ry: 162, torso: 30, head: -14, fF: [66, 196], fN: [102, 196], uF: -70, fFo: -100, uN: -74, fNo: -104, face: "relief" },
+  tuck: { rx: 82, ry: 150, torso: 78, head: 30, fF: [92, 166], fN: [98, 170], uF: -62, fFo: -142, uN: -66, fNo: -146, face: "dizzy" },
+};
+function blend(A, B, k) {
+  const o = {};
+  for (const key in A) {
+    if (Array.isArray(A[key])) o[key] = [lerp(A[key][0], B[key][0], k), lerp(A[key][1], B[key][1], k)];
+    else if (typeof A[key] === "number") o[key] = lerp(A[key], B[key], k);
+    else o[key] = k < .5 ? A[key] : B[key];
+  }
+  return o;
+}
+function makeRig(host) {
+  const svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("viewBox", "0 0 160 225"); svg.style.overflow = "visible";
+  const roll = document.createElementNS(NS, "g"); svg.appendChild(roll);
+  // A round fur ball behind the tucked body, shown only when he curls up.
+  const ballBack = document.createElementNS(NS, "circle");
+  ballBack.setAttribute("cx", 128); ballBack.setAttribute("cy", 140); ballBack.setAttribute("r", 54);
+  ballBack.setAttribute("fill", RIG.NEAR); ballBack.setAttribute("stroke", RIG.OUT); ballBack.setAttribute("stroke-width", 2.4);
+  ballBack.style.display = "none"; roll.appendChild(ballBack);
+  const el = (tag, attrs, parent = roll) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent.appendChild(e); return e; };
+  const limb = (col, w) => ({ out: el("path", { fill: "none", stroke: RIG.OUT, "stroke-width": w + 4.4, "stroke-linecap": "round", "stroke-linejoin": "round" }), fill: el("path", { fill: "none", stroke: col, "stroke-width": w, "stroke-linecap": "round", "stroke-linejoin": "round" }) });
+  // Far side first (behind), then torso, then near side.
+  const armF = limb(RIG.FAR, 13), handF = el("circle", { r: 8, fill: RIG.HAND_F, stroke: RIG.OUT, "stroke-width": 2 });
+  const legF = limb(RIG.FAR, 17), footF = el("ellipse", { rx: 14, ry: 6, fill: RIG.FOOT_F, stroke: RIG.OUT, "stroke-width": 2.2 });
+  const torso = el("g", {});
+  el("path", { d: "M46 70 Q74 40 112 62 Q122 96 116 132 Q80 146 48 132 Q40 100 46 70 Z", fill: RIG.NEAR, stroke: RIG.OUT, "stroke-width": 2.2, "stroke-linejoin": "round", transform: "translate(-82 -132)" }, torso);
+  el("path", { d: "M60 80 l6 8 M74 76 l5 9 M92 78 l4 9 M104 90 l4 8 M58 104 l6 7 M80 100 l5 8 M100 110 l4 8 M64 122 l5 7", stroke: RIG.FAR, "stroke-width": 2, "stroke-linecap": "round", transform: "translate(-82 -132)" }, torso);
+  const head = el("g", {}, torso);
+  const hd = (tag, a) => el(tag, a, head);
+  hd("path", { d: "M70 58 Q66 30 88 22 Q110 28 108 58 Q90 68 70 58 Z", fill: RIG.NEAR, stroke: RIG.OUT, "stroke-width": 2.2, "stroke-linejoin": "round", transform: "translate(-89 -60)" });
+  hd("ellipse", { cx: 5, cy: -12, rx: 11, ry: 12, fill: "#a77d5f", stroke: RIG.OUT, "stroke-width": 2.2 });
+  const faces = {};
+  const face = (name, html) => { const g = el("g", { transform: "translate(-89 -60)" }, head); g.innerHTML = html; g.style.display = "none"; faces[name] = g; };
+  face("calm", '<path d="M83 41 Q94 36 105 41" fill="none" stroke="#2c1e17" stroke-width="3.5" stroke-linecap="round"/><circle cx="89.5" cy="46" r="2" fill="#160f12"/><circle cx="99.5" cy="46" r="2" fill="#160f12"/><path d="M90 55 Q94.5 57 99 55" fill="none" stroke="#2c1e17" stroke-width="1.6" stroke-linecap="round"/>');
+  face("strain", '<path d="M83 39 L93 43 M105 39 L96 43" fill="none" stroke="#2c1e17" stroke-width="3.5" stroke-linecap="round"/><path d="M86 46 l4 1.5 l-4 1.5 M103 46 l-4 1.5 l4 1.5" fill="none" stroke="#160f12" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M89 55 l2 -1.5 l2 1.5 l2 -1.5 l2 1.5 l2 -1.5" fill="none" stroke="#2c1e17" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M107 36 q3 4 0 6 q-3 -2 0 -6 Z" fill="#8fd3ff" stroke="#160f12" stroke-width="1"/><ellipse cx="85" cy="52" rx="2.6" ry="1.6" fill="#e98a9a" opacity=".7"/><ellipse cx="104" cy="52" rx="2.6" ry="1.6" fill="#e98a9a" opacity=".7"/>');
+  face("relief", '<path d="M83 41 Q94 38 105 41" fill="none" stroke="#2c1e17" stroke-width="3.5" stroke-linecap="round"/><path d="M86.5 47 q3 -3 6 0 M96.5 47 q3 -3 6 0" fill="none" stroke="#160f12" stroke-width="1.8" stroke-linecap="round"/><path d="M89 53 Q94.5 59 100 53 Z" fill="#7a2335" stroke="#2c1e17" stroke-width="1.4" stroke-linejoin="round"/>');
+  face("dizzy", '<path d="M86 44 l5 5 m0 -5 l-5 5 M97 44 l5 5 m0 -5 l-5 5" stroke="#160f12" stroke-width="1.8" stroke-linecap="round"/><ellipse cx="94.5" cy="55" rx="2.5" ry="2" fill="#2c1e17"/>');
+  const legN = limb(RIG.NEAR, 17), footN = el("ellipse", { rx: 14, ry: 6, fill: RIG.FOOT_N, stroke: RIG.OUT, "stroke-width": 2.2 });
+  const armN = limb(RIG.NEAR, 13), handN = el("circle", { r: 8, fill: RIG.HAND_N, stroke: RIG.OUT, "stroke-width": 2 });
+  host.appendChild(svg);
+  let shown = "";
+  const rot = ([x, y], deg) => { const r = deg * Math.PI / 180, c = Math.cos(r), s = Math.sin(r); return [x * c - y * s, x * s + y * c]; };
+  return {
+    svg,
+    ball(on) { ballBack.style.display = on ? "" : "none"; },
+    draw(p, opts = {}) {
+      const R = [p.rx, p.ry];
+      const T = (local) => { const v = rot(local, p.torso); return [R[0] + v[0], R[1] + v[1]]; };
+      const pts = (...a) => a.map((q, i) => (i ? "L" : "M") + q[0].toFixed(1) + " " + q[1].toFixed(1)).join(" ");
+      // Legs: IK from hips to planted feet.
+      const hipF = [R[0] - 10, R[1] - 2], hipN = [R[0] + 14, R[1] - 2];
+      const lf = ik(hipF, p.fF, RIG.THIGH, RIG.SHIN), ln = ik(hipN, p.fN, RIG.THIGH, RIG.SHIN);
+      for (const [leg, foot, hip, s] of [[legF, footF, hipF, lf], [legN, footN, hipN, ln]]) {
+        const d = pts(hip, s.knee, s.ankle); leg.out.setAttribute("d", d); leg.fill.setAttribute("d", d);
+        const ang = Math.atan2(s.ankle[1] - s.knee[1], s.ankle[0] - s.knee[0]) * 180 / Math.PI - 90;
+        foot.setAttribute("transform", `translate(${(s.ankle[0] + 6).toFixed(1)} ${(s.ankle[1] + 3).toFixed(1)}) rotate(${(ang * 0.35).toFixed(1)} -6 -3)`);
+      }
+      torso.setAttribute("transform", `translate(${R[0].toFixed(1)} ${R[1].toFixed(1)}) rotate(${p.torso.toFixed(1)})`);
+      head.setAttribute("transform", `translate(7 -72) rotate(${p.head.toFixed(1)})`);
+      // Arms: forward kinematics from the shoulders (which follow the torso).
+      for (const [arm, hand, sh, u, f] of [[armF, handF, [-20, -58], p.uF, p.fFo], [armN, handN, [16, -60], p.uN, p.fNo]]) {
+        const S = T(sh), du = dir(u + p.torso * 0.6), df = dir(f + p.torso * 0.6);
+        const E = [S[0] + du[0] * RIG.UPPER, S[1] + du[1] * RIG.UPPER], Hd = [E[0] + df[0] * RIG.FORE, E[1] + df[1] * RIG.FORE];
+        const d = pts(S, E, Hd); arm.out.setAttribute("d", d); arm.fill.setAttribute("d", d);
+        hand.setAttribute("cx", Hd[0].toFixed(1)); hand.setAttribute("cy", Hd[1].toFixed(1));
+      }
+      if (p.face !== shown) { if (shown) faces[shown].style.display = "none"; faces[p.face].style.display = ""; shown = p.face; }
+      roll.setAttribute("transform", opts.spin ? `rotate(${opts.spin.toFixed(1)} ${opts.cx} ${opts.cy})` : "");
+    },
+  };
+}
+
+function Bigfoot() {
+  // Hostile, three hits (1 / 3, 2 / 3). The finishing hit, all on the rig:
+  // recoil, a proper squat (hips drop, knees bend over planted feet, hands on
+  // knees, a strain), the business (PFFT!), relief, a crouch to wind up, then
+  // he tucks into a ball and rolls off, spinning at the speed he travels. As
+  // he goes, the pile is flung at the camera and splats across the screen.
+  const wrap = document.createElement("div"); wrap.className = "c bigfoot"; stage.appendChild(wrap);
+  const label = document.createElement("div"); label.className = "label"; label.textContent = "BIGFOOT"; stage.appendChild(label);
+  // A boss bar over his head, from the first hit: it drains with each one.
+  const HITS = 20;
+  const bar = document.createElement("div"); bar.className = "bossbar"; bar.innerHTML = "<i></i>"; stage.appendChild(bar);
+  const rig = makeRig(wrap);
+  const ew = () => SIZE.bigfoot * K(), sc = () => ew() / 160;
+  wrap.style.width = ew() + "px";
+  let t = 0, x, state, hits = 0, seq = 0, recoil = 0, pile = null, pileAt = null, spin = 0, rollX = 0, jetT = 0, jx = 0, jy = 0, jv = 0, globAt = 0;
+  // Provoked by the first hit: he keeps walking and throws at the screen
+  // every THROW_EVERY seconds until he is off it. Each splat costs half a
+  // heart, but one Bigfoot can take at most MAX_DAMAGE in all; after that his
+  // throws still splat (and still block the view) but cost nothing.
+  const THROW_EVERY = 1.5, THROW_TIME = 0.55, PER_THROW = 0.5, MAX_DAMAGE = 1.5;
+  let provoked = false, thrown = 0, dealt = 0, nextThrow = 0, throwT = -1;
+  const reset = () => { x = 1.05 * W(); state = "walk"; hits = 0; wrap.style.opacity = 1; recoil = 0; rig.ball(false); wrap.style.transformOrigin = ""; provoked = false; thrown = 0; dealt = 0; throwT = -1; bar.classList.remove("on"); bar.firstChild.style.transform = ""; };
+  reset(); x = 0.8 * W();
+  // Sprite space -> stage, for a body mirrored to walk left.
+  const toStage = (sx, sy) => [x + (160 - sx) * sc(), GROUND * H() - (RIG.GROUND - sy) * sc()];
+  wrap.addEventListener("pointerdown", (e) => {
+    e.stopPropagation();
+    if (state !== "walk") return; const [px, py] = stageXY(e); hits++; recoil = 1;
+    bar.firstChild.style.transform = `scaleX(${Math.max(0, 1 - hits / HITS)})`;
+    bar.classList.add("on");
+    if (hits < HITS) {
+      if (!provoked) { provoked = true; nextThrow = t + 0.5; const a = document.createElement("div"); a.className = "pop neg"; a.textContent = "ANGRY!"; a.style.cssText += `left:${x + ew() / 2}px;top:${GROUND * H() - 175 * sc()}px`; stage.appendChild(a); a.addEventListener("animationend", () => a.remove()); }
+      return;
+    }
+    bar.classList.remove("on");
+    addScore(1500, px, py - 10); state = "die"; seq = 0; throwT = -1; splats = 0;
+  });
+  // The finishing sequence as timed segments: [start, end, from, to, ease].
+  const SEG = [
+    [0.00, 0.14, "stand", "stand", easeOut],
+    [0.14, 0.62, "stand", "squat", easeIO],
+    [1.62, 1.86, "squat", "jet", easeOut],
+  ];
+  function poseAt(s) {
+    let p = POSES.stand;
+    for (const [a, b, f, to, ez] of SEG) {
+      if (s >= b) p = POSES[to];
+      else if (s >= a) { p = blend(POSES[f], POSES[to], ez((s - a) / (b - a))); break; }
+    }
+    p = { ...p };
+    if (s >= 0.62 && s < 0.78) { const k = (s - 0.62) / 0.16; p.ry += Math.sin(k * Math.PI) * 3; } // settle into the squat
+    if (s >= 0.8 && s < 1.6) { p.rx += Math.sin(s * 95) * 0.9; p.torso += Math.sin(s * 80) * 0.8; } // strain
+    if (s >= 1.6 && s < 1.75) p.ry -= Math.sin((s - 1.6) / 0.15 * Math.PI) * 4; // the push
+    return p;
+  }
+  function dropPile() {
+    const p = document.createElement("div"); p.className = "c"; p.style.zIndex = 1;
+    const pw = 34 * sc() * 1.4; p.style.width = pw + "px"; p.innerHTML = svgs["poop"]; stage.appendChild(p);
+    const [bx, by] = toStage(POSES.squat.rx - 12, RIG.GROUND);
+    const pxp = bx - pw / 2, pyp = by - pw * 0.86;
+    pile = p; pileAt = [pxp, pyp, pw];
+    p.animate([
+      { transform: `translate(${pxp}px, ${pyp - 24 * sc()}px) scale(.85, 1.2)` },
+      { transform: `translate(${pxp}px, ${pyp}px) scale(1.12,.86)`, offset: .55 },
+      { transform: `translate(${pxp}px, ${pyp}px) scale(.97,1.04)`, offset: .8 },
+      { transform: `translate(${pxp}px, ${pyp}px) scale(1)` },
+    ], { duration: 340 * slow, easing: "ease-out", fill: "forwards" });
+    let n = 0; const stink = setInterval(() => { if (!pile) return clearInterval(stink);
+      puff(pxp + pw * (0.3 + Math.random() * 0.4), pyp + pw * 0.1, { color: "rgba(130,190,80,.5)", size: 9 * K() * 1.3, dx: (Math.random() - .5) * 18, dy: -46 * K(), life: 1000 });
+      if (++n > 12) clearInterval(stink); }, 150 * slow);
+    const pf = document.createElement("div"); pf.className = "pop"; pf.textContent = "PFFT!"; pf.style.cssText += `left:${pxp + pw / 2}px;top:${pyp - 24 * K()}px;color:#c8e39a`;
+    stage.appendChild(pf); pf.addEventListener("animationend", () => pf.remove());
+  }
+  function fling() {
+    if (!pile) return;
+    const [pxp, pyp, pw] = pileAt, p = pile; pile = null; p.remove();
+    flingGlob(pxp + pw / 2, pyp + pw / 2, 0.5 * W(), 0.42 * H(), 0.13 * Math.min(W(), H()), true);
+  }
+  let splatLayer = null, splats = 0;
+  function splat(cx, cy, r, main, fadeAfter) {
+    const s = slow;
+    if (!splatLayer) {
+      splatLayer = document.createElementNS(NS, "svg"); splatLayer.setAttribute("viewBox", `0 0 ${W()} ${H()}`);
+      Object.assign(splatLayer.style, { position: "absolute", inset: 0, width: "100%", height: "100%", zIndex: 9, pointerEvents: "none" });
+      stage.appendChild(splatLayer);
+    }
+    const g = document.createElementNS(NS, "g"); const pts = 14; let d = "";
+    for (let i = 0; i <= pts; i++) { const a = i / pts * Math.PI * 2, rr = r * (0.72 + Math.random() * 0.5) * (i % 2 ? 1.18 : 0.88); d += (i ? " L" : "M") + (cx + Math.cos(a) * rr).toFixed(1) + " " + (cy + Math.sin(a) * rr * 0.86).toFixed(1); }
+    const path = document.createElementNS(NS, "path"); path.setAttribute("d", d + " Z"); path.setAttribute("fill", main ? "#6e4024" : "#7a4a2a"); path.setAttribute("stroke", "#3a2216"); path.setAttribute("stroke-width", 2); path.setAttribute("stroke-linejoin", "round"); g.appendChild(path);
+    const hl = document.createElementNS(NS, "ellipse"); hl.setAttribute("cx", cx - r * 0.3); hl.setAttribute("cy", cy - r * 0.3); hl.setAttribute("rx", r * 0.22); hl.setAttribute("ry", r * 0.12); hl.setAttribute("fill", "rgba(200,150,100,.6)"); g.appendChild(hl);
+    for (let i = 0; i < 5; i++) { const a = Math.random() * Math.PI * 2, dd = r * (1.3 + Math.random() * 0.9); const f = document.createElementNS(NS, "circle"); f.setAttribute("cx", cx + Math.cos(a) * dd); f.setAttribute("cy", cy + Math.sin(a) * dd); f.setAttribute("r", r * (0.07 + Math.random() * 0.1)); f.setAttribute("fill", "#7a4a2a"); g.appendChild(f); }
+    for (let i = 0; i < (main ? 3 : 1); i++) { const dx = cx + (Math.random() - .5) * r, len = r * (0.8 + Math.random() * 1.4); const drip = document.createElementNS(NS, "path"); drip.setAttribute("d", `M${dx} ${cy + r * 0.5} L${dx} ${cy + r * 0.5 + len}`); drip.setAttribute("stroke", "#6e4024"); drip.setAttribute("stroke-width", r * 0.16); drip.setAttribute("stroke-linecap", "round"); drip.setAttribute("pathLength", "1"); drip.style.strokeDasharray = "1"; drip.style.strokeDashoffset = "1"; g.appendChild(drip); drip.animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 1800 * s, delay: 200 * s, easing: "ease-in", fill: "forwards" }); }
+    g.style.transformBox = "fill-box"; g.style.transformOrigin = "50% 50%";
+    g.animate([{ transform: "scale(.6)", opacity: 0 }, { transform: "scale(1.08)", opacity: 1, offset: .55 }, { transform: "scale(1)" }], { duration: 220 * s, easing: "cubic-bezier(.23,1,.32,1)" });
+    splatLayer.appendChild(g);
+    if (fadeAfter) g.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 900 * slow, delay: fadeAfter * 1000 * slow, fill: "forwards" }).onfinish = () => g.remove();
+    stage.animate([{ transform: "translate(0,0)" }, { transform: "translate(0,5px)" }, { transform: "translate(0,-2px)" }, { transform: "translate(0,0)" }], { duration: 220 * s });
+    if (splats++ === 0) {
+      const sp = document.createElement("div"); sp.className = "pop"; sp.textContent = "SPLAT!"; sp.style.cssText += `left:${cx}px;top:${cy - r * 1.6}px;font-size:${34 * K() * 1.3}px;color:#e3c8a8`;
+      stage.appendChild(sp); sp.addEventListener("animationend", () => sp.remove());
+    }
+  }
+  function endSplats() {
+    if (!splatLayer) return; const l = splatLayer; splatLayer = null; splats = 0;
+    l.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 1600 * slow, delay: 2400 * slow, fill: "forwards" }).onfinish = () => l.remove();
+  }
+  function flingGlob(fromX, fromY, toX, toY, r, main, onLand, fadeAfter) {
+    // A glob tumbling up at the camera, growing, then splatting on the glass.
+    const p = document.createElement("div"); p.className = "c"; p.style.zIndex = 9;
+    const pw = 26 * K() * 1.3; p.style.width = pw + "px"; p.innerHTML = svgs["poop"]; stage.appendChild(p);
+    const sEnd = (r * 2.2) / pw;
+    p.animate([
+      { transform: `translate(${fromX - pw / 2}px, ${fromY - pw / 2}px) scale(.6) rotate(0)` },
+      { transform: `translate(${(fromX + toX) / 2 - pw / 2}px, ${Math.min(fromY, toY) - 0.12 * H()}px) scale(${(0.6 + sEnd) / 2}) rotate(220deg)`, offset: .5 },
+      { transform: `translate(${toX - pw / 2}px, ${toY - pw / 2}px) scale(${sEnd}) rotate(360deg)` },
+    ], { duration: 460 * slow, easing: "cubic-bezier(.5,0,.9,.5)", fill: "forwards" }).onfinish = () => { p.remove(); splat(toX, toY, r, main, fadeAfter); onLand?.(); };
+  }
+  function placeWrap() {
+    wrap.style.width = ew() + "px";
+    // Mirrored to face left; the rig's ground line sits on the beach's.
+    wrap.style.transform = `translate(${x}px, ${GROUND * H() - RIG.GROUND * sc()}px) scale(-1, 1)`;
+    label.style.left = x + ew() / 2 + "px"; label.style.top = GROUND * H() - 160 * sc() - 16 + "px";
+    label.style.display = showLabels && state === "walk" && !provoked ? "" : "none";
+    Object.assign(bar.style, { left: x + ew() / 2 + "px", top: GROUND * H() - 178 * sc() + "px", width: 70 * sc() + "px" });
+  }
+  return { tick(dt) {
+    recoil = Math.max(0, recoil - dt * 5);
+    if (state === "walk") {
+      t += dt;
+      x -= 0.035 * W() * dt; if (x < -0.15 * W()) reset();
+      // Walk cycle: feet step in turn (lifted while swinging), hips bob, arms counter-swing.
+      const ph = t * 4.2, sF = Math.sin(ph), sN = Math.sin(ph + Math.PI);
+      const p = { ...POSES.stand };
+      p.fF = [72 + sF * 14, 194 - Math.max(0, Math.cos(ph)) * 8];
+      p.fN = [104 + sN * 14, 194 - Math.max(0, Math.cos(ph + Math.PI)) * 8];
+      p.ry = 132 + Math.abs(Math.cos(ph)) * 2.5 - 1.5;
+      p.uF = 12 - sF * 16; p.fFo = p.uF + 12; p.uN = 8 - sN * 16; p.fNo = p.uN + 12;
+      p.torso = 3 - recoil * 14; p.head = recoil * 8;
+      if (provoked) {
+        // Still walking, angry, throwing as he goes.
+        p.face = "strain";
+        if (throwT < 0 && t >= nextThrow && x > 0.02 * W()) throwT = 0;
+        if (throwT >= 0) {
+          throwT += dt; const k = throwT / THROW_TIME;
+          // Wind up (reach back and down), then a fast overarm release toward the camera.
+          if (k < 0.6) { const e = easeIO(k / 0.6); p.uN = lerp(8, -75, e); p.fNo = lerp(18, -125, e); p.torso = lerp(3, -16, e); p.ry += e * 4; }
+          else { const e = easeOut(Math.min(1, (k - 0.6) / 0.4)); p.uN = lerp(-75, 115, e); p.fNo = lerp(-125, 95, e); p.torso = lerp(-16, 20, e); }
+          if (k >= 0.62 && throwT - dt < THROW_TIME * 0.62) {
+            // Release: the glob leaves his hand and flies at the screen.
+            const [hx, hy] = toStage(118, 96);
+            const u = Math.min(W(), H());
+            const tx = (0.2 + Math.random() * 0.6) * W(), ty = (0.18 + Math.random() * 0.55) * H();
+            flingGlob(hx, hy, tx, ty, (0.07 + Math.random() * 0.03) * u, false, () => {
+              const n = Math.min(PER_THROW, MAX_DAMAGE - dealt);
+              if (n > 0) { dealt += n; damage(n, tx, ty - 0.08 * H()); }
+            }, 3.5);
+            thrown++;
+          }
+          if (k >= 1) { throwT = -1; nextThrow = t + THROW_EVERY; }
+        }
+      }
+      rig.draw(p); placeWrap(); return;
+    }
+    if (state === "die") {
+      seq += dt;
+      const p = poseAt(seq);
+      if (seq < 0.2) p.torso -= (1 - seq / 0.2) * 14;
+      if (!pile && !pileAt && seq >= 1.5) dropPile();
+      rig.draw(p); placeWrap();
+      if (seq >= 1.86) {
+        // Lift-off: jet-propelled by his own business, diagonally up and away.
+        state = "jet"; jetT = 0; jx = x; jy = 0; jv = 0.06 * W(); globAt = 0.12; fling();
+      }
+      return;
+    }
+    if (state === "jet") {
+      // Diagonal: forward (left on screen) and up, accelerating, tipped forward
+      // back onto the jet with a little shake. The exhaust is what he is doing:
+      // brown spray and globs falling away behind and below, green stink, and
+      // now and then a glob flung at the camera that splats on the glass.
+      jetT += dt; seq += dt;
+      const p = { ...POSES.jet };
+      p.rx += Math.sin(jetT * 70) * 0.8; p.uF += Math.sin(jetT * 22) * 10; p.uN += Math.sin(jetT * 22 + 1) * 10;
+      rig.draw(p);
+      jv += 0.9 * W() * dt;
+      const ang = -32 * Math.PI / 180; // 32° above the horizontal, heading left
+      jx -= Math.cos(ang) * jv * dt; jy += Math.sin(ang) * jv * dt;
+      x = jx;
+      // Leans back onto the jet: rear down and behind, head up toward where he is going.
+      const tilt = -Math.min(1, jetT / 0.25) * 22;
+      wrap.style.transformOrigin = `${(80 / 160) * 100}% ${(162 / 225) * 100}%`;
+      wrap.style.transform = `translate(${x}px, ${GROUND * H() - RIG.GROUND * sc() + jy}px) scale(-1, 1) rotate(${tilt + Math.sin(jetT * 40) * 2}deg)`;
+      label.style.display = "none";
+      // Exhaust from his rear (behind = right on screen), aimed back and down.
+      const [rx0, ry0] = toStage(POSES.jet.rx - 16, POSES.jet.ry + 10);
+      const ex = rx0, ey = ry0 + jy;
+      for (let i = 0; i < 3; i++) puff(ex, ey, { color: ["#6e4024", "#7a4a2a", "#8a5634"][i], size: (6 + Math.random() * 7) * K() * 1.4, dx: (60 + Math.random() * 70) * K(), dy: (50 + Math.random() * 80) * K(), life: 520 });
+      if (Math.random() < .5) puff(ex, ey, { color: "rgba(130,190,80,.45)", size: 16 * K() * 1.4, dx: 50 * K(), dy: 20 * K(), life: 900 });
+      if (Math.random() < .18) {
+        // A chunk dropping away under gravity.
+        const c = document.createElement("div"); c.className = "c"; const cw = 14 * K() * 1.3; c.style.width = cw + "px"; c.innerHTML = svgs["poop"]; stage.appendChild(c);
+        c.animate([{ transform: `translate(${ex}px, ${ey}px) rotate(0)` }, { transform: `translate(${ex + 60 * K()}px, ${ey + 0.5 * H()}px) rotate(300deg)` }], { duration: 900 * slow, easing: "cubic-bezier(.4,0,1,1)", fill: "forwards" }).onfinish = () => c.remove();
+      }
+      // Globs at the camera, spaced out over the flight.
+      if (jetT >= globAt && splats < 4) {
+        const u = Math.min(W(), H());
+        flingGlob(ex, ey, (0.25 + Math.random() * 0.5) * W(), (0.2 + Math.random() * 0.5) * H(), (0.04 + Math.random() * 0.04) * u, false);
+        globAt += 0.35;
+      }
+      if (x < -0.3 * W() || jy < -1.1 * H()) { state = "gone"; wrap.style.opacity = 0; pileAt = null; endSplats(); setTimeout(() => { seq = 0; jy = 0; wrap.style.transformOrigin = ""; reset(); }, 2600 * slow); }
+    }
+  } };
+}
+
+function start2() { drawHearts(); }
+function start() {
+  start2();
+  actors.push(Cow(), Tiger(), Shark(), Merman(), Ufo(), Bigfoot());
+  let last = performance.now();
+  const loop = (now) => {
+    const dt = Math.min(0.05, (now - last) / 1000) / slow; last = now;
+    actors.forEach((a) => a.tick(dt));
+    requestAnimationFrame(loop);
+  };
+  requestAnimationFrame(loop);
+}
+
+document.getElementById("reset").onclick = () => location.reload();
+document.getElementById("slow").onclick = (e) => {
+  slow = slow === 1 ? 3 : 1; e.currentTarget.setAttribute("aria-pressed", slow > 1);
+  document.querySelectorAll(".c svg").forEach((s) => s.querySelectorAll("*").forEach((n) => { n.getAnimations().forEach((a) => (a.playbackRate = 1 / slow)); }));
+};
+document.getElementById("labels").onclick = (e) => { showLabels = !showLabels; e.currentTarget.setAttribute("aria-pressed", showLabels); };
+load();
+// ?demo=tiger fires the tiger's hit by itself (for a silent check).
+if (new URLSearchParams(location.search).get("demo") === "tiger") setTimeout(() => {
+  const el = document.querySelector(".c.tiger"); const b = el.getBoundingClientRect();
+  for (let i = 0; i < 3; i++) el.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, clientX: b.x + b.width / 2, clientY: b.y + b.height / 2 }));
+}, 300);
+</script>
+</body>
+</html>

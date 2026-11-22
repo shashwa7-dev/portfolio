@@ -465,6 +465,61 @@
      and symmetric so it reads as a dissolve, not a cut; the clip's sound fades
      over the same time (read from the computed transition). */
   --duration-spin-clip: 700ms;
+  /* The GTA 6 mode's hero art fading in and out (components/gta6); the track
+     fades over the same time (read from the computed value). */
+  --duration-gta-fade: 700ms;
+  /* The GTA 6 hero's wallpaper slideshow: thirteen images on one cycle, each up
+     for one turn (components/gta6/modStyles.ts, whose keyframe stops assume
+     these two values). Ambient, so far outside the UI budget on purpose. */
+  --duration-gta-wall-cycle: 65s;
+  --duration-gta-wall-turn: 5s;
+  /* One turn of the ring round Vice Hunt's pistol while the game loads. */
+  --duration-gta-loader: 900ms;
+  /* Vice Hunt's beach scene (components/gta6/scene): a change of time of day
+     fades every light and tint over this; the rest are its ambient loops, far
+     outside the UI budget on purpose. Fog bands drift over multiples of the
+     base, so they never line up. */
+  --duration-gta-time-fade: 1200ms;
+  --duration-gta-fog: 38s;
+  --duration-gta-boat: 70s;
+  --duration-gta-boat-bob: 3200ms;
+  --duration-gta-blink: 2s;
+  --duration-gta-twinkle: 3s;
+  /* Vice Hunt's full-screen game mode (components/gta6/game): the cinematic
+     entry (letterbox, push-in, title) runs for one entry, then the HUD slides
+     in; a kill's pop-up and a streak callout rise and fade; the Bigfoot banner
+     sweeps across once while the screen edges pulse red. */
+  --duration-gta-entry: 1500ms;
+  --duration-gta-hud-in: 500ms;
+  --duration-gta-pop: 900ms;
+  --duration-gta-callout: 1100ms;
+  --duration-gta-edge-pulse: 1200ms;
+  /* Vice Hunt's health and rares: the hearts jump when one is lost while the
+     screen's edges flash red; the RARE counter glows once when a rare comes
+     on or is first hit; at no hearts the scene greys over the first and the
+     WASTED word holds for the second before the results card. */
+  --duration-gta-heart-hit: 350ms;
+  --duration-gta-hurt: 520ms;
+  --duration-gta-rare-flash: 900ms;
+  --duration-gta-wasted: 700ms;
+  --duration-gta-wasted-hold: 2200ms;
+  /* Vice FM's card (components/gta6/Radio.module.css): one equaliser bar
+     swing, and the progress line's glide between its 1 s readings. */
+  --duration-gta-eq: 900ms;
+  --duration-gta-progress: 1s;
+  /* One turn of the hero pill's vinyl (ambient, so far outside the UI budget
+     on purpose); the HUD score counting up to a new total, read by Hud.tsx;
+     the latest kill's chip glowing pink, then fading back. */
+  --duration-gta-vinyl: 6s;
+  --duration-gta-score: 300ms;
+  --duration-gta-chip-glow: 1s;
+  /* The footer palm (components/gta6/FooterPalm.module.css): one hover sway,
+     the slow idle sway while the mode is on (ambient, outside the UI budget on
+     purpose), and the pop a click plays before it acts (FooterPalm.tsx waits
+     for it, reading this value). */
+  --duration-gta-palm-sway: 900ms;
+  --duration-gta-palm-idle: 4s;
+  --duration-gta-palm-pop: 250ms;
   --duration-glyph-wave: 1100ms;
   --duration-live-pulse: 1800ms;
   --duration-live-ring: 280ms;
@@ -473,6 +528,8 @@
   --duration-backdrop-step: 20ms;
   --duration-backdrop-fill: 240ms;
   --ease-spin-clip: cubic-bezier(0.45, 0, 0.55, 1);
+  /* The footer palm's sways: a soft ease in and out, like a frond in wind. */
+  --ease-gta-palm-sway: cubic-bezier(0.45, 0, 0.55, 1);
   --duration-goggles-on: 420ms;
   --duration-goggles-off: 240ms;
   --duration-goggles-glint: 650ms;
@@ -866,6 +923,18 @@ table {
   .status-ring { animation: status-ring-turn var(--duration-status-ring) linear infinite; }
   .spin-clip { opacity: 0; transition: opacity var(--duration-spin-clip) var(--ease-spin-clip); }
   .spin-clip[data-on] { opacity: 1; }
+  /* The GTA 6 wanted meter over the spinning photo (SpinAvatar): written as
+     data-stars straight from the spin loop. Shown only while it is filling,
+     with the mode still off (no data-mod on the root; the bare attribute keeps
+     the mode's own name out of the homepage CSS); the full row then lives in
+     the mode's cluster. */
+  .wanted-meter { display: none; }
+  html:not([data-mod]) .wanted-meter:is([data-stars="1"], [data-stars="2"], [data-stars="3"], [data-stars="4"]) { display: flex; }
+  .wanted-meter > * { opacity: 0.25; }
+  .wanted-meter[data-stars="1"] > :nth-child(-n + 1),
+  .wanted-meter[data-stars="2"] > :nth-child(-n + 2),
+  .wanted-meter[data-stars="3"] > :nth-child(-n + 3),
+  .wanted-meter[data-stars="4"] > :nth-child(-n + 4) { opacity: 1; }
 }
 @keyframes status-ring-turn { to { transform: rotate(1turn); } }
 @keyframes glyph-wave { 0%, 100% { opacity: 0.2; } 40% { opacity: 1; } }

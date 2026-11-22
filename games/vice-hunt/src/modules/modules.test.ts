@@ -1,0 +1,99 @@
+import { describe, expect, it, vi } from "vitest";
+import { MAX_DT } from "../config";
+import { CREATURES, KINDS } from "../creatures";
+import { DEATHS } from "../death";
+import { mulberry32 } from "../rng";
+import { createWorld, shoot, spawn } from "../world";
+import { fade } from "./finishes/fade";
+import { FINISHES, HIT_REACTIONS, MOVES, THREATS, resolveFinish, stepFinishing } from "./index";
+
+describe("registries", () => {
+  it("every FinishId, MoveId, HitReactionId and ThreatId used in CREATURES has a module", () => {
+    for (const k of KINDS) {
+      const c = CREATURES[k];
+      expect(FINISHES[c.finish], `${k} finish`).toBeDefined();
+      expect(MOVES[c.move], `${k} move`).toBeDefined();
+      expect(HIT_REACTIONS[c.hit], `${k} hit`).toBeDefined();
+      if ("threat" in c && c.threat) expect(THREATS[c.threat.attack], `${k} threat`).toBeDefined();
+    }
+  });
+});
+
+function finishedRabbit() {
+  const rng = mulberry32(1);
+  const world = createWorld(1000, 500, rng);
+  const a = spawn(world, rng, "rabbit");
+  const { finished } = shoot(world, a.x + a.w / 2, a.y + a.h / 2, rng);
+  expect(finished).toBe(true);
+  return world;
+}
+
+describe("stepFinishing", () => {
+  it("shoot moves a finished animal into world.finishing", () => {
+    const world = finishedRabbit();
+    expect(world.animals).toHaveLength(0);
+    expect(world.finishing).toHaveLength(1);
+    expect(world.finishing[0]).toMatchObject({ kind: "rabbit", id: "falls" });
+  });
+
+  it("removes a falls entry after DEATHS[kind].duration", () => {
+    const world = finishedRabbit();
+    const steps = Math.round(DEATHS.rabbit.duration / 0.02);
+    for (let i = 0; i < steps - 2; i++) stepFinishing(world, 0.02, false, mulberry32(9));
+    expect(world.finishing).toHaveLength(1);
+    for (let i = 0; i < 5; i++) stepFinishing(world, 0.02, false, mulberry32(9));
+    expect(world.finishing).toHaveLength(0);
+  });
+
+  it("with dt 1.0 advances by MAX_DT only", () => {
+    const world = finishedRabbit();
+    stepFinishing(world, 1.0, false, mulberry32(9));
+    expect((world.finishing[0].state as { age: number }).age).toBeCloseTo(MAX_DT);
+  });
+
+  it("the generic fade finish ends after 0.6 s", () => {
+    const world = finishedRabbit();
+    const saved = FINISHES.deflates;
+    FINISHES.deflates = fade; // the stand-in for a finish whose module has not landed
+    try {
+      const f = world.finishing[0];
+      f.id = "deflates";
+      f.state = fade.start({ ...world.finishing[0], vx: 1, pause: 0, age: 0, flash: 0 } as never, world, mulberry32(1));
+      for (let i = 0; i < 11; i++) stepFinishing(world, 0.05, false, mulberry32(9));
+      expect(world.finishing).toHaveLength(1);
+      for (let i = 0; i < 2; i++) stepFinishing(world, 0.05, false, mulberry32(9));
+      expect(world.finishing).toHaveLength(0);
+    } finally {
+      FINISHES.deflates = saved;
+    }
+  });
+});
+
+describe("reduced motion", () => {
+  it("step and draw both use the variant module", () => {
+    const mk = () => ({
+      start: () => ({}),
+      step: vi.fn(),
+      done: () => false,
+      draw: vi.fn(),
+    });
+    const base = { ...mk(), reduced: "deflates" as const };
+    const variant = mk();
+    const saved = { crashes: FINISHES.crashes, deflates: FINISHES.deflates };
+    FINISHES.crashes = base;
+    FINISHES.deflates = variant;
+    try {
+      const world = finishedRabbit();
+      world.finishing[0].id = "crashes";
+      stepFinishing(world, 0.02, true, mulberry32(9));
+      resolveFinish("crashes", true).draw({} as never, {}, {} as never, {} as never);
+      expect(variant.step).toHaveBeenCalledTimes(1);
+      expect(variant.draw).toHaveBeenCalledTimes(1);
+      expect(base.step).not.toHaveBeenCalled();
+      expect(base.draw).not.toHaveBeenCalled();
+      expect(resolveFinish("crashes", false)).toBe(base);
+    } finally {
+      Object.assign(FINISHES, saved);
+    }
+  });
+});

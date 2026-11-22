@@ -5,6 +5,8 @@ import AvatarHover from "@/components/AvatarHover";
 import SpinAvatar from "@/components/common/SpinAvatar";
 import DiwaliAvatar from "@/components/diwali/DiwaliAvatarLazy";
 import { DIWALI_ENABLED } from "@/lib/diwali";
+import { GtaModeMount } from "@/components/gta6/lazy";
+import { GTA6_ENABLED } from "@/lib/gta6";
 import LocalTime from "@/components/LocalTime";
 import Label from "@/components/layout/Label";
 import {
@@ -54,7 +56,10 @@ import { socialLinks } from "@/lib/siteLinks";
  */
 export default function About() {
   return (
-    <header className="pt-10 md:pt-14 candy:pb-6">
+    // `relative isolate` holds the GTA 6 mode's backdrop (z -10) inside the
+    // header, behind the content, without letting it sink under the page.
+    <header className="relative isolate pt-10 md:pt-14 candy:pb-6">
+      {GTA6_ENABLED && <GtaModeMount />}
       <Container width="reading">
         <div className="relative space-y-6 sm:space-y-7">
           {/* The intro line, and the page's h1: "Hi, I am (photo)
@@ -93,7 +98,7 @@ export default function About() {
                     </svg>
                     <span
                       aria-hidden
-                      className="absolute -bottom-[0.02em] -right-[0.04em] h-[0.28em] w-[0.28em] rounded-full bg-amber-700 ring-2 ring-background dark:bg-amber-300"
+                      className="hero-live-dot absolute -bottom-[0.02em] -right-[0.04em] h-[0.28em] w-[0.28em] rounded-full bg-amber-700 ring-2 ring-background dark:bg-amber-300"
                     />
                   </SpinAvatar>
                   )}
@@ -116,7 +121,7 @@ export default function About() {
                   )}
                 </TooltipContent>
               </Tooltip>{" "}
-              <span className="whitespace-nowrap font-semibold text-foreground">
+              <span className="hero-name whitespace-nowrap font-semibold text-foreground">
                 Shashwat
                 <span
                   className="ml-1.5 inline-grid h-4 w-4 place-items-center rounded-full bg-foreground align-[0.2em] text-background candy:h-[18px] candy:w-[18px] candy:bg-candy-mint candy:text-foreground candy:outline-solid candy:outline-[1.5px] candy:outline-foreground"
@@ -140,7 +145,7 @@ export default function About() {
               <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
                 <LocalTime />
                 <span aria-hidden className="font-label text-2xs text-subtle">·</span>
-                <span className="inline-flex items-center gap-1.5 font-label text-2xs uppercase tracking-label text-amber-700 dark:text-amber-300">
+                <span className="hero-live inline-flex items-center gap-1.5 font-label text-2xs uppercase tracking-label text-amber-700 dark:text-amber-300">
                   {/* A 3x3 live glyph in the section-glyph dot language: the
                       centre holds, the ring pulses outward like a signal
                       (.live-glyph in globals.css). Amber, like the avatar's live dot. */}

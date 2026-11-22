@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="110" height="150" viewBox="0 0 92 126">
+  <!-- canopy -->
+  <path d="M4 44 C4 16 24 2 46 2 C68 2 88 16 88 44 C82 40 76 40 70 44 C64 40 58 40 52 44 C46 40 40 40 34 44 C28 40 22 40 16 44 C12 40 8 40 4 44 Z" fill="#f49ea3" stroke="#2b2234" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M34 44 C34 20 40 4 46 2 C52 4 58 20 58 44" fill="#fff3c4" stroke="#2b2234" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M16 44 C18 22 30 6 46 2 M76 44 C74 22 62 6 46 2" fill="none" stroke="#2b2234" stroke-width="1.4"/>
+  <!-- lines -->
+  <path d="M4 44 L38 88 M34 44 L42 86 M58 44 L50 86 M88 44 L54 88" stroke="#2b2234" stroke-width="1.2"/>
+  <!-- alien -->
+  <ellipse cx="46" cy="94" rx="11" ry="12" fill="#8ee06a" stroke="#2b2234" stroke-width="1.8"/>
+  <path d="M39 84 L34 74 M53 84 L58 74" stroke="#2b2234" stroke-width="1.6" stroke-linecap="round"/>
+  <circle cx="34" cy="73" r="2.4" fill="#f49ea3" stroke="#2b2234" stroke-width="1.2"/>
+  <circle cx="58" cy="73" r="2.4" fill="#f49ea3" stroke="#2b2234" stroke-width="1.2"/>
+  <ellipse cx="41" cy="93" rx="3.2" ry="4.4" fill="#2b2234"/>
+  <ellipse cx="51" cy="93" rx="3.2" ry="4.4" fill="#2b2234"/>
+  <circle cx="42" cy="91.4" r="1" fill="#fff"/><circle cx="52" cy="91.4" r="1" fill="#fff"/>
+  <!-- worried mouth -->
+  <ellipse cx="46" cy="101" rx="2.4" ry="1.8" fill="#2b2234"/>
+  <!-- body and dangling legs -->
+  <path d="M38 104 C38 112 54 112 54 104 L52 114 L40 114 Z" fill="#b9c2d0" stroke="#2b2234" stroke-width="1.8" stroke-linejoin="round"/>
+  <path d="M42 114 L40 122 M50 114 L52 122" stroke="#2b2234" stroke-width="3" stroke-linecap="round"/>
+  <path d="M42 114 L40 122 M50 114 L52 122" stroke="#8ee06a" stroke-width="1.4" stroke-linecap="round"/>
+  <!-- arms up holding the lines -->
+  <path d="M38 106 L34 96 M54 106 L58 96" stroke="#2b2234" stroke-width="3" stroke-linecap="round"/>
+  <path d="M38 106 L34 96 M54 106 L58 96" stroke="#8ee06a" stroke-width="1.4" stroke-linecap="round"/>
+</svg>

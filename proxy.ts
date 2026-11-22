@@ -19,6 +19,15 @@ export function proxy(req: NextRequest) {
 
   const { pathname } = req.nextUrl;
 
+  // Dev-only tools (the Vice FM editor, /dev/radio): a real 404 in any build
+  // but `npm run dev`. The page cannot set the status itself: the root
+  // loading.tsx starts streaming a 200 before the page runs.
+  if (pathname.startsWith("/dev/")) {
+    return process.env.NODE_ENV === "development"
+      ? NextResponse.next()
+      : new NextResponse("Not found", { status: 404 });
+  }
+
   if (wantsMarkdown) {
     // Homepage — composes a markdown site summary from workData + clients.
     if (pathname === "/" || pathname === "") {
@@ -53,9 +62,9 @@ export function proxy(req: NextRequest) {
   return res;
 }
 
-// Run on the two route families that have a markdown rendition. The path
-// patterns below admit anything under those prefixes; the per-request regex
-// inside `middleware()` filters to the exact shape we rewrite.
+// Run on the two route families that have a markdown rendition (the path
+// patterns admit anything under those prefixes; the per-request regex inside
+// `proxy()` filters to the exact shape we rewrite), and on the dev-only tools.
 export const config = {
-  matcher: ["/", "/blogs/:path*", "/work/:path*"],
+  matcher: ["/", "/blogs/:path*", "/work/:path*", "/dev/:path*"],
 };

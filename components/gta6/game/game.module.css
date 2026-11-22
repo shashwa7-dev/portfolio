@@ -1,0 +1,994 @@
+/*
+ * Vice Hunt's full-screen game mode (GameMode.tsx and its parts). The HUD is
+ * layout L1 with score S2 (spec revision 3; mockups headers2.html and
+ * score.html in .superpowers/brainstorm/55516-1795237094/content/). No film
+ * grain.
+ *
+ * `data-phase` on the overlay drives the cinematic: "entry" (letterbox bars
+ * in, the scene pushes in under a dim, the title slams), then "play" (bars
+ * out, scene back to full, the HUD slides in from the edges), then
+ * "results" (the card over a blurred, paused scene). Everything is a
+ * transition keyed on that attribute, so a phase change mid-way reverses
+ * from wherever it got to.
+ *
+ * Stacking inside the overlay: scene (0), vignette (1), the game's layer
+ * (2), red edges (3: Bigfoot's pulse, a hit's flash), pop-ups (4), HUD (5),
+ * bars and WASTED (7), title, pause and results (8).
+ */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  /* clip, not hidden: the letterbox bars wait just off screen, and a hidden
+     box can still be scrolled (focus moving into the HUD radio's list did,
+     lifting the whole screen by a bar's height). */
+  overflow: clip;
+  isolation: isolate;
+  background: #000;
+  color: #fff;
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* The HUD's display face, self-hosted (Anton, SIL OFL 1.1, latin subset;
+   public/gta6/fonts/OFL.txt). It lives here, in the lazy game CSS, so the
+   homepage's first load never carries it. */
+@font-face {
+  font-family: Anton;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/gta6/fonts/anton-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+.display {
+  font-family: Anton, Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.03em;
+}
+
+.mono {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  letter-spacing: 0.08em;
+}
+
+/* The menus' faces (spec 2026-11-22-vice-hunt-opening-pause-design.md):
+   neon titles in Monoton and Mr Dafoe, buttons and controls in Audiowide.
+   Self-hosted like Anton (SIL OFL 1.1, latin subset). */
+@font-face {
+  font-family: Monoton;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/gta6/fonts/monoton-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Mr Dafoe";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/gta6/fonts/mr-dafoe-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: Audiowide;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/gta6/fonts/audiowide-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Neon words. Only "VICE", "Hunt", "Paused" and "WASTED" glow; buttons and
+   the controls never do. */
+.neonPink {
+  font-family: Monoton, Impact, sans-serif;
+  font-weight: 400;
+  color: #ffd8ec;
+  text-shadow: 0 0 0.05em #ff3ea5, 0 0 0.15em #ff3ea5, 0 0 0.33em #ff3ea5;
+}
+.neonCyan {
+  font-family: "Mr Dafoe", cursive;
+  font-weight: 400;
+  color: #7ff5ff;
+  text-shadow: 0 0 0.05em #18d6ff, 0 0 0.2em #18d6ff;
+}
+.neonRed {
+  font-family: Monoton, Impact, sans-serif;
+  font-weight: 400;
+  color: #ffd6d6;
+  text-shadow: 0 0 0.05em #ff2a2a, 0 0 0.15em #ff2a2a, 0 0 0.33em #ff2a2a;
+}
+
+/* Slanted 80s chrome buttons: a two-tone fill, a hard bottom edge and a soft
+   dark drop, no glow. The label inside is unskewed. */
+.chrome {
+  display: inline-block;
+  padding: 0.55em 1.6em;
+  font: 400 1.125rem/1 Audiowide, system-ui, sans-serif;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  transform: skewX(-12deg);
+  border-radius: 0.2em;
+  cursor: pointer;
+  transition: transform var(--duration-fast) var(--ease-out), filter var(--duration-fast) var(--ease-out);
+}
+.chrome > span { display: inline-block; transform: skewX(12deg); }
+.chrome:hover { filter: brightness(1.08); }
+.chrome:active { transform: skewX(-12deg) translateY(0.15em); }
+.chrome:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.chromePink {
+  color: #fff;
+  background: linear-gradient(180deg, #ff7cc4 0 48%, #f0338f 52% 100%);
+  box-shadow: inset 0 0.1em 0 rgba(255, 255, 255, 0.5), 0 0.22em 0 #8a0f4f, 0 0.45em 0.7em rgba(0, 0, 0, 0.35);
+}
+.chromeCyan,
+.chromeDark:focus,
+.chromeDark:hover {
+  color: #10203a;
+  border-color: transparent;
+  background: linear-gradient(180deg, #c6fdff 0 48%, #5fe6ff 52% 100%);
+  box-shadow: inset 0 0.1em 0 rgba(255, 255, 255, 0.6), 0 0.22em 0 #0a7f9c, 0 0.45em 0.7em rgba(0, 0, 0, 0.35);
+}
+.chromeDark {
+  color: #e6fbff;
+  background: rgba(20, 10, 40, 0.78);
+  border: 2px solid rgba(127, 245, 255, 0.45);
+}
+
+/* The controls, in the site dock's notch (see .dock in app/globals.css):
+   a dark tab out of the bottom edge, two layers, slanted SVG sides. */
+.notch {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  z-index: 9;
+  translate: -50% 0;
+  padding-top: 6px;
+  pointer-events: none;
+  filter: drop-shadow(0 -2px 12px rgb(0 0 0 / 0.3));
+  --notch-outer: hsl(30 6% 7.5%);
+  --notch-inner: hsl(30 5% 12.5%);
+  --notch-edge: hsl(30 5% 17%);
+}
+.notchLayer { position: absolute; inset-inline: 0; }
+.notchLayer > * { position: absolute; top: 0; display: block; }
+.notchOuter { top: 0; height: 54px; color: var(--notch-outer); }
+.notchInner { top: 6px; height: 48px; color: var(--notch-inner); }
+.notchStrip { inset-block: 0; left: 12.14px; right: 12.14px; background: currentColor; }
+.notchInner .notchStrip { border-top: 1px solid var(--notch-edge); }
+.notchOuter .notchLeft { left: -35.31px; }
+.notchOuter .notchRight { right: -35.31px; transform: scaleX(-1); }
+.notchInner .notchLeft { left: -19.39px; }
+.notchInner .notchRight { right: -19.39px; transform: scaleX(-1); }
+.notchEdge { fill: none; stroke: var(--notch-edge); stroke-width: 1; }
+.notchItems {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  height: 48px;
+  padding: 0 22px;
+}
+.notchItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font: 400 0.9375rem/1 Audiowide, system-ui, sans-serif;
+  letter-spacing: 0.04em;
+  color: hsl(35 6% 80%);
+  white-space: nowrap;
+}
+.keycap {
+  display: inline-grid;
+  place-items: center;
+  min-width: 26px;
+  height: 24px;
+  padding: 0 7px;
+  border-radius: 5px;
+  background: linear-gradient(hsl(35 6% 94%), hsl(35 5% 78%));
+  color: hsl(30 6% 9%);
+  font-size: 0.75rem;
+  box-shadow: 0 3px 0 hsl(30 5% 28%);
+}
+.mouseIcon { width: 17px; height: 25px; }
+
+.glass {
+  background: rgba(14, 12, 22, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 0.75rem;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+/* The scene: pushed in and dimmed for the entry, back to full for play. */
+.stage {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  transition:
+    transform var(--duration-gta-fade) var(--ease-out),
+    filter var(--duration-gta-fade) var(--ease-out);
+}
+.overlay[data-phase="entry"] .stage {
+  transform: scale(1.08);
+  filter: brightness(0.55) saturate(1.2);
+  transition-duration: var(--duration-gta-entry);
+}
+@starting-style {
+  .overlay[data-phase="entry"] .stage {
+    transform: scale(1);
+    filter: brightness(0.15) saturate(1.2);
+  }
+}
+.overlay[data-phase="results"] .stage {
+  filter: blur(3px) brightness(0.5);
+}
+/* Out of hearts: the whole scene greys, the creatures and the gun with it. */
+.overlay[data-wasted] .stage,
+.overlay[data-wasted] .host {
+  filter: grayscale(1) brightness(0.7);
+  transition: filter var(--duration-gta-wasted) var(--ease-out);
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  box-shadow: inset 0 0 140px 30px rgba(0, 0, 0, 0.55);
+}
+
+.host {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+/* Bigfoot: the screen's edges pulse red while he is on. */
+.edge {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0;
+  box-shadow: inset 0 0 110px 22px rgba(220, 30, 60, 0.6);
+  transition: opacity var(--duration-gta-fade) var(--ease-out);
+}
+.edge[data-on] {
+  opacity: 1;
+  animation: edge-pulse var(--duration-gta-edge-pulse) ease-in-out infinite alternate;
+}
+@keyframes edge-pulse {
+  from { opacity: 1; }
+  to { opacity: 0.35; }
+}
+/* A hit taken: the edges flash red once (a new element each time). */
+.hurt {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0;
+  box-shadow: inset 0 0 130px 34px rgba(230, 20, 45, 0.75);
+  animation: hurt-flash var(--duration-gta-hurt) var(--ease-out) forwards;
+}
+@keyframes hurt-flash {
+  15% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* Kill pop-ups and streak callouts. */
+.pops {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+.pop {
+  position: absolute;
+  font-size: 1.75rem;
+  line-height: 1;
+  text-align: center;
+  text-shadow: 0 2px 0 #000;
+  animation: pop-rise var(--duration-gta-pop) var(--ease-out) forwards;
+}
+.pop em {
+  display: block;
+  margin-top: 0.15rem;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #7fd6cf;
+}
+@keyframes pop-rise {
+  0% { opacity: 0; transform: translate(-50%, -40%) scale(0.6); }
+  18% { opacity: 1; transform: translate(-50%, -100%) scale(1.1); }
+  30% { transform: translate(-50%, -110%) scale(1); }
+  75% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -190%) scale(1); }
+}
+.callout {
+  position: absolute;
+  left: 50%;
+  top: 22%;
+  font-size: 4rem;
+  line-height: 1;
+  color: #f49ea3;
+  text-shadow: 0 4px 0 #000, 0 0 24px rgba(244, 158, 163, 0.6);
+  animation: callout-slam var(--duration-gta-callout) var(--ease-out) forwards;
+}
+/* The other pop-ups share the kill's rise; only the look changes. */
+.pop[data-tone="count"] { font-size: 1.5rem; }
+.pop[data-tone="penalty"] { color: #ff5a64; }
+.pop[data-tone="word"] {
+  font-size: 2rem;
+  color: #ffd166;
+  white-space: nowrap;
+}
+.pop[data-tone="damage"] {
+  left: 50%;
+  top: 30%;
+  font-size: 2.5rem;
+  color: #ff5a64;
+  white-space: nowrap;
+}
+@keyframes callout-slam {
+  0% { opacity: 0; transform: translateX(-50%) rotate(-3deg) scale(1.8); }
+  15% { opacity: 1; transform: translateX(-50%) rotate(-3deg) scale(1); }
+  75% { opacity: 1; transform: translateX(-50%) rotate(-3deg) scale(1); }
+  100% { opacity: 0; transform: translateX(-50%) rotate(-3deg) scale(0.9); }
+}
+
+/* HUD, layout L1: classic GTA corners. Each piece waits off its own edge
+   until play. */
+.hud {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+.hud > * {
+  position: absolute;
+  transition: transform var(--duration-gta-hud-in) var(--ease-out);
+}
+/* The header: one row, spread edge to edge, slid down from the top. */
+.top {
+  top: 1.25rem;
+  left: 1.5rem;
+  right: 1.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  transform: translateY(calc(-100% - 2rem));
+}
+.corner { display: flex; align-items: center; gap: 0.5rem; }
+
+/* Health: three hearts in a glass pill, filled by halves (the second heart
+   of each pair is the full one, clipped to the fill). */
+.hearts {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.5625rem 0.625rem;
+  border-radius: 999px;
+}
+.hearts[data-jump] {
+  animation: heart-jump var(--duration-gta-heart-hit) var(--ease-out);
+}
+@keyframes heart-jump {
+  30% { transform: translateY(-0.3rem) scale(1.12); }
+  65% { transform: translateY(0.05rem) scale(0.97); }
+}
+.heart {
+  position: relative;
+  display: block;
+  width: 1rem;
+  height: 1rem;
+}
+.heart svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: rgba(255, 255, 255, 0.18);
+}
+.heart svg + svg {
+  color: #ff4d5e;
+  filter: drop-shadow(0 1px 0 #000);
+  clip-path: inset(0 calc((1 - var(--fill)) * 100%) 0 0);
+}
+.ammo { bottom: 1.5rem; right: 1.75rem; transform: translateX(calc(100% + 2rem)); }
+.hint { bottom: 1.85rem; left: 50%; transform: translate(-50%, calc(100% + 2rem)); }
+.hud[data-in] .top,
+.hud[data-in] .ammo { transform: none; }
+.hud[data-in] .hint { transform: translateX(-50%); }
+
+/* The radio, beside the time switch: the minimised controller in the same
+   glass pill (disc, play/pause, track, elapsed, mute); the full card drops
+   below it while hovered or pinned (HudRadio). */
+.radio {
+  position: relative;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  padding: 0.1875rem;
+  border-radius: 999px;
+  color: #fff;
+}
+.disc {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+}
+.disc img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+/* The centre hole. */
+.disc::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 34%;
+  height: 34%;
+  border-radius: 50%;
+  background: #151221;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25);
+}
+.disc[data-spin] img {
+  animation: disc var(--duration-gta-vinyl) linear infinite;
+}
+@keyframes disc {
+  to { transform: rotate(360deg); }
+}
+.discOff { cursor: default; color: #d8cfe6; }
+.discOff::after { content: none; }
+.discOff svg { width: 0.875rem; height: 0.875rem; }
+.disc:focus-visible,
+.miniButton:focus-visible {
+  outline: 2px solid #f49ea3;
+  outline-offset: 2px;
+}
+
+.mini {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0 0.25rem 0 0.5rem;
+}
+.radioCard {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1;
+  padding-top: 0.5rem;
+}
+.miniButton {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+.miniButton:hover { background: rgba(255, 255, 255, 0.22); }
+.miniButton svg { width: 0.6875rem; height: 0.6875rem; }
+.miniTrack {
+  max-width: 11rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.miniTrack span { font-weight: 500; color: #d8cfe6; }
+.miniTime {
+  flex: none;
+  font-size: 0.6875rem;
+  color: #d8cfe6;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The time switch: icons only, the chosen one on white. */
+.time {
+  pointer-events: auto;
+  display: flex;
+  gap: 0.125rem;
+  padding: 0.1875rem;
+  border-radius: 999px;
+}
+.time button {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
+}
+.time button svg { width: 0.9375rem; height: 0.9375rem; }
+.time button:hover { color: #fff; }
+.time button[aria-pressed="true"] {
+  background: #fff;
+  color: #151221;
+}
+.time button:focus-visible {
+  outline: 2px solid #f49ea3;
+  outline-offset: 2px;
+}
+
+/* The header's right: a chip per common animal, a divider, then the RARE
+   menu. The score number is on the billboard (scene.module.css). */
+.score {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.divider {
+  width: 1px;
+  height: 1.25rem;
+  background: rgba(255, 255, 255, 0.3);
+}
+.chips {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.375rem;
+}
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.chip img {
+  height: 0.9375rem;
+  width: auto;
+  max-width: 1.75rem;
+  object-fit: contain;
+}
+.chip b { font-weight: 400; }
+
+/* "RARE n / total" (the enabled rares): a glass chip that drops the rares'
+   list (RareMenu). */
+.rare {
+  position: relative;
+  pointer-events: auto;
+}
+.rareButton {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  line-height: 1;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+.rareButton b { font-weight: 400; color: #f49ea3; }
+.rareButton > span:last-child { opacity: 0.6; }
+.rareButton:hover,
+.rareButton[aria-expanded="true"] { border-color: rgba(255, 255, 255, 0.4); }
+.rareButton:focus-visible {
+  outline: 2px solid #f49ea3;
+  outline-offset: 2px;
+}
+.rareGlow {
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+}
+.rareGlow[data-on] {
+  animation: rare-flash var(--duration-gta-rare-flash) var(--ease-out);
+}
+@keyframes rare-flash {
+  0%, 30% {
+    opacity: 1;
+    background-color: rgba(244, 158, 163, 0.3);
+    box-shadow: 0 0 0 1px rgba(244, 158, 163, 0.8), 0 0 18px rgba(244, 158, 163, 0.65);
+  }
+}
+.rareCard {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1;
+  padding-top: 0.5rem;
+}
+.rareCard ul {
+  display: grid;
+  gap: 0.125rem;
+  min-width: 13rem;
+  margin: 0;
+  padding: 0.375rem;
+  list-style: none;
+}
+.rareCard li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #e8e0f0;
+}
+.rareCard li img {
+  flex: none;
+  width: 1.75rem;
+  height: 1.25rem;
+  object-fit: contain;
+}
+.rareCard li span { flex: 1; }
+.rareCard li b {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.rareCard li:not([data-met]) { color: rgba(232, 224, 240, 0.5); }
+.rareCard li:not([data-met]) img { filter: brightness(0); opacity: 0.75; }
+.rareCard li b[data-hits] { color: #ff5a64; }
+/* The latest kill: pink, then back to glass over the glow time. */
+.chip[data-hot] {
+  animation: chip-glow var(--duration-gta-chip-glow) var(--ease-out) forwards;
+}
+@keyframes chip-glow {
+  0%, 35% {
+    background-color: rgba(244, 158, 163, 0.3);
+    border-color: rgba(244, 158, 163, 0.7);
+    box-shadow: 0 0 14px rgba(244, 158, 163, 0.55);
+  }
+}
+
+.ammo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.9rem 0.5rem 0.6rem;
+}
+.cylinder {
+  position: relative;
+  width: 2.75rem;
+  height: 2.75rem;
+}
+.cylinder[data-reloading] {
+  animation: cylinder-spin var(--duration-gta-loader) linear infinite;
+}
+@keyframes cylinder-spin {
+  to { transform: rotate(360deg); }
+}
+.cylinder i {
+  position: absolute;
+  width: 0.75rem;
+  height: 0.75rem;
+  margin: -0.375rem;
+  border-radius: 50%;
+  border: 1px solid #000;
+  background: #e7c46a;
+  box-shadow: inset 0 -2px 0 #9a7a2a;
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+.cylinder i[data-empty] {
+  background: #1b1a20;
+  box-shadow: none;
+}
+.count {
+  font-size: 1.75rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.count span {
+  font-size: 1rem;
+  opacity: 0.5;
+}
+
+/* Faint and boxless, so the bottom centre stays part of the scene. */
+.hint {
+  font-size: 0.625rem;
+  letter-spacing: 0.15em;
+  white-space: nowrap;
+  opacity: 0.75;
+  text-shadow: 0 1px 2px #000;
+}
+
+/* WASTED: red, over the greyed scene, until its hold ends (Wasted.tsx). */
+.wasted {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  animation: wasted-hold var(--duration-gta-wasted-hold) linear forwards;
+}
+@keyframes wasted-hold {
+  from { background-color: rgba(0, 0, 0, 0); }
+  30%, to { background-color: rgba(0, 0, 0, 0.25); }
+}
+.wasted b {
+  font-size: clamp(5rem, 13vw, 10rem);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  animation: wasted-in var(--duration-gta-wasted) var(--ease-out) both;
+}
+@keyframes wasted-in {
+  from { opacity: 0; transform: scale(1.35); }
+}
+
+/* Letterbox bars: in for the entry, out for play. */
+.bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 7;
+  height: 11%;
+  background: #000;
+  pointer-events: none;
+  transition: transform var(--duration-gta-hud-in) var(--ease-out);
+}
+.barTop { top: 0; transform: translateY(-100%); }
+.barBottom { bottom: 0; transform: translateY(100%); }
+.overlay[data-phase="entry"] .bar { transform: none; }
+@starting-style {
+  .overlay[data-phase="entry"] .barTop { transform: translateY(-100%); }
+  .overlay[data-phase="entry"] .barBottom { transform: translateY(100%); }
+}
+
+.title {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  /* Dusk over the beach, under the neon. */
+  background: linear-gradient(180deg, rgba(40, 10, 70, 0.72), rgba(255, 60, 140, 0.35) 70%, rgba(20, 5, 40, 0.8));
+  animation: fade-in var(--duration-gta-hud-in) var(--ease-out);
+}
+.title h1 { margin: 0; line-height: 1; }
+.title h1 > span { display: block; }
+.titleVice {
+  font-size: clamp(4.5rem, 12vw, 10rem);
+  letter-spacing: 0.02em;
+  animation: neon-on var(--duration-gta-entry) linear both;
+}
+.titleHunt {
+  margin-top: -0.12em;
+  font-size: clamp(4rem, 10vw, 8.5rem);
+  transform: rotate(-6deg);
+  animation: neon-on var(--duration-gta-entry) linear 0.25s both;
+}
+.title .chrome { margin-top: 2.25rem; }
+/* A tube catching: two stutters, then on for good. */
+@keyframes neon-on {
+  0% { opacity: 0; }
+  8% { opacity: 1; }
+  11% { opacity: 0.2; }
+  15% { opacity: 1; }
+  19% { opacity: 0.35; }
+  24%, 100% { opacity: 1; }
+}
+
+/* The pause menu, over the frozen hunt. */
+.pause {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  display: grid;
+  place-items: center;
+  background: rgba(14, 10, 30, 0.62);
+  backdrop-filter: blur(3px);
+  animation: fade-in var(--duration-fast) var(--ease-out);
+}
+.pauseMenu {
+  display: grid;
+  gap: 0.9rem;
+  justify-items: center;
+}
+.pauseMenu .chrome { min-width: 15rem; }
+.pauseTitle {
+  margin: 0 0 0.75rem;
+  font-size: clamp(3.5rem, 8vw, 6rem);
+  line-height: 1;
+  transform: rotate(-6deg);
+}
+/* The HUD's own loops hold with the hunt. */
+.overlay[data-paused] .cylinder { animation-play-state: paused; }
+
+/* Results. */
+.results {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.35);
+  animation: fade-in var(--duration-gta-hud-in) var(--ease-out);
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+}
+/* The report card: header B (cyan script, the score in pink neon), then the
+   score's breakdown, then accuracy and the best streak, then the buttons.
+   It never grows past the window: the breakdown scrolls inside it instead,
+   so the buttons always sit inside the card. */
+.report {
+  display: flex;
+  flex-direction: column;
+  width: min(30rem, calc(100% - 2rem));
+  max-height: calc(100dvh - 2rem);
+  padding: 1.5rem 1.75rem 1.75rem;
+  border-radius: 1rem;
+  background: rgba(18, 12, 34, 0.9);
+  border: 1px solid rgba(127, 245, 255, 0.18);
+  text-align: center;
+  font-family: Audiowide, system-ui, sans-serif;
+  color: #f1ecff;
+  outline: none;
+  animation: card-in var(--duration-gta-hud-in) var(--ease-out);
+}
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(1.5rem) scale(0.96); }
+}
+.reportEyebrow {
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  color: #ff9ccf;
+}
+.reportTitle {
+  margin: 0.4rem 0 0.2rem;
+  font-size: 3.5rem;
+  line-height: 1;
+  transform: rotate(-6deg);
+}
+.reportScore {
+  font-size: 3.25rem;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.reportScore small {
+  display: block;
+  margin-top: 0.2rem;
+  font: 400 0.625rem/1 Audiowide, system-ui, sans-serif;
+  letter-spacing: 0.3em;
+  color: #b9b0d0;
+  text-shadow: none;
+}
+.lines {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  margin: 1.1rem -0.25rem 0;
+  padding: 0 0.25rem;
+  text-align: left;
+}
+.line {
+  display: grid;
+  grid-template-columns: 1.75rem 1fr auto 4.5rem;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.35rem 0;
+}
+.line img {
+  width: 1.75rem;
+  height: 1.25rem;
+  object-fit: contain;
+}
+.line span { font-size: 0.9375rem; line-height: 1.2; }
+.line span small {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.6875rem;
+  color: #8f86a8;
+}
+.line b,
+.line em {
+  font-family: Anton, Impact, sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.line b { font-size: 1.375rem; }
+.line em { font-size: 1.125rem; color: #ff9ccf; }
+.line[data-tone="penalty"] b,
+.line[data-tone="penalty"] em { color: #ff5a64; }
+.line[data-tone="bonus"] span,
+.line[data-tone="bonus"] em { color: #ffe66d; }
+.line[data-tone="bonus"] span small { color: #bfae55; }
+.reportFoot {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.6rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 0.9375rem;
+}
+.reportFoot b {
+  margin-left: 0.5rem;
+  font-family: Anton, Impact, sans-serif;
+  font-weight: 400;
+  font-size: 1.25rem;
+}
+.reportButtons {
+  display: flex;
+  flex: none;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+.reportButtons .chrome { font-size: 1rem; padding-inline: 1.3em; }
+
+@media (prefers-reduced-motion: reduce) {
+  .stage,
+  .overlay[data-phase="entry"] .stage { transform: none; transition-duration: var(--duration-fast); }
+  .hud > *,
+  .bar { transition-duration: 0s; }
+  .disc[data-spin] img { animation: none; }
+  .edge[data-on] { animation: none; }
+  .cylinder[data-reloading] { animation: none; opacity: 0.5; }
+  .hearts[data-jump] { animation: none; }
+  .wasted b { animation-name: fade-in; }
+  /* The site's reduced-motion rule (app/globals.css) cuts every animation
+     to nothing. These are fades and tints, not movement, and they carry
+     the round: the pop-ups, a hit's red edges, and WASTED, whose hold ending
+     is what brings up the results. So they keep their time (the more
+     specific !important wins), and the scene still fades to grey. */
+  .pop { animation-duration: var(--duration-gta-pop) !important; }
+  .callout { animation-duration: var(--duration-gta-callout) !important; }
+  .hurt { animation-duration: var(--duration-gta-hurt) !important; }
+  .wasted { animation-duration: var(--duration-gta-wasted-hold) !important; }
+  .wasted b { animation-duration: var(--duration-gta-wasted) !important; }
+  .overlay[data-wasted] .stage,
+  .overlay[data-wasted] .host { transition-property: filter !important; }
+  /* The latest kill's chip keeps its pink, without the fade. */
+  .chip[data-hot] {
+    animation: none;
+    background-color: rgba(244, 158, 163, 0.3);
+    border-color: rgba(244, 158, 163, 0.7);
+  }
+  /* Kept as plain fades so their ends still fire and clear them. */
+  .pop,
+  .callout { animation-name: fade-out; }
+  /* The neon comes on without the stutter. */
+  .titleVice,
+  .titleHunt { animation-name: fade-in; }
+  .pop { transform: translate(-50%, -100%); }
+  .callout { transform: translateX(-50%) rotate(-3deg); }
+}
+@keyframes fade-out {
+  0%, 70% { opacity: 1; }
+  100% { opacity: 0; }
+}

@@ -1,0 +1,60 @@
+/* The footer palm (FooterPalm.tsx). Off: muted ink, a sway from the trunk's
+   base on hover. On: filled accent pink (the mode's own accent), a dot under
+   it and a slow idle sway. A click pops it once before it acts. No motion
+   under reduced motion; the colour and the dot still change. */
+.palm {
+  position: relative;
+  display: grid;
+  place-items: center;
+  color: hsl(var(--subtle));
+  transition: color var(--duration-fast) var(--ease-out);
+}
+.palm:hover { color: hsl(var(--foreground)); }
+
+.icon {
+  width: 0.875rem;
+  height: 0.875rem;
+  transform-origin: 50% 100%;
+}
+
+.palm[aria-pressed="true"] { color: hsl(var(--accent)); }
+.palm::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 0.2rem);
+  width: 0.2rem;
+  height: 0.2rem;
+  margin-left: -0.1rem;
+  border-radius: 9999px;
+  background: hsl(var(--accent));
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+.palm[aria-pressed="true"]::after { opacity: 1; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .palm:hover .icon {
+    animation: sway var(--duration-gta-palm-sway) var(--ease-gta-palm-sway) infinite;
+  }
+  .palm[aria-pressed="true"] .icon {
+    animation: idle var(--duration-gta-palm-idle) var(--ease-gta-palm-sway) infinite;
+  }
+  .palm[data-pop] {
+    animation: pop var(--duration-gta-palm-pop) var(--ease-out);
+  }
+}
+
+@keyframes sway {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(6deg); }
+  75% { transform: rotate(-6deg); }
+}
+@keyframes idle {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+@keyframes pop {
+  0%, 100% { transform: scale(1); }
+  45% { transform: scale(1.25); }
+}
