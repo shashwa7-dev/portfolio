@@ -1,0 +1,45 @@
+<!doctype html>
+<!--
+  The /vice-hunt link preview (public/og/vice-hunt.jpg), design B from the
+  2026-11-22 companion: the GTA VI wallpaper under a pink-cyan wash, the
+  game's neon title, a Play now button. No creatures, so the rares stay a
+  surprise. Re-render after any change, from the repo root:
+
+  "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new \
+    --mute-audio --hide-scrollbars --window-size=1200,630 --allow-file-access-from-files \
+    --virtual-time-budget=3000 --screenshot=/tmp/vice-hunt.png "file://$PWD/scripts/og/vice-hunt.html"
+  then save it as a JPEG (quality 88, about 100 KB, under WhatsApp's preview
+  limit) to public/og/vice-hunt.jpg.
+-->
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: Monoton; src: url(../../public/gta6/fonts/monoton-latin.woff2) format("woff2"); }
+  @font-face { font-family: "Mr Dafoe"; src: url(../../public/gta6/fonts/mr-dafoe-latin.woff2) format("woff2"); }
+  @font-face { font-family: Audiowide; src: url(../../public/gta6/fonts/audiowide-latin.woff2) format("woff2"); }
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
+  .og { position: relative; width: 1200px; height: 630px; overflow: hidden; color: #fff; font-family: Audiowide;
+    background: url(../../public/gta6/wallpapers/03.webp) center 30%/cover; }
+  .og > * { position: absolute; margin: 0; }
+  .tint { inset: 0; background:
+    linear-gradient(180deg, rgba(20,4,40,.35), rgba(80,10,90,.55) 45%, rgba(20,4,40,.95) 85%),
+    linear-gradient(90deg, rgba(255,40,140,.35), rgba(0,200,255,.25)); }
+  .vice { left: 0; right: 0; top: 72px; text-align: center; font: 156px/1 Monoton; color: #ffe3f1;
+    text-shadow: 0 0 6px #ff3ea5, 0 0 19px #ff3ea5, 0 0 47px #ff3ea5, 0 0 94px #ff1f8f; }
+  .hunt { left: 0; right: 0; top: 216px; text-align: center; font: 132px/1 "Mr Dafoe"; color: #b8fbff;
+    transform: rotate(-7deg); text-shadow: 0 0 5px #18d6ff, 0 0 20px #18d6ff, 0 0 53px #00b3ff; }
+  .chip { left: 50%; bottom: 114px; transform: translateX(-50%) skewX(-12deg); padding: 13px 31px;
+    font-size: 25px; letter-spacing: .06em; border-radius: 5px;
+    background: linear-gradient(180deg, #ff7cc4 0 48%, #f0338f 52% 100%);
+    box-shadow: 0 6px 0 #8a0f4f, 0 12px 24px rgba(0,0,0,.4); }
+  .chip span { display: inline-block; transform: skewX(12deg); }
+  .tag { left: 0; right: 0; bottom: 50px; text-align: center; font-size: 23px; letter-spacing: .2em; color: #ffe66d; }
+  .url { right: 36px; top: 36px; font-size: 20px; letter-spacing: .12em; color: rgba(255,255,255,.85); }
+</style>
+<div class="og">
+  <div class="tint"></div>
+  <p class="vice">VICE</p>
+  <p class="hunt">Hunt</p>
+  <span class="chip"><span>PLAY NOW</span></span>
+  <p class="tag">A GTA VI TRIBUTE MINI-GAME</p>
+  <span class="url">SHASHWA7.IN</span>
+</div>
