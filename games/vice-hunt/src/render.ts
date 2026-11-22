@@ -10,6 +10,8 @@ import { drawBossBar, drawRig } from "./rig/drawRig";
 import { RIG, rigTop, throwArm, walkPose } from "./rig/rig";
 import type { Animal, World } from "./world";
 import { OST_BOX, drawOstrich, emitSkateSparks, ostrichParts, skatePose } from "./modules/ostrich";
+import { drawGator } from "./rig/drawGator";
+import { GATOR, G_POSES, type GatorLook, type GatorPose, angerOf, blendPose, gatorPoints, gatorToWorld, gatorWalk } from "./rig/gator";
 
 const FEATHERS = ["#f7b6cc", "#e8789f", "#fbd3e0"];
 const DUST = ["#d9cbb3", "#bfae92", "#ece2d0"];
@@ -107,11 +109,41 @@ export function addHitFeathers(scene: Scene, a: Animal, rng: Rng, reduced: boole
   }
 }
 
-/** Per-frame effects of live creatures: sparks off a fast skater's wheels.
- *  Nothing under reduced motion. */
+// A live gator's pose and look: his strut, blended into the aim while he
+// shoots back (threats/candyGun.ts writes aim, spin, eyes and shootK).
+export function liveGator(a: Animal): { pose: GatorPose; look: GatorLook } {
+  const anger = angerOf(a.hits, a.hp);
+  const ph = a.phase ?? 0;
+  const aim = a.aim ?? 0;
+  const pose = blendPose(gatorWalk(ph, anger), G_POSES.aim, aim);
+  const look: GatorLook = {
+    anger,
+    gun: a.shootK !== undefined && aim > 0.05,
+    spin: a.spin ?? 0,
+    flex: aim,
+    eyes: a.eyes ?? "cool",
+    flap: a.shootK !== undefined ? -6 : Math.sin(ph * 2) * 10 - 4,
+  };
+  return { pose, look };
+}
+
+const STEAM = "rgba(255,255,255,.9)";
+
+/** Per-frame effects of live creatures: sparks off a fast skater's wheels,
+ *  steam off an angry gator's head. Nothing under reduced motion. */
 export function stepSceneFx(scene: Scene, world: World, dt: number, rng: Rng, reduced: boolean): void {
   if (reduced || world.wasted) return;
   for (const a of world.animals) {
+    if (a.kind === "gator") {
+      const anger = angerOf(a.hits, a.hp);
+      if (anger < 0.45 || rng() > dt / (0.22 - anger * 0.12)) continue;
+      const { pose, look } = liveGator(a);
+      const scale = a.w / GATOR.W;
+      const [hx, hy] = gatorToWorld(gatorPoints(pose, look).headTop, a.x, gatorTop(a), scale, a.vx < 0 ? -1 : 1);
+      const k = a.w / 120;
+      emit(scene.poofs, { kind: "smoke", x: hx + (rng() - 0.5) * 24 * k, y: hy, vx: (rng() - 0.5) * 30 * k, vy: -(60 + anger * 60) * k, drag: 1, life: 0.8, size: 5 * k, grow: 2.6, alpha: 0.9, color: STEAM });
+      continue;
+    }
     if (a.kind !== "ostrich") continue;
     const mul = a.speedMul ?? 1;
     if (mul < 1.3 || rng() > (mul - 1) * 30 * dt) continue;
@@ -153,8 +185,22 @@ function drawLiveOstrich(ctx: CanvasRenderingContext2D, scene: Scene, art: Art, 
   drawOstrich(ctx, art, scene.scratch, box, pose, { ...ostrichParts(a.hits), bare: false, shock: false }, a.flash);
 }
 
+/** The top of a live gator's rig box: his soles on the ground line. */
+const gatorTop = (a: Animal) => a.y + a.h - GATOR.GROUND * (a.w / GATOR.W);
+
+function drawLiveGator(ctx: CanvasRenderingContext2D, a: Animal): void {
+  const { pose, look } = liveGator(a);
+  const jolt = a.reaction != null ? HIT_REACTIONS[CREATURES[a.kind].hit].pose?.(a.reaction) : undefined;
+  const mirrored = a.vx < 0;
+  const x = a.x - (jolt?.dx ?? 0) * (mirrored ? -1 : 1);
+  const scale = a.w / GATOR.W;
+  drawGator(ctx, pose, look, x, gatorTop(a), scale, mirrored);
+  if (a.flash > 0) drawGator(ctx, pose, look, x, gatorTop(a), scale, mirrored, { white: true, alpha: Math.min(1, a.flash / FLASH) });
+}
+
 function drawAnimal(ctx: CanvasRenderingContext2D, scene: Scene, world: World, art: Art, a: Animal): void {
   if (a.kind === "bigfoot") return drawBigfoot(ctx, world, a);
+  if (a.kind === "gator") return drawLiveGator(ctx, a);
   if (a.kind === "ostrich") return drawLiveOstrich(ctx, scene, art, a);
   const frames = art.sprites[a.kind];
   const cfg = CREATURES[a.kind];

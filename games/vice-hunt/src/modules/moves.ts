@@ -6,6 +6,7 @@ import { sinkOffset } from "../surface";
 import type { Animal, World } from "../world";
 import { frameOf } from "./draw";
 import { SKATE_EASE, SKATE_SPEED, STRIDE } from "./ostrich";
+import { angerOf, gatorSpeed } from "../rig/gator";
 import type { MoveModule } from "./types";
 
 const RAD = Math.PI / 180;
@@ -119,5 +120,20 @@ const skate: MoveModule = {
   },
 };
 
-// Placeholder until its own module lands (plan Task 5).
-export const moves = { hop, dash, glide, float, swoop, strut, surface, hover, stomp, skate, swagger: stomp };
+// The candy gator struts, faster and with quicker steps as he gets angrier,
+// and stands still while he shoots back (threats/candyGun.ts sets shootK).
+// His pose is drawn from the phase (rig/gator.ts), not added to y.
+const GATOR_STEP = 0.8; // seconds per stride, calm
+const swagger: MoveModule = {
+  y: () => 0,
+  frame: frameOf,
+  advance(a: Animal, dt: number) {
+    if (a.shootK !== undefined) return false;
+    const anger = angerOf(a.hits, a.hp);
+    a.phase = (a.phase ?? 0) + ((dt * (1 + anger * 0.7)) / GATOR_STEP) * Math.PI * 2;
+    a.x += a.vx * (gatorSpeed(anger) / gatorSpeed(0) - 1) * dt;
+    return true;
+  },
+};
+
+export const moves = { hop, dash, glide, float, swoop, strut, surface, hover, stomp, skate, swagger };
