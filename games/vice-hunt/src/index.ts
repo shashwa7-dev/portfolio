@@ -9,11 +9,13 @@ import { mulberry32 } from "./rng";
 import { createSound, type SfxUrls } from "./sound";
 import { loadedArt, preloadHunt, svgUrl } from "./sprites";
 import { CREATURES, type Kind } from "./creatures";
+import type { GameEvent } from "./events";
 import type { Kills } from "./types";
 import { createWorld, drain, resize, shoot, spawn, step } from "./world";
 
 export type { Kills } from "./types";
 export type { Kind } from "./creatures";
+export type { GameEvent } from "./events";
 export { KINDS, isEnabled, isRare, kindsWhere, pointsFor, penaltyFor } from "./creatures";
 export type { Effect, SfxUrls } from "./sound";
 export { ROUNDS } from "./ammo";
@@ -24,6 +26,9 @@ export { preloadHunt } from "./sprites";
 export function iconUrl(kind: Kind): string {
   return svgUrl(SPRITES[kind][0]);
 }
+
+/** The words a host pops over the scene (the package draws no text). */
+export type Callout = Extract<GameEvent, { type: "callout" }>["text"];
 
 export type HuntOptions = {
   onKills?(kills: Kills): void;
@@ -37,8 +42,25 @@ export type HuntOptions = {
    *  kill counts sets false. */
   showScore?: boolean;
   /** Each kill, at the animal's centre in CSS px relative to host. `streak`
-   *  counts kills each within 1.5 s of the one before (1 for a lone kill). */
+   *  counts kills each within 1.5 s of the one before (1 for a lone kill).
+   *  The cow and the tiger are never killed: their last hit is a penalty. */
   onKill?(kind: Kind, x: number, y: number, streak: number): void;
+  /** Every hit, finishing or not: the `n`th of `of` needed (`of` is left out
+   *  for the UFO, whose total is a secret, and Bigfoot, who has a bar). */
+  onHit?(kind: Kind, n: number, of: number | undefined, x: number, y: number): void;
+  /** Points lost for hitting a protected creature (negative). */
+  onPenalty?(kind: Kind, points: number, x: number, y: number): void;
+  /** Hearts left (0 to 3, in halves): once at the start and after each
+   *  hit the player takes. */
+  onHealth?(hearts: number): void;
+  /** Out of hearts: the round is over and the world has stopped. */
+  onWasted?(): void;
+  /** A rare creature came on, or was hit for the first time this round. */
+  onRare?(kind: Kind, event: "appeared" | "met"): void;
+  /** The merman got away: his window for the next hits lapsed. */
+  onEscaped?(kind: Kind, x: number, y: number): void;
+  /** A word to pop at a spot ("ANGRY!", "HSSSS!", "PFFT!", "SPLAT!"). */
+  onCallout?(text: Callout, x: number, y: number): void;
   /** Rounds left (0 to 6) and whether a reload is running: once at the start
    *  and on every change. */
   onAmmo?(rounds: number, reloading: boolean): void;
@@ -66,6 +88,46 @@ export type HuntOptions = {
 export type Hunt = { destroy(): void };
 
 const SCORE_ORDER: Kind[] = ["rabbit", "iguana", "flamingo", "bigfoot"];
+
+/** Hands each event to its `HuntOptions` callback, with positions moved into
+ *  the host's CSS px by `toHost`. A new `GameEvent` member does not compile
+ *  here until it is handled; one smuggled in at run time is ignored. */
+export function toCallbacks(
+  events: readonly GameEvent[],
+  options: HuntOptions,
+  toHost: (x: number, y: number) => [number, number],
+): void {
+  for (const e of events) {
+    switch (e.type) {
+      case "hit":
+        options.onHit?.(e.kind, e.n, e.of, ...toHost(e.x, e.y));
+        break;
+      case "kill":
+        options.onKill?.(e.kind, ...toHost(e.x, e.y), e.streak);
+        break;
+      case "penalty":
+        options.onPenalty?.(e.kind, e.points, ...toHost(e.x, e.y));
+        break;
+      case "damage":
+        options.onHealth?.(e.hearts);
+        break;
+      case "rare":
+        options.onRare?.(e.kind, e.event);
+        break;
+      case "escaped":
+        options.onEscaped?.(e.kind, ...toHost(e.x, e.y));
+        break;
+      case "callout":
+        options.onCallout?.(e.text, ...toHost(e.x, e.y));
+        break;
+      case "wasted":
+        options.onWasted?.();
+        break;
+      default:
+        e satisfies never;
+    }
+  }
+}
 
 // Escape belongs to a dialog that has focus, or to whoever handled it first.
 function escapeIsOurs(e: KeyboardEvent): boolean {
@@ -155,6 +217,24 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
     return { x: e.clientX - b.left, y: e.clientY - b.top };
   };
 
+  let destroyed = false;
+  // The world's events since the last flush become the host's callbacks, in
+  // the host's px. Kills are only ever reported from here: a cow or a tiger
+  // finished is a penalty, never a kill (the world emits no kill for them).
+  const flush = () => {
+    const events = drain(world);
+    if (events.length === 0) return;
+    const hb = host.getBoundingClientRect();
+    const lb = layer.getBoundingClientRect();
+    const dx = lb.left - hb.left;
+    const dy = lb.top - hb.top;
+    toCallbacks(events, options, (x, y) => [x + dx, y + dy]);
+    if (events.some((e) => e.type === "kill")) {
+      showKills(world.kills);
+      options.onKills?.({ ...world.kills });
+    }
+  };
+
   const onMove = (e: PointerEvent) => {
     const { x, y } = local(e);
     gun.aim(x, y, world.width, world.height);
@@ -163,7 +243,8 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
   // Fires on press rather than release so rapid shots feel immediate.
   const onDown = (e: PointerEvent) => {
     // ctrl+click is a right click on macOS: it only exits, never shoots.
-    if (e.button !== 0 || e.ctrlKey) return;
+    // Once the round is WASTED the gun is down: no shot, no round spent.
+    if (destroyed || world.wasted || e.button !== 0 || e.ctrlKey) return;
     e.preventDefault();
     const { x, y } = local(e);
     gun.aim(x, y, world.width, world.height);
@@ -174,22 +255,15 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
     const { hit, finished } = shoot(world, x, y, rng);
     gun.fire();
     sound.shot();
-    const hb = host.getBoundingClientRect();
     if (finished && hit) {
       if (CREATURES[hit.kind].finish === "falls") addPuff(scene, world, hit, rng);
       sound.kill();
-      showKills(world.kills);
-      options.onKills?.({ ...world.kills });
-      const lb = layer.getBoundingClientRect();
-      options.onKill?.(
-        hit.kind,
-        lb.left - hb.left + hit.x + hit.w / 2,
-        lb.top - hb.top + hit.y + hit.h / 2,
-        world.streak,
-      );
     } else if (hit) {
       sound.hit();
     }
+    flush(); // the shot's hit, kill, penalty and callouts, straight away
+    if (destroyed) return; // a callback ended the hunt
+    const hb = host.getBoundingClientRect();
     options.onShot?.(e.clientX - hb.left, e.clientY - hb.top, hit ? hit.kind : null);
     if (!reducedMotion) {
       layer.animate(
@@ -216,7 +290,7 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
   const onKey = (e: KeyboardEvent) => {
     if (e.key === "Escape") {
       if (escapeIsOurs(e)) options.onExit?.();
-    } else if ((e.key === "r" || e.key === "R") && !e.metaKey && !e.ctrlKey && !e.altKey && !typing(e)) {
+    } else if ((e.key === "r" || e.key === "R") && !world.wasted && !e.metaKey && !e.ctrlKey && !e.altKey && !typing(e)) {
       if (startReload(ammo)) {
         beginReload();
         reportAmmo();
@@ -274,8 +348,9 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
     stepFinishing(world, dt, reducedMotion, rng);
     stepThreats(world, dt, rng, reducedMotion);
     stepGlass(world.glass, Math.min(dt, MAX_DT));
-    drain(world); // the events become callbacks in a later task; drop them so they do not pile up
-    stepScene(scene, Math.min(dt, 0.05));
+    stepScene(scene, Math.min(dt, MAX_DT));
+    flush();
+    if (destroyed) return; // a callback ended the hunt
     if (tick(ammo, dt)) reportAmmo();
     const big = world.animals.some((a) => a.kind === "bigfoot");
     if (big !== bigfoot) {
@@ -313,8 +388,8 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
   document.addEventListener("visibilitychange", onVisibility);
   onVisibility();
   reportAmmo();
+  options.onHealth?.(world.hearts);
 
-  let destroyed = false;
   return {
     destroy() {
       if (destroyed) return;
@@ -329,7 +404,7 @@ export function startHunt(host: HTMLElement, options: HuntOptions = {}): Hunt {
       window.removeEventListener("keydown", onKey);
       document.removeEventListener("visibilitychange", onVisibility);
       sound.close();
-      layer.remove();
+      layer.remove(); // the scene, the gun and the glass canvas with it
     },
   };
 }
