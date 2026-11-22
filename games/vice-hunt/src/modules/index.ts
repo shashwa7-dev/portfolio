@@ -1,5 +1,5 @@
-// Exhaustive registries over the id unions. Ids whose real module has not
-// landed point at a harmless generic one (Tasks 6 to 9 replace them).
+// Exhaustive registries over the id unions: a new id with no module, or a
+// module with no id, does not compile.
 import type { FinishId, HitReactionId, MoveId, ThreatId } from "../creatures";
 import { MAX_DT } from "../config";
 import { CREATURES } from "../creatures";
