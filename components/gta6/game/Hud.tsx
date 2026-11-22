@@ -169,7 +169,7 @@ export default function Hud({
         </span>
       </div>
 
-      <div className={`${s.hint} ${s.mono}`}>ESC EXIT · R RELOAD</div>
+      <div className={`${s.hint} ${s.mono}`}>ESC PAUSE · R RELOAD</div>
     </div>
   );
 }

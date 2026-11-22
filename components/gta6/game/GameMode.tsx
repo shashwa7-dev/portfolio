@@ -147,7 +147,8 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
       if (!overlayKey(e)) e.stopPropagation();
     };
     window.addEventListener("keydown", guard, true);
-    root.focus({ preventScroll: true });
+    // The title screen's start button may already have focus.
+    if (!root.contains(document.activeElement)) root.focus({ preventScroll: true });
     return () => {
       window.removeEventListener("keydown", guard, true);
       for (const { el, aria } of hidden) {
@@ -342,7 +343,7 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
 
       <div aria-hidden className={`${s.bar} ${s.barTop}`} />
       <div aria-hidden className={`${s.bar} ${s.barBottom}`} />
-      {phase === "entry" && <Entry onDone={() => setPhase("play")} />}
+      {phase === "entry" && <Entry onStart={() => setPhase("play")} />}
       {phase === "play" && wasted && <Wasted onDone={() => setPhase("results")} />}
 
       {phase === "results" && (

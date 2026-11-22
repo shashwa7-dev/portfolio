@@ -772,11 +772,9 @@
   30%, to { background-color: rgba(0, 0, 0, 0.25); }
 }
 .wasted b {
-  font-size: 8rem;
+  font-size: clamp(5rem, 13vw, 10rem);
   line-height: 1;
-  letter-spacing: 0.06em;
-  color: #d0142c;
-  text-shadow: 0 5px 0 #000, 0 0 36px rgba(0, 0, 0, 0.6);
+  letter-spacing: 0.02em;
   animation: wasted-in var(--duration-gta-wasted) var(--ease-out) both;
 }
 @keyframes wasted-in {
@@ -805,34 +803,36 @@
 .title {
   position: absolute;
   inset: 0;
-  z-index: 7;
+  z-index: 8;
   display: grid;
   place-items: center;
   text-align: center;
-  pointer-events: none;
-  animation: title-slam var(--duration-gta-entry) var(--ease-out) forwards;
+  /* Dusk over the beach, under the neon. */
+  background: linear-gradient(180deg, rgba(40, 10, 70, 0.72), rgba(255, 60, 140, 0.35) 70%, rgba(20, 5, 40, 0.8));
+  animation: fade-in var(--duration-gta-hud-in) var(--ease-out);
 }
-.title h1 {
-  margin: 0;
-  font-size: 7rem;
-  line-height: 1;
-  letter-spacing: 0.06em;
-  text-shadow: 0 6px 0 #000, 0 0 40px rgba(244, 158, 163, 0.7);
+.title h1 { margin: 0; line-height: 1; }
+.title h1 > span { display: block; }
+.titleVice {
+  font-size: clamp(4.5rem, 12vw, 10rem);
+  letter-spacing: 0.02em;
+  animation: neon-on var(--duration-gta-entry) linear both;
 }
-.title h1 span { color: #f49ea3; }
-.title p {
-  margin: 0.75rem 0 0;
-  font-size: 0.8125rem;
-  letter-spacing: 0.4em;
-  color: #e8e0f0;
+.titleHunt {
+  margin-top: -0.12em;
+  font-size: clamp(4rem, 10vw, 8.5rem);
+  transform: rotate(-6deg);
+  animation: neon-on var(--duration-gta-entry) linear 0.25s both;
 }
-@keyframes title-slam {
-  0% { opacity: 0; transform: scale(1.7); }
-  14% { opacity: 1; transform: scale(1); }
-  22% { transform: scale(1.03); }
-  30% { transform: scale(1); }
-  82% { opacity: 1; transform: scale(1); }
-  100% { opacity: 0; transform: scale(0.96); }
+.title .chrome { margin-top: 2.25rem; }
+/* A tube catching: two stutters, then on for good. */
+@keyframes neon-on {
+  0% { opacity: 0; }
+  8% { opacity: 1; }
+  11% { opacity: 0.2; }
+  15% { opacity: 1; }
+  19% { opacity: 0.35; }
+  24%, 100% { opacity: 1; }
 }
 
 /* Results. */
@@ -985,8 +985,10 @@
   /* Kept as plain fades so their ends still fire and clear them. */
   .pop,
   .callout,
-  .banner,
-  .title { animation-name: fade-out; }
+  .banner { animation-name: fade-out; }
+  /* The neon comes on without the stutter. */
+  .titleVice,
+  .titleHunt { animation-name: fade-in; }
   .pop { transform: translate(-50%, -100%); }
   .callout { transform: translateX(-50%) rotate(-3deg); }
 }
