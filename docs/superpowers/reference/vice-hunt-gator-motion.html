@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Vice Hunt: gym gator</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root { color-scheme: dark; }
+  body { margin:0; background:#151221; color:#efeaf7; font-family:Inter, system-ui, sans-serif; }
+  .wrap { max-width:1180px; margin:0 auto; padding:18px 18px 40px; }
+  h2 { margin:0 0 4px; font-size:20px; }
+  .sub { margin:0 0 12px; color:#b9b0cf; font-size:13px; line-height:1.5; }
+  .bar { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; align-items:center; }
+  .bar span { font:700 10px/1 "JetBrains Mono", monospace; letter-spacing:1.2px; color:#8f86a8; margin-left:6px; }
+  .bar button { font:700 11px/1 "JetBrains Mono", monospace; letter-spacing:1px; color:#fff; background:#2a2440; border:1px solid #4a4266; padding:8px 11px; border-radius:999px; cursor:pointer; }
+  .bar button[aria-pressed="true"] { background:#f49ea3; color:#151221; border-color:#f49ea3; }
+  .stage { position:relative; width:100%; aspect-ratio:16/9; overflow:hidden; border-radius:12px; background:url(vice-hunt-rares-bg.png) center/cover; cursor:crosshair; user-select:none; }
+  .gator { position:absolute; left:0; top:0; will-change:transform; }
+  .gator svg, .still svg { display:block; width:100%; height:auto; overflow:visible; }
+  .p { position:absolute; left:0; top:0; pointer-events:none; will-change:transform, opacity; }
+  .dot { border-radius:50%; }
+  .score { position:absolute; left:14px; top:12px; padding:6px 10px; border-radius:8px; background:rgba(14,12,22,.7); font:400 26px/1 Anton, Impact, sans-serif; z-index:5; }
+  .score small { display:block; font:700 9px/1.4 "JetBrains Mono", monospace; letter-spacing:1.4px; color:#f49ea3; }
+  .mood { position:absolute; right:14px; top:12px; padding:7px 11px; border-radius:8px; background:rgba(14,12,22,.75); font:700 11px/1.4 "JetBrains Mono", monospace; letter-spacing:1.2px; z-index:5; }
+  .mood i { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:7px; vertical-align:-1px; }
+  .hearts { position:absolute; left:14px; top:72px; display:flex; gap:4px; z-index:10; filter:drop-shadow(0 2px 0 rgba(0,0,0,.45)); }
+  .hearts svg { width:28px; height:26px; }
+  .hearts.hit { animation:heartsHit .35s ease-out; }
+  @keyframes heartsHit { 0%{transform:scale(1)} 30%{transform:scale(1.25) rotate(-4deg)} 100%{transform:scale(1)} }
+  .hurt { position:absolute; inset:0; pointer-events:none; z-index:11; opacity:0; box-shadow:inset 0 0 90px 30px rgba(255,40,60,.75); transition:opacity .5s ease-out; }
+  .hurt.on { opacity:1; transition:none; }
+  .wasted { position:absolute; inset:0; display:grid; place-items:center; z-index:12; pointer-events:none; opacity:0; font:400 86px/1 Anton, Impact, sans-serif; color:#d81e2a; letter-spacing:2px; text-shadow:0 4px 0 #000; background:rgba(40,40,40,.45); transition:opacity .6s; }
+  .wasted.on { opacity:1; }
+  .pop { position:absolute; font:400 22px/1 Anton, Impact, sans-serif; color:#fff; text-shadow:0 2px 0 #2b2234, 0 0 12px rgba(244,158,163,.6); pointer-events:none; animation:pop 1.1s ease-out forwards; z-index:13; white-space:nowrap; }
+  .pop.big { font-size:30px; }
+  .pop.huge { font-size:64px; color:#ffe14d; text-shadow:0 4px 0 #2b2234, 0 0 24px rgba(255,225,77,.8); }
+  .pop.neg { color:#ff5a6a; text-shadow:0 2px 0 #2b2234, 0 0 12px rgba(255,90,106,.6); }
+  .pop.say { font:400 17px/1 Anton, Impact, sans-serif; letter-spacing:.5px; color:#2b2234; background:#fff; padding:6px 10px 5px; border-radius:10px; border:2px solid #2b2234; text-shadow:none; }
+  @keyframes pop { 0% { transform:translate(-50%,0) scale(.6); opacity:0 } 15% { transform:translate(-50%,-8px) scale(1.15); opacity:1 } 100% { transform:translate(-50%,-48px) scale(1); opacity:0 } }
+  .ring { position:absolute; border:3px solid #e9fbff; border-radius:50%; pointer-events:none; animation:ring .35s ease-out forwards; }
+  @keyframes ring { from { transform:translate(-50%,-50%) scale(.3); opacity:1 } to { transform:translate(-50%,-50%) scale(1.4); opacity:0 } }
+  .impact { position:absolute; pointer-events:none; z-index:12; border-radius:50%; background:radial-gradient(circle, #fff 0 18%, #ffe7a0 30%, rgba(255,160,60,.55) 50%, transparent 70%); animation:impact .45s ease-out forwards; }
+  @keyframes impact { from { transform:translate(-50%,-50%) scale(.4); opacity:1 } to { transform:translate(-50%,-50%) scale(1.6); opacity:0 } }
+  .burst { position:absolute; pointer-events:none; z-index:7; border-radius:50%; border:6px solid #fff; animation:burst .5s cubic-bezier(.2,.8,.3,1) forwards; }
+  @keyframes burst { from { transform:translate(-50%,-50%) scale(.2); opacity:1; border-width:14px } to { transform:translate(-50%,-50%) scale(1.5); opacity:0; border-width:1px } }
+  .flash { position:absolute; pointer-events:none; z-index:7; border-radius:50%; background:radial-gradient(circle, #fff 0 25%, rgba(255,255,255,.6) 45%, transparent 70%); animation:impact .3s ease-out forwards; }
+  .notes { margin-top:16px; font-size:12.5px; color:#c9c1de; line-height:1.55; display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:8px 18px; }
+  .notes b { color:#fff; }
+  .stills { margin-top:18px; display:flex; gap:30px; align-items:flex-end; justify-content:center; background:linear-gradient(#5b8fc4,#f2d6a8 85%); border-radius:12px; padding:40px 20px 10px; }
+  .still { margin:0; text-align:center; width:140px; }
+  .still figcaption { font:700 9px/1 "JetBrains Mono", monospace; letter-spacing:1.2px; color:#2b2234; margin-top:14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h2>The gym gator, take 3 (click it to shoot)</h2>
+  <p class="sub">Now with a candy gun: shoot him and he sprays 10 to 20 candies that stick to your screen and get in the way (click one to knock it off). Every hit makes him angrier: faster, more candy, green to yellow to red. 5 or 6 hits (rolled), then he puffs up and bursts into candy.</p>
+  <div class="bar">
+    <span>VIEW</span>
+    <button id="slow" aria-pressed="false">SLOW MOTION</button>
+    <button id="reset">RESPAWN</button>
+    <button id="refill">REFILL HEARTS</button>
+    <span>JUMP TO</span>
+    <button id="popNow">PLAY THE POP</button>
+  </div>
+  <div class="stage" id="stage">
+    <div class="score"><small>SCORE</small><span id="score">0</span></div>
+    <div class="mood" id="mood"></div>
+    <div class="hearts" id="hearts"></div>
+    <div class="hurt" id="hurt"></div>
+    <div class="wasted" id="wasted">WASTED</div>
+  </div>
+
+  <div class="stills" id="stills"></div>
+
+  <div class="notes">
+    <div><b>Look:</b> white ribbed tank top, big biceps, hot pink shorts, white high-tops, a gold watch on the gun hand, a blue bandana. No chains, no jewellery.</div>
+    <div><b>Candy gun:</b> a gold revolver with a long candy-cane barrel. Each shot sprays candies at you: about 10 when he is calm, up to 20 when he is red. They stick to the screen for about 4 seconds, then slide and fade. Click a candy to knock it off; it soaks up that shot, so a full screen makes him hard to hit.</div>
+    <div><b>Getting angrier:</b> green, then yellow, orange, red. Each step he walks faster, draws quicker, frowns harder, steams from the head, and sprays more candy.</div>
+    <div><b>Damage (my proposal):</b> each spray costs half a heart, at most 1.5 hearts per gator (Bigfoot's cap). After that the candies still stick and block, they just don't hurt.</div>
+    <div><b>Kill:</b> on the last hit he puffs up in three gulps (body, head and limbs swell together on the rig), floats off the sand flailing, trembles and POPS. Candies squeeze out of him as he swells, then about 100 candies burst out in every direction, arc over and rain down. The bandana and the watch fall too.</div>
+  </div>
+</div>
+
+<script>
+const NS = "http://www.w3.org/2000/svg", O = "#2b2234";
+const RIG = { THIGH: 30, SHIN: 30, UPPER: 26, FORE: 25, GROUND: 206, HEAD: 0.82 };
+const COL = { tank:"#ffffff", rib:"#e2deea", trim:"#1fc8d6", shorts:"#ff3d8b", shortsDark:"#d02a6f", stripe:"#ffffff", band:"#2f6bff", bandDark:"#1f4fd0", gold:"#ffcc33", goldDark:"#d39a12", grip:"#ff5fa2", shoe:"#ffffff", sole:"#7b3cff", swoosh:"#1fc8d6" };
+const lerp = (a, b, k) => a + (b - a) * k;
+const clamp01 = (v) => Math.max(0, Math.min(1, v));
+const ease = (k) => k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+const easeOut = (k) => 1 - Math.pow(1 - k, 3);
+const dir = (deg) => [Math.sin(deg * Math.PI / 180), Math.cos(deg * Math.PI / 180)]; // 0 = down, +90 = forward
+const rot = ([x, y], deg) => { const r = deg * Math.PI / 180, c = Math.cos(r), s = Math.sin(r); return [x * c - y * s, x * s + y * c]; };
+function ik(H, A, L1, L2) {
+  let dx = A[0] - H[0], dy = A[1] - H[1], d = Math.hypot(dx, dy);
+  const max = L1 + L2 - 0.01; if (d > max) { dx *= max / d; dy *= max / d; d = max; }
+  const a = Math.atan2(dy, dx), c = Math.max(-1, Math.min(1, (L1 * L1 + d * d - L2 * L2) / (2 * L1 * d)));
+  const k1 = [H[0] + L1 * Math.cos(a - Math.acos(c)), H[1] + L1 * Math.sin(a - Math.acos(c))];
+  const k2 = [H[0] + L1 * Math.cos(a + Math.acos(c)), H[1] + L1 * Math.sin(a + Math.acos(c))];
+  return { knee: k1[0] > k2[0] ? k1 : k2, ankle: [H[0] + dx, H[1] + dy] };
+}
+// Anger 0..1 -> skin: green, yellow, orange, red.
+function skin(a) {
+  const h = lerp(135, 2, a), s = lerp(58, 82, a), l = 50 + Math.sin(a * Math.PI) * 6;
+  return { skin: `hsl(${h} ${s}% ${l}%)`, far: `hsl(${h} ${s}% ${l - 9}%)`, dark: `hsl(${h} ${s}% ${l - 18}%)`, belly: `hsl(${h + 10} 75% 80%)` };
+}
+
+const HEAD_ART = `
+  <path d="M64 56 L88 56 L90 80 L64 80 Z" style="fill:var(--skin)" stroke="${O}" stroke-width="2"/>
+  <path d="M40 52 C36 30 52 14 72 16 C86 17 96 24 104 30 C118 30 136 32 146 38 C154 42 154 52 146 56 C134 62 110 64 90 66 C66 70 44 68 40 52 Z" style="fill:var(--skin)" stroke="${O}" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M86 56 C104 62 130 58 148 48 C150 56 138 64 118 66 C104 68 92 66 86 60 Z" style="fill:var(--belly)" stroke="${O}" stroke-width="1.6"/>
+  <g class="teeth" fill="#fff" stroke="${O}" stroke-width="1" stroke-linejoin="round">
+    <path d="M95 59 l3 5 l3 -5 Z"/><path d="M103 60 l3 5 l3 -5 Z"/><path d="M111 60 l3.4 6 l3.4 -6 Z"/><path d="M122 58 l3 5 l3 -5 Z"/><path d="M132 55 l3 5 l3 -5 Z"/><path d="M140 52 l2.6 4.4 l2.6 -4.4 Z"/>
+  </g>
+  <path class="grin" d="M86 56 C104 62 130 58 148 48 C150 47 152 45 151 43" fill="none" stroke="${O}" stroke-width="2.2" stroke-linecap="round"/>
+  <g class="omouth" style="display:none"><ellipse cx="116" cy="58" rx="9" ry="8" fill="#5a1530" stroke="${O}" stroke-width="2"/><ellipse cx="116" cy="61" rx="5" ry="3" fill="#ff7fa8"/></g>
+  <ellipse cx="146" cy="37" rx="2" ry="1.4" fill="${O}"/>
+  <g style="fill:var(--dark)"><circle cx="58" cy="44" r="2"/><circle cx="50" cy="52" r="2"/><circle cx="64" cy="54" r="1.6"/><circle cx="112" cy="38" r="1.6"/><circle cx="126" cy="40" r="1.6"/></g>
+  <g class="bandana">
+    <path class="tail1" d="M42 38 C32 34 22 36 14 42 L20 46 C26 42 34 41 42 43 Z" fill="${COL.band}" stroke="${O}" stroke-width="1.6" stroke-linejoin="round"/>
+    <path class="tail2" d="M42 42 C34 44 26 50 22 58 L28 59 C32 53 37 49 44 46 Z" fill="${COL.bandDark}" stroke="${O}" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M38 42 C38 20 58 10 76 11 C90 12 100 18 104 28 C84 24 60 28 38 42 Z" fill="${COL.band}" stroke="${O}" stroke-width="1.8" stroke-linejoin="round"/>
+    <circle cx="42" cy="40" r="4.2" fill="${COL.bandDark}" stroke="${O}" stroke-width="1.6"/>
+    <g fill="#fff"><circle cx="56" cy="22" r="1.6"/><circle cx="68" cy="17" r="1.6"/><circle cx="82" cy="17" r="1.6"/><circle cx="50" cy="32" r="1.6"/><circle cx="64" cy="27" r="1.4"/><circle cx="92" cy="22" r="1.4"/></g>
+  </g>
+  <circle cx="72" cy="28" r="7" fill="#fff" stroke="${O}" stroke-width="1.8"/>
+  <circle class="pupilF" cx="74.5" cy="29" r="2.8" fill="${O}"/>
+  <g class="eye"><circle cx="88" cy="30" r="9" fill="#fff" stroke="${O}" stroke-width="2"/><circle class="pupil" cx="91" cy="31" r="3.4" fill="${O}"/><circle cx="92.2" cy="29.6" r="1.1" fill="#fff"/></g>
+  <path class="lid" d="M78.6 30 C79 21 97 21 97.4 30 C92 27 84 27 78.6 30 Z" style="fill:var(--skin)" stroke="${O}" stroke-width="1.8" stroke-linejoin="round"/>
+  <path class="lidF" d="M65 28 C65.4 21 78.6 21 79 28 C75 26 69 26 65 28 Z" style="fill:var(--skin)" stroke="${O}" stroke-width="1.6" stroke-linejoin="round"/>
+  <path class="wink" style="display:none;fill:var(--skin)" d="M78.6 30 C79 20 97 20 97.4 30 C93 36 83 36 78.6 30 Z" stroke="${O}" stroke-width="1.8"/>
+  <path class="brow" d="M78 20 L98 22" stroke="${O}" stroke-width="3.6" stroke-linecap="round"/>
+  <path class="browF" d="M64 19 L78 20" stroke="${O}" stroke-width="3" stroke-linecap="round"/>
+  <ellipse class="blush" cx="98" cy="52" rx="5" ry="3" fill="#ff5a7a" opacity=".5"/>`;
+
+const GUN = `
+  <path d="M-5 -3 L5 -3 C6 4 5 12 2 17 L-6 17 C-7 10 -7 3 -5 -3 Z" fill="${COL.grip}" stroke="${O}" stroke-width="1.6" stroke-linejoin="round"/>
+  <circle cx="-1.5" cy="8" r="1.5" fill="${COL.gold}"/>
+  <path d="M4 -2 C4 6 14 6 14 -2" fill="none" stroke="${O}" stroke-width="2"/>
+  <path d="M-7 -11 L-12 -17 L-8.5 -18 L-3 -12 Z" fill="${COL.goldDark}" stroke="${O}" stroke-width="1.4" stroke-linejoin="round"/>
+  <rect x="-7" y="-13" width="18" height="11" rx="2" fill="${COL.gold}" stroke="${O}" stroke-width="1.6"/>
+  <rect x="3" y="-15.5" width="13" height="14" rx="3.5" fill="${COL.goldDark}" stroke="${O}" stroke-width="1.6"/>
+  <path d="M7.5 -15 L7.5 -2 M11.5 -15 L11.5 -2" stroke="${O}" stroke-width=".9"/>
+  <rect x="15" y="-13" width="50" height="9" rx="4.5" fill="#fff"/>
+  <path d="M17 -13 l5 9 M24 -13 l5 9 M31 -13 l5 9 M38 -13 l5 9 M45 -13 l5 9 M52 -13 l5 9 M59 -13 l4 7.5" stroke="#ff2d55" stroke-width="3.2"/>
+  <path d="M19 -11.4 L61 -11.4" stroke="#fff" stroke-width="1.3" stroke-linecap="round" opacity=".8"/>
+  <rect x="15" y="-13" width="50" height="9" rx="4.5" fill="none" stroke="${O}" stroke-width="1.6"/>
+  <ellipse cx="65" cy="-8.5" rx="3" ry="5" fill="#ff7fb0" stroke="${O}" stroke-width="1.5"/>
+  <ellipse cx="65.6" cy="-8.5" rx="1.3" ry="2.6" fill="#5a1530"/>
+  <rect x="13" y="-14.5" width="5" height="12" rx="1.5" fill="${COL.goldDark}" stroke="${O}" stroke-width="1.4"/>`;
+
+const SNEAKER = (far) => `
+  <path d="M-9 -6 C-10 -12 -2 -14 4 -11 L10 -5 C18 -4 24 -1 24 4 L-11 4 C-12 0 -11 -3 -9 -6 Z" fill="${far ? "#dcd8e6" : COL.shoe}" stroke="${O}" stroke-width="1.8" stroke-linejoin="round"/>
+  <path d="M-12 4 L25 4 L24 8 C14 9 -2 9 -12 8 Z" fill="${COL.sole}" stroke="${O}" stroke-width="1.6" stroke-linejoin="round"/>
+  <path d="M-3 0 C3 -3 10 -3 16 0" fill="none" stroke="${COL.swoosh}" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M0 -10 l5 3 M3 -12 l5 3" stroke="${O}" stroke-width="1.2" stroke-linecap="round"/>`;
+
+function makeGator(host) {
+  const svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("viewBox", "0 0 170 215");
+  host.appendChild(svg);
+  const mk = (tag, attrs, parent = svg) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent.appendChild(e); return e; };
+  const stroke = (col, w, parent = svg) => mk("path", { fill: "none", style: `stroke:${col}`, "stroke-width": w, "stroke-linecap": "round", "stroke-linejoin": "round" }, parent);
+  const limb = (col, w) => ({ out: stroke(O, w + 4), fill: stroke(col, w) });
+  function arm(far) {
+    const col = far ? "var(--far)" : "var(--skin)";
+    const fore = limb(col, 10);
+    const upper = limb(col, 13);
+    const bicep = mk("ellipse", { ry: 8.6, style: `fill:${col}`, stroke: O, "stroke-width": 2 });
+    const delt = mk("circle", { r: 9.8, style: `fill:${col}`, stroke: O, "stroke-width": 2 });
+    const gunWrap = far ? null : mk("g", { style: "display:none" }); if (gunWrap) gunWrap.innerHTML = GUN;
+    const hand = mk("circle", { r: 7.2, style: `fill:${col}`, stroke: O, "stroke-width": 2 });
+    const knuck = stroke(O, 1.4);
+    const watch = far ? null : mk("g", {}); if (watch) watch.innerHTML = `<rect x="-3.4" y="-6.8" width="6.8" height="13.6" rx="1.6" fill="${COL.gold}" stroke="${O}" stroke-width="1.5"/><circle r="3.6" fill="#fff8d8" stroke="${COL.goldDark}" stroke-width="1.4"/><path d="M0 0 L0 -2.4 M0 0 L1.8 0" stroke="${O}" stroke-width=".8" stroke-linecap="round"/>`;
+    return { fore, upper, bicep, delt, hand, knuck, gunWrap, watch };
+  }
+  function leg(far) {
+    const col = far ? "var(--far)" : "var(--skin)";
+    const l = limb(col, 12);
+    const shortsOut = stroke(O, 24), shorts = stroke(far ? COL.shortsDark : COL.shorts, 20), stripe = stroke(COL.stripe, 2.4);
+    const sock = stroke("#fff", 9);
+    const shoe = mk("g", {}); shoe.innerHTML = SNEAKER(far);
+    return { l, shortsOut, shorts, stripe, sock, shoe };
+  }
+  const armF = arm(true), legF = leg(true);
+  const torso = mk("g", {});
+  torso.innerHTML = `
+    <path d="M-22 2 C-28 -18 -40 -42 -36 -56 C-22 -68 26 -68 38 -56 C42 -40 32 -18 22 2 Z" style="fill:var(--skin)" stroke="${O}" stroke-width="2"/>
+    <path d="M-6 -50 C2 -45 12 -45 18 -50" fill="none" style="stroke:var(--dark)" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M-24 2 C-29 -16 -36 -38 -30 -52 L-15 -58 C-9 -46 8 -46 14 -58 L30 -53 C37 -38 31 -16 22 2 Z" fill="${COL.tank}" stroke="${O}" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M-22 -40 L-20 0 M-13 -40 L-12 0 M-4 -42 L-4 0 M5 -42 L5 0 M14 -42 L13 0 M23 -40 L20 0" stroke="${COL.rib}" stroke-width="1.4"/>
+    <path d="M-15 -58 C-9 -46 8 -46 14 -58" fill="none" stroke="${COL.trim}" stroke-width="2.6" stroke-linecap="round"/>
+    <path d="M-30 -52 C-34 -40 -32 -30 -28 -24 M30 -53 C35 -42 34 -32 29 -26" fill="none" stroke="${COL.trim}" stroke-width="2" stroke-linecap="round"/>
+    <path d="M-18 -20 C-8 -15 8 -15 18 -20" fill="none" stroke="${COL.rib}" stroke-width="1.6"/>
+    <ellipse class="shine" cx="-12" cy="-36" rx="10" ry="5" fill="#fff" opacity="0" transform="rotate(-30 -12 -36)"/>
+    <path d="M-26 -5 L24 -5 L27 12 L-28 12 Z" fill="${COL.shorts}" stroke="${O}" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M-26 -1 L25 -1" stroke="#fff" stroke-width="2"/>
+    <path d="M4 0 l-2 7 M4 0 l3 6" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/>`;
+  const legN = leg(false);
+  const head = mk("g", {}); head.innerHTML = `<g transform="translate(-76 -66)">${HEAD_ART}</g>`;
+  const armN = arm(false);
+  const q = (c) => head.querySelector("." + c);
+  const face = { lid: q("lid"), lidF: q("lidF"), wink: q("wink"), eye: q("eye"), pupil: q("pupil"), pupilF: q("pupilF"), grin: q("grin"), teeth: q("teeth"), omouth: q("omouth"), brow: q("brow"), browF: q("browF"), tail1: q("tail1"), tail2: q("tail2"), blush: q("blush") };
+  const shine = torso.querySelector(".shine");
+  const D = (...a) => a.map((p, i) => (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" ");
+  const deg = (v) => Math.atan2(v[1], v[0]) * 180 / Math.PI;
+  let last = {};
+
+  return {
+    svg, last: () => last,
+    // p: pose; o: { anger, puff, extra, gun, spin, eyes, mouth, flap }
+    draw(p, o = {}) {
+      const a = o.anger || 0, pf = o.puff || 0, ex = o.extra || 0;
+      const c = skin(a); svg.style.setProperty("--skin", c.skin); svg.style.setProperty("--far", c.far); svg.style.setProperty("--dark", c.dark); svg.style.setProperty("--belly", c.belly);
+      const sx = 1 + 1.55 * pf + ex, sy = 1 + 0.7 * pf + ex, hs = RIG.HEAD * (1 + 0.3 * pf);
+      const R = [p.rx, p.ry];
+      const T = (l) => { const v = rot([l[0] * sx, l[1] * sy], p.torso); return [R[0] + v[0], R[1] + v[1]]; };
+      torso.setAttribute("transform", `translate(${R[0]} ${R[1]}) rotate(${p.torso}) scale(${sx} ${sy})`);
+      // Legs: two-bone IK from the hips to the feet.
+      for (const [L, hipL, foot] of [[legF, [-11, 4], p.fF], [legN, [11, 4], p.fN]]) {
+        const H = T(hipL), s = ik(H, foot, RIG.THIGH, RIG.SHIN);
+        const d = D(H, s.knee, s.ankle); L.l.out.setAttribute("d", d); L.l.fill.setAttribute("d", d);
+        const mid = [lerp(H[0], s.knee[0], 0.62), lerp(H[1], s.knee[1], 0.62)];
+        const sd = D(H, mid); L.shortsOut.setAttribute("d", sd); L.shorts.setAttribute("d", sd);
+        L.stripe.setAttribute("d", D([H[0] + 7, H[1] + 2], [mid[0] + 7, mid[1]]));
+        const sk = [lerp(s.knee[0], s.ankle[0], 0.82), lerp(s.knee[1], s.ankle[1], 0.82)];
+        L.sock.setAttribute("d", D(sk, s.ankle));
+        const ang = deg([s.ankle[0] - s.knee[0], s.ankle[1] - s.knee[1]]) - 90;
+        L.shoe.setAttribute("transform", `translate(${s.ankle[0].toFixed(1)} ${(s.ankle[1] + 2).toFixed(1)}) rotate(${(ang * 0.35).toFixed(1)})`);
+      }
+      // Head on the neck, following the torso.
+      const N = T([6, -60]);
+      head.setAttribute("transform", `translate(${N[0]} ${N[1]}) rotate(${p.torso + p.head}) scale(${hs})`);
+      // Arms: forward kinematics from the shoulders.
+      for (const [A, shL, u, f] of [[armF, [-26, -52], p.uF, p.fFo], [armN, [22, -54], p.uN, p.fNo]]) {
+        const S = T(shL), du = dir(u + p.torso * 0.6), df = dir(f + p.torso * 0.6);
+        const E = [S[0] + du[0] * RIG.UPPER, S[1] + du[1] * RIG.UPPER], Hd = [E[0] + df[0] * RIG.FORE, E[1] + df[1] * RIG.FORE];
+        const ud = D(S, E), fd = D(E, Hd);
+        A.upper.out.setAttribute("d", ud); A.upper.fill.setAttribute("d", ud);
+        A.fore.out.setAttribute("d", fd); A.fore.fill.setAttribute("d", fd);
+        // Bicep bulges on the front of the upper arm, bigger as he flexes for the shot.
+        const n = [du[1], -du[0]], bulge = 2.5 + (o.flex || 0) * 1.5;
+        const bc = [S[0] + du[0] * RIG.UPPER * 0.5 + n[0] * bulge, S[1] + du[1] * RIG.UPPER * 0.5 + n[1] * bulge];
+        A.bicep.setAttribute("rx", 13.5); A.bicep.setAttribute("ry", 8.6 + (o.flex || 0) * 1.6);
+        A.bicep.setAttribute("transform", `translate(${bc[0].toFixed(1)} ${bc[1].toFixed(1)}) rotate(${deg(du).toFixed(1)})`);
+        A.delt.setAttribute("cx", S[0].toFixed(1)); A.delt.setAttribute("cy", S[1].toFixed(1));
+        A.hand.setAttribute("cx", Hd[0].toFixed(1)); A.hand.setAttribute("cy", Hd[1].toFixed(1));
+        const fa = deg(df);
+        const kn = rot([3, 0], fa); A.knuck.setAttribute("d", `M${(Hd[0] + kn[0] - kn[1] * 1.2).toFixed(1)} ${(Hd[1] + kn[1] + kn[0] * 1.2).toFixed(1)} L${(Hd[0] + kn[0] + kn[1] * 1.2).toFixed(1)} ${(Hd[1] + kn[1] - kn[0] * 1.2).toFixed(1)}`);
+        if (A.watch) { const w = [lerp(E[0], Hd[0], 0.72), lerp(E[1], Hd[1], 0.72)]; A.watch.setAttribute("transform", `translate(${w[0].toFixed(1)} ${w[1].toFixed(1)}) rotate(${fa.toFixed(1)})`); A.watch.style.display = o.noWatch ? "none" : ""; }
+        if (A.gunWrap) {
+          A.gunWrap.style.display = o.gun ? "" : "none";
+          A.gunWrap.setAttribute("transform", `translate(${Hd[0].toFixed(1)} ${Hd[1].toFixed(1)}) rotate(${(fa + (o.spin || 0)).toFixed(1)})`);
+          const m = rot([67, -8.5], fa + (o.spin || 0)); last.muzzle = [Hd[0] + m[0], Hd[1] + m[1]];
+        }
+      }
+      // Face: brows sink and slant with anger.
+      const eyes = o.eyes || "cool";
+      face.lid.style.display = eyes === "cool" || eyes === "squint" ? "" : "none";
+      face.lid.setAttribute("transform", eyes === "squint" ? "translate(0 3)" : `translate(0 ${a * 2})`);
+      face.lidF.style.display = eyes === "shock" ? "none" : "";
+      face.wink.style.display = eyes === "wink" ? "" : "none";
+      face.eye.setAttribute("transform", eyes === "shock" ? "translate(88 30) scale(1.35) translate(-88 -30)" : "");
+      face.pupil.setAttribute("r", eyes === "shock" ? 1.8 : 3.4 - a * 0.8); face.pupilF.setAttribute("r", eyes === "shock" ? 1.5 : 2.8 - a * 0.6);
+      face.brow.style.display = eyes === "shock" ? "none" : ""; face.browF.style.display = eyes === "shock" ? "none" : "";
+      face.brow.setAttribute("transform", `translate(0 ${a * 4}) rotate(${a * 24} 88 21)`);
+      face.browF.setAttribute("transform", `translate(0 ${a * 3}) rotate(${-a * 18} 71 20)`);
+      face.blush.setAttribute("opacity", 0.4 + a * 0.5);
+      const om = o.mouth === "o"; face.grin.style.display = om ? "none" : ""; face.teeth.style.display = om ? "none" : ""; face.omouth.style.display = om ? "" : "none";
+      face.tail1.setAttribute("transform", `rotate(${o.flap || 0} 42 40)`); face.tail2.setAttribute("transform", `rotate(${(o.flap || 0) * 0.7} 42 44)`);
+      shine.setAttribute("opacity", Math.min(0.8, pf * 0.85));
+      // Head points for effects (speech, steam).
+      last.headPt = (lx, ly) => { const v = rot([(lx - 76) * hs, (ly - 66) * hs], p.torso + p.head); return [N[0] + v[0], N[1] + v[1]]; };
+      last.torsoPt = T;
+    },
+  };
+}
+
+// Poses (sprite space): pelvis rx/ry, torso and head lean, foot targets, arm angles (0 = down, +90 = forward).
+const POSES = {
+  stand:  { rx: 80, ry: 140, torso: 2, head: 0, fF: [70, 200], fN: [94, 200], uF: 10, fFo: 20, uN: 6, fNo: 22 },
+  aim:    { rx: 78, ry: 142, torso: -5, head: -6, fF: [66, 200], fN: [96, 200], uF: 24, fFo: 50, uN: 92, fNo: 90 },
+  puffed: { rx: 80, ry: 136, torso: 0, head: -6, fF: [72, 176], fN: [94, 178], uF: -100, fFo: -112, uN: 100, fNo: 112 },
+};
+function blend(A, B, k) {
+  const o = {};
+  for (const key in A) o[key] = Array.isArray(A[key]) ? [lerp(A[key][0], B[key][0], k), lerp(A[key][1], B[key][1], k)] : lerp(A[key], B[key], k);
+  return o;
+}
+function walkPose(ph, a) {
+  const stride = 10 + a * 4, lift = 7 + a * 3;
+  const p = { ...POSES.stand };
+  p.fN = [94 + stride * Math.sin(ph), 200 - Math.max(0, Math.cos(ph)) * lift];
+  p.fF = [70 - stride * Math.sin(ph), 200 - Math.max(0, -Math.cos(ph)) * lift];
+  p.ry = 140 - Math.abs(Math.sin(ph)) * 2.5; p.torso = 3 + a * 7; p.head = Math.sin(ph * 2) * 3 - a * 4;
+  const sw = 24 + a * 8;
+  p.uN = 8 - sw * Math.sin(ph); p.fNo = p.uN + 26; p.uF = 10 + sw * Math.sin(ph); p.fFo = p.uF + 26;
+  return p;
+}
+
+// Stills.
+const STILLS = [
+  ["CALM", walkPose(0.6, 0), { anger: 0 }],
+  ["SHOOTING (ANGRY)", POSES.aim, { anger: 0.5, gun: true, eyes: "squint", flex: 1 }],
+  ["FURIOUS", walkPose(2.2, 1), { anger: 1 }],
+  ["FULLY PUFFED", POSES.puffed, { anger: 1, puff: 1, eyes: "shock", mouth: "o" }],
+];
+const stillsEl = document.getElementById("stills");
+for (const [cap, p, o] of STILLS) {
+  const f = document.createElement("figure"); f.className = "still"; stillsEl.appendChild(f);
+  makeGator(f).draw(p, o);
+  const fc = document.createElement("figcaption"); fc.textContent = cap; f.appendChild(fc);
+}
+
+// ---------- stage ----------
+const stage = document.getElementById("stage");
+const W = () => stage.clientWidth, H = () => stage.clientHeight, K = () => W() / 1280;
+const GROUND = 0.93, PER_SHOT = 0.5, MAX_DAMAGE = 1.5;
+let slow = 1, score = 0, hearts = 3;
+
+const heartsEl = document.getElementById("hearts");
+function drawHearts() {
+  const heart = "M14 24 C4 16 1 11 1 7 C1 3 4 1 7.5 1 C10.5 1 12.5 3 14 5 C15.5 3 17.5 1 20.5 1 C24 1 27 3 27 7 C27 11 24 16 14 24 Z";
+  heartsEl.innerHTML = [0, 1, 2].map((i) => {
+    const fill = Math.max(0, Math.min(1, hearts - i));
+    return `<svg viewBox="0 0 28 26"><defs><clipPath id="h${i}"><rect width="${28 * fill}" height="26"/></clipPath></defs>
+      <path d="${heart}" fill="#3a2f3f" stroke="#fff" stroke-width="1.6"/><path clip-path="url(#h${i})" d="${heart}" fill="#ff3d5a"/></svg>`;
+  }).join("");
+}
+drawHearts();
+
+const el = document.createElement("div"); el.className = "gator"; stage.appendChild(el);
+const rig = makeGator(el);
+
+const particles = [];
+function spawn(o) {
+  const d = document.createElement("div"); d.className = "p";
+  if (o.html) d.innerHTML = o.html;
+  else {
+    if (o.kind !== "confetti") d.classList.add("dot");
+    Object.assign(d.style, { width: o.size + "px", height: (o.h || o.size) + "px", background: o.color });
+    if (o.glow) d.style.boxShadow = `0 0 ${o.size * 1.5}px ${o.color}`;
+  }
+  if (o.z) d.style.zIndex = o.z;
+  stage.appendChild(d);
+  particles.push(Object.assign({ el: d, t: 0, g: 0, drag: 0, grow: 0, rot: 0, vr: 0, phase: Math.random() * 6 }, o));
+}
+function tickParticles(dt) {
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i]; p.t += dt; const k = p.t / p.life;
+    if (k >= 1) { p.el.remove(); particles.splice(i, 1); continue; }
+    p.vx *= Math.exp(-p.drag * dt); p.vy *= Math.exp(-p.drag * dt); p.vy += p.g * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.rot += p.vr * dt;
+    let extra = "", sway = 0;
+    if (p.kind === "confetti") { extra = ` scaleY(${Math.cos(p.t * 9 + p.phase)})`; sway = Math.sin(p.t * 4 + p.phase) * 10 * K(); }
+    if (p.kind === "item") sway = Math.sin(p.t * 3 + p.phase) * 18 * K();
+    p.el.style.transform = `translate(${p.x + sway - p.size / 2}px, ${p.y - (p.h || p.size) / 2}px) rotate(${p.rot}deg) scale(${1 + p.grow * k})${extra}`;
+    p.el.style.opacity = p.smoke ? 0.6 * (1 - k) : (p.kind === "confetti" || p.kind === "item" || p.kind === "candy") ? (k > 0.8 ? (1 - k) / 0.2 : 1) : 1 - k * k;
+  }
+}
+function pop(x, y, text, cls) {
+  const d = document.createElement("div"); d.className = "pop" + (cls ? " " + cls : "");
+  d.textContent = text; d.style.left = x + "px"; d.style.top = y + "px"; d.style.animationDuration = 1.3 * slow + "s";
+  stage.appendChild(d); setTimeout(() => d.remove(), 1400 * slow);
+}
+function fx(cls, x, y, size, ms) {
+  const d = document.createElement("div"); d.className = cls;
+  Object.assign(d.style, { left: x + "px", top: y + "px", width: size + "px", height: size + "px", animationDuration: ms * slow + "ms" });
+  stage.appendChild(d); setTimeout(() => d.remove(), ms * slow + 50);
+}
+
+let x = 0, y = 0, lift = 0, state = "walk", t = 0, st = 0, hits = 0, need = 6, pending = false, jolt = 0, shake = 0, dealt = 0, steamT = 0, shots = [], bullets = [];
+const bw = () => 0.13 * W();
+const sc = () => bw() / 170;
+const toStage = (px, py) => [x + px * sc(), y + py * sc()];
+const anger = () => clamp01(hits / (need - 1));
+const moodEl = document.getElementById("mood");
+function setMood() {
+  const a = anger(), names = ["CALM", "ANNOYED", "ANGRY", "FURIOUS"];
+  const n = state === "puff" || state === "gone" ? "POPPED" : names[Math.min(3, Math.round(a * 3))];
+  moodEl.innerHTML = `<i style="background:${skin(a).skin}"></i>${n} · HITS ${hits} / ${need}`;
+}
+function respawn() {
+  state = "walk"; hits = 0; t = 0; st = 0; lift = 0; dealt = 0; pending = false; shots = [];
+  need = Math.random() < 0.5 ? 5 : 6; x = -0.12 * W(); el.style.display = ""; setMood();
+}
+
+// ---- candy ----
+const CANDY_COLS = ["#ff3d8b", "#1fc8d6", "#ffcc33", "#8bff3a", "#9b5cff", "#ff8a1f", "#ff2d55"];
+function candySVG(kind, c, c2) {
+  const s = `stroke="${O}" stroke-width="2" stroke-linejoin="round"`;
+  if (kind === 0) return `<svg viewBox="-24 -14 48 28"><path d="M-12 0 L-22 -9 L-19 0 L-22 9 Z M12 0 L22 -9 L19 0 L22 9 Z" fill="${c2}" ${s}/><circle r="11" fill="${c}" ${s}/><path d="M-6 -8 C-2 -2 2 2 6 8 M-10 -2 C-6 2 -2 6 2 10 M-2 -10 C2 -6 6 -2 10 2" stroke="#fff" stroke-width="2.4" fill="none" opacity=".8"/></svg>`;
+  if (kind === 1) return `<svg viewBox="-16 -16 32 44"><path d="M0 12 L0 27" stroke="${O}" stroke-width="5.4" stroke-linecap="round"/><path d="M0 12 L0 27" stroke="#f4efe6" stroke-width="3" stroke-linecap="round"/><circle r="14" fill="${c}" ${s}/><path d="M0 0 m0 -2 a2 2 0 1 1 -2 2 a4 4 0 1 1 4 4 a6 6 0 1 1 -6 -6 a8 8 0 1 1 8 8 a10 10 0 1 1 -10 -10" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>`;
+  if (kind === 2) return `<svg viewBox="-14 -14 28 28"><circle r="12" fill="#fff" ${s}/><path d="M0 0 L0 -12 A12 12 0 0 1 10.4 -6 Z M0 0 L10.4 6 A12 12 0 0 1 0 12 Z M0 0 L-10.4 6 A12 12 0 0 1 -10.4 -6 Z" fill="${c}"/><circle r="12" fill="none" ${s}/><circle r="3" fill="#fff" stroke="${O}" stroke-width="1"/></svg>`;
+  if (kind === 3) return `<svg viewBox="-14 -14 28 26"><path d="M-12 10 C-13 -2 -8 -12 0 -12 C8 -12 13 -2 12 10 Z" fill="${c}" ${s}/><g fill="#fff" opacity=".85"><circle cx="-5" cy="-4" r="1.2"/><circle cx="3" cy="-7" r="1.2"/><circle cx="6" cy="2" r="1.2"/><circle cx="-2" cy="4" r="1.2"/><circle cx="-7" cy="5" r="1"/></g><path d="M-6 -8 C-4 -10 -2 -10 0 -10" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`;
+  return `<svg viewBox="-14 -13 28 26"><path d="M0 11 C-14 2 -13 -10 -6 -10 C-3 -10 -1 -8 0 -6 C1 -8 3 -10 6 -10 C13 -10 14 2 0 11 Z" fill="${c}" ${s}/><path d="M-7 -6 C-9 -4 -9 -1 -8 1" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`;
+}
+const STICK_FOR = 4, glass = [];
+function fire() {
+  const [mx, my] = toStage(...rig.last().muzzle);
+  // No fire: a pink sugar puff and sparkles at the candy-cane tip.
+  fx("flash", mx, my, 60 * K(), 260);
+  for (let i = 0; i < 12; i++) {
+    const a = (Math.random() - 0.5) * 1.6, sp = (60 + Math.random() * 200) * K();
+    spawn({ x: mx, y: my, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, drag: 4, life: 0.35, size: (3 + Math.random() * 4) * K() * 1.4, color: CANDY_COLS[i % CANDY_COLS.length], glow: true });
+  }
+  spawn({ x: mx + 6 * K(), y: my, vx: 30 * K(), vy: -20 * K(), life: 0.8, size: 18 * K(), color: "rgba(255,190,220,.9)", smoke: true, grow: 2 });
+  pop(mx + 30 * K(), my - 30 * K(), "FWUMP!", "big");
+  const n = Math.round(10 + anger() * 10);
+  const volley = { hurt: false };
+  for (let i = 0; i < n; i++) {
+    const kind = (Math.random() * 5) | 0, c = CANDY_COLS[(Math.random() * CANDY_COLS.length) | 0], c2 = CANDY_COLS[(Math.random() * CANDY_COLS.length) | 0];
+    const size = (32 + Math.random() * 20) * K(); // smaller (owner, 2026-11-23)
+    const d = document.createElement("div"); d.className = "p"; d.style.zIndex = 12; d.style.width = size + "px"; d.innerHTML = candySVG(kind, c, c2);
+    d.querySelector("svg").style.cssText = "width:100%;height:auto;display:block;overflow:visible;filter:drop-shadow(0 3px 0 rgba(0,0,0,.3))";
+    stage.appendChild(d);
+    // Spread around the middle of the screen, a bit wider for bigger sprays.
+    const spread = 0.28 + n / 100;
+    bullets.push({ t: -i * 0.025, x0: mx, y0: my, x1: W() * (0.5 + (Math.random() - 0.5) * 2 * spread), y1: H() * (0.45 + (Math.random() - 0.5) * 1.2 * spread), d, size, spin: (Math.random() - 0.5) * 720, rot: (Math.random() - 0.5) * 50, volley });
+  }
+}
+function land(b) {
+  // The candy splats onto the glass and sticks: a squash, then it sits there.
+  const c = { d: b.d, x: b.x1, y: b.y1, size: b.size, rot: b.rot, t: 0, off: false };
+  b.d.style.pointerEvents = "auto"; b.d.style.cursor = "crosshair";
+  b.d.addEventListener("pointerdown", (e) => { e.stopPropagation(); knock(c, e); });
+  glass.push(c);
+  for (let i = 0; i < 5; i++) { const a = Math.random() * Math.PI * 2, sp = (60 + Math.random() * 90) * K(); spawn({ x: b.x1, y: b.y1, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, drag: 5, life: 0.35, size: 4 * K() * 1.4, color: "#fff", z: 12 }); }
+  shake = Math.max(shake, 0.25);
+  if (b.volley.hurt) return;
+  b.volley.hurt = true;
+  if (dealt < MAX_DAMAGE && hearts > 0) {
+    dealt += PER_SHOT; hearts = Math.max(0, hearts - PER_SHOT); drawHearts();
+    heartsEl.classList.remove("hit"); void heartsEl.offsetWidth; heartsEl.classList.add("hit");
+    const hurt = document.getElementById("hurt"); hurt.classList.add("on"); setTimeout(() => hurt.classList.remove("on"), 60);
+    pop(80, 110, "−½ ♥", "neg");
+    if (hearts <= 0) document.getElementById("wasted").classList.add("on");
+  }
+}
+
+const LINES = ["YO!?", "BACK OFF!", "THAT'S IT!", "GRRRR!", "AAARGH!!"];
+function startDraw() {
+  state = "draw"; st = 0;
+  const a = anger(), n = 1; // one spray per hit; angrier = more candies in it
+  const speed = 1 + a * 0.9;
+  // Timeline in seconds, compressed as he gets angrier.
+  const raise = 0.12 / speed, aimAt = 0.4 / speed, fireAt = 0.62 / speed, gap = 0.22 / speed;
+  shots = Array.from({ length: n }, (_, i) => fireAt + i * gap);
+  draw = { raise, aimAt, fireAt, end: shots[n - 1] + (a < 0.5 ? 0.95 : 0.45) / speed, twirl: a < 0.5, n };
+  const [hx, hy] = toStage(...rig.last().headPt(110, 0));
+  pop(hx, hy - 20 * K(), LINES[Math.min(LINES.length - 1, hits - 1)], "say");
+}
+let draw = null;
+
+function startFinish(px, py) {
+  score += 1200; document.getElementById("score").textContent = score;
+  pop(px, py - 12 * K(), "+1200", "big");
+  state = "puff"; st = 0; shots = []; setMood();
+}
+el.addEventListener("pointerdown", (e) => {
+  if (state === "puff" || state === "gone") return;
+  e.stopPropagation();
+  const r = stage.getBoundingClientRect(), px = e.clientX - r.left, py = e.clientY - r.top;
+  fx("ring", px, py, 34 * K(), 350); hits++; jolt = 1; setMood();
+  if (hits >= need) return startFinish(px, py);
+  pop(px, py - 12 * K(), hits + " / " + need);
+  if (state === "walk") startDraw(); else pending = true;
+});
+stage.addEventListener("pointerdown", (e) => { const r = stage.getBoundingClientRect(); fx("ring", e.clientX - r.left, e.clientY - r.top, 34 * K(), 350); });
+
+function puffCurve(t) {
+  let p = 0;
+  for (const [t0, amt] of [[0.3, 0.3], [0.72, 0.33], [1.12, 0.37]]) {
+    const k = clamp01((t - t0) / 0.28);
+    p += amt * (k < 1 ? 1 - Math.pow(1 - k, 3) * Math.cos(k * 5) : 1);
+  }
+  return Math.min(1.04, p);
+}
+
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000) / slow; last = now;
+  el.style.width = bw() + "px";
+  const base = GROUND * H() - (RIG.GROUND + 4) * sc();
+  let pose, opts = { anger: anger() }, rotDeg = 0;
+  jolt = Math.max(0, jolt - dt * 6);
+  const a = anger();
+  if (state === "walk") {
+    t += dt * (1 + a * 0.7); x += (0.065 + a * 0.06) * W() * dt;
+    const ph = t / 0.8 * Math.PI * 2;
+    pose = walkPose(ph, a); opts.flap = Math.sin(ph * 2) * 10 - 4;
+    if (x > 1.05 * W()) respawn();
+  } else if (state === "draw") {
+    st += dt;
+    const D = draw, up = ease(clamp01((st - D.raise) / (D.aimAt - D.raise))), down = ease(clamp01((st - (D.end - 0.3)) / 0.3));
+    const k = up * (1 - down);
+    pose = blend(POSES.stand, POSES.aim, k);
+    opts.gun = st > D.raise + 0.05 && down < 0.85;
+    opts.flex = k;
+    opts.spin = D.twirl ? 720 * (1 - easeOut(clamp01((st - D.raise) / (D.fireAt - D.raise)))) : 0;
+    opts.eyes = st < D.raise ? "shock" : st < D.end - 0.3 ? "squint" : (a < 0.5 ? "wink" : "squint");
+    opts.flap = -6;
+    for (const ft of shots) {
+      if (st >= ft && st - dt < ft) fire();
+      if (st > ft && st < ft + 0.16) { const r = Math.sin((st - ft) / 0.16 * Math.PI); pose.uN -= r * 16; pose.fNo -= r * 26; pose.torso -= r * 3; }
+    }
+    if (D.twirl && st > shots[shots.length - 1] + 0.3 && Math.random() < 0.6) {
+      const [sx2, sy2] = toStage(...rig.last().muzzle);
+      spawn({ x: sx2, y: sy2, vx: (Math.random() - 0.5) * 20 * K(), vy: -50 * K(), life: 0.9, size: 9 * K(), color: "rgba(255,255,255,.85)", smoke: true, grow: 2 });
+    }
+    if (st > D.end) { if (pending) { pending = false; startDraw(); } else state = "walk"; }
+  } else if (state === "puff") {
+    st += dt;
+    const p = puffCurve(st), tense = clamp01((st - 1.45) / 0.4);
+    pose = blend(POSES.stand, POSES.puffed, clamp01(p * 1.3));
+    pose.uN += Math.sin(st * 14) * 14 * p; pose.uF -= Math.sin(st * 14 + 1) * 14 * p;
+    pose.fN = [pose.fN[0] + Math.sin(st * 9) * 4 * p, pose.fN[1]]; pose.fF = [pose.fF[0] - Math.sin(st * 9 + 1) * 4 * p, pose.fF[1]];
+    Object.assign(opts, { anger: 1, puff: p, extra: tense * 0.08 + Math.sin(st * 85) * 0.025 * tense, eyes: "shock", mouth: st > 0.18 ? "o" : "grin", flap: Math.sin(st * 9) * 14 });
+    lift = -0.2 * H() * Math.pow(clamp01((st - 0.5) / 1.3), 1.4);
+    rotDeg = Math.sin(st * 4.5) * 6 * p + Math.sin(st * 70) * 2 * tense;
+    // Candies squeeze out of him as he swells, more and more as he gets tighter.
+    if (p > 0.3 && Math.random() < dt * (4 + 14 * p + 20 * tense)) {
+      const T = rig.last().torsoPt; if (T) {
+        const side = Math.random() < 0.5 ? -1 : 1;
+        const [ex, ey] = toStage(...T([side * 30, -20 - Math.random() * 30]));
+        candyBit(ex, ey, (120 + Math.random() * 200) * K(), side < 0 ? Math.PI + (Math.random() - 0.5) : (Math.random() - 0.5), (18 + Math.random() * 12) * K());
+      }
+    }
+    if (st > 1.85) { burst(); }
+  } else {
+    st += dt; if (st > 2.6) respawn();
+  }
+  // Steam off the head once he is properly angry.
+  if ((state === "walk" || state === "draw") && a >= 0.45) {
+    steamT -= dt;
+    if (steamT <= 0) {
+      steamT = 0.22 - a * 0.12;
+      const [hx, hy] = toStage(...rig.last().headPt(60 + Math.random() * 30, 12));
+      spawn({ x: hx, y: hy, vx: (Math.random() - 0.5) * 30 * K(), vy: -(60 + a * 60) * K(), drag: 1, life: 0.8, size: 10 * K() * 1.3, color: "rgba(255,255,255,.9)", smoke: true, grow: 1.6, z: 4 });
+    }
+  }
+  // Candies in flight: tumble toward the camera, growing.
+  for (let i = bullets.length - 1; i >= 0; i--) {
+    const b = bullets[i]; b.t += dt / 0.42; const k = clamp01(b.t);
+    b.d.style.opacity = b.t < 0 ? 0 : 1;
+    const bx = b.x0 + (b.x1 - b.x0) * k, by = b.y0 + (b.y1 - b.y0) * k - Math.sin(k * Math.PI) * 40 * K();
+    b.d.style.transform = `translate(${bx - b.size / 2}px, ${by - b.size / 2}px) rotate(${b.rot + b.spin * (1 - k)}deg) scale(${0.12 + k * k * 0.98})`;
+    if (b.t >= 1) { bullets.splice(i, 1); land(b); }
+  }
+  // Stuck candies: squash on landing, sit, then slide a little and fade.
+  for (let i = glass.length - 1; i >= 0; i--) {
+    const c = glass[i]; c.t += dt;
+    if (c.off) {
+      c.vy += 1400 * K() * dt; c.x += c.vx * dt; c.y += c.vy * dt; c.rot += c.vr * dt;
+      c.d.style.opacity = Math.max(0, 1 - c.t / 0.7);
+      c.d.style.transform = `translate(${c.x - c.size / 2}px, ${c.y - c.size / 2}px) rotate(${c.rot}deg)`;
+      if (c.t > 0.7) { c.d.remove(); glass.splice(i, 1); continue; }
+    } else {
+      const sq = c.t < 0.25 ? 1 + Math.sin(c.t / 0.25 * Math.PI) * 0.22 * (1 - c.t / 0.25) : 1;
+      const slide = c.t > STICK_FOR ? (c.t - STICK_FOR) * 30 * K() : 0;
+      c.d.style.opacity = c.t > STICK_FOR ? Math.max(0, 1 - (c.t - STICK_FOR) / 0.7) : 1;
+      c.d.style.transform = `translate(${c.x - c.size / 2}px, ${c.y - c.size / 2 + slide}px) rotate(${c.rot}deg) scale(${sq}, ${2 - sq})`;
+      if (c.t > STICK_FOR + 0.7) { c.d.remove(); glass.splice(i, 1); continue; }
+    }
+  }
+  y = base + lift;
+  if (pose && state !== "gone") rig.draw(pose, opts);
+  shake = Math.max(0, shake - dt * 3);
+  stage.style.transform = shake > 0 ? `translate(${Math.sin(now / 18) * shake * 8 * K()}px, ${Math.cos(now / 23) * shake * 6 * K()}px)` : "";
+  const jx = Math.sin(jolt * 40) * jolt * 6 * K();
+  el.style.transformOrigin = `${(80 / 170) * 100}% ${(110 / 215) * 100}%`;
+  el.style.transform = `translate(${x + jx}px, ${y}px) rotate(${rotDeg}deg)`;
+  tickParticles(dt);
+  requestAnimationFrame(frame);
+}
+
+// A loose candy flying through the scene (not stuck to the glass).
+function candyBit(x0, y0, sp, a, size) {
+  const kind = (Math.random() * 5) | 0, c = CANDY_COLS[(Math.random() * CANDY_COLS.length) | 0], c2 = CANDY_COLS[(Math.random() * CANDY_COLS.length) | 0];
+  spawn({ kind: "candy", html: candySVG(kind, c, c2).replace("<svg ", `<svg width="${size}" height="${size}" style="display:block;overflow:visible" `),
+    x: x0, y: y0, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 160 * K(), drag: 1.2, g: 900 * K(), life: 2 + Math.random() * 0.9, size, rot: Math.random() * 360, vr: (Math.random() - 0.5) * 1000, z: 8 });
+}
+// Clicking a stuck candy knocks it off the glass; that shot is spent on it.
+function knock(c, e) {
+  if (c.off) return;
+  const r = stage.getBoundingClientRect(); fx("ring", e.clientX - r.left, e.clientY - r.top, 34 * K(), 350);
+  c.off = true; c.t = 0; c.vx = (Math.random() - 0.5) * 200 * K(); c.vy = -220 * K(); c.vr = (Math.random() - 0.5) * 900;
+  c.d.style.pointerEvents = "none";
+}
+function burst() {
+  const [cx, cy] = toStage(...rig.last().torsoPt([0, -30]));
+  el.style.display = "none"; state = "gone"; st = 0; setMood();
+  fx("flash", cx, cy, 260 * K(), 320);
+  fx("burst", cx, cy, 320 * K(), 520);
+  pop(cx, cy - 40 * K(), "POP!", "huge");
+  shake = 0.6;
+  // He was full of candy: about 100 burst out in every direction, arc over and rain down.
+  for (let i = 0; i < 100; i++) candyBit(cx, cy, (220 + Math.random() * 620) * K(), Math.random() * Math.PI * 2, (24 + Math.random() * 26) * K());
+  for (let i = 0; i < 18; i++) {
+    const a = i / 18 * Math.PI * 2, sp = (300 + Math.random() * 200) * K();
+    spawn({ x: cx, y: cy, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, drag: 4, life: 0.5, size: 5 * K() * 1.4, color: "#fff7c2", glow: true, z: 8 });
+  }
+  const s = 46 * K();
+  spawn({ kind: "item", html: `<svg viewBox="0 0 40 30" width="${s}" height="${s * 0.75}"><path d="M2 20 C4 6 22 0 38 8 C26 10 14 14 2 20 Z" fill="${COL.band}" stroke="${O}" stroke-width="1.6"/><circle cx="14" cy="10" r="1.4" fill="#fff"/><circle cx="24" cy="7" r="1.4" fill="#fff"/><path d="M4 19 L-2 28 M6 18 L4 29" stroke="${COL.bandDark}" stroke-width="3" stroke-linecap="round"/></svg>`,
+    x: cx - 10 * K(), y: cy - 30 * K(), vx: -60 * K(), vy: -260 * K(), drag: 1.6, g: 180 * K(), life: 3, size: s, vr: 90, z: 9 });
+  spawn({ kind: "item", html: `<svg viewBox="0 0 30 30" width="${s * 0.55}" height="${s * 0.55}"><rect x="11" y="1" width="8" height="28" rx="2" fill="${COL.gold}" stroke="${O}" stroke-width="1.8"/><circle cx="15" cy="15" r="7" fill="#fff8d8" stroke="${COL.goldDark}" stroke-width="2"/><path d="M15 15 L15 11 M15 15 L18 15" stroke="${O}" stroke-width="1.2" stroke-linecap="round"/></svg>`,
+    x: cx + 10 * K(), y: cy, vx: 90 * K(), vy: -300 * K(), drag: 0.8, g: 700 * K(), life: 2.2, size: s * 0.55, vr: 400, z: 9 });
+}
+
+document.getElementById("slow").onclick = (e) => { slow = slow === 1 ? 2.8 : 1; e.target.setAttribute("aria-pressed", slow !== 1); };
+document.getElementById("reset").onclick = () => { respawn(); x = 0.35 * W(); };
+document.getElementById("refill").onclick = () => { hearts = 3; drawHearts(); document.getElementById("wasted").classList.remove("on"); };
+document.getElementById("popNow").onclick = () => { respawn(); x = 0.4 * W(); hits = need; const [px, py] = toStage(80, 100); startFinish(px, py); };
+
+respawn(); x = 0.35 * W();
+rig.draw(walkPose(0, 0), { anger: 0 });
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

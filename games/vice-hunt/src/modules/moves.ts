@@ -5,6 +5,8 @@ import type { Rng } from "../rng";
 import { sinkOffset } from "../surface";
 import type { Animal, World } from "../world";
 import { frameOf } from "./draw";
+import { SKATE_EASE, SKATE_SPEED, STRIDE } from "./ostrich";
+import { angerOf, gatorSpeed } from "../rig/gator";
 import type { MoveModule } from "./types";
 
 const RAD = Math.PI / 180;
@@ -102,4 +104,36 @@ const hover: MoveModule = {
 // Bigfoot is drawn by his rig (Task 9).
 const stomp: MoveModule = { y: () => 0, frame: frameOf };
 
-export const moves = { hop, dash, glide, float, swoop, strut, surface, hover, stomp };
+// The roller ostrich: faster with every hit (SKATE_SPEED), easing up to the
+// new pace. Its bob and push phase live on the animal and are drawn, not
+// added to y, so the lane's resting y stays recoverable.
+const skate: MoveModule = {
+  y: () => 0,
+  frame: frameOf,
+  advance(a: Animal, dt: number) {
+    const target = SKATE_SPEED[Math.min(a.hits, SKATE_SPEED.length - 1)];
+    const mul = (a.speedMul ??= 1);
+    a.speedMul = mul + (target - mul) * Math.min(1, dt * SKATE_EASE);
+    a.phase = (a.phase ?? 0) + ((dt * Math.pow(a.speedMul, 0.8)) / STRIDE) * Math.PI * 2;
+    a.x += a.vx * (a.speedMul - 1) * dt;
+    return true;
+  },
+};
+
+// The candy gator struts, faster and with quicker steps as he gets angrier,
+// and stands still while he shoots back (threats/candyGun.ts sets shootK).
+// His pose is drawn from the phase (rig/gator.ts), not added to y.
+const GATOR_STEP = 0.8; // seconds per stride, calm
+const swagger: MoveModule = {
+  y: () => 0,
+  frame: frameOf,
+  advance(a: Animal, dt: number) {
+    if (a.shootK !== undefined) return false;
+    const anger = angerOf(a.hits, a.hp);
+    a.phase = (a.phase ?? 0) + ((dt * (1 + anger * 0.7)) / GATOR_STEP) * Math.PI * 2;
+    a.x += a.vx * (gatorSpeed(anger) / gatorSpeed(0) - 1) * dt;
+    return true;
+  },
+};
+
+export const moves = { hop, dash, glide, float, swoop, strut, surface, hover, stomp, skate, swagger };

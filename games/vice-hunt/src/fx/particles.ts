@@ -1,11 +1,12 @@
 // The one particle system: poofs of dust and feathers, fireworks, smoke,
-// fountain fish and splash droplets. `emit` and `stepParticles` are pure (no
+// fountain fish, splash droplets and loose candies. `emit` and `stepParticles` are pure (no
 // DOM; callers pass their rng's numbers in); `drawParticles` and `drawRings`
 // take the context and keep no state.
 import type { Rng } from "../rng";
 import type { Art } from "../sprites";
+import { type CandyLook, drawCandy } from "./candy";
 
-export type ParticleKind = "dot" | "star" | "smoke" | "fish";
+export type ParticleKind = "dot" | "star" | "smoke" | "fish" | "candy";
 
 export type Particle = {
   x: number;
@@ -22,11 +23,12 @@ export type Particle = {
   g: number; // its own gravity, px/s², added to stepParticles' gravity
   grow: number; // size at the end of its life, as a multiple of `size`
   spin: number; // rad/s: a dot that spins is a feather (a flat ellipse); a fish's wiggle phase
-  alpha: number; // opacity at birth; fades to 0 over its life (fish do not fade)
+  alpha: number; // opacity at birth; fades to 0 over its life (fish do not fade; candies only at the very end)
+  look?: CandyLook; // a candy's shape and colours (`size` is its radius; it turns at `spin` rad/s)
 };
 
 export type ParticleSpec = Pick<Particle, "x" | "y" | "vx" | "vy" | "life" | "size" | "color" | "kind"> &
-  Partial<Pick<Particle, "delay" | "drag" | "g" | "grow" | "spin" | "alpha">>;
+  Partial<Pick<Particle, "delay" | "drag" | "g" | "grow" | "spin" | "alpha" | "look">>;
 
 export function emit(list: Particle[], spec: ParticleSpec): Particle {
   const p: Particle = { age: 0, delay: 0, drag: 0, g: 0, grow: 1, spin: 0, alpha: 1, ...spec };
@@ -173,6 +175,11 @@ export function drawParticles(ctx: CanvasRenderingContext2D, list: Particle[], _
       ctx.translate(-13, -6);
       drawFish(ctx, p.color);
       ctx.restore();
+      continue;
+    }
+    if (p.kind === "candy" && p.look) {
+      ctx.globalAlpha = p.alpha * Math.min(1, (1 - k) * 5); // solid, fading out over the last fifth
+      drawCandy(ctx, p.look, p.x, p.y, p.size * 2, p.spin * p.age + p.size);
       continue;
     }
     const a = p.alpha * (1 - k);

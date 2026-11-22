@@ -3,6 +3,8 @@ import { MAX_ALIVE, MAX_DT, SEA_LINE, SPOTTED_PER_MINUTE } from "./config";
 import { CREATURES, KINDS, isRare, pointsFor } from "./creatures";
 import type { GameEvent } from "./events";
 import { mulberry32 } from "./rng";
+import { addCandy } from "./fx/glass";
+import { randomCandy } from "./fx/candy";
 import { type Animal, type World, createWorld, damage, drain, rareRate, resize, shoot as shootWith, spawn, step } from "./world";
 import type { Kind } from "./types";
 
@@ -361,6 +363,80 @@ describe("world rules", () => {
     expect(ofType(events, "rare")).toEqual([{ type: "rare", kind: "bigfoot", event: "met" }]);
     expect(ofType(events, "callout").map((e) => e.text)).toEqual(["ANGRY!"]);
     expect(ofType(events, "hit").every((e) => !("of" in e))).toBe(true);
+  });
+
+  it("the gator shows its hit total, is provoked, and only Bigfoot shouts ANGRY!", () => {
+    const { rng, world } = quiet();
+    const a = spawn(world, rng, "gator");
+    a.x = 400;
+    drain(world);
+    hitAt(world, a);
+    expect(a.provoked).toBe(true);
+    const events = drain(world);
+    expect(ofType(events, "hit")).toMatchObject([{ kind: "gator", n: 1, of: a.hp }]);
+    expect(ofType(events, "callout")).toEqual([]);
+  });
+
+  it("a stuck candy takes the shot: the gator behind it is not hit", () => {
+    const { rng, world } = quiet();
+    const a = spawn(world, rng, "gator");
+    a.x = 400;
+    const x = a.x + a.w / 2;
+    const y = a.y + a.h / 2;
+    addCandy(world.glass, x, y, 40, 0, randomCandy(rng), false);
+    expect(shoot(world, x, y)).toEqual({ hit: null, finished: false, blocked: true });
+    expect(a.hits).toBe(0);
+    expect(shoot(world, x, y)).toMatchObject({ hit: a, finished: false });
+    expect(a.hits).toBe(1);
+  });
+
+  it("a resize moves the candies on the glass with the screen", () => {
+    const { rng, world } = quiet();
+    addCandy(world.glass, 900, 300, 40, 0, randomCandy(rng), false);
+    resize(world, 500, 200);
+    const c = world.glass.marks[0] as { x: number; y: number };
+    expect(c.x).toBeCloseTo(450);
+    expect(c.y).toBeCloseTo(150);
+  });
+
+  it("the ostrich flinches on every hit that does not finish it", () => {
+    const { rng, world } = quiet();
+    const a = spawn(world, rng, "ostrich");
+    a.x = 400;
+    hitAt(world, a);
+    const first = a.reaction;
+    hitAt(world, a);
+    expect(a.reaction).not.toBe(first);
+  });
+
+  it("the ostrich stays rarer: 0.25 a minute, 0.4 once spotted", () => {
+    const { world } = quiet();
+    expect(rareRate(world, "ostrich")).toBe(0.25);
+    world.spotted.add("ostrich");
+    expect(rareRate(world, "ostrich")).toBe(0.4);
+  });
+
+  it("the gator comes back like the other rares once spotted; Bigfoot keeps his rate", () => {
+    const { world } = quiet();
+    world.spotted.add("gator");
+    world.spotted.add("bigfoot");
+    expect(rareRate(world, "gator")).toBe(SPOTTED_PER_MINUTE);
+    expect(rareRate(world, "bigfoot")).toBe(CREATURES.bigfoot.spawn.perMinute);
+  });
+
+  it("only a boss shares the screen with another rare", () => {
+    const zero = () => 0;
+    const world = createWorld(1000, 400, zero);
+    world.nextSpawn = Infinity;
+    world.time = 31;
+    const g = spawn(world, zero, "gator");
+    g.vx = 0; // stays on screen
+    g.x = 400;
+    for (let i = 0; i < 10 * 60; i++) {
+      step(world, DT, zero);
+      expect(world.animals.filter((a) => isRare(a.kind) && a.kind !== "bigfoot" && a.kind !== "gator")).toEqual([]);
+    }
+    expect(world.animals.some((a) => a.kind === "bigfoot")).toBe(true);
   });
 
   it("damage clamps at 0 and emits wasted once", () => {

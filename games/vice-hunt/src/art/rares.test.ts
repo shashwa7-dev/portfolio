@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { EXTRA, RARE_FRAMES, type ExtraId } from "./rares";
 import { SPRITES } from "./sprites";
 import { KINDS } from "../creatures";
+import { expectSvgDocument } from "./svgTestkit";
 
 const EXTRA_IDS: readonly ExtraId[] = [
   "cowGarland",
@@ -16,21 +17,6 @@ const EXTRA_IDS: readonly ExtraId[] = [
 ];
 
 const FRAME_COUNTS = { cow: 2, tiger: 2, shark: 2, merman: 2, ufo: 2 } as const;
-
-// A complete SVG document: one root <svg> with explicit width, height and
-// viewBox on the root tag, closed at the very end.
-function expectSvgDocument(svg: string): void {
-  expect(svg.startsWith("<svg ")).toBe(true);
-  expect(svg.trimEnd().endsWith("</svg>")).toBe(true);
-  const root = svg.slice(0, svg.indexOf(">") + 1);
-  expect(root).toContain('xmlns="http://www.w3.org/2000/svg"');
-  expect(root).toMatch(/ width="\d+(\.\d+)?"/);
-  expect(root).toMatch(/ height="\d+(\.\d+)?"/);
-  expect(root).toMatch(/ viewBox="-?[\d.]+ -?[\d.]+ [\d.]+ [\d.]+"/);
-  // Classes and CSS have no meaning in a canvas image: none left behind.
-  expect(svg).not.toContain("class=");
-  expect(svg).not.toContain("<!--");
-}
 
 describe("rare creature art", () => {
   it("has the agreed frame count for each rare", () => {

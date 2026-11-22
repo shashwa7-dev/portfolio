@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Vice Hunt: roller ostrich v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root { color-scheme: dark; }
+  body { margin:0; background:#151221; color:#efeaf7; font-family:Inter, system-ui, sans-serif; }
+  .wrap { max-width:1180px; margin:0 auto; padding:18px 18px 40px; }
+  h2 { margin:0 0 4px; font-size:20px; }
+  .sub { margin:0 0 12px; color:#b9b0cf; font-size:13px; line-height:1.5; }
+  .bar { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; align-items:center; }
+  .bar span { font:700 10px/1 "JetBrains Mono", monospace; letter-spacing:1.2px; color:#8f86a8; margin-left:6px; }
+  .bar button { font:700 11px/1 "JetBrains Mono", monospace; letter-spacing:1px; color:#fff; background:#2a2440; border:1px solid #4a4266; padding:8px 11px; border-radius:999px; cursor:pointer; }
+  .bar button[aria-pressed="true"] { background:#f49ea3; color:#151221; border-color:#f49ea3; }
+  .stage { position:relative; width:100%; aspect-ratio:16/9; overflow:hidden; border-radius:12px; background:url(vice-hunt-rares-bg.png) center/cover; cursor:crosshair; user-select:none; }
+  .bird { position:absolute; left:0; top:0; transform-origin:50% 100%; will-change:transform; }
+  .bird svg { display:block; width:100%; height:auto; overflow:visible; }
+  .p { position:absolute; left:0; top:0; pointer-events:none; will-change:transform, opacity; }
+  .dot { border-radius:50%; }
+  .score { position:absolute; left:14px; top:12px; padding:6px 10px; border-radius:8px; background:rgba(14,12,22,.7); font:400 26px/1 Anton, Impact, sans-serif; z-index:5; }
+  .score small { display:block; font:700 9px/1.4 "JetBrains Mono", monospace; letter-spacing:1.4px; color:#f49ea3; }
+  .speed { position:absolute; right:14px; top:12px; padding:6px 10px; border-radius:8px; background:rgba(14,12,22,.7); font:700 11px/1.4 "JetBrains Mono", monospace; letter-spacing:1.2px; z-index:5; }
+  .pop { position:absolute; font:400 22px/1 Anton, Impact, sans-serif; color:#fff; text-shadow:0 2px 0 #2b2234, 0 0 12px rgba(244,158,163,.6); pointer-events:none; animation:pop 1.1s ease-out forwards; z-index:6; white-space:nowrap; }
+  .pop.big { font-size:30px; }
+  .pop.fast { color:#ffe14d; font-size:18px; }
+  @keyframes pop { 0% { transform:translate(-50%,0) scale(.6); opacity:0 } 15% { transform:translate(-50%,-8px) scale(1.15); opacity:1 } 100% { transform:translate(-50%,-48px) scale(1); opacity:0 } }
+  .ring { position:absolute; border:3px solid #e9fbff; border-radius:50%; pointer-events:none; animation:ring .35s ease-out forwards; }
+  @keyframes ring { from { transform:translate(-50%,-50%) scale(.3); opacity:1 } to { transform:translate(-50%,-50%) scale(1.4); opacity:0 } }
+  .cards { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:18px; }
+  .card { background:#1e1a2e; border:2px solid #3a3352; border-radius:12px; padding:12px 14px; cursor:pointer; }
+  .card.selected { border-color:#f49ea3; box-shadow:0 0 0 3px rgba(244,158,163,.2); }
+  .card h3 { margin:0 0 2px; font:400 22px/1.1 Anton, Impact, sans-serif; letter-spacing:.5px; }
+  .card p { margin:0 0 10px; color:#b9b0cf; font-size:12.5px; line-height:1.45; min-height:54px; }
+  .stills { display:flex; gap:6px; justify-content:center; align-items:flex-end; background:linear-gradient(#5b8fc4,#f2d6a8 85%); border-radius:8px; padding:14px 6px 8px; }
+  .stills figure { margin:0; text-align:center; }
+  .stills svg { width:96px; height:auto; display:block; }
+  .stills figcaption { font:700 9px/1 "JetBrains Mono", monospace; letter-spacing:1.2px; color:#2b2234; margin-top:4px; }
+  .notes { margin-top:16px; font-size:12.5px; color:#c9c1de; line-height:1.55; display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:8px 18px; }
+  .notes b { color:#fff; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h2>Roller ostrich, take 2: loud colours, faster with every hit</h2>
+  <p class="sub">Three hits. Each hit knocks feathers off and makes it skate faster (watch the speed tag, top right). The third hit plucks it bare and it rockets off screen on fireworks. Pick a look below; the beach switches to it.</p>
+  <div class="bar">
+    <span>LOOK</span>
+    <button data-look="neon" aria-pressed="true">VICE NEON</button>
+    <button data-look="leopard" aria-pressed="false">SUNSET LEOPARD</button>
+    <button data-look="polka" aria-pressed="false">TROPICAL POLKA</button>
+    <span>VIEW</span>
+    <button id="slow" aria-pressed="false">SLOW MOTION</button>
+    <button id="reset">RESPAWN</button>
+  </div>
+  <div class="stage" id="stage">
+    <div class="score"><small>SCORE</small><span id="score">0</span></div>
+    <div class="speed" id="speed">SPEED x1</div>
+  </div>
+
+  <div class="cards">
+    <div class="card" data-choice="neon" onclick="pickCard(this)">
+      <h3>A. Vice Neon</h3>
+      <p>Hot magenta body with cyan zebra stripes, electric yellow and cyan tail, striped neck, lime skates. The most GTA.</p>
+      <div class="stills" id="st-neon"></div>
+    </div>
+    <div class="card" data-choice="leopard" onclick="pickCard(this)">
+      <h3>B. Sunset Leopard</h3>
+      <p>Orange to pink gradient body with purple leopard spots, teal and violet plumes, golden neck, purple skates.</p>
+      <div class="stills" id="st-leopard"></div>
+    </div>
+    <div class="card" data-choice="polka" onclick="pickCard(this)">
+      <h3>C. Tropical Polka</h3>
+      <p>Electric teal body with sunny yellow polka dots, hot pink and orange tail, violet neck, orange skates.</p>
+      <div class="stills" id="st-polka"></div>
+    </div>
+  </div>
+
+  <div class="notes">
+    <div><b>Speed:</b> skating pace x1, then x1.7 after the first hit, x2.6 after the second, with a little "FASTER!" and sparks off the skates each time. So the second and third hits get harder to land.</div>
+    <div><b>Third hit:</b> +700, every feather blows off in its colours, a short shocked shiver, then it rockets off right with fireworks from the skates.</div>
+    <div><b>Plucked:</b> the body goes bare pink with goosebumps either way; the neck and skates keep their colours so you can still tell it is the same bird.</div>
+  </div>
+</div>
+
+<script>
+const O = "#2b2234";
+const LOOKS = {
+  neon:    { body:"#ff2d95", body2:"#ff2d95", pattern:"zebra",   pc:"#22e4ff", pc2:"#22e4ff", plume:"#ffe14d", plume2:"#22e4ff", wing:"#c3127a", neck:"#22e4ff", ring:"#ff2d95", head:"#22e4ff", fuzz:"#ffe14d", beak:"#ffb020", leg:"#ffe14d", legF:"#d9b92c", skate:"#8bff3a", skateF:"#5fcf1d", wheel:"#ff2d95", wheelF:"#c3127a", feathers:["#ff2d95","#22e4ff","#ffe14d","#ff2d95"] },
+  leopard: { body:"#ff8a1f", body2:"#ff3d8b", pattern:"leopard", pc:"#4b1d6e", pc2:"#b05cff", plume:"#1fe0c4", plume2:"#9b5cff", wing:"#d63a7a", neck:"#ffd23f", ring:"#ff8a1f", head:"#ffd23f", fuzz:"#9b5cff", beak:"#ff5a3d", leg:"#ffd23f", legF:"#d9ad2a", skate:"#9b5cff", skateF:"#7340c9", wheel:"#1fe0c4", wheelF:"#17ad98", feathers:["#ff8a1f","#ff3d8b","#1fe0c4","#9b5cff"] },
+  polka:   { body:"#00c2b8", body2:"#00a6e0", pattern:"polka",   pc:"#ffe14d", pc2:"#ffe14d", plume:"#ff3d8b", plume2:"#ff8a1f", wing:"#0089a8", neck:"#a65cff", ring:"#ffe14d", head:"#a65cff", fuzz:"#ff3d8b", beak:"#ff8a1f", leg:"#ff8a1f", legF:"#d06c12", skate:"#ff8a1f", skateF:"#d06c12", wheel:"#ffe14d", wheelF:"#d9b92c", feathers:["#00c2b8","#ffe14d","#ff3d8b","#ff8a1f"] },
+};
+const BARE = "#f6bcae", BARE_SHADE = "#d98a7d";
+const BODY = "M22 84 C22 66 40 58 60 60 C80 62 92 72 92 86 C92 102 76 112 56 112 C36 112 22 102 22 84 Z";
+let uid = 0;
+
+function patternMarks(p) {
+  if (p.pattern === "zebra") {
+    return [0, 1, 2, 3, 4, 5, 6].map((i) => { const x = 26 + i * 10; return `<path d="M${x} 56 C${x + 7} 70 ${x - 5} 90 ${x + 4} 116" fill="none" stroke="${p.pc}" stroke-width="4.2" stroke-linecap="round"/>`; }).join("");
+  }
+  if (p.pattern === "leopard") {
+    return [[32,74],[44,66],[58,66],[72,70],[84,80],[38,90],[52,82],[66,84],[80,94],[46,102],[62,100],[30,100]]
+      .map(([x, y], i) => `<ellipse cx="${x}" cy="${y}" rx="${3.6 + (i % 3) * 0.6}" ry="${2.8 + (i % 2) * 0.6}" fill="${p.pc2}" stroke="${p.pc}" stroke-width="1.8" stroke-dasharray="5 2.5" transform="rotate(${i * 23} ${x} ${y})"/>`).join("");
+  }
+  return [[30,74],[44,68],[58,66],[72,70],[84,78],[36,88],[50,82],[64,84],[78,90],[44,100],[58,100],[72,104],[28,98]]
+    .map(([x, y]) => `<circle cx="${x}" cy="${y}" r="3.6" fill="${p.pc}" stroke="${O}" stroke-width=".8"/>`).join("");
+}
+
+function birdSVG(look, bare = false) {
+  const p = LOOKS[look], id = "b" + (uid++);
+  const on = bare ? ' style="display:none"' : "", off = bare ? "" : ' style="display:none"';
+  const skate = (far) => `
+    <g stroke="${O}" stroke-width="1.8" stroke-linejoin="round">
+      <path d="M52 152 C52 144 58 141 64 143 L67 151 L79 153 C84 154 84 161 79 161 L52 161 Z" fill="${far ? p.skateF : p.skate}"/>
+      <path d="M53 156.5 L82 156.5" stroke="#fff" stroke-width="2"/>
+      <rect x="50" y="161" width="34" height="3.5" rx="1.5" fill="#3a2f3f"/>
+      <circle cx="56" cy="168" r="5" fill="${far ? p.wheelF : p.wheel}"/><circle cx="77" cy="168" r="5" fill="${far ? p.wheelF : p.wheel}"/>
+    </g>
+    <circle cx="56" cy="168" r="1.8" fill="#fff"/><circle cx="77" cy="168" r="1.8" fill="#fff"/>`;
+  const leg = (cls, c, far) => `<g class="${cls}">
+      <path d="M58 100 L52 128 L62 150" fill="none" stroke="${O}" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M58 100 L52 128 L62 150" fill="none" stroke="${c}" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+      ${skate(far)}</g>`;
+  const bumps = [[36,78],[44,72],[52,70],[62,70],[72,74],[80,80],[40,92],[50,96],[62,98],[74,94],[84,88],[32,88],[56,84],[68,86],[46,84]]
+    .map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.2" fill="${BARE_SHADE}"/>`).join("");
+  return `<svg viewBox="0 0 130 180" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="${id}g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${p.body}"/><stop offset="1" stop-color="${p.body2}"/></linearGradient>
+      <clipPath id="${id}c"><path d="${BODY}"/></clipPath>
+    </defs>
+    ${leg("legF", p.legF, true)}
+    ${leg("legN", p.leg, false)}
+    <g class="tail"${on}>
+      <path d="M28 70 C14 54 0 62 6 72 C-4 74 -2 88 10 86 C2 96 12 104 26 94 Z" fill="${p.plume2}" stroke="${O}" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M27 74 C15 64 6 70 11 78 C4 82 6 92 15 89 C10 96 18 100 28 92 Z" fill="${p.plume}" stroke="${O}" stroke-width="1.6" stroke-linejoin="round"/>
+    </g>
+    <g class="plume"${on}>
+      <path d="${BODY}" fill="url(#${id}g)"/>
+      <g clip-path="url(#${id}c)">${patternMarks(p)}</g>
+      <path d="${BODY}" fill="none" stroke="${O}" stroke-width="2"/>
+    </g>
+    <g class="bare"${off}>
+      <path d="M28 80 C20 75 15 80 20 84 C15 87 20 92 27 89" fill="${BARE}" stroke="${O}" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M23 80 C17 70 19 63 25 65 C25 71 25 76 23 80 Z" fill="${p.plume}" stroke="${O}" stroke-width="1.4"/>
+      <path d="M26 86 C24 70 40 62 58 63 C78 64 90 74 90 87 C90 101 76 109 57 109 C38 109 27 100 26 86 Z" fill="${BARE}" stroke="${O}" stroke-width="2"/>
+      ${bumps}
+      <path d="M54 80 C62 76 72 78 74 84 C68 88 60 88 54 84 Z" fill="${BARE}" stroke="${O}" stroke-width="1.8"/>
+    </g>
+    <g class="wing"${on}>
+      <path d="M40 76 C52 70 72 72 80 82 C70 90 52 92 40 86 Z" fill="${p.wing}" stroke="${O}" stroke-width="1.8"/>
+      <path d="M40 76 C30 75 24 83 27 91 C34 93 40 90 42 86 Z" fill="${p.plume}" stroke="${O}" stroke-width="1.8"/>
+      <path d="M48 80 C56 78 66 79 72 83" fill="none" stroke="${p.plume2}" stroke-width="2" stroke-linecap="round"/>
+    </g>
+    <g class="neckhead">
+      <path d="M80 74 C90 60 90 44 95 28" fill="none" stroke="${O}" stroke-width="11" stroke-linecap="round"/>
+      <path d="M80 74 C90 60 90 44 95 28" fill="none" stroke="${p.neck}" stroke-width="8" stroke-linecap="round"/>
+      <path d="M84 63 l6 -1 M87 53 l6 -1 M89 43 l6 -1 M91 35 l5 -1" stroke="${p.ring}" stroke-width="3" stroke-linecap="round"/>
+      <g class="collar"${on}><path d="M70 72 C74 62 86 60 91 68 C88 77 76 80 70 72 Z" fill="${p.plume}" stroke="${O}" stroke-width="1.8"/></g>
+      <circle cx="98" cy="22" r="10" fill="${p.head}" stroke="${O}" stroke-width="2"/>
+      <g class="fuzz"${on}><path d="M90 14 l2 -7 l2 6 l3 -8 l2 7 l3 -6 l1 6" fill="none" stroke="${p.fuzz}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></g>
+      <path class="beakC"${on} d="M106 20 C112 20 120 22 124 25 C120 28 112 28 106 27 Z" fill="${p.beak}" stroke="${O}" stroke-width="1.8" stroke-linejoin="round"/>
+      <g class="beakO"${off}>
+        <path d="M106 19 C112 16 120 15 124 17 C118 21 112 22 106 23 Z" fill="${p.beak}" stroke="${O}" stroke-width="1.8" stroke-linejoin="round"/>
+        <path d="M106 25 C112 27 118 30 122 33 C116 34 110 31 106 29 Z" fill="${p.beak}" stroke="${O}" stroke-width="1.8" stroke-linejoin="round"/>
+      </g>
+      <g class="eyeN"${on}>
+        <circle cx="101" cy="18" r="5" fill="#fff" stroke="${O}" stroke-width="1.6"/>
+        <circle cx="102.4" cy="18.2" r="2.6" fill="${O}"/><circle cx="103.2" cy="17.2" r=".9" fill="#fff"/>
+        <path d="M97 12.5 l-2 -3 M100.5 11.5 l0 -3.5 M104 12 l2 -3" stroke="${O}" stroke-width="1.4" stroke-linecap="round"/>
+      </g>
+      <g class="eyeS"${off}>
+        <circle cx="101" cy="17" r="7" fill="#fff" stroke="${O}" stroke-width="1.6"/>
+        <circle cx="102" cy="17" r="1.4" fill="${O}"/>
+      </g>
+      ${bare ? `<ellipse cx="93" cy="27" rx="3" ry="1.6" fill="#ff7f8f" opacity=".8"/>` : ""}
+    </g>
+  </svg>`;
+}
+
+for (const k of Object.keys(LOOKS)) {
+  document.getElementById("st-" + k).innerHTML =
+    `<figure>${birdSVG(k)}<figcaption>SKATING</figcaption></figure>` +
+    `<figure>${birdSVG(k, true)}<figcaption>PLUCKED</figcaption></figure>`;
+}
+
+// ---------- the stage ----------
+const stage = document.getElementById("stage");
+const W = () => stage.clientWidth, H = () => stage.clientHeight, K = () => W() / 1280;
+const GROUND = 0.93, NEED = 3, SPEEDS = [1, 1.7, 2.6], BASE = 0.1;
+let look = "neon", slow = 1, score = 0;
+
+const el = document.createElement("div"); el.className = "bird"; stage.appendChild(el);
+let parts = {};
+function build(bare = false) {
+  el.innerHTML = birdSVG(look, bare);
+  const q = (c) => el.querySelector("." + c);
+  parts = { legN: q("legN"), legF: q("legF"), neck: q("neckhead"), tail: q("tail"), wing: q("wing"), collar: q("collar") };
+}
+const show = (p, v) => { if (p) p.style.display = v ? "" : "none"; };
+
+const particles = [];
+function spawn(o) {
+  const d = document.createElement("div"); d.className = "p";
+  if (o.kind === "feather") {
+    d.innerHTML = `<svg viewBox="0 0 10 24" width="${o.size}" height="${o.size * 2.4}"><path d="M5 0 C9 6 9 16 5 24 C1 16 1 6 5 0Z" fill="${o.color}" stroke="${O}" stroke-width=".8"/><path d="M5 3 L5 23" stroke="${O}" stroke-width=".6"/></svg>`;
+  } else {
+    d.classList.add("dot");
+    Object.assign(d.style, { width: o.size + "px", height: o.size + "px", background: o.color });
+    if (o.kind === "spark") d.style.boxShadow = `0 0 ${o.size * 1.4}px ${o.color}`;
+  }
+  stage.appendChild(d);
+  particles.push(Object.assign({ el: d, t: 0, rot: 0, vr: 0, g: 0, drag: 0, phase: Math.random() * 6 }, o));
+}
+function tickParticles(dt) {
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i]; p.t += dt;
+    const k = p.t / p.life;
+    if (k >= 1) { p.el.remove(); particles.splice(i, 1); continue; }
+    p.vx *= Math.exp(-p.drag * dt); p.vy *= Math.exp(-p.drag * dt); p.vy += p.g * dt;
+    p.x += p.vx * dt; p.y += p.vy * dt;
+    let sx = 0, rot = p.rot;
+    if (p.kind === "feather") { sx = Math.sin(p.t * 3.2 + p.phase) * 14 * K(); rot = p.rot + Math.sin(p.t * 3.2 + p.phase) * 40; p.rot += p.vr * dt; }
+    const s = p.kind === "smoke" ? 1 + k * 2.2 : 1;
+    const a = p.kind === "feather" ? (k > 0.8 ? (1 - k) / 0.2 : 1) : p.kind === "smoke" ? 0.5 * (1 - k) : 1 - k * k;
+    p.el.style.transform = `translate(${p.x + sx - p.size / 2}px, ${p.y - p.size / 2}px) rotate(${rot}deg) scale(${s})`;
+    p.el.style.opacity = a;
+  }
+}
+
+function pop(x, y, text, cls) {
+  const d = document.createElement("div"); d.className = "pop" + (cls ? " " + cls : "");
+  d.textContent = text; d.style.left = x + "px"; d.style.top = y + "px";
+  d.style.animationDuration = 1.1 * slow + "s";
+  stage.appendChild(d); setTimeout(() => d.remove(), 1200 * slow);
+}
+function ring(x, y) {
+  const d = document.createElement("div"); d.className = "ring";
+  const s = 34 * K(); Object.assign(d.style, { left: x + "px", top: y + "px", width: s + "px", height: s + "px" });
+  stage.appendChild(d); setTimeout(() => d.remove(), 400);
+}
+
+let x = 0, y = 0, state = "skate", t = 0, st = 0, hits = 0, vx = 0, jolt = 0, mul = 1, mulTarget = 1;
+const bw = () => 0.12 * W();
+function toStage(px, py) { const s = bw() / 130; return [x + px * s, y + py * s]; }
+function rotPt(px, py, a, cx, cy) { const r = a * Math.PI / 180, c = Math.cos(r), s = Math.sin(r); return [cx + (px - cx) * c - (py - cy) * s, cy + (px - cx) * s + (py - cy) * c]; }
+
+function featherBurst(n, region, palette) {
+  const [rx0, ry0, rx1, ry1] = region;
+  for (let i = 0; i < n; i++) {
+    const [px, py] = toStage(rx0 + Math.random() * (rx1 - rx0), ry0 + Math.random() * (ry1 - ry0));
+    const a = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 1.6, sp = (120 + Math.random() * 220) * K();
+    spawn({ kind: "feather", x: px, y: py, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, drag: 2.6, g: 70 * K(), life: 2.6 + Math.random() * 1.4, size: (7 + Math.random() * 5) * K() * 1.3, color: palette[(Math.random() * palette.length) | 0], rot: Math.random() * 360, vr: (Math.random() - 0.5) * 200 });
+  }
+}
+const SPARK = ["#fff3c4", "#f7c46c", "#f49ea3", "#5ad1d6", "#ffffff", "#f7a01c", "#8bff3a", "#ff2d95"];
+function skateFireworks(strength, legAngles) {
+  for (const a of legAngles) {
+    for (const wx of [56, 77]) {
+      const [lx, ly] = rotPt(wx, 172, a, 58, 100);
+      const [sx, sy] = toStage(lx, ly);
+      const n = Math.round(strength * (0.6 + Math.random()));
+      for (let i = 0; i < n; i++) {
+        const c = SPARK[(Math.random() * SPARK.length) | 0];
+        spawn({ kind: "spark", x: sx, y: sy, vx: -(80 + Math.random() * 260) * K(), vy: -(40 + Math.random() * 200) * K(), g: 520 * K(), life: 0.4 + Math.random() * 0.35, size: (2.5 + Math.random() * 3.5) * K() * 1.4, color: c });
+      }
+    }
+  }
+  if (Math.random() < 0.16 * strength) {
+    const [bx, by] = toStage(-20 - Math.random() * 80, 120 + Math.random() * 40), c = SPARK[(Math.random() * SPARK.length) | 0];
+    for (let j = 0; j < 10; j++) { const a = j / 10 * Math.PI * 2; spawn({ kind: "spark", x: bx, y: by, vx: Math.cos(a) * 70 * K(), vy: Math.sin(a) * 70 * K(), drag: 3, g: 60 * K(), life: 0.55, size: 3 * K() * 1.4, color: c }); }
+  }
+  if (Math.random() < 0.5) { const [sx, sy] = toStage(40, 170); spawn({ kind: "smoke", x: sx, y: sy, vx: -60 * K(), vy: -20 * K(), life: 0.8, size: 16 * K() * 1.3, color: "rgba(255,255,255,.9)" }); }
+}
+
+const speedTag = document.getElementById("speed");
+function setSpeedTag() { speedTag.textContent = state === "skate" ? `SPEED x${SPEEDS[hits]}  HITS ${hits} / ${NEED}` : "SPEED: GONE"; }
+
+function respawn() {
+  build(false); state = "skate"; hits = 0; t = 0; st = 0; vx = 0; mul = mulTarget = 1;
+  x = -0.14 * W(); el.style.opacity = 1; setSpeedTag();
+}
+
+el.addEventListener("pointerdown", (e) => {
+  if (state !== "skate") return;
+  e.stopPropagation();
+  const r = stage.getBoundingClientRect(), px = e.clientX - r.left, py = e.clientY - r.top;
+  ring(px, py); hits++; jolt = 1;
+  const pal = LOOKS[look].feathers;
+  if (hits < NEED) {
+    pop(px, py - 12 * K(), hits + " / " + NEED);
+    const [fx, fy] = toStage(110, 0); setTimeout(() => pop(fx, fy, "FASTER!", "fast"), 160 * slow);
+    if (hits === 1) { show(parts.tail, false); featherBurst(14, [0, 58, 30, 104], pal); }
+    else { show(parts.wing, false); show(parts.collar, false); featherBurst(16, [26, 62, 92, 92], pal); }
+    mulTarget = SPEEDS[hits];
+    skateFireworks(2, [0, 0]);
+    setSpeedTag();
+    return;
+  }
+  score += 700; document.getElementById("score").textContent = score;
+  pop(px, py - 12 * K(), "+700", "big");
+  featherBurst(40, [8, 60, 100, 112], pal);
+  featherBurst(5, [88, 4, 106, 16], [LOOKS[look].fuzz]);
+  build(true); state = "shock"; st = 0; setSpeedTag();
+  const [hx, hy] = toStage(98, -6); setTimeout(() => pop(hx, hy, "!!", "big"), 120 * slow);
+});
+stage.addEventListener("pointerdown", (e) => { const r = stage.getBoundingClientRect(); ring(e.clientX - r.left, e.clientY - r.top); });
+
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000) / slow; last = now;
+  const w = bw(), h = w * 180 / 130, base = GROUND * H() - h;
+  el.style.width = w + "px";
+  let lN = 0, lF = 0, neck = 0, tilt = 0, bob = 0, sq = 1, jx = 0;
+  jolt = Math.max(0, jolt - dt * 6);
+  if (state === "skate") {
+    // Ease up to the new speed over a moment, so each hit reads as a kick.
+    mul += (mulTarget - mul) * Math.min(1, dt * 5);
+    t += dt * Math.pow(mul, 0.8); x += BASE * W() * mul * dt;
+    const ph = t / 1.0 * Math.PI * 2, amp = 26 + (mul - 1) * 6;
+    lN = Math.max(0, Math.sin(ph)) * amp; lF = Math.max(0, -Math.sin(ph)) * amp;
+    bob = -Math.abs(Math.sin(ph)) * 3 * K(); neck = Math.sin(ph * 2) * 3 + (mul - 1) * 5; tilt = Math.sin(ph) * 1.5 + (mul - 1) * 3;
+    jx = Math.sin(jolt * 40) * jolt * 6 * K();
+    if (mul > 1.3 && Math.random() < (mul - 1) * 0.5) skateFireworks(0.5, [lN, lF]);
+    if (x > 1.05 * W()) respawn();
+  } else if (state === "shock") {
+    st += dt; jx = Math.sin(st * 90) * 2 * K(); neck = -6;
+    if (st > 0.3) skateFireworks(0.8, [0, 0]);
+    if (st > 0.5) { state = "crouch"; st = 0; }
+  } else if (state === "crouch") {
+    st += dt; const k = Math.min(1, st / 0.16); sq = 1 - 0.1 * Math.sin(k * Math.PI / 2); neck = -6 + 14 * k; tilt = 6 * k;
+    skateFireworks(1.4, [0, 0]);
+    if (k >= 1) { state = "rush"; st = 0; vx = BASE * W() * SPEEDS[2]; }
+  } else if (state === "rush") {
+    st += dt; vx += 3.6 * W() * dt; x += vx * dt;
+    const ph = st / 0.2 * Math.PI * 2;
+    lN = Math.sin(ph) * 32 + 8; lF = -Math.sin(ph) * 32 + 8;
+    neck = 12; tilt = 10; bob = -Math.abs(Math.sin(ph)) * 4 * K();
+    skateFireworks(2.6, [lN, lF]);
+    if (x > 1.2 * W()) { state = "gone"; st = 0; el.style.opacity = 0; }
+  } else if (state === "gone") {
+    st += dt; if (st > 1.8) respawn();
+  }
+  y = base + bob;
+  if (parts.legN) {
+    parts.legN.setAttribute("transform", `rotate(${lN} 58 100)`);
+    parts.legF.setAttribute("transform", `rotate(${lF} 58 100)`);
+    parts.neck.setAttribute("transform", `rotate(${neck} 80 74)`);
+  }
+  el.style.transform = `translate(${x + jx}px, ${y}px) rotate(${tilt}deg) scale(${2 - sq}, ${sq})`;
+  tickParticles(dt);
+  requestAnimationFrame(frame);
+}
+
+function press(sel, btn) { document.querySelectorAll(sel).forEach((b) => b.setAttribute("aria-pressed", b === btn)); }
+function markCard() { document.querySelectorAll(".card").forEach((c) => c.classList.toggle("selected", c.dataset.choice === look)); }
+function setLook(k) { look = k; press("[data-look]", document.querySelector(`[data-look="${k}"]`)); markCard(); respawn(); x = 0.2 * W(); }
+document.querySelectorAll("[data-look]").forEach((b) => b.onclick = () => setLook(b.dataset.look));
+document.getElementById("slow").onclick = (e) => { slow = slow === 1 ? 2.8 : 1; e.target.setAttribute("aria-pressed", slow !== 1); };
+document.getElementById("reset").onclick = () => { respawn(); x = 0.2 * W(); };
+window.pickCard = (c) => setLook(c.dataset.choice);
+
+setLook("leopard"); // the owner picked B, Sunset Leopard (2026-11-22)
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

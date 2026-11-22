@@ -29,6 +29,8 @@ export const NAMES: Record<Kind, string> = {
   merman: "Merman",
   ufo: "UFO",
   bigfoot: "Bigfoot",
+  ostrich: "Roller ostrich",
+  gator: "Candy gator",
 };
 
 /** One creature as the HUD and the results card list it, built by GameMode

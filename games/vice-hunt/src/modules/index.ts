@@ -1,19 +1,22 @@
-// Exhaustive registries over the id unions. Ids whose real module has not
-// landed point at a harmless generic one (Tasks 6 to 9 replace them).
+// Exhaustive registries over the id unions: a new id with no module, or a
+// module with no id, does not compile.
 import type { FinishId, HitReactionId, MoveId, ThreatId } from "../creatures";
 import { MAX_DT } from "../config";
 import { CREATURES } from "../creatures";
 import type { Rng } from "../rng";
 import type { World } from "../world";
+import { candyPop, candyPopGentle } from "./finishes/candyPop";
 import { crashes, crashesGentle } from "./finishes/crashes";
 import { deflates, deflatesGentle } from "./finishes/deflates";
 import { falls } from "./finishes/falls";
 import { jet, jetGentle } from "./finishes/jet";
 import { fountain, fountainGentle } from "./finishes/fountain";
+import { plucked, pluckedGentle } from "./finishes/plucked";
 import { pounces, pouncesGentle } from "./finishes/pounces";
 import { rocket, rocketGentle } from "./finishes/rocket";
 import { moves } from "./moves";
 import { flinch, garland, noReaction } from "./reactions";
+import { candyGun } from "./threats/candyGun";
 import { clawSwipe } from "./threats/clawSwipe";
 import { throwAt } from "./threats/throw";
 import type { FinishModule, HitReactionModule, MoveModule, Origin, ThreatModule } from "./types";
@@ -22,11 +25,12 @@ export type { Finishing } from "./types";
 
 export const MOVES: Record<MoveId, MoveModule> = moves;
 
-export const HIT_REACTIONS: Record<HitReactionId, HitReactionModule<any>> = { none: noReaction, flinch, garland };
+export const HIT_REACTIONS: Record<HitReactionId, HitReactionModule<any>> = { none: noReaction, flinch, garland, pluck: flinch }; // the ostrich flinches; its feathers fly as scene particles (render.ts)
 
 export const THREATS: Record<ThreatId, ThreatModule<any>> = {
   "claw-swipe": clawSwipe,
   throw: throwAt,
+  "candy-gun": candyGun,
 };
 
 export const FINISHES: Record<FinishId, FinishModule<any>> = {
@@ -43,6 +47,10 @@ export const FINISHES: Record<FinishId, FinishModule<any>> = {
   "fountain-gentle": fountainGentle,
   "crashes-gentle": crashesGentle,
   "jet-gentle": jetGentle,
+  plucked,
+  "plucked-gentle": pluckedGentle,
+  "candy-pop": candyPop,
+  "candy-pop-gentle": candyPopGentle,
 };
 
 // The one place `reduced` is resolved: step and draw both use it.
@@ -76,14 +84,15 @@ export function startThreat(world: World, at: Origin, id: ThreatId, rng: Rng, re
   world.threats.push({ kind: at.kind, id, state: THREATS[id].start(at, world, rng, reduced), from: at.id });
 }
 
-type Throws = { kind: string; attack: ThreatId };
+type Provoked = { kind: string; attack: ThreatId };
 
-// A provoked animal that throws (Bigfoot) gets its threat once.
+// A provoked animal that throws (Bigfoot) or returns fire (the gator) gets
+// its threat once.
 function startThrowers(world: World, rng: Rng, reduced: boolean): void {
   for (const a of world.animals) {
     if (!a.provoked) continue;
-    const threat = (CREATURES[a.kind] as { threat?: Throws }).threat;
-    if (threat?.kind !== "throws" || world.threats.some((t) => t.from === a.id)) continue;
+    const threat = (CREATURES[a.kind] as { threat?: Provoked }).threat;
+    if ((threat?.kind !== "throws" && threat?.kind !== "returns-fire") || world.threats.some((t) => t.from === a.id)) continue;
     startThreat(world, { ...a, dir: a.vx < 0 ? -1 : 1 }, threat.attack, rng, reduced);
   }
 }

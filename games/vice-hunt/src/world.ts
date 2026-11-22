@@ -11,7 +11,7 @@ import {
 import { CREATURES, KINDS, type Creature, isEnabled, isRare, kindsWhere, penaltyFor, streaks, type Kind } from "./creatures";
 import type { GameEvent } from "./events";
 import { FINISHES, HIT_REACTIONS, MOVES } from "./modules";
-import { createGlass, type Glass } from "./fx/glass";
+import { candyAt, createGlass, knockCandy, type Glass } from "./fx/glass";
 import type { Finishing, Threatening } from "./modules/types";
 import type { Rng } from "./rng";
 import { type Surface, SURFACE_OUT, dive, duck, newSurface, sinkOffset, stepSurface, surfaceX } from "./surface";
@@ -36,6 +36,15 @@ export type Animal = {
   flash: number;
   reaction?: unknown; // hit-reaction state (garland, flinch), see modules/reactions.ts
   throwK?: number; // 0..1 into a throw (a provoked Bigfoot), set by modules/threats/throw.ts
+  // A gator shooting back, set by modules/threats/candyGun.ts: 0..1 into the
+  // shot (undefined when not shooting), how far the gun arm is up (0..1), the
+  // gun's twirl in degrees and his eyes.
+  shootK?: number;
+  aim?: number;
+  spin?: number;
+  eyes?: "cool" | "squint" | "shock" | "wink";
+  speedMul?: number; // the ostrich's current skate speed, eased (modules/moves.ts)
+  phase?: number; // a skater's or walker's step phase, radians (modules/moves.ts)
 };
 
 export type World = {
@@ -74,8 +83,9 @@ export function emptyKills(): Kills {
 
 const table: Record<Kind, Creature> = CREATURES;
 const RARES = KINDS.filter((k) => isRare(k) && isEnabled(k));
-// Hostile rares (Bigfoot) may share the screen with one other rare.
-const sharesScreen = (k: Kind) => table[k].role === "hostile";
+// A boss (Bigfoot) may share the screen with one other rare.
+const isBoss = (k: Kind) => "boss" in table[k];
+const sharesScreen = isBoss;
 
 // Vertical offset from the lane's resting y, a pure function of the animal's
 // age (or the merman's surface state) so the resting y can be recovered by
@@ -206,11 +216,13 @@ export function spawn(world: World, rng: Rng, kind?: Kind): Animal {
 }
 
 /** A rare's spawns per minute: its own rate until it has been spotted, then
- *  SPOTTED_PER_MINUTE. A hostile one (Bigfoot) always keeps its own. */
+ *  its `spotted` rate (default SPOTTED_PER_MINUTE). A boss (Bigfoot) always
+ *  keeps its own. */
 export function rareRate(world: World, kind: Kind): number {
   const sp = table[kind].spawn;
   if (!("perMinute" in sp)) return 0;
-  return world.spotted.has(kind) && table[kind].role !== "hostile" ? SPOTTED_PER_MINUTE : sp.perMinute;
+  if (!world.spotted.has(kind) || isBoss(kind)) return sp.perMinute;
+  return "spotted" in sp && sp.spotted !== undefined ? sp.spotted : SPOTTED_PER_MINUTE;
 }
 
 // Each rare not alive rolls its per-second chance; at most one rare on screen
@@ -276,9 +288,18 @@ function inBox(world: World, a: Animal, x: number, y: number): boolean {
   return table[a.kind].lane !== "sea" || y < world.sea;
 }
 
-// Front-most first: the list's end is drawn last, so it is on top.
-export function shoot(world: World, x: number, y: number, rng: Rng): { hit: Animal | null; finished: boolean } {
+/** A shot's outcome; `blocked` when a candy on the glass took it. */
+export type Shot = { hit: Animal | null; finished: boolean; blocked?: true };
+
+// A candy stuck to the glass takes the shot first; then animals, front-most
+// first (the list's end is drawn last, so it is on top).
+export function shoot(world: World, x: number, y: number, rng: Rng): Shot {
   if (world.wasted) return { hit: null, finished: false };
+  const candy = candyAt(world.glass, x, y);
+  if (candy) {
+    knockCandy(candy, rng);
+    return { hit: null, finished: false, blocked: true };
+  }
   for (let i = world.animals.length - 1; i >= 0; i--) {
     const a = world.animals[i];
     if (!inBox(world, a, x, y)) continue;
@@ -311,11 +332,12 @@ function registerHit(world: World, a: Animal): boolean {
   a.lastHitAt = world.time;
   if (a.hits === 1) a.firstHitAt = world.time;
   a.flash = FLASH;
-  if (a.reaction === undefined || cfg.hit === "flinch") a.reaction = HIT_REACTIONS[cfg.hit].start(a);
+  // A flinch (and the ostrich's pluck, a flinch) restarts on every hit.
+  if (a.reaction === undefined || cfg.hit === "flinch" || cfg.hit === "pluck") a.reaction = HIT_REACTIONS[cfg.hit].start(a);
   a.x -= Math.sign(a.vx) * KNOCKBACK;
   const at = centre(a);
   const finished = a.hits >= a.hp;
-  const secret = a.kind === "ufo" || cfg.role === "hostile"; // UFO's total is secret; Bigfoot has a bar
+  const secret = a.kind === "ufo" || isBoss(a.kind); // UFO's total is secret; Bigfoot has a bar
   world.events.push(
     secret
       ? { type: "hit", kind: a.kind, n: a.hits, ...at }
@@ -328,7 +350,8 @@ function registerHit(world: World, a: Animal): boolean {
   }
   if (cfg.role === "hostile" && !a.provoked) {
     a.provoked = true;
-    world.events.push({ type: "callout", text: "ANGRY!", x: at.x, y: a.y });
+    // Bigfoot's shout; the gator has his own lines (threats/candyGun.ts).
+    if (cfg.threat.kind === "throws") world.events.push({ type: "callout", text: "ANGRY!", x: at.x, y: a.y });
   }
   if (a.surface && a.hits === 1 && !finished) duck(a.surface);
 
@@ -357,6 +380,33 @@ export function resize(world: World, width: number, height: number, sea = SEA_LI
     a.x *= rx;
     a.vx *= rx;
     a.y = restingY({ ...world, height, sea }, a, rest / oldHeight) + bob(a, world);
+  }
+  // Marks on the glass move with the screen (a candy, a splat, a scratch).
+  const ry = height / oldHeight;
+  for (const m of world.glass.marks) {
+    if (m.kind === "scratch") {
+      m.x1 *= rx;
+      m.x2 *= rx;
+      m.cx *= rx;
+      m.y1 *= ry;
+      m.y2 *= ry;
+      m.cy *= ry;
+    } else if (m.kind === "splat") {
+      m.x *= rx;
+      m.y *= ry;
+      for (let i = 0; i < m.outline.length; i += 2) {
+        m.outline[i] *= rx;
+        m.outline[i + 1] *= ry;
+      }
+      for (let i = 0; i < m.flecks.length; i += 3) {
+        m.flecks[i] *= rx;
+        m.flecks[i + 1] *= ry;
+      }
+      for (let i = 0; i < m.drips.length; i += 2) m.drips[i] *= rx;
+    } else {
+      m.x *= rx;
+      m.y *= ry;
+    }
   }
   world.width = width;
   world.height = height;

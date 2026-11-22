@@ -13,14 +13,29 @@ describe("creature registry", () => {
   });
 
   it("lists kinds in registry order and groups them by role", () => {
-    expect(KINDS).toEqual(["rabbit", "iguana", "flamingo", "cow", "tiger", "shark", "merman", "ufo", "bigfoot"]);
+    expect(KINDS).toEqual(["rabbit", "iguana", "flamingo", "cow", "tiger", "shark", "merman", "ufo", "bigfoot", "ostrich", "gator"]);
     expect(kindsWhere("prey")).toEqual(["rabbit", "iguana", "flamingo"]);
     expect(kindsWhere("protected")).toEqual(["cow", "tiger"]);
-    expect(kindsWhere("hostile")).toEqual(["bigfoot"]);
+    expect(kindsWhere("hostile")).toEqual(["bigfoot", "gator"]);
   });
 
-  it("isRare is true for exactly the six rares", () => {
-    expect(KINDS.filter(isRare)).toEqual(["cow", "tiger", "shark", "merman", "ufo", "bigfoot"]);
+  it("isRare is true for exactly the eight rares", () => {
+    expect(KINDS.filter(isRare)).toEqual(["cow", "tiger", "shark", "merman", "ufo", "bigfoot", "ostrich", "gator"]);
+  });
+
+  it("has the roller ostrich and the candy gator", () => {
+    expect(CREATURES.ostrich).toMatchObject({
+      enabled: true, role: "trophy", lane: "ground", rule: { hits: [3, 3] }, points: 700,
+      spawn: { perMinute: 0.25, spotted: 0.4 }, size: [96, 133], move: "skate", hit: "pluck", finish: "plucked",
+    });
+    expect(CREATURES.gator).toMatchObject({
+      enabled: true, role: "hostile", lane: "ground", rule: { hits: [5, 6] }, points: 1200,
+      spawn: { perMinute: 0.35 }, size: [120, 152], move: "swagger", finish: "candy-pop",
+      threat: { kind: "returns-fire", perShot: 0.5, max: 1.5, attack: "candy-gun" },
+    });
+    expect("boss" in CREATURES.gator).toBe(false);
+    expect(streaks("ostrich")).toBe(true);
+    expect(streaks("gator")).toBe(false);
   });
 
   it("only prey and trophy kills build streaks", () => {
