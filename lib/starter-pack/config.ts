@@ -21,6 +21,7 @@ export type BubbleDef = {
   fit: "cover" | "contain";
 };
 
+/** `label` is not drawn on the pod; it names the pod in the card's screen-reader description. */
 export type PodDef = { id: string; label: string; art: string };
 
 export type StarterPackConfig = {
@@ -57,9 +58,9 @@ export const starterPack: StarterPackConfig = {
   mascot: {
     src: "/starter-pack/mascot.webp",
     shadowSrc: "/starter-pack/mascot-shadow.webp",
-    width: 260,
+    width: 262,
     height: 829,
-    alt: "Shashwat as a toy figure in a cap, glasses and an offcod8 T-shirt",
+    alt: "Shashwat as a toy figure in an orange cap, round glasses, an offcod8 T-shirt and high-top sneakers",
   },
   bubbles: [
     { id: "swoopy", name: "Swoopy", src: logo("swoopy", "svg"), r: 40, bg: "#ffffff", fit: "contain" },
@@ -72,10 +73,10 @@ export const starterPack: StarterPackConfig = {
     { id: "playai", name: "Play AI", src: logo("playai"), r: 19, bg: "#000000", fit: "cover" },
   ],
   pods: [
-    { id: "builds", label: "BUILDS", art: "/starter-pack/pods/builds.svg" },
-    { id: "coffee", label: "COFFEE", art: "/starter-pack/pods/coffee.svg" },
-    { id: "music", label: "MUSIC", art: "/starter-pack/pods/music.svg" },
-    { id: "gym", label: "GYM", art: "/starter-pack/pods/gym.svg" },
+    { id: "anime", label: "ANIME", art: "/starter-pack/pods/anime.webp" },
+    { id: "coffee", label: "COFFEE", art: "/starter-pack/pods/coffee.webp" },
+    { id: "music", label: "MUSIC", art: "/starter-pack/pods/music.webp" },
+    { id: "gaming", label: "GAMING", art: "/starter-pack/pods/gaming.webp" },
   ],
   ticket: {
     url: "https://www.youtube.com/watch?v=YlbvZ542Ijo&list=RDYlbvZ542Ijo&start_radio=1",

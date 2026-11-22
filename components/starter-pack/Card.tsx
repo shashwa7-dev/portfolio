@@ -72,7 +72,7 @@ export default function Card({
       </div>
       <div className={`${s.z} ${s.mascot}`}>
         {/* eslint-disable-next-line @next/next/no-img-element -- inside a 3D layer behind the plastic; already sized WebP */}
-        <img src={c.mascot.src} alt={c.mascot.alt} width={129} height={410} draggable={false} loading="lazy" decoding="async" />
+        <img src={c.mascot.src} alt={c.mascot.alt} width={130} height={410} draggable={false} loading="lazy" decoding="async" />
       </div>
       <div className={`${s.z} ${s.speech} ${s.label}`} aria-hidden>
         {c.greeting}

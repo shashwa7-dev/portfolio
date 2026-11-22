@@ -29,10 +29,10 @@ export default function Pod({ pod, left, top }: { pod: PodDef; left: number; top
   return (
     <div className={`${s.z} ${s.pod}`} style={{ left, top, width: 104, height: 112 }}>
       <Walls />
-      <div className={`${s.item} ${s.label}`}>
-        {/* eslint-disable-next-line @next/next/no-img-element -- tiny SVG inside a 3D layer; next/image adds nothing here */}
+      {/* Illustration only: the label is not drawn, but the card's hidden description still reads it. */}
+      <div className={s.item}>
+        {/* eslint-disable-next-line @next/next/no-img-element -- tiny image inside a 3D layer; next/image adds nothing here */}
         <img className={s.art} src={pod.art} alt="" draggable={false} loading="lazy" decoding="async" />
-        {pod.label}
       </div>
     </div>
   );

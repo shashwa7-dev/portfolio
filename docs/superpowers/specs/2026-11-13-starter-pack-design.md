@@ -57,9 +57,9 @@ The prototype that settled the look is
   Swoopy and Sloosh large; ShopOS, Coinbase, DeHidden, Polygon, Santul and
   Play AI small. Logos are cropped to circles. Label: the tilted
   highlighter chip "'SHIPPED'", in front of the pod, never behind it.
-- **ESSENTIALS**: four pods, Builds (folio tablet and stylus), Coffee
-  (takeaway cup), Music (headphones), Gym (dumbbell), as soft-shaded
-  original SVG drawings, with a vertical "ESSENTIALS ★" label beside them.
+- **ESSENTIALS**: four pods, Anime (black samurai cat figure), Coffee
+  (V60 dripper on a cup), Music (electric guitar), Gaming (question-mark block), as 3D
+  icon renders (160px webp), with a vertical "ESSENTIALS ★" label beside them.
 - **Badges**: "OPEN TO WORK", a round "BLR" stamp.
 - **Warning label**: "FRAGILE!!!" with "FR" faded and struck out, so it
   reads AGILE, over "SHIPS IN SPRINTS".

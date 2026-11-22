@@ -6,6 +6,7 @@ import { BUBBLE_BOX, starterPack } from "@/lib/starter-pack/config";
 import {
   breeze,
   armAngle,
+  carryLanyard,
   cardPose,
   createLanyard,
   ENTRANCE,
@@ -73,11 +74,16 @@ export function useStarterPackSim(
   useEffect(() => {
     boundsRef.current = bounds;
   }, [bounds]);
-  const live = useRef<{ lanyard: LanyardState | null; wake: () => void }>({ lanyard: null, wake: () => {} });
+  // `entering`: the drop-in carries the rig to anchorRef itself, so a resize must not move the anchor under it.
+  const live = useRef<{ lanyard: LanyardState | null; wake: () => void; entering: boolean }>({
+    lanyard: null,
+    wake: () => {},
+    entering: false,
+  });
   useEffect(() => {
     anchorRef.current = { x: ax, y: ay };
     if (live.current.lanyard) {
-      setAnchor(live.current.lanyard, { x: ax, y: ay });
+      if (!live.current.entering) setAnchor(live.current.lanyard, { x: ax, y: ay });
       live.current.wake();
     }
   }, [ax, ay]);
@@ -118,6 +124,7 @@ export function useStarterPackSim(
       lanyard = createLanyard(anchorRef.current, 0);
       entered = true;
       live.current.lanyard = lanyard;
+      live.current.entering = false;
       state = createBalls(starterPack.bubbles.map((b) => ({ id: b.id, r: b.r })), BOX);
       for (let i = 0; i < 120 * 20; i++) stepBalls(state, BOX, STEP, frameGravity(0, { x: 0, y: 0 }));
     };
@@ -203,8 +210,13 @@ export function useStarterPackSim(
         simT += STEP;
         if (!entered) {
           entranceT += STEP;
-          setAnchor(lanyard, { x: anchorRef.current.x, y: entranceY(entranceT, anchorRef.current.y) });
-          if (entranceT >= ENTRANCE.seconds) entered = true;
+          // Carry the whole rig, not just the anchor, so the strap never stretches or slams.
+          const a = anchorRef.current;
+          carryLanyard(lanyard, a.x - lanyard.anchor.x, entranceY(entranceT, a.y) - lanyard.anchor.y, STEP);
+          if (entranceT >= ENTRANCE.seconds) {
+            entered = true;
+            live.current.entering = false;
+          }
         }
         // Held cards stay where the hand puts them; otherwise the breeze keeps them dangling.
         stepLanyard(lanyard, STEP, drag, undefined, drag ? 0 : breeze(simT));
@@ -312,7 +324,7 @@ export function useStarterPackSim(
         schedule();
       }
     };
-    live.current = { lanyard, wake: follow };
+    live.current = { lanyard, wake: follow, entering: !entered };
     draw();
     io.observe(rootEl);
     hangEl.addEventListener("pointerdown", onDown);
@@ -329,7 +341,7 @@ export function useStarterPackSim(
     reduce.addEventListener("change", onReduce);
 
     return () => {
-      live.current = { lanyard: null, wake: () => {} };
+      live.current = { lanyard: null, wake: () => {}, entering: false };
       cancelAnimationFrame(raf);
       io.disconnect();
       hangEl.removeEventListener("pointerdown", onDown);
