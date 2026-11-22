@@ -1,0 +1,40 @@
+/* The /vice-hunt route: a dark cover over the site's chrome while the game
+   loads, and under the game mode once it is open. */
+.cover {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  background: #151221;
+  color: #f4ede4;
+}
+
+.note {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+}
+.note a {
+  color: #f49ea3;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.ring {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-top-color: #fff;
+  animation: spin var(--duration-gta-loader, 0.9s) linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ring { animation-duration: 2.4s; }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
