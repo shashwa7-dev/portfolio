@@ -19,7 +19,7 @@ Read this first, then the plan. Branch `vice-hunt-rares`, stacked on `gta6-mod` 
 | 10 host wiring: events to callbacks | done | `0d8cda8` |
 | 11 app: hearts, RARE menu, pop-ups, WASTED, results | done | `2e4543d` |
 | 12 verify in the real app, docs, bundle | done; push and PR wait for the owner | see `git log` ("Vice Hunt rares: verified, docs") |
-| Final whole-branch review | self-review (no subagent tool); see the SDD ledger's `Final` lines | |
+| Final whole-branch review | done as a self-review (no subagent tool): no Critical or Important findings, nothing to fix; minors below | |
 
 Gates last run on Task 11's commit `2e4543d`: `npx tsc --noEmit -p .` clean; `npm test` 455 passed (61 files); `npm run lint` 0 errors (20 warnings, all in untouched files); `./scripts/verify-simplification.sh` exit 0; `npm run build` exit 0 and `./scripts/check-gta6-bundle.sh`, `./scripts/check-diwali-bundle.sh --off`, `./scripts/check-starter-pack-bundle.sh` all exit 0. (The build also contained the owner's uncommitted `/vice-hunt` route, which is on disk.)
 
@@ -41,10 +41,16 @@ Verified by eye (muted headless Chrome, `--mute-audio --enable-automation`): the
 - **Host wiring (Task 10).** `toCallbacks` maps every event to its callback; `startHunt` flushes after each shot and every frame; kills reach the host only from `kill` events (R8: a finished cow or tiger is a penalty, never a kill); WASTED ignores clicks and R; `onHealth` also fires once at the start.
 - **The app (Task 11).** Hearts, the RARE menu ("RARE n / 5": enabled rares only), pop-ups, WASTED and the results card. Pure helpers in `lib/gta6/hud.ts`. Under reduced motion the pop-ups, the red edge flash and WASTED keep their durations (the site's global rule would cut them to nothing). Under `npm run dev`, `?shoot=cow` and `?hit=bigfoot` work in the app as on the package dev page (with `?spawn=`), e.g. `http://localhost:3001/vice-hunt?spawn=tiger,bigfoot&shoot=tiger&hit=bigfoot` reaches WASTED in about 8 s.
 
-## Known gaps
+## Known gaps (deferred minors from the final review)
 
 - The merman's foam line where he breaks the surface (spec, Merman) is not drawn.
 - Dev helper only: `?shoot=ufo` stops shooting if a creature in front takes one of its shots and dies (it checks `finished`, not which animal finished). Re-run the page.
+- Under reduced motion the entry title and the Bigfoot banner vanish at once (the site's global rule; code from `gta6-mod`), and the RARE counter's glow does not show. The pop-ups, the red edge flash and WASTED do keep their time.
+- Hand-listed kinds remain in three places: `world.ts` ("ufo" has a secret hit total), `index.ts` `SCORE_ORDER` (the package's own score strip, dev page only), and `render.ts` / `modules/draw.ts` ("bigfoot" for the rig).
+- Pop-ups are `aria-hidden`; screen readers hear WASTED but not each hit taken.
+- The tiger's face and paw keep the size they had when the claw began if the window is resized mid-claw.
+- The spec's "Callbacks added to HuntOptions" still shows `onHit(kind, hitNumber, x, y)` (the code follows the plan: `onHit(kind, n, of, x, y)`), and its `FinishModule` sketch lacks the glass parameter.
+- The Bigfoot banner's "TWENTY HITS" is app copy, not read from the registry.
 
 ## How to check visually (silent)
 
