@@ -4,11 +4,13 @@ import { useEffect, useId, useRef } from "react";
 import type { Kind } from "@games/vice-hunt";
 import { accuracy, hitCount, type Tally } from "@/lib/gta6/streak";
 import { totalScore } from "@/lib/gta6/score";
-import { KINDS } from "@/components/gta6/game/Hud";
+import type { Row } from "@/components/gta6/game/Hud";
 import s from "@/components/gta6/game/game.module.css";
 
 type Props = {
   tally: Tally;
+  /** Every creature in the game, in the registry's order (GameMode's). */
+  rows: readonly Row[];
   icons: Record<Kind, string>;
   /** A kind's lone-kill points (the game package's `pointsFor`). */
   pointsFor(kind: Kind): number;
@@ -17,15 +19,17 @@ type Props = {
 };
 
 /**
- * The card Esc brings up: the score first with the points table under it,
- * then kills per animal, accuracy (hits over shots) and the best streak,
- * then Play again or Back to site.
+ * The card Esc (or WASTED) brings up: the score first (the clamped fold)
+ * with the common animals' points under it, then every creature two to a
+ * line (kills; hits, in red, for one that cannot be killed, the cow; a rare
+ * not met this round is a silhouette and "???"), accuracy (hits over shots)
+ * and the best streak, then Play again or Back to site.
  * A modal dialog: focus lands on Play again, Tab stays between its two
  * buttons, Esc goes back to the site. A press anywhere else on it (the
  * backdrop, the card's text) keeps focus where it is, so focus is never
  * stranded outside the two buttons.
  */
-export default function Results({ tally, icons, pointsFor, onAgain, onBack }: Props) {
+export default function Results({ tally, rows, icons, pointsFor, onAgain, onBack }: Props) {
   const title = useId();
   const again = useRef<HTMLButtonElement>(null);
   const back = useRef<HTMLButtonElement>(null);
@@ -67,30 +71,41 @@ export default function Results({ tally, icons, pointsFor, onAgain, onBack }: Pr
           {totalScore(tally).toLocaleString("en-US")}
           <small className={s.mono}>SCORE</small>
         </div>
-        {/* Two animals a line, so no line breaks mid pair. */}
+        {/* The rares' points stay a surprise. */}
         <p className={`${s.points} ${s.mono}`}>
-          {[KINDS.slice(0, 2), KINDS.slice(2)].map((pair) => (
-            <span key={pair[0].kind}>
-              {pair.map(({ kind }) => `${kind.toUpperCase()} ${pointsFor(kind)}`).join(" · ")}
-            </span>
-          ))}
+          <span>
+            {rows
+              .filter((r) => !r.rare)
+              .map(({ kind }) => `${kind.toUpperCase()} ${pointsFor(kind)}`)
+              .join(" · ")}
+          </span>
           <span>DOUBLE +50% · TRIPLE +100%</span>
         </p>
         <dl className={s.table}>
-          {KINDS.map(({ kind, name }) => (
-            <div key={kind} className="contents">
-              <dt>
-                {/* eslint-disable-next-line @next/next/no-img-element -- a sprite data URL from the game package */}
-                <img src={icons[kind]} alt="" />
-                {name}
-              </dt>
-              <dd className={s.display}>{tally.kills[kind]}</dd>
-            </div>
-          ))}
-          <dt data-rule="">Accuracy</dt>
+          {rows.map(({ kind, name, rare, byHits }, i) => {
+            const seen = !rare || tally.met.includes(kind);
+            return (
+              <div key={kind} className="contents">
+                <dt data-col={i % 2} data-unmet={seen ? undefined : ""}>
+                  {/* eslint-disable-next-line @next/next/no-img-element -- a sprite data URL from the game package */}
+                  <img src={icons[kind]} alt="" />
+                  {seen ? name : "???"}
+                </dt>
+                <dd className={s.display} data-hits={seen && byHits ? "" : undefined}>
+                  {byHits ? tally.hits[kind] : tally.kills[kind]}
+                  {seen && byHits && <span className="sr-only"> hits</span>}
+                </dd>
+              </div>
+            );
+          })}
+          <dt data-rule="" data-col={0}>
+            Accuracy
+          </dt>
           <dd data-rule="" className={s.display}>{accuracy(hitCount(tally), tally.shots)}%</dd>
-          <dt>Best streak</dt>
-          <dd className={s.display}>{tally.bestStreak}</dd>
+          <dt data-rule="" data-col={1}>
+            Best streak
+          </dt>
+          <dd data-rule="" className={s.display}>{tally.bestStreak}</dd>
         </dl>
         <div className={s.buttons}>
           <button ref={again} type="button" className={s.primary} onClick={onAgain}>

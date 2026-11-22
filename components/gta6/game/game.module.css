@@ -12,8 +12,8 @@
  * from wherever it got to.
  *
  * Stacking inside the overlay: scene (0), vignette (1), the game's layer
- * (2), red edge (3), pop-ups (4), HUD (5), banner (6), bars and title (7),
- * results (8).
+ * (2), red edges (3: Bigfoot's pulse, a hit's flash), pop-ups (4), HUD (5),
+ * banner (6), bars, title and WASTED (7), results (8).
  */
 
 .overlay {
@@ -86,6 +86,12 @@
 .overlay[data-phase="results"] .stage {
   filter: blur(3px) brightness(0.5);
 }
+/* Out of hearts: the whole scene greys, the creatures and the gun with it. */
+.overlay[data-wasted] .stage,
+.overlay[data-wasted] .host {
+  filter: grayscale(1) brightness(0.7);
+  transition: filter var(--duration-gta-wasted) var(--ease-out);
+}
 
 .vignette {
   position: absolute;
@@ -118,6 +124,20 @@
 @keyframes edge-pulse {
   from { opacity: 1; }
   to { opacity: 0.35; }
+}
+/* A hit taken: the edges flash red once (a new element each time). */
+.hurt {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0;
+  box-shadow: inset 0 0 130px 34px rgba(230, 20, 45, 0.75);
+  animation: hurt-flash var(--duration-gta-hurt) var(--ease-out) forwards;
+}
+@keyframes hurt-flash {
+  15% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 /* Kill pop-ups and streak callouts. */
@@ -162,6 +182,21 @@
   text-shadow: 0 4px 0 #000, 0 0 24px rgba(244, 158, 163, 0.6);
   animation: callout-slam var(--duration-gta-callout) var(--ease-out) forwards;
 }
+/* The other pop-ups share the kill's rise; only the look changes. */
+.pop[data-tone="count"] { font-size: 1.5rem; }
+.pop[data-tone="penalty"] { color: #ff5a64; }
+.pop[data-tone="word"] {
+  font-size: 2rem;
+  color: #ffd166;
+  white-space: nowrap;
+}
+.pop[data-tone="damage"] {
+  left: 50%;
+  top: 30%;
+  font-size: 2.5rem;
+  color: #ff5a64;
+  white-space: nowrap;
+}
 @keyframes callout-slam {
   0% { opacity: 0; transform: translateX(-50%) rotate(-3deg) scale(1.8); }
   15% { opacity: 1; transform: translateX(-50%) rotate(-3deg) scale(1); }
@@ -193,6 +228,40 @@
   transform: translateY(calc(-100% - 2rem));
 }
 .corner { display: flex; align-items: center; gap: 0.5rem; }
+
+/* Health: three hearts in a glass pill, filled by halves (the second heart
+   of each pair is the full one, clipped to the fill). */
+.hearts {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.5625rem 0.625rem;
+  border-radius: 999px;
+}
+.hearts[data-jump] {
+  animation: heart-jump var(--duration-gta-heart-hit) var(--ease-out);
+}
+@keyframes heart-jump {
+  30% { transform: translateY(-0.3rem) scale(1.12); }
+  65% { transform: translateY(0.05rem) scale(0.97); }
+}
+.heart {
+  position: relative;
+  display: block;
+  width: 1rem;
+  height: 1rem;
+}
+.heart svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: rgba(255, 255, 255, 0.18);
+}
+.heart svg + svg {
+  color: #ff4d5e;
+  filter: drop-shadow(0 1px 0 #000);
+  clip-path: inset(0 calc((1 - var(--fill)) * 100%) 0 0);
+}
 .ammo { bottom: 1.5rem; right: 1.75rem; transform: translateX(calc(100% + 2rem)); }
 .hint { bottom: 1.85rem; left: 50%; transform: translate(-50%, calc(100% + 2rem)); }
 .hud[data-in] .top,
@@ -328,21 +397,18 @@
   outline-offset: 2px;
 }
 
-/* The header's right: a chip per animal, then the wanted stars. The score
-   number is on the billboard (scene.module.css). */
+/* The header's right: a chip per common animal, a divider, then the RARE
+   menu. The score number is on the billboard (scene.module.css). */
 .score {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
-.stars {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.2rem;
-  color: #f49ea3;
-  filter: drop-shadow(0 1px 0 #000);
+.divider {
+  width: 1px;
+  height: 1.25rem;
+  background: rgba(255, 255, 255, 0.3);
 }
-.stars svg { width: 1rem; height: 1rem; }
 .chips {
   display: flex;
   justify-content: flex-end;
@@ -365,6 +431,95 @@
   object-fit: contain;
 }
 .chip b { font-weight: 400; }
+
+/* "RARE n / total" (the enabled rares): a glass chip that drops the rares'
+   list (RareMenu). */
+.rare {
+  position: relative;
+  pointer-events: auto;
+}
+.rareButton {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  line-height: 1;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+.rareButton b { font-weight: 400; color: #f49ea3; }
+.rareButton > span:last-child { opacity: 0.6; }
+.rareButton:hover,
+.rareButton[aria-expanded="true"] { border-color: rgba(255, 255, 255, 0.4); }
+.rareButton:focus-visible {
+  outline: 2px solid #f49ea3;
+  outline-offset: 2px;
+}
+.rareGlow {
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+}
+.rareGlow[data-on] {
+  animation: rare-flash var(--duration-gta-rare-flash) var(--ease-out);
+}
+@keyframes rare-flash {
+  0%, 30% {
+    opacity: 1;
+    background-color: rgba(244, 158, 163, 0.3);
+    box-shadow: 0 0 0 1px rgba(244, 158, 163, 0.8), 0 0 18px rgba(244, 158, 163, 0.65);
+  }
+}
+.rareCard {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1;
+  padding-top: 0.5rem;
+}
+.rareCard ul {
+  display: grid;
+  gap: 0.125rem;
+  min-width: 13rem;
+  margin: 0;
+  padding: 0.375rem;
+  list-style: none;
+}
+.rareCard li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #e8e0f0;
+}
+.rareCard li img {
+  flex: none;
+  width: 1.75rem;
+  height: 1.25rem;
+  object-fit: contain;
+}
+.rareCard li span { flex: 1; }
+.rareCard li b {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.rareCard li:not([data-met]) { color: rgba(232, 224, 240, 0.5); }
+.rareCard li:not([data-met]) img,
+.table dt[data-unmet] img { filter: brightness(0); opacity: 0.75; }
+.rareCard li b[data-hits],
+.table dd[data-hits] { color: #ff5a64; }
 /* The latest kill: pink, then back to glass over the glow time. */
 .chip[data-hot] {
   animation: chip-glow var(--duration-gta-chip-glow) var(--ease-out) forwards;
@@ -461,6 +616,32 @@
   100% { opacity: 0; transform: translateX(60%); }
 }
 
+/* WASTED: red, over the greyed scene, until its hold ends (Wasted.tsx). */
+.wasted {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  animation: wasted-hold var(--duration-gta-wasted-hold) linear forwards;
+}
+@keyframes wasted-hold {
+  from { background-color: rgba(0, 0, 0, 0); }
+  30%, to { background-color: rgba(0, 0, 0, 0.25); }
+}
+.wasted b {
+  font-size: 8rem;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  color: #d0142c;
+  text-shadow: 0 5px 0 #000, 0 0 36px rgba(0, 0, 0, 0.6);
+  animation: wasted-in var(--duration-gta-wasted) var(--ease-out) both;
+}
+@keyframes wasted-in {
+  from { opacity: 0; transform: scale(1.35); }
+}
+
 /* Letterbox bars: in for the entry, out for play. */
 .bar {
   position: absolute;
@@ -527,7 +708,7 @@
   from { opacity: 0; }
 }
 .card {
-  width: min(24rem, calc(100% - 2rem));
+  width: min(30rem, calc(100% - 2rem));
   padding: 1.75rem 2rem 1.5rem;
   text-align: center;
   outline: none;
@@ -570,11 +751,11 @@
   line-height: 1.6;
   color: #a59fc3;
 }
+/* Two creatures a line, then accuracy and the best streak side by side. */
 .table {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr auto 1fr auto;
   gap: 0.45rem 0;
-  max-width: 16rem;
   margin: 1.25rem auto 1.5rem;
   text-align: left;
   font-size: 0.9375rem;
@@ -584,7 +765,11 @@
   align-items: center;
   gap: 0.5rem;
   color: #e8e0f0;
+  white-space: nowrap;
 }
+.table dt[data-col="1"] { padding-left: 1.5rem; }
+.table dt[data-rule][data-col="0"] { grid-column-start: 1; }
+.table dt[data-unmet] { color: rgba(232, 224, 240, 0.5); }
 .table dt img {
   width: 1.75rem;
   height: 1.25rem;
@@ -592,7 +777,7 @@
 }
 .table dd {
   margin: 0;
-  padding-left: 1.5rem;
+  padding-left: 0.75rem;
   text-align: right;
   font-size: 1.375rem;
   line-height: 1.1;
@@ -636,6 +821,20 @@
   .disc[data-spin] img { animation: none; }
   .edge[data-on] { animation: none; }
   .cylinder[data-reloading] { animation: none; opacity: 0.5; }
+  .hearts[data-jump] { animation: none; }
+  .wasted b { animation-name: fade-in; }
+  /* The site's reduced-motion rule (app/globals.css) cuts every animation
+     to nothing. These are fades and tints, not movement, and they carry
+     the round: the pop-ups, a hit's red edges, and WASTED, whose hold ending
+     is what brings up the results. So they keep their time (the more
+     specific !important wins), and the scene still fades to grey. */
+  .pop { animation-duration: var(--duration-gta-pop) !important; }
+  .callout { animation-duration: var(--duration-gta-callout) !important; }
+  .hurt { animation-duration: var(--duration-gta-hurt) !important; }
+  .wasted { animation-duration: var(--duration-gta-wasted-hold) !important; }
+  .wasted b { animation-duration: var(--duration-gta-wasted) !important; }
+  .overlay[data-wasted] .stage,
+  .overlay[data-wasted] .host { transition-property: filter !important; }
   /* The latest kill's chip keeps its pink, without the fade. */
   .chip[data-hot] {
     animation: none;

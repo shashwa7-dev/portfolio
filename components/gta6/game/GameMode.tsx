@@ -2,32 +2,39 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import type { Kind } from "@games/vice-hunt";
+import type { HuntOptions, Kind } from "@games/vice-hunt";
 import BeachScene from "@/components/gta6/scene/BeachScene";
 import { beachSeaLine } from "@/lib/gta6/sea";
 
 /** Development only: `?spawn=merman,cow` puts those creatures on screen at
- *  the start and brings each back after it goes. Ignored in production. */
-function devSpawn(kinds: readonly string[]): { spawn?: Kind[]; keep?: Kind[] } {
+ *  the start and brings each back after it goes; `?shoot=cow` lands the hits
+ *  that finish the first one once it is fully on screen, `?hit=bigfoot` one
+ *  hit (he starts throwing). Ignored in production. */
+function devOptions(kinds: readonly string[]): Pick<HuntOptions, "spawn" | "keep" | "finish" | "hit"> {
   if (process.env.NODE_ENV === "production") return {};
-  const wanted = (new URLSearchParams(window.location.search).get("spawn") ?? "")
-    .split(",")
-    .filter((k): k is Kind => kinds.includes(k));
-  return wanted.length ? { spawn: wanted, keep: wanted } : {};
+  const query = new URLSearchParams(window.location.search);
+  const list = (name: string) =>
+    (query.get(name) ?? "").split(",").filter((k): k is Kind => kinds.includes(k));
+  const spawn = list("spawn");
+  return { spawn, keep: spawn, finish: list("shoot"), hit: list("hit") };
 }
 import Entry from "@/components/gta6/game/Entry";
-import Hud, { type TimeChoice } from "@/components/gta6/game/Hud";
+import Hud, { NAMES, type Row, type TimeChoice } from "@/components/gta6/game/Hud";
 import Results from "@/components/gta6/game/Results";
+import Wasted from "@/components/gta6/game/Wasted";
 import { timeOfDay } from "@/lib/gta6/timeOfDay";
-import { callout, emptyTally, killLabel, recordHit, recordKill, recordShot } from "@/lib/gta6/streak";
+import { callout, emptyTally, killLabel, recordHit, recordKill, recordPenalty, recordShot } from "@/lib/gta6/streak";
 import { scoreFor, totalScore } from "@/lib/gta6/score";
+import { damageLabel, HEARTS, hitLabel, penaltyLabel } from "@/lib/gta6/hud";
 import s from "@/components/gta6/game/game.module.css";
 
 type HuntModule = typeof import("@games/vice-hunt");
 type Phase = "entry" | "play" | "results";
-type Pop = { id: number; x: number; y: number; label: string };
-
-const KIND_ORDER: Kind[] = ["rabbit", "iguana", "flamingo", "bigfoot"];
+/** A pop-up's look: a kill's "+1 SHARK", a hit's "1 / 3", a penalty's
+ *  "−500", a word ("ANGRY!", "TOO SLOW"), or hearts lost ("−½ ♥", always
+ *  at the screen's upper middle, so it has no spot). */
+type Tone = "kill" | "count" | "penalty" | "word" | "damage";
+type Pop = { id: number; at: { x: number; y: number } | null; text: string; sub?: string; tone: Tone };
 
 /** While the overlay is open the page under it is inert, but a few fixed
  *  pieces of it would still show at its edges or catch the eye on the way
@@ -68,9 +75,11 @@ type Props = {
  * or right click brings up the results card. Play again starts a fresh
  * game at zero with no entry; Back to site closes.
  *
- * Kills, the score, accuracy and streaks are counted here from the game's
- * callbacks (`lib/gta6/streak.ts`, `lib/gta6/score.ts`); the game's own
- * score strip is off.
+ * Kills, hits, penalties, the score, accuracy and streaks are counted here
+ * from the game's callbacks (`lib/gta6/streak.ts`, `lib/gta6/score.ts`); the
+ * game's own score strip is off. The game owns health: it reports hearts
+ * left, and at none the round is WASTED (the scene greys, the word holds,
+ * then the results card).
  */
 export default function GameMode({ game, onClose, onBigfoot }: Props) {
   const overlay = useRef<HTMLDivElement>(null);
@@ -80,6 +89,14 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
   const [round, setRound] = useState(0);
   const [tally, setTally] = useState(() => emptyTally(game.KINDS));
   const [ammo, setAmmo] = useState({ rounds: game.ROUNDS, reloading: false });
+  const [hearts, setHearts] = useState(HEARTS);
+  // The last hearts reported, to tell how many a hit took.
+  const heartsNow = useRef(HEARTS);
+  // Counts hits taken: each one flashes the screen's edges red once.
+  const [hurt, setHurt] = useState(0);
+  const [wasted, setWasted] = useState(false);
+  // Counts rares coming on or first hit: each one glows the RARE counter.
+  const [rareFlash, setRareFlash] = useState(0);
   const [pops, setPops] = useState<Pop[]>([]);
   const [shout, setShout] = useState<{ id: number; text: string } | null>(null);
   const [bigfoot, setBigfoot] = useState(false);
@@ -87,8 +104,18 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
   const [banner, setBanner] = useState(0);
   const [timeChoice, setTimeChoice] = useState<TimeChoice>("auto");
   const [autoTime] = useState(() => timeOfDay(new Date().getHours()));
+  // Every enabled creature, in the registry's order: the HUD's chips and
+  // RARE menu, and the results card.
+  const [rows] = useState<Row[]>(() =>
+    game.KINDS.filter(game.isEnabled).map((kind) => ({
+      kind,
+      name: NAMES[kind],
+      rare: game.isRare(kind),
+      byHits: game.kindsWhere("protected").includes(kind),
+    })),
+  );
   const [icons] = useState(
-    () => Object.fromEntries(KIND_ORDER.map((k) => [k, game.iconUrl(k)])) as Record<Kind, string>,
+    () => Object.fromEntries(game.KINDS.map((k) => [k, game.iconUrl(k)])) as Record<Kind, string>,
   );
   const nextId = useRef(0);
 
@@ -138,20 +165,46 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
     if (phase !== "play" || !host.current) return;
     overlay.current?.focus({ preventScroll: true });
     let hunt: import("@games/vice-hunt").Hunt;
+    const pop = (p: Omit<Pop, "id">) => {
+      const id = ++nextId.current;
+      setPops((all) => [...all, { id, ...p }]);
+      return id;
+    };
+    heartsNow.current = HEARTS;
     try {
       hunt = game.startHunt(host.current, {
         muted: false,
         showScore: false,
         seaLine: beachSeaLine,
-        ...devSpawn(game.KINDS),
-        onShot: (_x, _y, hit) => setTally((t) => (hit ? recordHit(recordShot(t), hit) : recordShot(t))),
+        ...devOptions(game.KINDS),
+        onShot: () => setTally(recordShot),
+        onHit: (kind, n, of, x, y) => {
+          setTally((t) => recordHit(t, kind));
+          const text = hitLabel(n, of, game.penaltyFor(kind, n, false));
+          if (text) pop({ at: { x, y }, text, tone: "count" });
+        },
         onKill: (kind, x, y, streak) => {
           setTally((t) => recordKill(t, kind, streak, scoreFor(game.pointsFor(kind), streak)));
-          const id = ++nextId.current;
-          setPops((p) => [...p, { id, x, y, label: killLabel(kind) }]);
+          const id = pop({ at: { x, y }, text: "+1", sub: killLabel(kind), tone: "kill" });
           const text = callout(streak);
           if (text) setShout({ id, text });
         },
+        onPenalty: (kind, points, x, y) => {
+          setTally((t) => recordPenalty(t, kind, points));
+          pop({ at: { x, y }, text: penaltyLabel(points), tone: "penalty" });
+        },
+        onHealth: (left) => {
+          const lost = heartsNow.current - left;
+          heartsNow.current = left;
+          setHearts(left);
+          if (lost <= 0) return;
+          setHurt((n) => n + 1);
+          pop({ at: null, text: damageLabel(lost), tone: "damage" });
+        },
+        onWasted: () => setWasted(true),
+        onRare: () => setRareFlash((n) => n + 1),
+        onEscaped: (_kind, x, y) => pop({ at: { x, y }, text: "TOO SLOW", tone: "word" }),
+        onCallout: (text, x, y) => pop({ at: { x, y }, text, tone: "word" }),
         onAmmo: (rounds, reloading) => setAmmo({ rounds, reloading }),
         onBigfoot: (present) => {
           setBigfoot(present);
@@ -187,6 +240,10 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
   const playAgain = () => {
     setTally(emptyTally(game.KINDS));
     setAmmo({ rounds: game.ROUNDS, reloading: false });
+    setHearts(HEARTS);
+    setHurt(0);
+    setWasted(false);
+    setRareFlash(0);
     setPops([]);
     setShout(null);
     setRound((n) => n + 1);
@@ -198,6 +255,7 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
       ref={overlay}
       data-vice-hunt-overlay=""
       data-phase={phase}
+      data-wasted={wasted && phase === "play" ? "" : undefined}
       role="region"
       aria-label="Vice Hunt"
       tabIndex={-1}
@@ -220,21 +278,30 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
       <div aria-hidden className={s.vignette} />
       <div ref={host} className={s.host} />
       <div aria-hidden className={s.edge} data-on={bigfoot ? "" : undefined} />
+      {/* A new key flashes the edges again for each hit taken (prefixed: the
+          banner below is a keyed sibling too). */}
+      {hurt > 0 && <div key={`hurt-${hurt}`} aria-hidden className={s.hurt} />}
 
       <div aria-hidden className={s.pops}>
         {pops.map((p) => (
           <div
             key={p.id}
             className={`${s.pop} ${s.display}`}
+            data-tone={p.tone}
             // Kept clear of the screen's edges, where an animal can die half
             // off screen.
-            style={{
-              left: `clamp(4rem, ${Math.round(p.x)}px, calc(100% - 4rem))`,
-              top: `clamp(6rem, ${Math.round(p.y)}px, 100%)`,
-            }}
+            style={
+              p.at
+                ? {
+                    left: `clamp(4rem, ${Math.round(p.at.x)}px, calc(100% - 4rem))`,
+                    top: `clamp(6rem, ${Math.round(p.at.y)}px, 100%)`,
+                  }
+                : undefined
+            }
             onAnimationEnd={() => setPops((all) => all.filter((q) => q.id !== p.id))}
           >
-            +1<em>{p.label}</em>
+            {p.text}
+            {p.sub && <em>{p.sub}</em>}
           </div>
         ))}
         {shout && (
@@ -250,7 +317,12 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
 
       <Hud
         shown={phase !== "entry"}
+        rows={rows}
         kills={tally.kills}
+        hits={tally.hits}
+        met={tally.met}
+        hearts={hearts}
+        rareFlash={rareFlash}
         score={totalScore(tally)}
         latest={latest}
         rounds={ammo.rounds}
@@ -264,16 +336,24 @@ export default function GameMode({ game, onClose, onBigfoot }: Props) {
       {banner > 0 && phase === "play" && (
         <div key={banner} role="status" className={s.banner} onAnimationEnd={() => setBanner(0)}>
           <b className={s.display}>BIGFOOT SPOTTED</b>
-          <small className={s.mono}>THREE HITS TO TAKE HIM DOWN</small>
+          <small className={s.mono}>TWENTY HITS TO TAKE HIM DOWN</small>
         </div>
       )}
 
       <div aria-hidden className={`${s.bar} ${s.barTop}`} />
       <div aria-hidden className={`${s.bar} ${s.barBottom}`} />
       {phase === "entry" && <Entry onDone={() => setPhase("play")} />}
+      {phase === "play" && wasted && <Wasted onDone={() => setPhase("results")} />}
 
       {phase === "results" && (
-        <Results tally={tally} icons={icons} pointsFor={game.pointsFor} onAgain={playAgain} onBack={() => close.current()} />
+        <Results
+          tally={tally}
+          rows={rows}
+          icons={icons}
+          pointsFor={game.pointsFor}
+          onAgain={playAgain}
+          onBack={() => close.current()}
+        />
       )}
     </div>,
     document.body,

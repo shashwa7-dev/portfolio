@@ -495,6 +495,15 @@
   --duration-gta-callout: 1100ms;
   --duration-gta-banner: 2600ms;
   --duration-gta-edge-pulse: 1200ms;
+  /* Vice Hunt's health and rares: the hearts jump when one is lost while the
+     screen's edges flash red; the RARE counter glows once when a rare comes
+     on or is first hit; at no hearts the scene greys over the first and the
+     WASTED word holds for the second before the results card. */
+  --duration-gta-heart-hit: 350ms;
+  --duration-gta-hurt: 520ms;
+  --duration-gta-rare-flash: 900ms;
+  --duration-gta-wasted: 700ms;
+  --duration-gta-wasted-hold: 2200ms;
   /* Vice FM's card (components/gta6/Radio.module.css): one equaliser bar
      swing, and the progress line's glide between its 1 s readings. */
   --duration-gta-eq: 900ms;
