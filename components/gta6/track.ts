@@ -35,4 +35,5 @@ export const PLAYLIST: readonly Track[] = [
   { id: "md4ujXhHzLs", title: "Express Yourself", artist: "N.W.A." },
   { id: "rzRqEWJYwX4", title: "You Know How We Do It", artist: "Ice Cube" },
   { id: "Dx6OQ7RvDXc", title: "Rupa -  Aaj Shanibar (1982)", artist: "secondscene" },
+  { id: "3szd37cj36s", title: "DJ Tunez, Wizkid, Odumodublvck - Easy With Me (Official Video)", artist: "DJ Tunez" },
 ];
